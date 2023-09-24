@@ -1,4 +1,4 @@
-USE_TRANS = True
+USE_TRANS = False
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse

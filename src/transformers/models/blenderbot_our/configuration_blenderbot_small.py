@@ -164,8 +164,8 @@ class BlenderbotSmallConfig(PretrainedConfig):
             self.use_th_attn = kwargs["use_th_attn"]
         else:
             self.use_th_attn = True
-        self.use_trans_mat = True
-        self.add_emo_cross_attn = True
+        self.use_trans_mat = False
+        self.add_emo_cross_attn = False
 
     @property
     def num_attention_heads(self) -> int:

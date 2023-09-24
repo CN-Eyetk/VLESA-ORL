@@ -648,7 +648,9 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
             # hidden_states = residual + hidden_states
             # hidden_states = residual + hidden_states_encoder + hidden_states_strategy
-            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp + hidden_states_strategy + hidden_states_emo
+            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp + hidden_states_strategy 
+            if emo_out_embs is not None:
+                hidden_states += hidden_states_emo
             hidden_states = self.encoder_attn_layer_norm(hidden_states)
 
 
