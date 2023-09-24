@@ -3,6 +3,11 @@ blender-small/*
 blender_our/*
 blender_our2/*
 blender_our_TRANS/*
+blender-strategy/*
+blender-small/*
+blender-our/*
+blender-our2/*
+blender-our-TRANS/*
 cached
 generated_data
 runs

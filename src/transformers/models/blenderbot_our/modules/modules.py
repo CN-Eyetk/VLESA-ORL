@@ -15,24 +15,26 @@ class EmoTrans(nn.Module):
         self.reset_weights()
     def reset_weights(self):
         for weight in self.matrices:
-            torch.nn.init.xavier_uniform_(
-                weight,
-                gain = 1)
+            torch.nn.init.ones_(
+                weight)
     def forward(self, emo_logits, strat_logits):
         b = emo_logits.size(0)
         emo_out_logits_each_strat = torch.zeros(b, self.n_strat, self.n_emo_out).to(emo_logits.device) #[b, stra, emo]
         emo_prob = F.softmax(emo_logits, dim = -1)
         for i,matrix in enumerate(self.matrices):
+            with torch.no_grad():
+                weight_norm = matrix/matrix.sum(dim=1, keepdim=True)
+                matrix.copy_(weight_norm)
             emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
             emo_out_logits_each_strat[:, i, :] = emo_out_logits_cur_strat
         strat_prob = F.softmax(strat_logits, dim = -1)
         #print(strat_prob)
-        emo_out_logits = torch.bmm(strat_prob.unsqueeze(-2), emo_out_logits_each_strat) #[b, 1, stra] * [b, stra, emo] -> [b, 1, emo] 
-        emo_out_prob = F.softmax(emo_out_logits, dim = -1) #[b, 1, emo]
+        emo_out_prob = torch.bmm(strat_prob.unsqueeze(-2), emo_out_logits_each_strat) #[b, 1, stra] * [b, stra, emo] -> [b, 1, emo] 
+        #emo_out_prob = F.softmax(emo_out_logits, dim = -1) #[b, 1, emo]
         #print(emo_out_prob)
         emotion_id = self.emotion_id.to(emo_logits.device) 
         emo_embed = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
-        return emo_embed, emo_out_logits
+        return emo_embed, emo_out_prob
         
         
 

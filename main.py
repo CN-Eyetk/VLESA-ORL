@@ -1,4 +1,4 @@
-USE_TRANS = False
+USE_TRANS = True
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
@@ -53,7 +53,7 @@ def load_arg():
             "turn":False,
             "logging_steps":30,
             "evaluate_during_training":True,
-            "output_dir":os.path.join('blender_our' + ("_TRANS" if USE_TRANS else ""), TAG),
+            "output_dir":os.path.join('blender-our' + ("-TRANS" if USE_TRANS else ""), TAG),
             "seed":42,
             "max_grad_norm":1.0
             
@@ -123,13 +123,13 @@ def print_blender(blender):
 if __name__ == "__main__":
     args = load_arg()
     config, tokenizer = load_tokenizer(args = args)
-    #model = load_model(args, tokenizer)
+    model = load_model(args, tokenizer)
     train_dataset, eval_dataset, test_dataset = load_dataset(args, tokenizer)
     args.train_dataset = train_dataset
     args.eval_dataset = eval_dataset
     args.test_dataset = test_dataset
     
-    #global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
+    global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False)
     model.to(args.device)
     test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
