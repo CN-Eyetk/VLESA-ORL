@@ -54,6 +54,8 @@ class BaseModelOutput(ModelOutput):
     strategy_embs: torch.FloatTensor = None
     comet_mask: torch.FloatTensor = None
     comet_mask_st: torch.FloatTensor = None
+    emo_out_embed: torch.FloatTensor = None
+    emo_out_logits: torch.FloatTensor = None
 
 
 

@@ -40,6 +40,8 @@ from ...modeling_outputs import (
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
+from .modules.modules import EmoTrans
+
 
 
 logger = logging.get_logger(__name__)
@@ -359,6 +361,8 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         else:
             self.muAttn = Mutual_Attn(embed_dim=config.d_model)
             self.muAttn_st = Mutual_Attn(embed_dim=config.d_model)
+            
+
         
 
     def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, comet_hidden_states :torch.Tensor,  attention_mask_for_muAttn :torch.Tensor, comet_mask :torch.Tensor, comet_hidden_states_st :torch.Tensor,  comet_mask_st :torch.Tensor, output_attentions: bool = False, output_mutual_attentions: bool=False):
@@ -397,13 +401,16 @@ class BlenderbotSmallEncoderLayer(nn.Module):
                 len_3 = comet_hidden_states_st.size(1)
                 hidden_cat, attn_weights, _ = self.muAttn(
                     hidden_cat, 
-                    attention_mask = attention_mask_for_muAttn
+                    attention_mask = attention_mask_for_muAttn,
+                    #output_attentions = True
                 )
+                #attn_weights shape [b, n_head, seq_len, seq_len]
+                #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
                 #hidden_states = hidden_cat[:,:len_1,:]
                 comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
                 comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
-                mutual_attn_weights = None
-                mutual_attn_weights_st = None
+                #mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
+                #mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
                 if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
                     clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
                     comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
@@ -492,7 +499,17 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
-
+        
+        if config.add_emo_cross_attn:
+            self.encoder_attn_emo= BlenderbotSmallAttention(
+                self.embed_dim,
+                config.decoder_attention_heads,
+                dropout=config.attention_dropout,
+                is_decoder=True,
+            )
+            self.encoder_attn_layer_norm_emo = nn.LayerNorm(self.embed_dim)
+        else:
+            self.encoder_attn_emo = None
     def forward(
         self,
         hidden_states: torch.Tensor,
@@ -504,6 +521,7 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         comet_hidden_states_st: Optional[torch.Tensor] = None,
         comet_mask_st: Optional[torch.Tensor] = None,
         strategy_embs: Optional[torch.Tensor] = None,
+        emo_out_embs: Optional[torch.Tensor] = None,
         past_key_value: Optional[Tuple[torch.Tensor]] = None,
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = True,
@@ -600,6 +618,12 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             )
             hidden_states_strategy = F.dropout(hidden_states_strategy, p=self.dropout, training=self.training)
 
+            if emo_out_embs is not None:
+                hidden_states_emo, _, _ = self.encoder_attn_emo(
+                    hidden_states=hidden_states,
+                    key_value_states=emo_out_embs,
+                )
+                hidden_states_emo = F.dropout(hidden_states_emo, p=self.dropout, training=self.training)
             hidden_states_sp, _, _ = self.encoder_attn_comet(
                 hidden_states=hidden_states,
                 key_value_states=comet_hidden_states,
@@ -624,7 +648,7 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
             # hidden_states = residual + hidden_states
             # hidden_states = residual + hidden_states_encoder + hidden_states_strategy
-            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp + hidden_states_strategy
+            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp + hidden_states_strategy + hidden_states_emo
             hidden_states = self.encoder_attn_layer_norm(hidden_states)
 
 
@@ -874,21 +898,31 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
-
-        self.emotion_head = nn.Linear(config.d_model, 11)
+        self.n_emo_in = 11
+        self.n_strat = 8
+        self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
         self.intensity_head = nn.Linear(config.d_model, 1)
-        self.strategy_head = nn.Linear(config.d_model, 8)
-        self.batchNorm_emotion = nn.BatchNorm1d(11)
-        self.batchNorm_strategy = nn.BatchNorm1d(8)
+        self.strategy_head = nn.Linear(config.d_model, self.n_strat)
+        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
+        self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
 
         self.strategy_embedding = nn.Embedding(8 + 1, embed_dim, 8)
         self.strategy_id = torch.tensor(range(8), dtype=torch.long)
         self.multi_state_LayerNorm = nn.LayerNorm(config.d_model)
 
         self.init_weights()
-        
+
         #our change
         self.use_th_attn = config.use_th_attn
+        self.use_trans_mat = config.use_trans_mat
+        if config.use_trans_mat:
+            self.trans_mat = EmoTrans(n_emo_in = self.n_emo_in, 
+                                      n_emo_out = self.n_emo_in,
+                                      n_strat = self.n_strat,
+                                      embed_dim = config.d_model
+                                      )
+        else:
+            self.trans_mat = None
     def forward(
         self,
         input_ids=None,
@@ -1039,6 +1073,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             multi_state = self.multi_state_LayerNorm(torch.mean(hidden_states, dim=1) + torch.mean(comet_hidden_states, dim=1) + torch.mean(comet_hidden_states_st, dim=1)) if comet_embs is not None else None
         #     multi_state = torch.mean([torch.mean(hidden_states, dim=1), torch.mean(comet_hidden_states, dim=1), torch.mean(comet_hidden_states_st, dim=1)], dim=1)
             emotion_logits = self.emotion_head(hidden_states[:,0,:])
+            emotion_logits = self.batchNorm_emotion(emotion_logits)
             emotion_intensity = self.intensity_head(hidden_states[:,0,:])
             strategy_logits = self.strategy_head(hidden_states[:, 0, :])
             # strategy_logits = self.strategy_head(hidden_states[:,0,:]) + 1 / turn_ids.unsqueeze(1).type(torch.float)
@@ -1088,12 +1123,19 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         else:
             strategy_embs=None
-
+        
+        if self.trans_mat is not None and strategy_logits is not None and emotion_logits is not None:
+            emo_out_embed, emo_out_logits = self.trans_mat(emotion_logits, strategy_logits)
+        else:
+            emo_out_embed = None
+            emo_out_logits = None
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
             emotion_logits = emotion_logits, emotion_intensity = emotion_intensity, strategy_logits = strategy_logits, strategy_embs = strategy_embs, comet_mask = comet_mask,
-            comet_mask_st=comet_mask_st
+            comet_mask_st=comet_mask_st,
+            emo_out_embed=emo_out_embed,
+            emo_out_logits=emo_out_logits,
         )
 
 
@@ -1143,6 +1185,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
         comet_hidden_states_st=None,
         comet_mask_st=None,
         strategy_embs=None,
+        emo_out_embs=None,
         past_key_values=None,
         inputs_embeds=None,
         use_cache=None,
@@ -1327,6 +1370,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
                     comet_hidden_states_st=comet_hidden_states_st,
                     comet_mask_st=comet_mask_st,
                     strategy_embs = strategy_embs,
+                    emo_out_embs=emo_out_embs,
                     past_key_value=past_key_value,
                     output_attentions=output_attentions,
                     use_cache=use_cache,
@@ -1531,8 +1575,11 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.register_buffer("final_logits_bias", torch.zeros((1, self.model.shared.num_embeddings)))
         self.lm_head = nn.Linear(config.d_model, self.model.shared.num_embeddings, bias=False)
         self.use_th_attn = config.use_th_attn
+        self.use_trans_mat = config.use_trans_mat
         self.dropout = config.dropout
         self.init_weights()
+        #if config.use_trans_mat:
+        #    self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
 
     def get_encoder(self):
         return self.model.get_encoder()
@@ -1642,8 +1689,14 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
             )
         # print(decoder_input_ids)
-
-
+        if encoder_outputs.emo_out_embed is not None and encoder_outputs.strategy_embs is not None:
+            #strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embed,encoder_outputs.strategy_embs), dim = -1))
+            strategy_embs = encoder_outputs.strategy_embs
+            emo_out_embs = encoder_outputs.emo_out_embed
+            
+        else:
+            strategy_embs = encoder_outputs.strategy_embs
+            emo_out_embs = None
         # if decoder_input_ids.shape[-1] > 1 and not generate:
         #     strategy_label = decoder_input_ids[:, 0] - 54944
         #     decoder_input_ids = decoder_input_ids[:, 1:]
@@ -1671,7 +1724,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             comet_mask=encoder_outputs.comet_mask,
             comet_hidden_states_st=encoder_outputs.last_comet_hidden_state_st,
             comet_mask_st=encoder_outputs.comet_mask_st,
-            strategy_embs=encoder_outputs.strategy_embs,
+            strategy_embs=strategy_embs,#encoder_outputs.strategy_embs,
+            emo_out_embs=emo_out_embs,
             past_key_values=past_key_values,
             inputs_embeds=decoder_inputs_embeds,
             use_cache=use_cache,
@@ -1786,131 +1840,3 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             )
         return reordered_past
 
-class SelfAttention(nn.Module):
-    def __init__(self, num_attention_heads, 
-                hidden_size, 
-                attention_probs_dropout_prob,
-                layer_norm_eps: float = 1e-8,
-                ):
-        super().__init__()
-        self.layer_norm_eps = layer_norm_eps
-        self.num_attention_heads = num_attention_heads
-        self.attention_head_size = int(hidden_size / num_attention_heads)
-        self.all_head_size = self.num_attention_heads * self.attention_head_size
-
-        self.query_1 = nn.Linear(hidden_size, self.all_head_size)
-        self.key_1 = nn.Linear(hidden_size, self.all_head_size)
-        self.value_1 = nn.Linear(hidden_size, self.all_head_size)
-
-        self.query_2 = nn.Linear(hidden_size, self.all_head_size)
-        self.key_2 = nn.Linear(hidden_size, self.all_head_size)
-        self.value_2 = nn.Linear(hidden_size, self.all_head_size)
-
-        self.query_3 = nn.Linear(hidden_size, self.all_head_size)
-        self.key_3 = nn.Linear(hidden_size, self.all_head_size)
-        self.value_3 = nn.Linear(hidden_size, self.all_head_size)
-
-        self.dropout = nn.Dropout(attention_probs_dropout_prob)
-        self.layerNorm_1 = nn.LayerNorm(hidden_size, eps=self.layer_norm_eps)
-        self.layerNorm_2 = nn.LayerNorm(hidden_size, eps=self.layer_norm_eps)
-        self.layerNorm_3 = nn.LayerNorm(hidden_size, eps=self.layer_norm_eps)
-    def transpose_for_scores(self, x: torch.Tensor) -> torch.Tensor:
-        new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
-        x = x.view(new_x_shape)
-        return x.permute(0, 2, 1, 3)
-
-    def forward(
-        self,
-        hidden_states_1: torch.Tensor,
-        hidden_states_2: torch.Tensor,
-        hidden_states_3: torch.Tensor,
-        attention_mask: Optional[torch.FloatTensor] = None,
-        attention_mask_1: Optional[torch.FloatTensor] = None,
-        attention_mask_2: Optional[torch.FloatTensor] = None,
-        attention_mask_3: Optional[torch.FloatTensor] = None,
-        head_mask: Optional[torch.FloatTensor] = None,
-        output_attentions: Optional[bool] = False,
-    ) -> Tuple[torch.Tensor]:
-        bsz, len_1, embed_dim = hidden_states_1.size()
-        bsz, len_2, embed_dim = hidden_states_2.size()
-        bsz, len_3, embed_dim = hidden_states_3.size()
-        #print(f"len_1:{len_1}-len_2:{len_2}-len_3:{len_3}")
-
-        mixed_query_layer_1 = self.query_1(hidden_states_1)
-        mixed_query_layer_2 = self.query_2(hidden_states_2)
-        mixed_query_layer_3 = self.query_3(hidden_states_3)
-
-        key_layer_1 = self.transpose_for_scores(self.key_1(hidden_states_1))
-        key_layer_2 = self.transpose_for_scores(self.key_2(hidden_states_2))
-        key_layer_3 = self.transpose_for_scores(self.key_3(hidden_states_3))
-
-        value_layer_1 = self.transpose_for_scores(self.value_1(hidden_states_1))
-        value_layer_2 = self.transpose_for_scores(self.value_2(hidden_states_2))
-        value_layer_3 = self.transpose_for_scores(self.value_3(hidden_states_3))
-
-        query_layer_1 = self.transpose_for_scores(mixed_query_layer_1)
-        query_layer_2 = self.transpose_for_scores(mixed_query_layer_2)
-        query_layer_3 = self.transpose_for_scores(mixed_query_layer_3)
-
-        query_layer = torch.cat((query_layer_1, query_layer_2, query_layer_3), dim = -2)
-        key_layer = torch.cat((key_layer_1, key_layer_2, key_layer_3), dim = -2)
-        value_layer = torch.cat((value_layer_1, value_layer_2, value_layer_3), dim = -2)
-        if attention_mask is None:
-            attention_mask = self.get_attention_mask_for_muAttn(attention_mask_1, attention_mask_2, attention_mask_3)
-
-        attention_mask = torch.where(attention_mask == 1, torch.zeros_like(attention_mask, dtype=torch.float),
-                           -1e8 * torch.ones_like(attention_mask, dtype=torch.float))
-        # Take the dot product between "query" and "key" to get the raw attention scores.
-        attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
-        attention_scores = attention_scores / math.sqrt(self.attention_head_size)
-        if attention_mask is not None:
-            # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
-            attention_scores = attention_scores + attention_mask
-
-        # Normalize the attention scores to probabilities.
-        attention_probs = nn.functional.softmax(attention_scores, dim=-1)
-
-        # This is actually dropping out entire tokens to attend to, which might
-        # seem a bit unusual, but is taken from the original Transformer paper.
-        attention_probs = self.dropout(attention_probs)
-
-        # Mask heads if we want to
-        if head_mask is not None:
-            attention_probs = attention_probs * head_mask
-
-        context_layer = torch.matmul(attention_probs, value_layer)
-
-        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
-        new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
-        context_layer = context_layer.view(new_context_layer_shape)
-        #print("context_layer",context_layer.shape)
-        
-        context_layer_1 = self.layerNorm_1(context_layer[:,:len_1,:])
-        context_layer_2 = self.layerNorm_2(context_layer[:,len_1:len_1 + len_2,:])
-        context_layer_3 = self.layerNorm_3(context_layer[:,len_1 + len_2:len_1 + len_2 + len_3,:])
-
-        context_layer = (context_layer_1, context_layer_2, context_layer_3)
-        outputs = (context_layer, attention_probs) if output_attentions else (context_layer,)
-
-        return outputs
-    @classmethod
-    def get_extended_attention_mask(cls, attention_mask) -> torch.Tensor:
-        non_attn_pos = attention_mask == 0
-        extended_attention_mask = torch.ones(attention_mask.size(0),attention_mask.size(1),attention_mask.size(1))
-        extended_attention_mask[non_attn_pos,:] = 0
-        extended_attention_mask = extended_attention_mask.permute(0,2,1)
-        extended_attention_mask[non_attn_pos,:] = 0
-        extended_attention_mask = extended_attention_mask.unsqueeze(1)    
-        return extended_attention_mask
-    @classmethod
-    def get_attention_mask_for_muAttn(cls, attention_mask_1, attention_mask_2, attention_mask_3):
-        bsz, len_1 = attention_mask_1.size()
-        bsz, len_2 = attention_mask_2.size()
-        bsz, len_3 = attention_mask_3.size()
-        attention_mask = torch.cat((attention_mask_1, attention_mask_2, attention_mask_3), dim = 1)
-        attention_mask = cls.get_extended_attention_mask(attention_mask)
-        attention_mask[:,:,:len_1,:len_1] = 0
-        attention_mask[:,:,len_1:len_1+len_2,len_1:len_1+len_2] = 0
-        attention_mask[:,:,len_1+len_2:len_1+len_2+len_3,len_1+len_2:len_1+len_2+len_3] = 0
-        attention_mask = attention_mask.to(attention_mask_1.device)
-        return attention_mask

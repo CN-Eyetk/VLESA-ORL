@@ -1569,7 +1569,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         generate = True if encoder_outputs is not None else False
         strategy_label = decoder_strategy_ids
-
+        
         if not generate:
             batch_size = strategy_label.shape[0]
             onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
@@ -1577,7 +1577,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             strategy_logit_ground.float()
         else:
             strategy_logit_ground = None
-
+        
         if encoder_outputs is None:
             encoder_outputs = self.model.encoder(
                 input_ids=input_ids,
