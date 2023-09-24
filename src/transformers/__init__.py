@@ -147,7 +147,7 @@ _import_structure = {
     "models.bert_japanese": ["BertJapaneseTokenizer", "CharacterTokenizer", "MecabTokenizer"],
     "models.bertweet": ["BertweetTokenizer"],
     "models.blenderbot": ["BLENDERBOT_PRETRAINED_CONFIG_ARCHIVE_MAP", "BlenderbotConfig", "BlenderbotTokenizer"],
-    "models.blenderbot_small": [
+    "models.blenderbot_our": [
         "BLENDERBOT_SMALL_PRETRAINED_CONFIG_ARCHIVE_MAP",
         "BlenderbotSmallConfig",
         "BlenderbotSmallTokenizer",
@@ -443,7 +443,7 @@ if is_torch_available():
             "BlenderbotModel",
         ]
     )
-    _import_structure["models.blenderbot_small"].extend(
+    _import_structure["models.blenderbot_our"].extend(
         [
             "BLENDERBOT_SMALL_PRETRAINED_MODEL_ARCHIVE_LIST",
             "BlenderbotSmallForConditionalGeneration",
@@ -870,7 +870,7 @@ if is_tf_available():
         ]
     )
     _import_structure["models.blenderbot"].extend(["TFBlenderbotForConditionalGeneration", "TFBlenderbotModel"])
-    _import_structure["models.blenderbot_small"].extend(
+    _import_structure["models.blenderbot_our"].extend(
         ["TFBlenderbotSmallForConditionalGeneration", "TFBlenderbotSmallModel"]
     )
     _import_structure["models.camembert"].extend(
@@ -1225,7 +1225,7 @@ if TYPE_CHECKING:
     from .models.bert_japanese import BertJapaneseTokenizer, CharacterTokenizer, MecabTokenizer
     from .models.bertweet import BertweetTokenizer
     from .models.blenderbot import BLENDERBOT_PRETRAINED_CONFIG_ARCHIVE_MAP, BlenderbotConfig, BlenderbotTokenizer
-    from .models.blenderbot_small import (
+    from .models.blenderbot_our import (
         BLENDERBOT_SMALL_PRETRAINED_CONFIG_ARCHIVE_MAP,
         BlenderbotSmallConfig,
         BlenderbotSmallTokenizer,
@@ -1501,7 +1501,7 @@ if TYPE_CHECKING:
             BlenderbotForConditionalGeneration,
             BlenderbotModel,
         )
-        from .models.blenderbot_small import (
+        from .models.blenderbot_our import (
             BLENDERBOT_SMALL_PRETRAINED_MODEL_ARCHIVE_LIST,
             BlenderbotSmallForConditionalGeneration,
             BlenderbotSmallModel,
@@ -1861,7 +1861,7 @@ if TYPE_CHECKING:
             TFBertPreTrainedModel,
         )
         from .models.blenderbot import TFBlenderbotForConditionalGeneration, TFBlenderbotModel
-        from .models.blenderbot_small import TFBlenderbotSmallForConditionalGeneration, TFBlenderbotSmallModel
+        from .models.blenderbot_our import TFBlenderbotSmallForConditionalGeneration, TFBlenderbotSmallModel
         from .models.camembert import (
             TF_CAMEMBERT_PRETRAINED_MODEL_ARCHIVE_LIST,
             TFCamembertForMaskedLM,
