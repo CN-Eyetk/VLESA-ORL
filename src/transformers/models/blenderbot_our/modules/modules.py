@@ -34,7 +34,7 @@ class EmoTrans(nn.Module):
         #print(emo_out_prob)
         emotion_id = self.emotion_id.to(emo_logits.device) 
         emo_embed = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
-        emo_out_prob = emo_out_prob.squeeze(1)
+        emo_out_prob = emo_out_prob.squeeze()
         return emo_embed, emo_out_prob
         
         

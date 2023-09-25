@@ -1,0 +1,1180 @@
+***** Eval results checkpoint-30 *****
+eval_emotion_predict_accuracy = 0.032879818594104306
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 80.02061930176711
+eval_strategy_predict_accuracy = 0.1320861678004535
+***** Eval results checkpoint-60 *****
+eval_emotion_predict_accuracy = 0.034013605442176874
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 52.43981927928561
+eval_strategy_predict_accuracy = 0.17630385487528344
+***** Eval results checkpoint-90 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 44.14462840329825
+eval_strategy_predict_accuracy = 0.1961451247165533
+***** Eval results checkpoint-120 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 38.97746484856015
+eval_strategy_predict_accuracy = 0.19387755102040816
+***** Eval results checkpoint-150 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 35.36237575848463
+eval_strategy_predict_accuracy = 0.1870748299319728
+***** Eval results checkpoint-180 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 31.77354268065063
+eval_strategy_predict_accuracy = 0.20521541950113378
+***** Eval results checkpoint-210 *****
+eval_emotion_predict_accuracy = 0.027777777777777776
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 28.385462733497835
+eval_strategy_predict_accuracy = 0.20294784580498867
+***** Eval results checkpoint-240 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 26.487368930777624
+eval_strategy_predict_accuracy = 0.21485260770975056
+***** Eval results checkpoint-270 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 24.39979397003221
+eval_strategy_predict_accuracy = 0.21882086167800455
+***** Eval results checkpoint-300 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 23.25647940107325
+eval_strategy_predict_accuracy = 0.23922902494331066
+***** Eval results checkpoint-330 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 22.51370545648476
+eval_strategy_predict_accuracy = 0.23072562358276644
+***** Eval results checkpoint-360 *****
+eval_emotion_predict_accuracy = 0.02891156462585034
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 21.84739032481852
+eval_strategy_predict_accuracy = 0.24263038548752835
+***** Eval results checkpoint-390 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 21.05647222799451
+eval_strategy_predict_accuracy = 0.24036281179138322
+***** Eval results checkpoint-420 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 20.498606299145564
+eval_strategy_predict_accuracy = 0.2443310657596372
+***** Eval results checkpoint-450 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.97318672470735
+eval_strategy_predict_accuracy = 0.2687074829931973
+***** Eval results checkpoint-480 *****
+eval_emotion_predict_accuracy = 0.03231292517006803
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.86316440798231
+eval_strategy_predict_accuracy = 0.2528344671201814
+***** Eval results checkpoint-510 *****
+eval_emotion_predict_accuracy = 0.03968253968253968
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.843124873032355
+eval_strategy_predict_accuracy = 0.25736961451247165
+***** Eval results checkpoint-540 *****
+eval_emotion_predict_accuracy = 0.036281179138321996
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.56351084844507
+eval_strategy_predict_accuracy = 0.28514739229024944
+***** Eval results checkpoint-570 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.236472924168936
+eval_strategy_predict_accuracy = 0.27154195011337867
+***** Eval results checkpoint-600 *****
+eval_emotion_predict_accuracy = 0.031746031746031744
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 19.047957688316792
+eval_strategy_predict_accuracy = 0.26077097505668934
+***** Eval results checkpoint-630 *****
+eval_emotion_predict_accuracy = 0.03344671201814059
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.828987720156313
+eval_strategy_predict_accuracy = 0.2789115646258503
+***** Eval results checkpoint-660 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.80795339991011
+eval_strategy_predict_accuracy = 0.28798185941043086
+***** Eval results checkpoint-690 *****
+eval_emotion_predict_accuracy = 0.03344671201814059
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.6345009673566
+eval_strategy_predict_accuracy = 0.2766439909297052
+***** Eval results checkpoint-720 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.25492095886713
+eval_strategy_predict_accuracy = 0.27834467120181405
+***** Eval results checkpoint-750 *****
+eval_emotion_predict_accuracy = 0.03344671201814059
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.065972069120452
+eval_strategy_predict_accuracy = 0.2834467120181406
+***** Eval results checkpoint-780 *****
+eval_emotion_predict_accuracy = 0.03458049886621315
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.00912422645696
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-810 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.91753578574331
+eval_strategy_predict_accuracy = 0.2743764172335601
+***** Eval results checkpoint-840 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 18.002497896184252
+eval_strategy_predict_accuracy = 0.28458049886621317
+***** Eval results checkpoint-870 *****
+eval_emotion_predict_accuracy = 0.031179138321995464
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.772154642193975
+eval_strategy_predict_accuracy = 0.28458049886621317
+***** Eval results checkpoint-900 *****
+eval_emotion_predict_accuracy = 0.03231292517006803
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.866516215704877
+eval_strategy_predict_accuracy = 0.2857142857142857
+***** Eval results checkpoint-930 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.615628841061056
+eval_strategy_predict_accuracy = 0.2885487528344671
+***** Eval results checkpoint-960 *****
+eval_emotion_predict_accuracy = 0.030045351473922902
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.523491717320066
+eval_strategy_predict_accuracy = 0.28401360544217685
+***** Eval results checkpoint-990 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.561100993361585
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-1020 *****
+eval_emotion_predict_accuracy = 0.035147392290249435
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.495120768557577
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-1050 *****
+eval_emotion_predict_accuracy = 0.03458049886621315
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.43563265257678
+eval_strategy_predict_accuracy = 0.2789115646258503
+***** Eval results checkpoint-1080 *****
+eval_emotion_predict_accuracy = 0.031746031746031744
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.343201314736845
+eval_strategy_predict_accuracy = 0.2868480725623583
+***** Eval results checkpoint-1110 *****
+eval_emotion_predict_accuracy = 0.0391156462585034
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.390536960317927
+eval_strategy_predict_accuracy = 0.2987528344671202
+***** Eval results checkpoint-1140 *****
+eval_emotion_predict_accuracy = 0.035147392290249435
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.247498214865377
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-1170 *****
+eval_emotion_predict_accuracy = 0.032879818594104306
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.255837051974808
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-1200 *****
+eval_emotion_predict_accuracy = 0.03854875283446712
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.33797950196079
+eval_strategy_predict_accuracy = 0.2987528344671202
+***** Eval results checkpoint-1230 *****
+eval_emotion_predict_accuracy = 0.03571428571428571
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.19279049414609
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-1260 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.98193732266142
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-1290 *****
+eval_emotion_predict_accuracy = 0.031746031746031744
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.91706409998193
+eval_strategy_predict_accuracy = 0.30612244897959184
+***** Eval results checkpoint-1320 *****
+eval_emotion_predict_accuracy = 0.03458049886621315
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 17.076898774940886
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-1350 *****
+eval_emotion_predict_accuracy = 0.03231292517006803
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.94621772136114
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-1380 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.809092807624776
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-1410 *****
+eval_emotion_predict_accuracy = 0.03571428571428571
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.849506299463208
+eval_strategy_predict_accuracy = 0.3123582766439909
+***** Eval results checkpoint-1440 *****
+eval_emotion_predict_accuracy = 0.03344671201814059
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.841624443702884
+eval_strategy_predict_accuracy = 0.3100907029478458
+***** Eval results checkpoint-1470 *****
+eval_emotion_predict_accuracy = 0.030045351473922902
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.879320160806607
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-1500 *****
+eval_emotion_predict_accuracy = 0.024943310657596373
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.638589205481644
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-1530 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.6498751747054
+eval_strategy_predict_accuracy = 0.31065759637188206
+***** Eval results checkpoint-1560 *****
+eval_emotion_predict_accuracy = 0.027777777777777776
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.72811567039348
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-1590 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.626014703963587
+eval_strategy_predict_accuracy = 0.2953514739229025
+***** Eval results checkpoint-1620 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.61060622173701
+eval_strategy_predict_accuracy = 0.30158730158730157
+***** Eval results checkpoint-1650 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.49225052104448
+eval_strategy_predict_accuracy = 0.3089569160997732
+***** Eval results checkpoint-1680 *****
+eval_emotion_predict_accuracy = 0.027777777777777776
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.507414308618586
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-1710 *****
+eval_emotion_predict_accuracy = 0.02891156462585034
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.476236787161586
+eval_strategy_predict_accuracy = 0.31065759637188206
+***** Eval results checkpoint-1740 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.46155736257225
+eval_strategy_predict_accuracy = 0.2828798185941043
+***** Eval results checkpoint-1770 *****
+eval_emotion_predict_accuracy = 0.031179138321995464
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.514518645693354
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-1800 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.614545039059156
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-1830 *****
+eval_emotion_predict_accuracy = 0.02891156462585034
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.64062284954567
+eval_strategy_predict_accuracy = 0.2919501133786848
+***** Eval results checkpoint-1860 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.580381567695838
+eval_strategy_predict_accuracy = 0.3072562358276644
+***** Eval results checkpoint-1890 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.50750726447159
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-1920 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.563603066718137
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-1950 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.464488013721862
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-1980 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.561250265645892
+eval_strategy_predict_accuracy = 0.3072562358276644
+***** Eval results checkpoint-2010 *****
+eval_emotion_predict_accuracy = 0.03344671201814059
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.499300947720158
+eval_strategy_predict_accuracy = 0.3112244897959184
+***** Eval results checkpoint-2040 *****
+eval_emotion_predict_accuracy = 0.031746031746031744
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.5059928237659
+eval_strategy_predict_accuracy = 0.30839002267573695
+***** Eval results checkpoint-2070 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.443843926165705
+eval_strategy_predict_accuracy = 0.3066893424036281
+***** Eval results checkpoint-2100 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.43688538577311
+eval_strategy_predict_accuracy = 0.3089569160997732
+***** Eval results checkpoint-2130 *****
+eval_emotion_predict_accuracy = 0.016439909297052153
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.476512940101244
+eval_strategy_predict_accuracy = 0.3100907029478458
+***** Eval results checkpoint-2160 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.467124424109876
+eval_strategy_predict_accuracy = 0.3112244897959184
+***** Eval results checkpoint-2190 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.309310342234372
+eval_strategy_predict_accuracy = 0.3055555555555556
+***** Eval results checkpoint-2220 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.37146659040957
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-2250 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.457336416458837
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-2280 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.32011613831094
+eval_strategy_predict_accuracy = 0.3123582766439909
+***** Eval results checkpoint-2310 *****
+eval_emotion_predict_accuracy = 0.034013605442176874
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.345040283052057
+eval_strategy_predict_accuracy = 0.29931972789115646
+***** Eval results checkpoint-2340 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.44132994237472
+eval_strategy_predict_accuracy = 0.31462585034013607
+***** Eval results checkpoint-2370 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.325587045724696
+eval_strategy_predict_accuracy = 0.31462585034013607
+***** Eval results checkpoint-2400 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.305426922907337
+eval_strategy_predict_accuracy = 0.30839002267573695
+***** Eval results checkpoint-2430 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.195961383275286
+eval_strategy_predict_accuracy = 0.3129251700680272
+***** Eval results checkpoint-2460 *****
+eval_emotion_predict_accuracy = 0.027777777777777776
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.30735057181203
+eval_strategy_predict_accuracy = 0.3129251700680272
+***** Eval results checkpoint-2490 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.258333179835976
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-2520 *****
+eval_emotion_predict_accuracy = 0.024943310657596373
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.239242393280104
+eval_strategy_predict_accuracy = 0.3100907029478458
+***** Eval results checkpoint-2550 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.14149849366942
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-2580 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.152724480374914
+eval_strategy_predict_accuracy = 0.3129251700680272
+***** Eval results checkpoint-2610 *****
+eval_emotion_predict_accuracy = 0.02834467120181406
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.266258512126768
+eval_strategy_predict_accuracy = 0.30272108843537415
+***** Eval results checkpoint-2640 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.110415415141375
+eval_strategy_predict_accuracy = 0.3055555555555556
+***** Eval results checkpoint-2670 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.22648744563894
+eval_strategy_predict_accuracy = 0.29931972789115646
+***** Eval results checkpoint-2700 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.435604044965956
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-2730 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.427232314997493
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-2760 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.534907326757704
+eval_strategy_predict_accuracy = 0.2987528344671202
+***** Eval results checkpoint-2790 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.398821572591856
+eval_strategy_predict_accuracy = 0.2891156462585034
+***** Eval results checkpoint-2820 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.47005168152468
+eval_strategy_predict_accuracy = 0.2987528344671202
+***** Eval results checkpoint-2850 *****
+eval_emotion_predict_accuracy = 0.024943310657596373
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.363871252092007
+eval_strategy_predict_accuracy = 0.2919501133786848
+***** Eval results checkpoint-2880 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.430714828502264
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-2910 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.345398627278705
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-2940 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.354114785121844
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-2970 *****
+eval_emotion_predict_accuracy = 0.024943310657596373
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.36123808009274
+eval_strategy_predict_accuracy = 0.30612244897959184
+***** Eval results checkpoint-3000 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.329841943855108
+eval_strategy_predict_accuracy = 0.31179138321995464
+***** Eval results checkpoint-3030 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.455744164691758
+eval_strategy_predict_accuracy = 0.31405895691609975
+***** Eval results checkpoint-3060 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.392121134837414
+eval_strategy_predict_accuracy = 0.3089569160997732
+***** Eval results checkpoint-3090 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.32287786383901
+eval_strategy_predict_accuracy = 0.30952380952380953
+***** Eval results checkpoint-3120 *****
+eval_emotion_predict_accuracy = 0.03571428571428571
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.33185363614222
+eval_strategy_predict_accuracy = 0.3134920634920635
+***** Eval results checkpoint-3150 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.36553319006658
+eval_strategy_predict_accuracy = 0.31405895691609975
+***** Eval results checkpoint-3180 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.276986937629175
+eval_strategy_predict_accuracy = 0.2987528344671202
+***** Eval results checkpoint-3210 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.396168898833118
+eval_strategy_predict_accuracy = 0.30612244897959184
+***** Eval results checkpoint-3240 *****
+eval_emotion_predict_accuracy = 0.027777777777777776
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.305115488972344
+eval_strategy_predict_accuracy = 0.30158730158730157
+***** Eval results checkpoint-3270 *****
+eval_emotion_predict_accuracy = 0.026643990929705215
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.184813036100834
+eval_strategy_predict_accuracy = 0.3168934240362812
+***** Eval results checkpoint-3300 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.26984159211307
+eval_strategy_predict_accuracy = 0.3134920634920635
+***** Eval results checkpoint-3330 *****
+eval_emotion_predict_accuracy = 0.02891156462585034
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.25994320608025
+eval_strategy_predict_accuracy = 0.3157596371882086
+***** Eval results checkpoint-3360 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.249847990865604
+eval_strategy_predict_accuracy = 0.3129251700680272
+***** Eval results checkpoint-3390 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.300594624124404
+eval_strategy_predict_accuracy = 0.30839002267573695
+***** Eval results checkpoint-3420 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.310104705917443
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-3450 *****
+eval_emotion_predict_accuracy = 0.018140589569160998
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.334259448950835
+eval_strategy_predict_accuracy = 0.3089569160997732
+***** Eval results checkpoint-3480 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.204605484201057
+eval_strategy_predict_accuracy = 0.3168934240362812
+***** Eval results checkpoint-3510 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.15841383103963
+eval_strategy_predict_accuracy = 0.3055555555555556
+***** Eval results checkpoint-3540 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.21187603510206
+eval_strategy_predict_accuracy = 0.30272108843537415
+***** Eval results checkpoint-3570 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.420843775294262
+eval_strategy_predict_accuracy = 0.30045351473922904
+***** Eval results checkpoint-3600 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.525639711584972
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-3630 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.428666362965462
+eval_strategy_predict_accuracy = 0.3021541950113379
+***** Eval results checkpoint-3660 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.46906576438418
+eval_strategy_predict_accuracy = 0.2919501133786848
+***** Eval results checkpoint-3690 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.49928102633039
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-3720 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.528105934107323
+eval_strategy_predict_accuracy = 0.3112244897959184
+***** Eval results checkpoint-3750 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.471026540123702
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-3780 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.515985546716774
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-3810 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.451913194351967
+eval_strategy_predict_accuracy = 0.3100907029478458
+***** Eval results checkpoint-3840 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.574674416334926
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-3870 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.479760424502192
+eval_strategy_predict_accuracy = 0.29591836734693877
+***** Eval results checkpoint-3900 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.405519529368647
+eval_strategy_predict_accuracy = 0.31405895691609975
+***** Eval results checkpoint-3930 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.473292035606512
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-3960 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.493230063124525
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-3990 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.49500818235413
+eval_strategy_predict_accuracy = 0.3157596371882086
+***** Eval results checkpoint-4020 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.412939177781436
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-4050 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.370532644824177
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-4080 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.54060868426204
+eval_strategy_predict_accuracy = 0.30272108843537415
+***** Eval results checkpoint-4110 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.42281321622982
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-4140 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.497607471452845
+eval_strategy_predict_accuracy = 0.31179138321995464
+***** Eval results checkpoint-4170 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.403202980304666
+eval_strategy_predict_accuracy = 0.3072562358276644
+***** Eval results checkpoint-4200 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.435541334977838
+eval_strategy_predict_accuracy = 0.30272108843537415
+***** Eval results checkpoint-4230 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.389064444197977
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-4260 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.378801012837823
+eval_strategy_predict_accuracy = 0.304421768707483
+***** Eval results checkpoint-4290 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.41106917380253
+eval_strategy_predict_accuracy = 0.31462585034013607
+***** Eval results checkpoint-4320 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.564160573713135
+eval_strategy_predict_accuracy = 0.304421768707483
+***** Eval results checkpoint-4350 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.512606987713706
+eval_strategy_predict_accuracy = 0.3066893424036281
+***** Eval results checkpoint-4380 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.267015460000252
+eval_strategy_predict_accuracy = 0.3123582766439909
+***** Eval results checkpoint-4410 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.42350429732377
+eval_strategy_predict_accuracy = 0.3089569160997732
+***** Eval results checkpoint-4440 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.527997916911538
+eval_strategy_predict_accuracy = 0.30498866213151926
+***** Eval results checkpoint-4470 *****
+eval_emotion_predict_accuracy = 0.024943310657596373
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.498941808263424
+eval_strategy_predict_accuracy = 0.3072562358276644
+***** Eval results checkpoint-4500 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.642419928915693
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-4530 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.552329088919482
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-4560 *****
+eval_emotion_predict_accuracy = 0.025510204081632654
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.75519928639474
+eval_strategy_predict_accuracy = 0.30045351473922904
+***** Eval results checkpoint-4590 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.699581289480207
+eval_strategy_predict_accuracy = 0.3032879818594104
+***** Eval results checkpoint-4620 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.646250688402866
+eval_strategy_predict_accuracy = 0.286281179138322
+***** Eval results checkpoint-4650 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.610737879917327
+eval_strategy_predict_accuracy = 0.3066893424036281
+***** Eval results checkpoint-4680 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.648596288758913
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-4710 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.676217183569175
+eval_strategy_predict_accuracy = 0.2919501133786848
+***** Eval results checkpoint-4740 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.75543892911882
+eval_strategy_predict_accuracy = 0.2896825396825397
+***** Eval results checkpoint-4770 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.644075024659962
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-4800 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.574437316599482
+eval_strategy_predict_accuracy = 0.2834467120181406
+***** Eval results checkpoint-4830 *****
+eval_emotion_predict_accuracy = 0.01870748299319728
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.68008780057767
+eval_strategy_predict_accuracy = 0.286281179138322
+***** Eval results checkpoint-4860 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.703066172518692
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-4890 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.56254424678903
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-4920 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.690960858524612
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-4950 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.59241717815529
+eval_strategy_predict_accuracy = 0.29591836734693877
+***** Eval results checkpoint-4980 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.63332036013143
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-5010 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.60955964900395
+eval_strategy_predict_accuracy = 0.28798185941043086
+***** Eval results checkpoint-5040 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.61038051347027
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-5070 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.538105753105278
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-5100 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.534262748860353
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-5130 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.52660444414461
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-5160 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.596843586682585
+eval_strategy_predict_accuracy = 0.30158730158730157
+***** Eval results checkpoint-5190 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.546999772098793
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-5220 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.530460065163457
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-5250 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.652036772871302
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-5280 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.502824350983285
+eval_strategy_predict_accuracy = 0.2925170068027211
+***** Eval results checkpoint-5310 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.622060117184695
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-5340 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.653314203628774
+eval_strategy_predict_accuracy = 0.304421768707483
+***** Eval results checkpoint-5370 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.748935595073494
+eval_strategy_predict_accuracy = 0.30272108843537415
+***** Eval results checkpoint-5400 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.78794406631191
+eval_strategy_predict_accuracy = 0.2947845804988662
+***** Eval results checkpoint-5430 *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.89378420599633
+eval_strategy_predict_accuracy = 0.2896825396825397
+***** Eval results checkpoint-5460 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.842094632850056
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-5490 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.746967115387374
+eval_strategy_predict_accuracy = 0.29365079365079366
+***** Eval results checkpoint-5520 *****
+eval_emotion_predict_accuracy = 0.026077097505668934
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.733448652164764
+eval_strategy_predict_accuracy = 0.2953514739229025
+***** Eval results checkpoint-5550 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.726910399198655
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-5580 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.709325067772443
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-5610 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.760824058771334
+eval_strategy_predict_accuracy = 0.2828798185941043
+***** Eval results checkpoint-5640 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.76376912450508
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-5670 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.81750066475821
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-5700 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.85626960464851
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-5730 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.77671556559763
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-5760 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.855522345489117
+eval_strategy_predict_accuracy = 0.29591836734693877
+***** Eval results checkpoint-5790 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.68728112098565
+eval_strategy_predict_accuracy = 0.2925170068027211
+***** Eval results checkpoint-5820 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.847120887274237
+eval_strategy_predict_accuracy = 0.30839002267573695
+***** Eval results checkpoint-5850 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.762258758097442
+eval_strategy_predict_accuracy = 0.2891156462585034
+***** Eval results checkpoint-5880 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.751115999012367
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-5910 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.70973525089238
+eval_strategy_predict_accuracy = 0.30385487528344673
+***** Eval results checkpoint-5940 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.73827916470246
+eval_strategy_predict_accuracy = 0.2953514739229025
+***** Eval results checkpoint-5970 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.800905751927687
+eval_strategy_predict_accuracy = 0.3010204081632653
+***** Eval results checkpoint-6000 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.693411805509324
+eval_strategy_predict_accuracy = 0.29591836734693877
+***** Eval results checkpoint-6030 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.693881194648355
+eval_strategy_predict_accuracy = 0.2981859410430839
+***** Eval results checkpoint-6060 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.69483102793665
+eval_strategy_predict_accuracy = 0.28798185941043086
+***** Eval results checkpoint-6090 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.73016325759454
+eval_strategy_predict_accuracy = 0.2834467120181406
+***** Eval results checkpoint-6120 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.650380302966834
+eval_strategy_predict_accuracy = 0.29705215419501135
+***** Eval results checkpoint-6150 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.77109428566188
+eval_strategy_predict_accuracy = 0.29365079365079366
+***** Eval results checkpoint-6180 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.722524055582042
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-6210 *****
+eval_emotion_predict_accuracy = 0.01870748299319728
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.749480603089744
+eval_strategy_predict_accuracy = 0.2947845804988662
+***** Eval results checkpoint-6240 *****
+eval_emotion_predict_accuracy = 0.01984126984126984
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.79483470128757
+eval_strategy_predict_accuracy = 0.29648526077097503
+***** Eval results checkpoint-6270 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.93630133197442
+eval_strategy_predict_accuracy = 0.286281179138322
+***** Eval results checkpoint-6300 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.82212562049823
+eval_strategy_predict_accuracy = 0.28798185941043086
+***** Eval results checkpoint-6330 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.930642445790266
+eval_strategy_predict_accuracy = 0.29081632653061223
+***** Eval results checkpoint-6360 *****
+eval_emotion_predict_accuracy = 0.022675736961451247
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.711675393487774
+eval_strategy_predict_accuracy = 0.2891156462585034
+***** Eval results checkpoint-6390 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.766047099769064
+eval_strategy_predict_accuracy = 0.28514739229024944
+***** Eval results checkpoint-6420 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.8272485905163
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-6450 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.777346160698336
+eval_strategy_predict_accuracy = 0.2953514739229025
+***** Eval results checkpoint-6480 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.853130268425765
+eval_strategy_predict_accuracy = 0.28741496598639454
+***** Eval results checkpoint-6510 *****
+eval_emotion_predict_accuracy = 0.02040816326530612
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.852913756545814
+eval_strategy_predict_accuracy = 0.2998866213151927
+***** Eval results checkpoint-6540 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.88203093912962
+eval_strategy_predict_accuracy = 0.2885487528344671
+***** Eval results checkpoint-6570 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.842821629487855
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-6600 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.89350402625418
+eval_strategy_predict_accuracy = 0.28458049886621317
+***** Eval results checkpoint-6630 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.874182472639344
+eval_strategy_predict_accuracy = 0.29138321995464855
+***** Eval results checkpoint-6660 *****
+eval_emotion_predict_accuracy = 0.023242630385487528
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.81617903536383
+eval_strategy_predict_accuracy = 0.2953514739229025
+***** Eval results checkpoint-6690 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.87029223080303
+eval_strategy_predict_accuracy = 0.2976190476190476
+***** Eval results checkpoint-6720 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.88328366413224
+eval_strategy_predict_accuracy = 0.29024943310657597
+***** Eval results checkpoint-6750 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.905808777614105
+eval_strategy_predict_accuracy = 0.27834467120181405
+***** Eval results checkpoint-6780 *****
+eval_emotion_predict_accuracy = 0.01927437641723356
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.82405516683892
+eval_strategy_predict_accuracy = 0.2896825396825397
+***** Eval results checkpoint-6810 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.870061274085465
+eval_strategy_predict_accuracy = 0.2942176870748299
+***** Eval results checkpoint-6840 *****
+eval_emotion_predict_accuracy = 0.021541950113378686
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.85386730894686
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-6870 *****
+eval_emotion_predict_accuracy = 0.017006802721088437
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.909570937823315
+eval_strategy_predict_accuracy = 0.2885487528344671
+***** Eval results checkpoint-6900 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.84028117074849
+eval_strategy_predict_accuracy = 0.29308390022675734
+***** Eval results checkpoint-6930 *****
+eval_emotion_predict_accuracy = 0.020975056689342405
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.825380238343804
+eval_strategy_predict_accuracy = 0.28514739229024944
+***** Eval results checkpoint-6960 *****
+eval_emotion_predict_accuracy = 0.024376417233560092
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.768812967494164
+eval_strategy_predict_accuracy = 0.29365079365079366
+***** Eval results checkpoint-6990 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.86598724413363
+eval_strategy_predict_accuracy = 0.29081632653061223
+***** Eval results checkpoint-7020 *****
+eval_emotion_predict_accuracy = 0.022108843537414966
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.93246889905571
+eval_strategy_predict_accuracy = 0.28061224489795916
+***** Eval results checkpoint-7050 *****
+eval_emotion_predict_accuracy = 0.023809523809523808
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.820000356736696
+eval_strategy_predict_accuracy = 0.28741496598639454
+***** Eval results of test set *****
+eval_emotion_predict_accuracy = 0.027210884353741496
+eval_number_of_evaluated_examples = 1764
+eval_perplexity = 16.39830341705888
+eval_strategy_predict_accuracy = 0.31462585034013607

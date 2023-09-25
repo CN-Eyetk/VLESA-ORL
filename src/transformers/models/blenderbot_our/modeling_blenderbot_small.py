@@ -1021,6 +1021,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         # expand attention_mask
         if attention_mask is not None:
             # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+            #attention_mask_2d = attention_mask.clone().detach()
             attention_mask = _expand_mask(attention_mask, inputs_embeds.dtype)
 
         comet_hidden_states = comet_embs
@@ -1076,6 +1077,9 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             multi_state = self.multi_state_LayerNorm(torch.mean(hidden_states, dim=1) + torch.mean(comet_hidden_states, dim=1) + torch.mean(comet_hidden_states_st, dim=1)) if comet_embs is not None else None
         #     multi_state = torch.mean([torch.mean(hidden_states, dim=1), torch.mean(comet_hidden_states, dim=1), torch.mean(comet_hidden_states_st, dim=1)], dim=1)
             emotion_logits = self.emotion_head(hidden_states[:,0,:])
+            #ourchange ：emotion_logits = self.emotion_head(hidden_states.mean(dim = 1))
+            
+            
             emotion_logits = self.batchNorm_emotion(emotion_logits)
             emotion_intensity = self.intensity_head(hidden_states[:,0,:])
             strategy_logits = self.strategy_head(hidden_states[:, 0, :])
@@ -1786,8 +1790,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         
         if emo_out_logits is not None:
             assert emo_out_logits.size(1) > 1
+            #emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
             emo_out_loss_fct = NLLLoss()
             emo_out_label = emo_dist.argmax(-1).squeeze()
+            #emo_out_logits = torch.log(emo_out_logits)
             emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
             loss += emo_out_loss
             

@@ -30,14 +30,14 @@ def load_arg():
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
             "data_cache_dir":"./mycached",
-            "model_type":"mymodel",
+            "model_type":"misc_model",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
             "model_cache_dir":"./blender-small",
             "strategy":False,
             "local_rank":-1,
-            "per_gpu_train_batch_size":16,
-            "per_gpu_eval_batch_size":16,
+            "per_gpu_train_batch_size":20,
+            "per_gpu_eval_batch_size":20,
             "save_total_limit":1,
             "n_gpu":torch.cuda.device_count(),
             "max_steps":-1,
@@ -125,13 +125,13 @@ def print_blender(blender):
 if __name__ == "__main__":
     args = load_arg()
     config, tokenizer = load_tokenizer(args = args)
-    model = load_model(args, tokenizer)
+    #model = load_model(args, tokenizer)
     train_dataset, eval_dataset, test_dataset = load_dataset(args, tokenizer)
     args.train_dataset = train_dataset
     args.eval_dataset = eval_dataset
     args.test_dataset = test_dataset
     
-    global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
+    #global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False)
     model.to(args.device)
     test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
