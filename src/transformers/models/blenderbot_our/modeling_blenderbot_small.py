@@ -22,7 +22,7 @@ from typing import Optional, Tuple
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torch.nn import CrossEntropyLoss, MSELoss
+from torch.nn import CrossEntropyLoss, MSELoss, NLLLoss
 
 from ...activations import ACT2FN
 from ...file_utils import (
@@ -901,6 +901,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
         self.n_emo_in = 11
+        self.n_emo_out = 28
         self.n_strat = 8
         self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
         self.intensity_head = nn.Linear(config.d_model, 1)
@@ -919,7 +920,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.use_trans_mat = config.use_trans_mat
         if config.use_trans_mat:
             self.trans_mat = EmoTrans(n_emo_in = self.n_emo_in, 
-                                      n_emo_out = self.n_emo_in,
+                                      n_emo_out = self.n_emo_out,
                                       n_strat = self.n_strat,
                                       embed_dim = config.d_model
                                       )
@@ -1639,6 +1640,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         emotion=None,
         output_attentions=None,
         output_hidden_states=None,
+        emo_dist=None,
         return_dict=None,
         
     ):
@@ -1699,6 +1701,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         else:
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
+            
         # if decoder_input_ids.shape[-1] > 1 and not generate:
         #     strategy_label = decoder_input_ids[:, 0] - 54944
         #     decoder_input_ids = decoder_input_ids[:, 1:]
@@ -1750,6 +1753,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         emotion_logits = encoder_outputs.emotion_logits
         emotion_intensity = encoder_outputs.emotion_intensity
         strategy_logits = encoder_outputs.strategy_logits
+        emo_out_logits = encoder_outputs.emo_out_logits
         # lm_logits[:, 0, 54944:54944 + 8] = strategy_logits
 
         if labels is not None:
@@ -1779,6 +1783,14 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             strategy_loss_fct = CrossEntropyLoss()
             strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
             loss += strategy_loss
+        
+        if emo_out_logits is not None:
+            assert emo_out_logits.size(1) > 1
+            emo_out_loss_fct = NLLLoss()
+            emo_out_label = emo_dist.argmax(-1).squeeze()
+            emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
+            loss += emo_out_loss
+            
 
 
         return Seq2SeqLMOutput(

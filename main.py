@@ -9,7 +9,8 @@ from BlenderEmotionalSupport import (ESDDataset,
                                     load_and_cache_examples, 
                                     InputFeatures_blender,
                                     train,
-                                    evaluate
+                                    evaluate,
+                                    generate
                                     )
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./cached",
+            "data_cache_dir":"./mycached",
             "model_type":"mymodel",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
@@ -53,9 +54,10 @@ def load_arg():
             "turn":False,
             "logging_steps":30,
             "evaluate_during_training":True,
-            "output_dir":os.path.join('blender-our' + ("-TRANS" if USE_TRANS else ""), TAG),
+            "output_dir":os.path.join('blender-our' + ("-TRANS2" if USE_TRANS else ""), TAG),
             "seed":42,
-            "max_grad_norm":1.0
+            "max_grad_norm":1.0,
+            "prepend_emotion":False
             
             }
     args = argparse.Namespace(**args)
@@ -133,6 +135,7 @@ if __name__ == "__main__":
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False)
     model.to(args.device)
     test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+    #generate(args)
     #global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
     #for k in range(10):
     #    print_blender(train_dataset[k])
