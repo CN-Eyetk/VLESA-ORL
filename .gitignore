@@ -4,13 +4,16 @@ blender_our/*
 blender_our2/*
 blender_our_TRANS/*
 blender_our_TRANS2/*
+blender_our_TRANS3/*
 blender-strategy/*
 blender-small/*
 blender-our/*
 blender-our2/*
 blender-our-TRANS/*
 blender-our-TRANS2/*
+blender-our-TRANS3/*
 cached
 mycached
+prepend_cached
 generated_data
 runs

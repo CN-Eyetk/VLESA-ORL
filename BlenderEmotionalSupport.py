@@ -62,6 +62,20 @@ logger = logging.getLogger(__name__)
 MODEL_CONFIG_CLASSES = list(MODEL_WITH_LM_HEAD_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 # Args to allow for easy convertion of python script to notebook
+def load_tokenizer(args):
+    config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+    comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
+    tokenizer.add_tokens(additional_special_tokens)
+    tokenizer.add_tokens(comet_additional_special_tokens)
+    tokenizer.add_special_tokens({'cls_token': '[CLS]'})
+    if args.prepend_emotion:
+        emotion_special_tokens = [f"[{label}]" for label in emo_extracter.label_2_id.keys()]
+        print(emotion_special_tokens)
+        tokenizer.add_tokens(emotion_special_tokens)
+    return config, tokenizer
+
 class Args():
    def __init__(self):
        TAG = 'all_loss'
@@ -398,16 +412,27 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
             #verbose_limit -= 1
     else:
         emo_dist = None
+    if prepend_emotion:
+        pred = pred[0]
+        emo_label = f"[{pred}]"
+        #print(emo_label)
+        emo_token_id = tokenizer.convert_tokens_to_ids(emo_label)
+        assert type(emo_token_id) == int
+        last_utt = inputs[-1]
+        last_context_id = [emo_token_id] + [x for i,x in enumerate(last_utt)]
+        inputs = inputs[:-1] + [last_context_id]
+        #print(inputs)
+        #print(tokenizer.batch_decode(inputs))
     return inputs, roles, turns, strategy_labels, emotion, emo_dist
 
-def construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None):
+def construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None, prepend_emotion = False):
 
     #  process input text
     #print("row",row)
     
     inputs, roles, turns, strategy_labels, _, _ = _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy)
     # process output (decoder input) text
-    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True)
+    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion)
     situ_ids = tokenizer.encode(situation)
     # make feature for input text
     feature = _make_feature(idx, inputs, roles, turns, tokenizer.eos_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
@@ -458,7 +483,7 @@ class ESDDataset(Dataset):
             if situations is None:
                 for idx, (row, comet_row, comet_st_row) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1])):
                     
-                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate)
+                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, prepend_emotion = args.prepend_emotion)
                     if len(conv.input_ids) >= block_size:
                         conv.input_ids = conv.input_ids[-block_size:]
                         conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
@@ -470,7 +495,7 @@ class ESDDataset(Dataset):
                     #print("row", row)
                     #print("comet_row", comet_row)
                     #print("situation", situation)
-                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation)
+                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion)
                     if len(conv.input_ids) >= block_size:
                         conv.input_ids = conv.input_ids[-block_size:]
                         conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
@@ -1147,6 +1172,7 @@ def main(args):
     tokenizer.add_special_tokens({'cls_token': '[CLS]'})
     if args.prepend_emotion:
         emotion_special_tokens = [f"[{label}]" for label in emo_extracter.label_2_id.keys()]
+        print(emotion_special_tokens)
         tokenizer.add_tokens(emotion_special_tokens)
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
 

@@ -10,7 +10,8 @@ from BlenderEmotionalSupport import (ESDDataset,
                                     InputFeatures_blender,
                                     train,
                                     evaluate,
-                                    generate
+                                    generate,
+                                    load_tokenizer
                                     )
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./mycached",
+            "data_cache_dir":"./prepend_cached",
             "model_type":"misc_model",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
@@ -54,24 +55,16 @@ def load_arg():
             "turn":False,
             "logging_steps":30,
             "evaluate_during_training":True,
-            "output_dir":os.path.join('blender-our' + ("-TRANS2" if USE_TRANS else ""), TAG),
+            "output_dir":os.path.join('blender-our' + ("-TRANS3" if USE_TRANS else ""), TAG),
             "seed":42,
             "max_grad_norm":1.0,
-            "prepend_emotion":False
+            "prepend_emotion":True
             
             }
     args = argparse.Namespace(**args)
     return args
 
-def load_tokenizer(args):
-    config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-    tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-    additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
-    comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
-    tokenizer.add_tokens(additional_special_tokens)
-    tokenizer.add_tokens(comet_additional_special_tokens)
-    tokenizer.add_special_tokens({'cls_token': '[CLS]'})
-    return config, tokenizer
+
 
 def load_dataset(args, tokenizer):
     with open(args.data_path+"/"+ args.train_comet_file, "r", encoding="utf-8") as f:

@@ -166,6 +166,7 @@ class BlenderbotSmallConfig(PretrainedConfig):
             self.use_th_attn = True
         self.use_trans_mat = True
         self.add_emo_cross_attn = True
+        self.prepend = True
 
     @property
     def num_attention_heads(self) -> int:
