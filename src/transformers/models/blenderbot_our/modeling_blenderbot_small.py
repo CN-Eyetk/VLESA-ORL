@@ -1583,7 +1583,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.lm_head = nn.Linear(config.d_model, self.model.shared.num_embeddings, bias=False)
         self.use_th_attn = config.use_th_attn
         self.use_trans_mat = config.use_trans_mat
-        self.use_prepend = config.prepend
+        self.prepend = config.prepend
         self.dropout = config.dropout
         self.init_weights()
         #if config.use_trans_mat:
@@ -1766,7 +1766,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             # masked_lm_loss = loss_fct(lm_logits[:, 1:, :].reshape(-1, self.config.vocab_size), labels[:, 1:].reshape(-1))
             # print(lm_logits.shape)
             # print(labels)
-            if self.use_prepend and not lm_logits.requires_grad:
+            if self.prepend and not lm_logits.requires_grad:
                 print("Truncating the prepend")
                 lm_logits = lm_logits[:,1:,:]
                 labels = labels[:,1:]

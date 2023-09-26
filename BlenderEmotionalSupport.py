@@ -65,6 +65,7 @@ MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 def load_tokenizer(args):
     config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
     tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    
     additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
     tokenizer.add_tokens(additional_special_tokens)
@@ -1225,17 +1226,19 @@ def main(args):
 
 def generate(args):
 
-    additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
-                                "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
-                                "[Affirmation and Reassurance]", "[Providing Suggestions]"]
+    #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
+    #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
+    #                            "[Affirmation and Reassurance]", "[Providing Suggestions]"]
     # comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]"]
-    comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]",
-                                    "[oEffect]", "[oReact]"]
+    #comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]",
+    #                                "[oEffect]", "[oReact]"]
 
-    tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-    tokenizer.add_tokens(additional_special_tokens)
-    tokenizer.add_tokens(comet_additional_special_tokens)
-    tokenizer.add_special_tokens({'cls_token': '[CLS]'})
+    tokenizer = load_tokenizer(args)
+    
+    
+    #tokenizer.add_tokens(additional_special_tokens)
+    #tokenizer.add_tokens(comet_additional_special_tokens)
+    #tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 
     # print(tokenizer.encode(['others]']))
     # print(1 / 0)
