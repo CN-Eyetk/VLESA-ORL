@@ -30,11 +30,13 @@ class EmoTrans(nn.Module):
         strat_prob = F.softmax(strat_logits, dim = -1)
         #print(strat_prob)
         emo_out_prob = torch.bmm(strat_prob.unsqueeze(-2), emo_out_logits_each_strat) #[b, 1, stra] * [b, stra, emo] -> [b, 1, emo] 
+        #print(emo_out_prob.sum(-1)) -> 1
         #emo_out_prob = F.softmax(emo_out_logits, dim = -1) #[b, 1, emo]
         #print(emo_out_prob)
         emotion_id = self.emotion_id.to(emo_logits.device) 
         emo_embed = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
         emo_out_prob = emo_out_prob.squeeze()
+        emo_out_prob = torch.log(emo_out_prob) #upDATE  9-27-II
         return emo_embed, emo_out_prob
         
 

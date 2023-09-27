@@ -884,6 +884,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.layerdrop = config.encoder_layerdrop
 
         embed_dim = config.d_model
+        self.eos_token = config.eos_token_id
         self.padding_idx = config.pad_token_id
         self.max_source_positions = config.max_position_embeddings
         self.embed_scale = math.sqrt(embed_dim) if config.scale_embedding else 1.0
@@ -905,7 +906,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.n_emo_out = 28
         self.n_strat = 8
         self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
-        self.intensity_head = nn.Linear(config.d_model, 1)
+        #self.intensity_head = nn.Linear(config.d_model, 1)
         self.strategy_head = nn.Linear(config.d_model, self.n_strat)
         self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
         self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
@@ -914,11 +915,10 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.strategy_id = torch.tensor(range(8), dtype=torch.long)
         self.multi_state_LayerNorm = nn.LayerNorm(config.d_model)
 
-        self.init_weights()
-
         #our change
         self.use_th_attn = config.use_th_attn
         self.use_trans_mat = config.use_trans_mat
+        self.emo_from_eos = config.emo_from_eos
         if config.use_trans_mat:
             self.trans_mat = EmoTrans(n_emo_in = self.n_emo_in, 
                                       n_emo_out = self.n_emo_out,
@@ -927,6 +927,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                                       )
         else:
             self.trans_mat = None
+        self.init_weights()
     def forward(
         self,
         input_ids=None,
@@ -1013,6 +1014,8 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         hidden_states = inputs_embeds + embed_pos
         hidden_states = self.layernorm_embedding(hidden_states)
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
+        with torch.no_grad():
+            last_token_index = attention_mask.sum(-1) - 1
         if self.use_th_attn and comet_mask is not None and comet_mask_st is not None:
             attention_mask_for_muAttn = torch.cat((attention_mask, comet_mask, comet_mask_st), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
             attention_mask_for_muAttn = _expand_mask(attention_mask_for_muAttn, inputs_embeds.dtype)
@@ -1075,14 +1078,24 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             encoder_states = encoder_states + (hidden_states,)
         multi_state = None
         if comet_embs is not None and comet_embs_st is not None:
-            multi_state = self.multi_state_LayerNorm(torch.mean(hidden_states, dim=1) + torch.mean(comet_hidden_states, dim=1) + torch.mean(comet_hidden_states_st, dim=1)) if comet_embs is not None else None
+            #multi_state = self.multi_state_LayerNorm(torch.mean(hidden_states, dim=1) + torch.mean(comet_hidden_states, dim=1) + torch.mean(comet_hidden_states_st, dim=1)) if comet_embs is not None else None
         #     multi_state = torch.mean([torch.mean(hidden_states, dim=1), torch.mean(comet_hidden_states, dim=1), torch.mean(comet_hidden_states_st, dim=1)], dim=1)
-            emotion_logits = self.emotion_head(hidden_states[:,0,:])
+
+            if self.emo_from_eos:
+                last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                emotion_logits = self.emotion_head(last_eos_state)
+
+            else:
+                emotion_logits = self.emotion_head(hidden_states[:,0,:])
+            
+            #emotion_logits = self.emotion_head(hidden_states[:,0,:])
             #ourchange ：emotion_logits = self.emotion_head(hidden_states.mean(dim = 1))
+
             
             
             emotion_logits = self.batchNorm_emotion(emotion_logits)
-            emotion_intensity = self.intensity_head(hidden_states[:,0,:])
+            #emotion_intensity = self.intensity_head(hidden_states[:,0,:])
+            emotion_intensity = None
             strategy_logits = self.strategy_head(hidden_states[:, 0, :])
             # strategy_logits = self.strategy_head(hidden_states[:,0,:]) + 1 / turn_ids.unsqueeze(1).type(torch.float)
         #     emotion_logits = self.emotion_head(F.relu(torch.mean(comet_hidden_states_st, dim=1)))
@@ -1586,6 +1599,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.use_trans_mat = config.use_trans_mat
         self.prepend = config.prepend
         self.dropout = config.dropout
+        self.use_kl = config.use_kl
         self.init_weights()
         #if config.use_trans_mat:
         #    self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
@@ -1781,14 +1795,14 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             emo_loss = emo_loss_fct(emotion_logits.view(-1, 11), emotion.view(-1))
             # loss += emo_loss
 
-        intensity_label = None
-        if decoder_turn_ids is not None:
-            intensity_label = 1 / decoder_turn_ids[:, 0].type(torch.float)
-        if intensity_label is not None:
-            intensity_loss_fct = MSELoss()
-            intensity_loss = intensity_loss_fct(emotion_intensity, intensity_label)
+        #intensity_label = None
+        #if decoder_turn_ids is not None:
+        #    intensity_label = 1 / decoder_turn_ids[:, 0].type(torch.float)
+        #if intensity_label is not None:
+        #    intensity_loss_fct = MSELoss()
+        #    intensity_loss = intensity_loss_fct(emotion_intensity, intensity_label)
             # loss += intensity_loss
-
+        intensity_loss = None
         if strategy_label is not None:
             strategy_loss_fct = CrossEntropyLoss()
             strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
@@ -1799,12 +1813,14 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             if len(emo_out_logits.size()) == 1:
                 emo_out_logits = emo_out_logits.unsqueeze(0)
             assert emo_out_logits.size(1) > 1
-            #emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
             if emo_dist is not None:
-                emo_out_loss_fct = NLLLoss()
-                emo_out_label = emo_dist.argmax(-1).squeeze()
-                #emo_out_logits = torch.log(emo_out_logits)
-                emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
+                if self.use_kl:
+                    emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
+                    emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_dist)
+                else:
+                    emo_out_loss_fct = NLLLoss()
+                    emo_out_label = emo_dist.argmax(-1).squeeze()
+                    emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
                 loss += emo_out_loss
             
 

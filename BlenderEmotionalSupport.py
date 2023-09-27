@@ -69,6 +69,9 @@ def load_model_for_eval(args):
     config.use_th_attn = args.use_th_attn
     config.prepend = args.prepend_emotion
     config.use_trans_mat = args.use_trans_mat
+    config.use_kl = args.use_kl
+    config.add_emo_cross_attn = args.add_emo_cross_attn
+    config.emo_from_eos = args.emo_from_eos
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
     return model
 
@@ -561,11 +564,12 @@ class ESDDataset(Dataset):
         labels = pad_sequence([torch.tensor(f.lm_labels, dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-100)
-        
-        #situations = pad_sequence([torch.tensor(f.situ_ids, dtype=torch.long)
-        #                    for f in features],
-        #                    batch_first=True, padding_value=-100)
-        
+        if features[0].situ_ids is not None:
+            situations = pad_sequence([torch.tensor(f.situ_ids, dtype=torch.long)
+                            for f in features],
+                            batch_first=True, padding_value=-100)
+        else:
+            situations = None
         cls_positions = torch.tensor([f.cls_position for f in features], dtype=torch.long)
         
         cls_labels = torch.tensor([f.cls_label for f in features], dtype=torch.long)
@@ -611,7 +615,7 @@ class ESDDataset(Dataset):
             emo_dist = torch.tensor([f.emo_dist for f in features], dtype=torch.float64).squeeze(1)
         else:
             emo_dist = None
-        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist)
+        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist, situations)
 
 
 def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False, strategy=True, test=False, **kwargs):
@@ -813,7 +817,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                 continue
 
             input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist= batch
+            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, situ_ids= batch
             # print(input_ids)
             # for item in input_ids:
             #     print(len(item))
@@ -823,6 +827,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
             #print("emo_dist",emo_dist.shape)
             decoder_strategy_ids = decoder_strategy_ids[:, 0]
             decoder_strategy_ids = decoder_strategy_ids.to(args.device)
+
 
             # print(comet_ids)
             # print(comet_mask)
@@ -842,15 +847,22 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
             batch_size, n_attr, len_attr = comet_ids.shape
             comet_ids = comet_ids.view(-1, len_attr)
+            if situ_ids is not None:
+                situ_ids = situ_ids.to(args.device)
+
             with torch.no_grad():
                 comet_embs = model.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
             comet_embs = comet_embs.view(batch_size, n_attr, -1)
 
             batch_size, n_attr, len_attr = comet_ids_st.shape
             comet_ids_st = comet_ids_st.view(-1, len_attr)
-            with torch.no_grad():
-                comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
-            comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
+            if args.encode_situ:
+                with torch.no_grad():
+                    comet_embs_st = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+            else:
+                with torch.no_grad():
+                    comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
+                comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
 
 
             input_ids = input_ids.to(args.device)
@@ -904,7 +916,8 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
             tr_lm_loss += lm_loss.item()
             tr_emo_loss += emo_loss.item()
             tr_strategy_loss += strategy_loss.item()
-            tr_intensity_loss += intensity_loss.item()
+            #tr_intensity_loss += intensity_loss.item()
+            tr_intensity_loss = 0
 
 
             if (step + 1) % args.gradient_accumulation_steps == 0:
@@ -1019,7 +1032,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
 
     for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True):
         model.train()
-        input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist = batch
+        input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, situ_ids = batch
         if input_ids.shape[1] > 512: continue
 
         decoder_strategy_ids = decoder_strategy_ids[:, 0]

@@ -1,8 +1,12 @@
-USE_TRANS = False
+USE_TRANS = True
 USE_PREPEND = False
-MISC = True
+MISC = False
+KL = True
+ST_FROM_EOS = False
+EMO_FROM_EOS = True
 GROUP = ("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else ""
-TAG = "all_loss"
+TAG = "all_loss" + ("kl" if KL else "")
+ENCODE_SITU = False
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
@@ -63,7 +67,7 @@ def load_arg():
             "strategy":False,
             "local_rank":-1,
             "per_gpu_train_batch_size":20,
-            "per_gpu_eval_batch_size":50,
+            "per_gpu_eval_batch_size":30,
             "save_total_limit":1,
             "n_gpu":torch.cuda.device_count(),
             "max_steps":-1,
@@ -86,9 +90,14 @@ def load_arg():
             "prepend_emotion":USE_PREPEND,
             "use_trans_mat":USE_TRANS,
             "use_th_attn":not MISC,
+            "add_emo_cross_attn":True,
+            "st_from_eos":ST_FROM_EOS,
+            "emo_from_eos":EMO_FROM_EOS,
+            "use_kl":KL,
             "no_cuda":False,
             "block_size":512,
-            "generation_dir":generation_dir
+            "generation_dir":generation_dir,
+            "encode_situ":ENCODE_SITU
             }
     args = argparse.Namespace(**args)
     return args
@@ -133,6 +142,9 @@ def load_config(args):
     config.use_th_attn = args.use_th_attn
     config.prepend = args.prepend_emotion
     config.use_trans_mat = args.use_trans_mat
+    config.use_kl = args.use_kl
+    config.add_emo_cross_attn = args.add_emo_cross_attn
+    config.emo_from_eos = args.emo_from_eos
     return config
 
 def load_model(args, tokenizer):

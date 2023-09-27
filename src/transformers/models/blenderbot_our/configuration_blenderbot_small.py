@@ -160,13 +160,12 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.num_hidden_layers = encoder_layers
         self.gradient_checkpointing = gradient_checkpointing
         self.scale_embedding = scale_embedding  # scale factor will be sqrt(d_model) if True
-        if "use_th_attn" in kwargs.keys():
-            self.use_th_attn = kwargs["use_th_attn"]
-        else:
-            self.use_th_attn = True
-        self.use_trans_mat = True
-        self.add_emo_cross_attn = True
-        self.prepend = True
+        self.use_th_attn = kwargs["use_th_attn"] if "use_th_attn" in kwargs.keys() else False
+        self.use_trans_mat = kwargs["use_trans_mat"] if "use_trans_mat" in kwargs.keys() else False
+        self.add_emo_cross_attn = kwargs["add_emo_cross_attn"] if "add_emo_cross_attn" in kwargs.keys() else False
+        self.prepend = kwargs["prepend"] if "prepend" in kwargs.keys() else False
+        self.use_kl = kwargs["use_kl"] if "use_kl" in kwargs.keys() else False
+        self.emo_from_eos = kwargs["emo_from_eos"] if "emo_from_eos" in kwargs.keys() else False
 
     @property
     def num_attention_heads(self) -> int:
