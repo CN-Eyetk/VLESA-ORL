@@ -373,9 +373,9 @@ class GenerationMixin:
         # retrieve encoder hidden states
         encoder = self.get_encoder()
         encoder_kwargs = {
-            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_")
+            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") #Update 9-27
         }
-
+        #encoder_kwargs["output_mutual_attentions"] = True #Update 9-27
 
         model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
         # model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids,

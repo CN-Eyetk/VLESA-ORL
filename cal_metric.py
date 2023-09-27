@@ -6,11 +6,20 @@ comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]
 tokenizer.add_tokens(comet_additional_special_tokens)
 tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 from metric.myMetrics import Metric
-hyp_path = "generated_data/hyp_strategy.json"
-ref_path = "generated_data/ref_strategy.json"
-metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path)
-# print(metric.hyps)
-result, result_list = metric.close()
-print(result)
-print("="*100)
-# print(result_list)
+import pandas as pd
+import json
+dirs = ["misc_generated_data","our_generated_data","our_generated_data_wotrans","our_generated_data_prepend"]
+all_res = {}
+for dir in dirs:
+    hyp_path = f"{dir}/hyp_strategy.json"
+    ref_path = f"{dir}/ref_strategy.json"
+    metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path)
+    # print(metric.hyps)
+    result, result_list = metric.close()
+    print(result)
+    print("="*100)
+    # print(result_list)
+    all_res[dir.replace("generated_data","")] = {k:round(v,3) for k,v in result.items()}
+
+df = pd.DataFrame(all_res)
+df.to_csv("res.csv")

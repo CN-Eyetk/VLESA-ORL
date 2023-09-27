@@ -56,6 +56,12 @@ logger = logging.getLogger(__name__)
 
 MODEL_CONFIG_CLASSES = list(MODEL_WITH_LM_HEAD_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
+
+def load_model_for_eval(args):
+    print("outputdir",args.output_dir)
+    config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
+    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
+    return model
 # Args to allow for easy convertion of python script to notebook
 class Args():
    def __init__(self):
@@ -1156,7 +1162,7 @@ def generate(args):
     from sklearn.metrics.pairwise import cosine_similarity
     print(cosine_similarity(C))
 
-    print(1/0)
+    #print(1/0)
     model.resize_token_embeddings(len(tokenizer))
     #model.resize_token_embeddings(54944) 
     # Setup CUDA, GPU & distributed training

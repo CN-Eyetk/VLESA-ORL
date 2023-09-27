@@ -402,15 +402,16 @@ class BlenderbotSmallEncoderLayer(nn.Module):
                 hidden_cat, attn_weights, _ = self.muAttn(
                     hidden_cat, 
                     attention_mask = attention_mask_for_muAttn,
-                    #output_attentions = True
+                    output_attentions = output_mutual_attentions
                 )
                 #attn_weights shape [b, n_head, seq_len, seq_len]
                 #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
                 #hidden_states = hidden_cat[:,:len_1,:]
                 comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
                 comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
-                #mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
-                #mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
+                if output_mutual_attentions:
+                    mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
+                    mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
                 if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
                     clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
                     comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
@@ -1767,7 +1768,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             # print(lm_logits.shape)
             # print(labels)
             if self.prepend and not lm_logits.requires_grad:
-                print("Truncating the prepend")
+                #print("Truncating the prepend")
                 lm_logits = lm_logits[:,1:,:]
                 labels = labels[:,1:]
             masked_lm_loss = loss_fct(lm_logits.reshape(-1, self.config.vocab_size),
@@ -1794,13 +1795,17 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             loss += strategy_loss
         
         if emo_out_logits is not None:
+            #print("emo_out_logits",emo_out_logits.shape)
+            if len(emo_out_logits.size()) == 1:
+                emo_out_logits = emo_out_logits.unsqueeze(0)
             assert emo_out_logits.size(1) > 1
             #emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
-            emo_out_loss_fct = NLLLoss()
-            emo_out_label = emo_dist.argmax(-1).squeeze()
-            #emo_out_logits = torch.log(emo_out_logits)
-            emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
-            loss += emo_out_loss
+            if emo_dist is not None:
+                emo_out_loss_fct = NLLLoss()
+                emo_out_label = emo_dist.argmax(-1).squeeze()
+                #emo_out_logits = torch.log(emo_out_logits)
+                emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
+                loss += emo_out_loss
             
 
 
@@ -1864,4 +1869,3 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 tuple(past_state.index_select(0, beam_idx) for past_state in layer_past[:2]) + layer_past[2:],
             )
         return reordered_past
-

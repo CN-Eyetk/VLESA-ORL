@@ -1,4 +1,8 @@
 USE_TRANS = False
+USE_PREPEND = False
+MISC = True
+GROUP = ("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else ""
+TAG = "all_loss"
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
@@ -6,19 +10,37 @@ import os
 import logging
 import json
 
-from BlenderEmotionalSupport import (ESDDataset, 
-                                    load_and_cache_examples, 
-                                    InputFeatures_blender,
-                                    train,
-                                    evaluate,
-                                    generate,
-                                    load_tokenizer,
-                                    set_seed
-                                    )
+if MISC:
+    from BlenderEmotionalSupport_origin import (
+                                        load_and_cache_examples, 
+                                        InputFeatures_blender,
+                                        train,
+                                        evaluate,
+                                        generate,
+                                        #load_tokenizer,
+                                        set_seed,
+                                        load_model_for_eval
+                                        )
+    from BlenderEmotionalSupport import load_tokenizer
+    output_dir = os.path.join('blender-small' + GROUP, TAG)
+    generation_dir = "misc_generated_data"
+else:
+    from BlenderEmotionalSupport import (
+                                        load_and_cache_examples, 
+                                        InputFeatures_blender,
+                                        train,
+                                        evaluate,
+                                        generate,
+                                        load_tokenizer,
+                                        set_seed,
+                                        load_model_for_eval
+                                        )
+    output_dir = os.path.join('blender-our' + GROUP, TAG)
+    generation_dir = "our_generated_data" + ("_prepend" if USE_PREPEND else "") + ("_wotrans" if not USE_TRANS else "")
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 def load_arg():
-    TAG = "all_loss"
+    
     args = {"do_train":False,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
@@ -33,8 +55,8 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./prepend_cached",
-            "model_type":"mymodel",
+            "data_cache_dir":"./mycached",
+            "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
             "model_cache_dir":"./blender-small",
@@ -58,13 +80,15 @@ def load_arg():
             "turn":False,
             "logging_steps":30,
             "evaluate_during_training":True,
-            "output_dir":os.path.join('blender-our' + ("-TRANS2" if USE_TRANS else ""), TAG),
+            "output_dir":output_dir,
             "seed":42,
             "max_grad_norm":1.0,
-            "prepend_emotion":False,
-            "use_trans_mat":False,
-            "use_th_attn":True
-            
+            "prepend_emotion":USE_PREPEND,
+            "use_trans_mat":USE_TRANS,
+            "use_th_attn":not MISC,
+            "no_cuda":False,
+            "block_size":512,
+            "generation_dir":generation_dir
             }
     args = argparse.Namespace(**args)
     return args
@@ -98,9 +122,9 @@ def load_dataset(args, tokenizer):
         df_test = f.read().split("\n")
     with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
         st_test = f.read().split("\n")
-    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
-    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
-    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
+    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, )#situations = st_trn)
+    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, )#situations = st_val)
+    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, )#situations = st_test)
     return train_dataset, eval_dataset, test_dataset
 
 def load_config(args):
@@ -120,6 +144,7 @@ def load_model(args, tokenizer):
     model = model.to(args.device)
     return model
 
+
 def print_blender(blender):
     feats = vars(blender)
     for k,v in feats.items():
@@ -129,6 +154,7 @@ def print_blender(blender):
             print(f"{k}\t{1}\t{v}")
 if __name__ == "__main__":
     args = load_arg()
+    print(args.output_dir)
     set_seed(args)
     _, tokenizer = load_tokenizer(args = args)
     train_dataset, eval_dataset, test_dataset = load_dataset(args, tokenizer)
@@ -138,20 +164,19 @@ if __name__ == "__main__":
     if args.do_train:
         model = load_model(args, tokenizer)
         global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
-    config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
-    config.use_th_attn = args.use_th_attn
-    config.prepend = args.prepend_emotion
-    config.use_trans_mat = args.use_trans_mat
-    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
-    print(model.config)
-    #model.use_th_attn = args.use_th_attn
-    #model.prepend = args.prepend_emotion
-    #model.use_trans_mat = args.use_trans_mat
+    
+    model = load_model_for_eval(args)
     model.to(args.device)
     model.eval()
     with torch.no_grad():
         test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
-    #generate(args)
+        generate(args)
+
+    #model.to(args.device)
+    #model.eval()
+    #with torch.no_grad():
+    #    test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+    #    generate(args)
     #global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
     #for k in range(10):
     #    print_blender(train_dataset[k])

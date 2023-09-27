@@ -62,6 +62,16 @@ logger = logging.getLogger(__name__)
 MODEL_CONFIG_CLASSES = list(MODEL_WITH_LM_HEAD_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 # Args to allow for easy convertion of python script to notebook
+
+def load_model_for_eval(args):
+    print("outputdir",args.output_dir)
+    config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
+    config.use_th_attn = args.use_th_attn
+    config.prepend = args.prepend_emotion
+    config.use_trans_mat = args.use_trans_mat
+    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
+    return model
+
 def load_tokenizer(args):
     config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
     tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
@@ -211,13 +221,22 @@ def summary(test_file_path, generate_file_path, reference_file_path, summary_fil
         gen_rep = json.load(f)
     with open(reference_file_path, "r", encoding="utf-8") as f:
         ref_rep = json.load(f)
-    with open(summary_file_path, 'w', encoding='utf-8') as f:
-        for (ctx_row, ref_rep_row, gen_rep_row, top_k_blocks, top_k_blocks_st, chat_text, st_row) in zip(ctx, ref_rep, gen_rep, all_top_k_blocks, all_top_k_blocks_st, chat_texts, st):
-            query = process_row_to_comet_query(chat_text)
-            if query is None:
-                query = ""
-            line = '[contxt]\t' + ctx_row + '\n[reference_response]\t' + ref_rep_row + '\n[hypothesis_response]\t' + gen_rep_row + '\n[comet query]\t' + query + '\n[comet blocks (attention top5)]\t' + '  '.join(top_k_blocks) +'\n[situation]\t' + st_row + '\n[situation comet blocks (attention top5)]\t' + '  '.join(top_k_blocks_st) + '\n' * 2
-            f.writelines(line)
+    if all_top_k_blocks is not None:
+        with open(summary_file_path, 'w', encoding='utf-8') as f:
+            for (ctx_row, ref_rep_row, gen_rep_row, top_k_blocks, top_k_blocks_st, chat_text, st_row) in zip(ctx, ref_rep, gen_rep, all_top_k_blocks, all_top_k_blocks_st, chat_texts, st):
+                query = process_row_to_comet_query(chat_text)
+                if query is None:
+                    query = ""
+                line = '[contxt]\t' + ctx_row + '\n[reference_response]\t' + ref_rep_row + '\n[hypothesis_response]\t' + gen_rep_row + '\n[comet query]\t' + query + '\n[comet blocks (attention top5)]\t' + '  '.join(top_k_blocks) +'\n[situation]\t' + st_row + '\n[situation comet blocks (attention top5)]\t' + '  '.join(top_k_blocks_st) + '\n' * 2
+                f.writelines(line)
+    else:
+        with open(summary_file_path, 'w', encoding='utf-8') as f:
+            for (ctx_row, ref_rep_row, gen_rep_row, chat_text, st_row) in zip(ctx, ref_rep, gen_rep, chat_texts, st):
+                query = process_row_to_comet_query(chat_text)
+                if query is None:
+                    query = ""
+                line = '[contxt]\t' + ctx_row + '\n[reference_response]\t' + ref_rep_row + '\n[hypothesis_response]\t' + gen_rep_row + '\n[comet query]\t' + query + '\n[comet blocks (attention top5)]\t'  +'\n[situation]\t' + st_row + '\n[situation comet blocks (attention top5)]\t' + '\n' * 2
+                f.writelines(line)
 
 def extract_top_k_attention_comet_block(mutual_attentions, comet_rows, k):
     all_top_k_blocks = []
@@ -1233,7 +1252,7 @@ def generate(args):
     #comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]",
     #                                "[oEffect]", "[oReact]"]
 
-    tokenizer = load_tokenizer(args)
+    _, tokenizer = load_tokenizer(args)
     
     
     #tokenizer.add_tokens(additional_special_tokens)
@@ -1242,14 +1261,15 @@ def generate(args):
 
     # print(tokenizer.encode(['others]']))
     # print(1 / 0)
-    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir,
-        from_tf=False)
-    C = model.model.encoder.strategy_embedding.weight[:8,:]
-    C = C.cpu().detach().numpy()
-    from sklearn.metrics.pairwise import cosine_similarity
-    print(cosine_similarity(C))
+    #model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir,
+    #    from_tf=False)
+    model = load_model_for_eval(args=args)
+    #C = model.model.encoder.strategy_embedding.weight[:8,:]
+    #C = C.cpu().detach().numpy()
+    #from sklearn.metrics.pairwise import cosine_similarity
+    #print(cosine_similarity(C))
 
-    print(1/0)
+    #print(1/0)
     model.resize_token_embeddings(len(tokenizer))
     #model.resize_token_embeddings(54944) 
     # Setup CUDA, GPU & distributed training
@@ -1273,7 +1293,9 @@ def generate(args):
     with open(args.data_path+"/"+ args.test_comet_file, "r", encoding="utf-8") as f:
         comet = f.read().split("\n")
 
-    assert len(comet) == len(chat_texts) == len(comet_st)
+    with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
+        situ = f.read().split("\n")
+    assert len(comet) == len(chat_texts) == len(comet_st) == len(situ)
     gts = []
     refs = []
     mutual_attentions = []
@@ -1294,7 +1316,7 @@ def generate(args):
         # gts.append(" ".join(tokens[1:]))
         # = max(tokenizer.encode(tokens[0]))
         chat_history = c_text
-        f = construct_conv_ESD(idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True)
+        f = construct_conv_ESD(idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ[idx])
         if len(f.input_ids) >= args.block_size:
             f.input_ids = f.input_ids[-args.block_size:]
             f.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
@@ -1314,11 +1336,16 @@ def generate(args):
         comet_mask = torch.tensor([f.comet_mask], dtype=torch.long)
         comet_ids_st = torch.tensor([f.comet_st_ids], dtype=torch.long)
         comet_mask_st = torch.tensor([f.comet_st_mask], dtype=torch.long)
-
+        #print("emo_dist", f.emo_dist)
+        if f.emo_dist is not None:
+            emo_dist = torch.tensor([f.emo_dist], dtype = torch.float64).squeeze(1)
+        else:
+            emo_dist = None
         comet_ids = comet_ids.to(args.device)
         comet_mask = comet_mask.to(args.device)
         comet_ids_st = comet_ids_st.to(args.device)
         comet_mask_st = comet_mask_st.to(args.device)
+        emo_dist = emo_dist.to(args.device)
 
         batch_size, n_attr, len_attr = comet_ids.shape
         comet_ids = comet_ids.view(-1, len_attr)
@@ -1337,6 +1364,7 @@ def generate(args):
         paras["comet_mask"] = comet_mask
         paras["comet_embs_st"] = comet_embs_st
         paras["comet_mask_st"] = comet_mask_st
+        paras["emo_dist"] = emo_dist
         paras["output_mutual_attentions"] = True
 
         # batch_size = decoder_strategy_ids.shape[0]
@@ -1354,11 +1382,14 @@ def generate(args):
             pad_token_id=0,use_cache=True,
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
             top_p=0.3, top_k = 30, do_sample=True, repetition_penalty=1.03) #top_p 0.9, topk 30
-        chat_history_ids, mutual_attention, mutual_attention_st = chat_history_ids.cpu(), mutual_attention[-1][0].cpu(), mutual_attention_st[-1][0].cpu()
-        mutual_attention = torch.mean(mutual_attention, dim=0)
-        mutual_attention_st = torch.mean(mutual_attention_st, dim=0)
-        mutual_attentions.append(mutual_attention)
-        mutual_attentions_st.append(mutual_attention_st)
+        if mutual_attention is not None:
+            chat_history_ids, mutual_attention, mutual_attention_st = chat_history_ids.cpu(), mutual_attention[-1][0].cpu(), mutual_attention_st[-1][0].cpu()
+            mutual_attention = torch.mean(mutual_attention, dim=0) 
+            mutual_attention_st = torch.mean(mutual_attention_st, dim=0)
+            mutual_attentions.append(mutual_attention)
+            mutual_attentions_st.append(mutual_attention_st)
+        else:
+            chat_history_ids = chat_history_ids.cpu()
 
         # refs.append(tokenizer.decode(chat_history_ids[:, :][0][2:], skip_special_tokens=True))
         # print(tokenizer.decode(chat_history_ids[:, :][0][2:], skip_special_tokens=True))
@@ -1389,8 +1420,12 @@ def generate(args):
     for i in range(8):
         print(sum(strategy_hits_topk[i]) / len(strategy_hits_topk[i]))
     print('strategy predict accuray', sum(strategy_hits)/len(strategy_hits))
-    all_top_k_blocks = extract_top_k_attention_comet_block(mutual_attentions, comet[:-1], 5)
-    all_top_k_blocks_st = extract_top_k_attention_comet_block(mutual_attentions_st, comet_st[:-1], 5)
+    #if mutual_attention is not None:
+    #    all_top_k_blocks = extract_top_k_attention_comet_block(mutual_attentions, comet[:-1], 5)
+    #    all_top_k_blocks_st = extract_top_k_attention_comet_block(mutual_attentions_st, comet_st[:-1], 5)
+    #else:
+    all_top_k_blocks = None
+    all_top_k_blocks_st = None
     if not os.path.exists(args.generation_dir):
         os.makedirs(args.generation_dir)
     test_file_path = "dataset/testWithStrategy_short.tsv"
