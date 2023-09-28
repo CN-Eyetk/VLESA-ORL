@@ -1600,9 +1600,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.prepend = config.prepend
         self.dropout = config.dropout
         self.use_kl = config.use_kl
+        self.add_emo_cross_attn = config.add_emo_cross_attn
+        if config.use_trans_mat:
+            self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.init_weights()
-        #if config.use_trans_mat:
-        #    self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
 
     def get_encoder(self):
         return self.model.get_encoder()
@@ -1714,9 +1715,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             )
         # print(decoder_input_ids)
         if encoder_outputs.emo_out_embed is not None and encoder_outputs.strategy_embs is not None:
-            #strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embed,encoder_outputs.strategy_embs), dim = -1))
-            strategy_embs = encoder_outputs.strategy_embs
-            emo_out_embs = encoder_outputs.emo_out_embed
+            strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embed,encoder_outputs.strategy_embs), dim = -1))
+            #strategy_embs = encoder_outputs.strategy_embs
+            emo_out_embs = encoder_outputs.emo_out_embed if self.add_emo_cross_attn else None
             
         else:
             strategy_embs = encoder_outputs.strategy_embs

@@ -20,8 +20,8 @@ def prepare_data(ref_file, hyp_file):
 # torch.nn.Module.dump_patches = True
 import numpy as np
 # MODEL_PATH = "models/DialoFlow_large.bin"
-hypFile = 'generated_data/all_loss/hyp_strategy.json'
-refFile = 'generated_data/all_loss/ref_strategy.json'
+hypFile = 'our_generated_data_kl_eosemo/hyp_strategy.json'
+refFile = 'our_generated_data_kl_eosemo/ref_strategy.json'
 result = prepare_data(refFile, hypFile)
 result = np.array(result)
 print(result.mean(0))

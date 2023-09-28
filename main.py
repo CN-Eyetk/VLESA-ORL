@@ -7,6 +7,7 @@ EMO_FROM_EOS = True
 GROUP = ("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else ""
 TAG = "all_loss" + ("kl" if KL else "")
 ENCODE_SITU = False
+EMO_CRO_ATTN = False
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
@@ -40,7 +41,7 @@ else:
                                         load_model_for_eval
                                         )
     output_dir = os.path.join('blender-our' + GROUP, TAG)
-    generation_dir = "our_generated_data" + ("_prepend" if USE_PREPEND else "") + ("_wotrans" if not USE_TRANS else "")
+    generation_dir = "our_generated_data" + ("_prepend" if USE_PREPEND else "") + ("_wotrans" if not USE_TRANS else "") + ("_kl" if KL else "") + ("_eosemo" if EMO_FROM_EOS else "")
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 def load_arg():
@@ -90,7 +91,7 @@ def load_arg():
             "prepend_emotion":USE_PREPEND,
             "use_trans_mat":USE_TRANS,
             "use_th_attn":not MISC,
-            "add_emo_cross_attn":True,
+            "add_emo_cross_attn":EMO_CRO_ATTN,
             "st_from_eos":ST_FROM_EOS,
             "emo_from_eos":EMO_FROM_EOS,
             "use_kl":KL,
