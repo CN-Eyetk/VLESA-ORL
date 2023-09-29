@@ -361,6 +361,7 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         else:
             self.muAttn = Mutual_Attn(embed_dim=config.d_model)
             self.muAttn_st = Mutual_Attn(embed_dim=config.d_model)
+
             
 
         
@@ -485,12 +486,14 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             dropout=config.attention_dropout,
             is_decoder=True,
         )
+
         self.encoder_attn_strategy= BlenderbotSmallAttention(
             self.embed_dim,
             config.decoder_attention_heads,
             dropout=config.attention_dropout,
             is_decoder=True,
         )
+
         self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
         self.encoder_attn_layer_norm_strategy = nn.LayerNorm(self.embed_dim)
         self.encoder_attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
@@ -501,7 +504,7 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
         
-        if config.add_emo_cross_attn:
+        if config.add_emo_cross_attn and not config.use_emb_prep:
             self.encoder_attn_emo= BlenderbotSmallAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
@@ -612,14 +615,14 @@ class BlenderbotSmallDecoderLayer(nn.Module):
                 output_attentions=output_attentions,
             )
             hidden_states_encoder = F.dropout(hidden_states_encoder, p=self.dropout, training=self.training)
+            if self.encoder_attn_strategy is not None:
+                hidden_states_strategy, _, _ = self.encoder_attn_strategy(
+                    hidden_states=hidden_states,
+                    key_value_states=strategy_embs,
+                )
+                hidden_states_strategy = F.dropout(hidden_states_strategy, p=self.dropout, training=self.training)
 
-            hidden_states_strategy, _, _ = self.encoder_attn_strategy(
-                hidden_states=hidden_states,
-                key_value_states=strategy_embs,
-            )
-            hidden_states_strategy = F.dropout(hidden_states_strategy, p=self.dropout, training=self.training)
-
-            if emo_out_embs is not None:
+            if self.encoder_attn_emo is not None:
                 hidden_states_emo, _, _ = self.encoder_attn_emo(
                     hidden_states=hidden_states,
                     key_value_states=emo_out_embs,
@@ -649,8 +652,10 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
             # hidden_states = residual + hidden_states
             # hidden_states = residual + hidden_states_encoder + hidden_states_strategy
-            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp + hidden_states_strategy 
-            if emo_out_embs is not None:
+            hidden_states = residual + hidden_states_encoder + hidden_states_st +  hidden_states_sp
+            if self.encoder_attn_strategy is not None:
+                hidden_states += hidden_states_strategy
+            if self.encoder_attn_emo is not None:
                 hidden_states += hidden_states_emo
             hidden_states = self.encoder_attn_layer_norm(hidden_states)
 
@@ -902,13 +907,15 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
-        self.n_emo_in = 11
-        self.n_emo_out = 28
+        self.use_emo_in_dist = config.use_emo_in_dist
+        self.n_emo_situ = 11
+        self.n_emo_in = config.n_emo_out if config.use_emo_in_dist else self.n_emo_situ
+        
+        self.n_emo_out = config.n_emo_out
         self.n_strat = 8
-        self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
-        #self.intensity_head = nn.Linear(config.d_model, 1)
-        self.strategy_head = nn.Linear(config.d_model, self.n_strat)
-        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
+        self.emotion_head = nn.Linear(config.d_model + (self.n_emo_in if config.use_emo_in_dist else 0), self.n_emo_situ)
+        self.strategy_head = nn.Linear(config.d_model + (self.n_emo_in if config.use_emo_in_dist else 0), self.n_strat)
+        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_situ)
         self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
 
         self.strategy_embedding = nn.Embedding(8 + 1, embed_dim, 8)
@@ -946,6 +953,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         output_hidden_states=None,
         return_dict=None,
         strategy_logit_ground=None,
+        emo_in_dist=None
     ):
 
         r"""
@@ -1083,10 +1091,23 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
             if self.emo_from_eos:
                 last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                emotion_logits = self.emotion_head(last_eos_state)
+                if self.use_emo_in_dist:
+                    emo_in_dist = emo_in_dist.to(last_eos_state.dtype)
+                    hidden_states_with_emo = torch.cat((last_eos_state, emo_in_dist), dim = -1)
+                    #print("last_eos_state",last_eos_state.dtype)
+                    #print("emo_in_dist",emo_in_dist.dtype)
+                    #print("hidden_states_with_emo",hidden_states_with_emo.dtype)
+                    #print("emotion_head",self.emotion_head.weight.dtype)
+                    emotion_logits = self.emotion_head(hidden_states_with_emo)
+                    #print("emotion_logits",emotion_logits.shape)
+                else:
+                    emotion_logits = self.emotion_head(last_eos_state)
 
             else:
-                emotion_logits = self.emotion_head(hidden_states[:,0,:])
+                if self.use_emo_in_dist:
+                    emotion_logits = self.emotion_head(torch.cat((hidden_states[:, 0, :], emo_in_dist), dim = -1))
+                else:
+                    emotion_logits = self.emotion_head(hidden_states[:,0,:])
             
             #emotion_logits = self.emotion_head(hidden_states[:,0,:])
             #ourchange ：emotion_logits = self.emotion_head(hidden_states.mean(dim = 1))
@@ -1096,7 +1117,10 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             emotion_logits = self.batchNorm_emotion(emotion_logits)
             #emotion_intensity = self.intensity_head(hidden_states[:,0,:])
             emotion_intensity = None
-            strategy_logits = self.strategy_head(hidden_states[:, 0, :])
+            if self.use_emo_in_dist:
+                strategy_logits = self.strategy_head(torch.cat((hidden_states[:, 0, :], emo_in_dist), dim = -1))
+            else:
+                strategy_logits = self.strategy_head(hidden_states[:, 0, :])
             # strategy_logits = self.strategy_head(hidden_states[:,0,:]) + 1 / turn_ids.unsqueeze(1).type(torch.float)
         #     emotion_logits = self.emotion_head(F.relu(torch.mean(comet_hidden_states_st, dim=1)))
         #     emotion_intensity = self.intensity_head(F.relu(torch.mean(comet_hidden_states, dim=1)))
@@ -1146,17 +1170,21 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             strategy_embs=None
         
         if self.trans_mat is not None and strategy_logits is not None and emotion_logits is not None:
-            emo_out_embed, emo_out_logits = self.trans_mat(emotion_logits, strategy_logits)
+            if not self.use_emo_in_dist:
+                emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
+            else:
+                emo_out_embs, emo_out_prob = self.trans_mat(emo_in_dist, strategy_logits)
         else:
-            emo_out_embed = None
-            emo_out_logits = None
+            emo_out_embs = None
+            emo_out_prob = None
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
             emotion_logits = emotion_logits, emotion_intensity = emotion_intensity, strategy_logits = strategy_logits, strategy_embs = strategy_embs, comet_mask = comet_mask,
             comet_mask_st=comet_mask_st,
-            emo_out_embed=emo_out_embed,
-            emo_out_logits=emo_out_logits,
+            
+            emo_out_embs=emo_out_embs,
+            emo_out_prob=emo_out_prob,
         )
 
 
@@ -1192,7 +1220,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
         )
         self.layers = nn.ModuleList([BlenderbotSmallDecoderLayer(config) for _ in range(config.decoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(config.d_model)
-
+        
         self.init_weights()
 
     def forward(
@@ -1292,7 +1320,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
 
         # create causal mask
-        # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+        # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len
         combined_attention_mask = None
         if input_shape[-1] > 1:
             combined_attention_mask = _make_causal_mask(
@@ -1318,6 +1346,13 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
 
         # embed positions
         positions = self.embed_positions(input_shape, past_key_values_length)
+        #print("positions", positions.shape)
+        #if self.use_emb_prep:
+        #    positions_prepend = self.embed_positions((input_shape[0],1), past_key_values_length)
+        #    print("positions_prepend", positions_prepend.shape)
+        #    positions_prepend = positions_prepend.repeat(1, 2)
+        #    print("positions_prepend", positions_prepend.shape)
+        #    positions = torch.cat((positions_prepend, positions), dim = 1)
 
         if role_ids is not None:
             role_embeds = 0
@@ -1598,9 +1633,18 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.use_th_attn = config.use_th_attn
         self.use_trans_mat = config.use_trans_mat
         self.prepend = config.prepend
+        self.use_emb_prep = config.use_emb_prep
+        self.n_emo_out = config.n_emo_out
         self.dropout = config.dropout
         self.use_kl = config.use_kl
         self.add_emo_cross_attn = config.add_emo_cross_attn
+        self.use_emo_in_dist = config.use_emo_in_dist
+        #if not self.use_emb_prep:
+        #    self.emotion_embedding = nn.Embedding(config.n_emo_out, config.d_model)
+        #    self.emotion_id = torch.tensor(range(config.n_emo_out), dtype=torch.long)
+        #else:
+            #self.emotion_embedding = 
+        #    self.emotion_id = torch.tensor(config.prepend_emo_ids, dtype=torch.long)
         if config.use_trans_mat:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.init_weights()
@@ -1662,6 +1706,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         output_attentions=None,
         output_hidden_states=None,
         emo_dist=None,
+        emo_in_dist=None,
         return_dict=None,
         
     ):
@@ -1711,14 +1756,16 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 turn_ids=decoder_turn_ids[:, 0],
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
+                emo_in_dist = emo_in_dist
 
             )
-        # print(decoder_input_ids)
-        if encoder_outputs.emo_out_embed is not None and encoder_outputs.strategy_embs is not None:
-            strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embed,encoder_outputs.strategy_embs), dim = -1))
-            #strategy_embs = encoder_outputs.strategy_embs
-            emo_out_embs = encoder_outputs.emo_out_embed if self.add_emo_cross_attn else None
-            
+
+        if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
+            if not self.use_emb_prep:
+                strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embs,encoder_outputs.strategy_embs), dim = -1))
+                emo_out_embs = None
+            else:
+                strategy_embs = encoder_outputs.strategy_embs            
         else:
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
@@ -1729,10 +1776,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         # print(decoder_input_ids)
 
         if labels is not None:
-            # labels = labels[:, 1:]
             decoder_input_ids = shift_tokens_right(
                 decoder_input_ids, self.config.pad_token_id, self.config.decoder_start_token_id
             )
+            
 
         # print(encoder_outputs.comet_mask)
         # print(1/0)
@@ -1772,9 +1819,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         strategy_loss = None
 
         emotion_logits = encoder_outputs.emotion_logits
-        emotion_intensity = encoder_outputs.emotion_intensity
+        #emotion_intensity = encoder_outputs.emotion_intensity
         strategy_logits = encoder_outputs.strategy_logits
-        emo_out_logits = encoder_outputs.emo_out_logits
+        emo_out_prob = encoder_outputs.emo_out_prob
         # lm_logits[:, 0, 54944:54944 + 8] = strategy_logits
 
         if labels is not None:
@@ -1809,19 +1856,19 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
             loss += strategy_loss
         
-        if emo_out_logits is not None:
+        if self.use_trans_mat and emo_out_prob is not None:
             #print("emo_out_logits",emo_out_logits.shape)
-            if len(emo_out_logits.size()) == 1:
-                emo_out_logits = emo_out_logits.unsqueeze(0)
-            assert emo_out_logits.size(1) > 1
+            if len(emo_out_prob.size()) == 1:
+                emo_out_prob = emo_out_prob.unsqueeze(0)
+            assert emo_out_prob.size(1) > 1
             if emo_dist is not None:
                 if self.use_kl:
                     emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
-                    emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_dist)
+                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist)
                 else:
                     emo_out_loss_fct = NLLLoss()
                     emo_out_label = emo_dist.argmax(-1).squeeze()
-                    emo_out_loss = emo_out_loss_fct(emo_out_logits, emo_out_label)
+                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
                 loss += emo_out_loss
             
 
@@ -1842,6 +1889,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,
             encoder_hidden_states=encoder_outputs.hidden_states,
             encoder_attentions=encoder_outputs.attentions,
+
+            
         )
 
     def prepare_inputs_for_generation(

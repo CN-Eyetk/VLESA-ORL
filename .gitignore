@@ -12,8 +12,11 @@ blender-our2/*
 blender-our-TRANS/*
 blender-our-TRANS2/*
 blender-our-TRANS3/*
+our*/
+blender-our*/
 cached
 mycached
 prepend_cached
+930cached
 generated_data
 runs

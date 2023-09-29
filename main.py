@@ -1,13 +1,17 @@
 USE_TRANS = True
-USE_PREPEND = False
+USE_PREPEND = True
+USE_EMB_PREP = False
 MISC = False
 KL = True
 ST_FROM_EOS = False
 EMO_FROM_EOS = True
-GROUP = ("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else ""
-TAG = "all_loss" + ("kl" if KL else "")
-ENCODE_SITU = False
+
+TAG = "all_loss" + ("kl" if KL else "") + ("embpp" if USE_EMB_PREP else "")
+ENCODE_SITU = True
 EMO_CRO_ATTN = False
+USE_EMO_IN_DIST = False
+GROUP = "-TRANS4" if USE_EMB_PREP else (("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") + ("-Situ" if ENCODE_SITU else "") + ("-Emoin" if USE_EMO_IN_DIST else "") + ("embpp" if USE_EMB_PREP else "")
+
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
@@ -38,7 +42,8 @@ else:
                                         generate,
                                         load_tokenizer,
                                         set_seed,
-                                        load_model_for_eval
+                                        load_model_for_eval,
+                                        load_model
                                         )
     output_dir = os.path.join('blender-our' + GROUP, TAG)
     generation_dir = "our_generated_data" + ("_prepend" if USE_PREPEND else "") + ("_wotrans" if not USE_TRANS else "") + ("_kl" if KL else "") + ("_eosemo" if EMO_FROM_EOS else "")
@@ -60,7 +65,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./mycached",
+            "data_cache_dir":"./930cached",
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
@@ -68,7 +73,7 @@ def load_arg():
             "strategy":False,
             "local_rank":-1,
             "per_gpu_train_batch_size":20,
-            "per_gpu_eval_batch_size":30,
+            "per_gpu_eval_batch_size":20,
             "save_total_limit":1,
             "n_gpu":torch.cuda.device_count(),
             "max_steps":-1,
@@ -98,7 +103,9 @@ def load_arg():
             "no_cuda":False,
             "block_size":512,
             "generation_dir":generation_dir,
-            "encode_situ":ENCODE_SITU
+            "encode_situ":ENCODE_SITU,
+            "use_emo_in_dist":USE_EMO_IN_DIST,
+            "use_emb_prep":USE_EMB_PREP
             }
     args = argparse.Namespace(**args)
     return args
@@ -132,39 +139,11 @@ def load_dataset(args, tokenizer):
         df_test = f.read().split("\n")
     with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
         st_test = f.read().split("\n")
-    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, )#situations = st_trn)
-    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, )#situations = st_val)
-    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, )#situations = st_test)
+    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
+    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
+    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
     return train_dataset, eval_dataset, test_dataset
 
-def load_config(args):
-    config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-    #config = BlenderbotSmallConfig.from_dict(config)
-    config.use_th_attn = args.use_th_attn
-    config.prepend = args.prepend_emotion
-    config.use_trans_mat = args.use_trans_mat
-    config.use_kl = args.use_kl
-    config.add_emo_cross_attn = args.add_emo_cross_attn
-    config.emo_from_eos = args.emo_from_eos
-    return config
-
-def load_model(args, tokenizer):
-    config = load_config(args)
-    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
-    print(model.config)
-    #model = BlenderbotSmallForConditionalGeneration(config)
-    model.resize_token_embeddings(len(tokenizer))
-    model = model.to(args.device)
-    return model
-
-
-def print_blender(blender):
-    feats = vars(blender)
-    for k,v in feats.items():
-        if type(v) != type(1):
-            print(f"{k}\t{torch.tensor(v).shape}\t{v}")
-        else:
-            print(f"{k}\t{1}\t{v}")
 if __name__ == "__main__":
     args = load_arg()
     print(args.output_dir)
@@ -183,6 +162,7 @@ if __name__ == "__main__":
     model.eval()
     with torch.no_grad():
         test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+        #args.device = "cpu"
         generate(args)
 
     #model.to(args.device)
