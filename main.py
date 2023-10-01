@@ -5,12 +5,15 @@ MISC = False
 KL = True
 ST_FROM_EOS = False
 EMO_FROM_EOS = True
-
-TAG = "all_loss" + ("kl" if KL else "") + ("embpp" if USE_EMB_PREP else "")
+EMO_FROM_SITU = False
+COPY = False
 ENCODE_SITU = True
 EMO_CRO_ATTN = False
-USE_EMO_IN_DIST = False
-GROUP = "-TRANS4" if USE_EMB_PREP else (("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") + ("-Situ" if ENCODE_SITU else "") + ("-Emoin" if USE_EMO_IN_DIST else "") + ("embpp" if USE_EMB_PREP else "")
+USE_EMO_IN_DIST = True
+
+TAG = "all_loss" + ("kl" if KL else "") + ("copy" if COPY else "") + ("-Situ" if ENCODE_SITU else "") + ("-Emoin" if USE_EMO_IN_DIST else "") + ("Sit_emo" if EMO_FROM_SITU else "")
+
+GROUP = "-TRANS4" if USE_EMB_PREP else (("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
 
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
@@ -46,12 +49,12 @@ else:
                                         load_model
                                         )
     output_dir = os.path.join('blender-our' + GROUP, TAG)
-    generation_dir = "our_generated_data" + ("_prepend" if USE_PREPEND else "") + ("_wotrans" if not USE_TRANS else "") + ("_kl" if KL else "") + ("_eosemo" if EMO_FROM_EOS else "")
+    generation_dir = "our_generated_data/" + GROUP
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -65,7 +68,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./930cached",
+            "data_cache_dir":"./101cached",
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
@@ -99,13 +102,15 @@ def load_arg():
             "add_emo_cross_attn":EMO_CRO_ATTN,
             "st_from_eos":ST_FROM_EOS,
             "emo_from_eos":EMO_FROM_EOS,
+            "emo_from_situ":EMO_FROM_SITU,
             "use_kl":KL,
             "no_cuda":False,
             "block_size":512,
             "generation_dir":generation_dir,
             "encode_situ":ENCODE_SITU,
             "use_emo_in_dist":USE_EMO_IN_DIST,
-            "use_emb_prep":USE_EMB_PREP
+            "use_emb_prep":USE_EMB_PREP,
+            "use_copy":COPY,
             }
     args = argparse.Namespace(**args)
     return args

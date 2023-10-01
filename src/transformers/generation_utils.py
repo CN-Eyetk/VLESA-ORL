@@ -841,6 +841,8 @@ class GenerationMixin:
             # add encoder_outputs to model_kwargs
             model_kwargs = self._prepare_encoder_decoder_kwargs_for_generation(input_ids, model_kwargs)
             # set input_ids as decoder_input_ids
+            #print("model_kwargs",model_kwargs)
+            #print("model_kwargs",model_kwargs.keys())
             if "decoder_input_ids" in model_kwargs:
                 input_ids = model_kwargs.pop("decoder_input_ids")
             else:
@@ -928,7 +930,7 @@ class GenerationMixin:
                 eos_token_id=eos_token_id,
                 output_scores=output_scores,
                 return_dict_in_generate=return_dict_in_generate,
-                encoder_input_ids=encoder_input_ids,
+                #encoder_input_ids=encoder_input_ids,
                 **model_kwargs,
             )
 
@@ -1160,7 +1162,7 @@ class GenerationMixin:
 
         while cur_len < max_length:
             # prepare model inputs
-         
+            
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
 
             # forward pass to get next token
@@ -1379,6 +1381,8 @@ class GenerationMixin:
             # prepare model inputs
             # print(model_kwargs)
             # print(1/0)
+            #print("model_kwargs",model_kwargs.keys())
+            model_kwargs["encoder_input_ids"] = encoder_input_ids
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
             # print(model_kwargs)
             # print(model_inputs)

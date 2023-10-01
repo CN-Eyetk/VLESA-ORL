@@ -167,8 +167,10 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.prepend = kwargs["prepend"] if "prepend" in kwargs.keys() else False
         self.use_kl = kwargs["use_kl"] if "use_kl" in kwargs.keys() else False
         self.emo_from_eos = kwargs["emo_from_eos"] if "emo_from_eos" in kwargs.keys() else False
+        self.emo_from_situ = kwargs["emo_from_situ"] if "emo_from_situ" in kwargs.keys() else False
         self.use_emo_in_dist = kwargs["use_emo_in_dist"] if "use_emo_in_dist" in kwargs.keys() else False
         self.use_emb_prep = kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
+        self.use_copy = kwargs["use_copy"] if "use_copy" in kwargs.keys() else False
 
     @property
     def num_attention_heads(self) -> int:

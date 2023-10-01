@@ -49,7 +49,7 @@ from src.transformers import (BlenderbotSmallTokenizer, BlenderbotSmallForCondit
 #from utils.data_parallel import BalancedDataParallel
 from add_emo import EmoExtracter
 model_dirs = ["j-hartmann/emotion-english-distilroberta-base","SamLowe/roberta-base-go_emotions"]
-emo_extracter = EmoExtracter(model_dir=model_dirs[1])
+emo_extracter = EmoExtracter(model_dir=model_dirs[0])
 
 try:
     from torch.utils.tensorboard import SummaryWriter
@@ -74,9 +74,11 @@ def load_config(args, eval = False):
     config.use_kl = args.use_kl
     config.add_emo_cross_attn = args.add_emo_cross_attn
     config.emo_from_eos = args.emo_from_eos
+    config.emo_from_situ = args.emo_from_situ
     config.use_emo_in_dist = args.use_emo_in_dist
     config.use_emb_prep = args.use_emb_prep
     config.n_emo_out = len(emo_extracter.id_2_label)
+    config.use_copy = args.use_copy
     return config
 
 def load_model_for_eval(args):
@@ -1172,7 +1174,9 @@ def generate(args):
     # print(1 / 0)
     #model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir,
     #    from_tf=False)
+    
     model = load_model_for_eval(args=args)
+    model.eval()
     #C = model.model.encoder.strategy_embedding.weight[:8,:]
     #C = C.cpu().detach().numpy()
     #from sklearn.metrics.pairwise import cosine_similarity
@@ -1394,7 +1398,11 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
 
     
     assert input_ids.shape[1] <= 512 
-    emotion = emotion.to(args.device)
+    if not args.use_emo_in_dist:
+        emotion = emotion.to(args.device)
+    else:
+        emotion = emo_in_dist.argmax(-1).to(args.device)
+
     comet_ids = comet_ids.to(args.device)
 
     batch_size, n_attr, len_attr = comet_ids.shape

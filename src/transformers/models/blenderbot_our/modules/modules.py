@@ -12,6 +12,7 @@ class EmoTrans(nn.Module):
         self.matrices = nn.ParameterList([nn.Parameter(torch.Tensor(n_emo_in, n_emo_out)) for i in range(n_strat)])
         self.emotion_embedding = nn.Embedding(n_emo_out, embed_dim)
         self.emotion_id = torch.tensor(range(n_emo_out), dtype=torch.long)
+        self.dropout = nn.Dropout(0.1)
         self.reset_weights()
     def reset_weights(self):
         for weight in self.matrices:
@@ -20,6 +21,8 @@ class EmoTrans(nn.Module):
     def forward(self, emo_logits, strat_logits):
         b = emo_logits.size(0)
         emo_out_logits_each_strat = torch.zeros(b, self.n_strat, self.n_emo_out).to(emo_logits.device) #[b, stra, emo]
+        emo_logits = self.dropout(emo_logits)
+        strat_logits = self.dropout(strat_logits)
         emo_prob = F.softmax(emo_logits, dim = -1)
         for i,matrix in enumerate(self.matrices):
             with torch.no_grad():

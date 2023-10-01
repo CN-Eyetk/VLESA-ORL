@@ -17,12 +17,12 @@
 
 import math
 import random
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any, Dict, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torch.nn import CrossEntropyLoss, MSELoss, NLLLoss
+from torch.nn import CrossEntropyLoss, NLLLoss
 
 from ...activations import ACT2FN
 from ...file_utils import (
@@ -37,6 +37,7 @@ from ...modeling_outputs import (
     Seq2SeqLMOutput,
     Seq2SeqModelOutput,
 )
+from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
@@ -913,9 +914,9 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         
         self.n_emo_out = config.n_emo_out
         self.n_strat = 8
-        self.emotion_head = nn.Linear(config.d_model + (self.n_emo_in if config.use_emo_in_dist else 0), self.n_emo_situ)
-        self.strategy_head = nn.Linear(config.d_model + (self.n_emo_in if config.use_emo_in_dist else 0), self.n_strat)
-        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_situ)
+        self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
+        self.strategy_head = nn.Linear(config.d_model, self.n_strat)
+        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
         self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
 
         self.strategy_embedding = nn.Embedding(8 + 1, embed_dim, 8)
@@ -926,6 +927,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.use_th_attn = config.use_th_attn
         self.use_trans_mat = config.use_trans_mat
         self.emo_from_eos = config.emo_from_eos
+        self.emo_from_situ = config.emo_from_situ
         if config.use_trans_mat:
             self.trans_mat = EmoTrans(n_emo_in = self.n_emo_in, 
                                       n_emo_out = self.n_emo_out,
@@ -953,7 +955,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         output_hidden_states=None,
         return_dict=None,
         strategy_logit_ground=None,
-        emo_in_dist=None
     ):
 
         r"""
@@ -1091,23 +1092,11 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
             if self.emo_from_eos:
                 last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                if self.use_emo_in_dist:
-                    emo_in_dist = emo_in_dist.to(last_eos_state.dtype)
-                    hidden_states_with_emo = torch.cat((last_eos_state, emo_in_dist), dim = -1)
-                    #print("last_eos_state",last_eos_state.dtype)
-                    #print("emo_in_dist",emo_in_dist.dtype)
-                    #print("hidden_states_with_emo",hidden_states_with_emo.dtype)
-                    #print("emotion_head",self.emotion_head.weight.dtype)
-                    emotion_logits = self.emotion_head(hidden_states_with_emo)
-                    #print("emotion_logits",emotion_logits.shape)
-                else:
-                    emotion_logits = self.emotion_head(last_eos_state)
-
+                emotion_logits = self.emotion_head(last_eos_state)
+            elif self.emo_from_situ:
+                emotion_logits = self.emotion_head(hidden_states[:,0,:])
             else:
-                if self.use_emo_in_dist:
-                    emotion_logits = self.emotion_head(torch.cat((hidden_states[:, 0, :], emo_in_dist), dim = -1))
-                else:
-                    emotion_logits = self.emotion_head(hidden_states[:,0,:])
+                emotion_logits = self.emotion_head(comet_hidden_states[:,0,:])
             
             #emotion_logits = self.emotion_head(hidden_states[:,0,:])
             #ourchange ：emotion_logits = self.emotion_head(hidden_states.mean(dim = 1))
@@ -1117,10 +1106,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             emotion_logits = self.batchNorm_emotion(emotion_logits)
             #emotion_intensity = self.intensity_head(hidden_states[:,0,:])
             emotion_intensity = None
-            if self.use_emo_in_dist:
-                strategy_logits = self.strategy_head(torch.cat((hidden_states[:, 0, :], emo_in_dist), dim = -1))
-            else:
-                strategy_logits = self.strategy_head(hidden_states[:, 0, :])
+            strategy_logits = self.strategy_head(hidden_states[:, 0, :])
             # strategy_logits = self.strategy_head(hidden_states[:,0,:]) + 1 / turn_ids.unsqueeze(1).type(torch.float)
         #     emotion_logits = self.emotion_head(F.relu(torch.mean(comet_hidden_states_st, dim=1)))
         #     emotion_intensity = self.intensity_head(F.relu(torch.mean(comet_hidden_states, dim=1)))
@@ -1168,12 +1154,8 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         else:
             strategy_embs=None
-        
         if self.trans_mat is not None and strategy_logits is not None and emotion_logits is not None:
-            if not self.use_emo_in_dist:
-                emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
-            else:
-                emo_out_embs, emo_out_prob = self.trans_mat(emo_in_dist, strategy_logits)
+            emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
         else:
             emo_out_embs = None
             emo_out_prob = None
@@ -1634,11 +1616,16 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.use_trans_mat = config.use_trans_mat
         self.prepend = config.prepend
         self.use_emb_prep = config.use_emb_prep
+        
         self.n_emo_out = config.n_emo_out
         self.dropout = config.dropout
         self.use_kl = config.use_kl
         self.add_emo_cross_attn = config.add_emo_cross_attn
         self.use_emo_in_dist = config.use_emo_in_dist
+        self.n_emo_in = self.n_emo_out if self.use_emo_in_dist else 11
+        self.use_copy = config.use_copy
+        if self.use_copy:
+            self.pgen_decoder_output_layer = nn.Linear(config.d_model, 1, bias=True)
         #if not self.use_emb_prep:
         #    self.emotion_embedding = nn.Embedding(config.n_emo_out, config.d_model)
         #    self.emotion_id = torch.tensor(range(config.n_emo_out), dtype=torch.long)
@@ -1756,8 +1743,6 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 turn_ids=decoder_turn_ids[:, 0],
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
-                emo_in_dist = emo_in_dist
-
             )
 
         if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
@@ -1804,12 +1789,16 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             use_cache=use_cache,
             role_ids=decoder_role_ids,
             turn_ids=decoder_turn_ids,
-            output_attentions=output_attentions,
+            output_attentions=True if self.use_copy else output_attentions, #COPY机制需要输出corss
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-
-        lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
+        if not self.use_copy:
+            lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
+        else:
+            cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)
+            decoder_hidden_state = decoder_outputs[0]
+            lm_logits = self._compute_output_dist_light(decoder_hidden_state, cross_attn, input_ids) + self.final_logits_bias
 
 
         loss = None
@@ -1840,16 +1829,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         if emotion is not None:
             emo_loss_fct = CrossEntropyLoss()
             # print(emotion_logits.shape, emotion)
-            emo_loss = emo_loss_fct(emotion_logits.view(-1, 11), emotion.view(-1))
-            # loss += emo_loss
+            emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
+            loss += emo_loss
 
-        #intensity_label = None
-        #if decoder_turn_ids is not None:
-        #    intensity_label = 1 / decoder_turn_ids[:, 0].type(torch.float)
-        #if intensity_label is not None:
-        #    intensity_loss_fct = MSELoss()
-        #    intensity_loss = intensity_loss_fct(emotion_intensity, intensity_label)
-            # loss += intensity_loss
         intensity_loss = None
         if strategy_label is not None:
             strategy_loss_fct = CrossEntropyLoss()
@@ -1892,7 +1874,43 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
             
         )
+    def _compute_output_dist_light(self, decoder_hidden_states, attn, input_ids):
+        vocab_prob = self.lm_head(decoder_hidden_states) 
+        copy_vocab_logits = F.one_hot(input_ids, num_classes = self.config.vocab_size).to(self.device).to(torch.float32)
+        p_copy = torch.sigmoid(self.pgen_decoder_output_layer(decoder_hidden_states)) #[16, tl ,1]
+        #print(p_copy)
+        out_prob = torch.mul(vocab_prob, 1 - p_copy)  #[16, tl ,vocab]
+        mul_attn = torch.mul(attn, p_copy) #[16, tl ,sl]
+        copy_prob = torch.bmm(
+            mul_attn.to(torch.float32), #[16, sl ,tl] * [16, sl, vocab]
+            copy_vocab_logits
+        )
+        probs = copy_prob + out_prob
+        return probs
+    def _prepare_encoder_decoder_kwargs_for_generation(
+        self, input_ids: torch.LongTensor, model_kwargs
+    ) -> Dict[str, Any]:
+        # retrieve encoder hidden states
+        encoder = self.get_encoder()
+        encoder_kwargs = {
+            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") #Update 9-27
+        }
+        #encoder_kwargs["output_mutual_attentions"] = True #Update 9-27
 
+        model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
+        # model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids,
+        #                                                        return_dict=True,
+        #                                                        attention_mask = encoder_kwargs['attention_mask'],
+        #                                                        comet_embs = encoder_kwargs['comet_embs'],
+        #                                                        comet_mask = encoder_kwargs['comet_mask'],
+        #                                                        output_attentions = encoder_kwargs['comet_mask'],
+        #                                                        output_hidden_states = encoder_kwargs['output_hidden_states'])
+        # print(model_kwargs)
+        # print(1 / 0)
+        if self.use_copy:
+            print("getting encoder input ids")
+            model_kwargs["encoder_input_ids"] = input_ids #10-1如果使用copy机制，generation需要输入input_ids
+        return model_kwargs
     def prepare_inputs_for_generation(
         self, decoder_input_ids, past=None, attention_mask=None, use_cache=None, encoder_outputs=None, **kwargs
     ):
@@ -1908,7 +1926,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         #    "use_cache": use_cache,  # change this to avoid caching (presumably for debugging)
         #})
         return {
-            "input_ids": None,  # encoder_outputs is defined. input_ids not needed
+            "input_ids": None if not self.use_copy else kwargs["encoder_input_ids"],  # encoder_outputs is defined. input_ids not needed
             "encoder_outputs": encoder_outputs,
             "past_key_values": past,
             "decoder_input_ids": decoder_input_ids,
