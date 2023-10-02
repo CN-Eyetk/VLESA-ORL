@@ -1,5 +1,5 @@
 USE_TRANS = True
-USE_PREPEND = True
+USE_PREPEND = False
 USE_EMB_PREP = False
 MISC = False
 KL = True
@@ -9,7 +9,7 @@ EMO_FROM_SITU = False
 COPY = False
 ENCODE_SITU = True
 EMO_CRO_ATTN = False
-USE_EMO_IN_DIST = True
+USE_EMO_IN_DIST = False
 
 TAG = "all_loss" + ("kl" if KL else "") + ("copy" if COPY else "") + ("-Situ" if ENCODE_SITU else "") + ("-Emoin" if USE_EMO_IN_DIST else "") + ("Sit_emo" if EMO_FROM_SITU else "")
 
@@ -31,7 +31,8 @@ if MISC:
                                         generate,
                                         #load_tokenizer,
                                         set_seed,
-                                        load_model_for_eval
+                                        load_model_for_eval,
+                                        logger
                                         )
     from BlenderEmotionalSupport import load_tokenizer
     output_dir = os.path.join('blender-small' + GROUP, TAG)
@@ -46,10 +47,11 @@ else:
                                         load_tokenizer,
                                         set_seed,
                                         load_model_for_eval,
-                                        load_model
+                                        load_model,
+                                        logger
                                         )
     output_dir = os.path.join('blender-our' + GROUP, TAG)
-    generation_dir = "our_generated_data/" + GROUP
+    generation_dir = "our_generated_data/" + GROUP + "/" + TAG
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 def load_arg():
@@ -68,7 +70,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./101cached",
+            "data_cache_dir":"./102_noprep_cached",
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":False,
             "model_name_or_path":"facebook/blenderbot_small-90M",
@@ -91,7 +93,7 @@ def load_arg():
             "num_train_epochs":8,
             "role":False,
             "turn":False,
-            "logging_steps":30,
+            "logging_steps":200,
             "evaluate_during_training":True,
             "output_dir":output_dir,
             "seed":42,

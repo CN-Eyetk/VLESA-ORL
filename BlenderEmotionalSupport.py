@@ -49,7 +49,7 @@ from src.transformers import (BlenderbotSmallTokenizer, BlenderbotSmallForCondit
 #from utils.data_parallel import BalancedDataParallel
 from add_emo import EmoExtracter
 model_dirs = ["j-hartmann/emotion-english-distilroberta-base","SamLowe/roberta-base-go_emotions"]
-emo_extracter = EmoExtracter(model_dir=model_dirs[0])
+emo_extracter = EmoExtracter(model_dir=model_dirs[1])
 
 try:
     from torch.utils.tensorboard import SummaryWriter
@@ -307,7 +307,7 @@ def _make_feature(id_, sents, rls, ts, eos, pad=False, block_size=512, strategy_
     if len(sents) == 0:
         return InputFeatures_train([], [], [], [], [],
                             [], [] , [], [])
-    input_ids = [i for s in sents for i in s+[eos]]
+    input_ids = [i for s in sents for i in s+[eos]] #添加eos
 
     input_ids = input_ids
     lm_labels = []
@@ -889,6 +889,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                         args.local_rank == -1 and args.evaluate_during_training
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
                         results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
+                        #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
                     tb_writer.add_scalar("lr", scheduler.get_last_lr()[0], global_step)
@@ -1165,16 +1166,7 @@ def generate(args):
 
     _, tokenizer = load_tokenizer(args)
     
-    
-    #tokenizer.add_tokens(additional_special_tokens)
-    #tokenizer.add_tokens(comet_additional_special_tokens)
-    #tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 
-    # print(tokenizer.encode(['others]']))
-    # print(1 / 0)
-    #model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir,
-    #    from_tf=False)
-    
     model = load_model_for_eval(args=args)
     model.eval()
     #C = model.model.encoder.strategy_embedding.weight[:8,:]
@@ -1183,7 +1175,7 @@ def generate(args):
     #print(cosine_similarity(C))
 
     #print(1/0)
-    model.resize_token_embeddings(len(tokenizer))
+    #model.resize_token_embeddings(len(tokenizer))
     #model.resize_token_embeddings(54944) 
     # Setup CUDA, GPU & distributed training
     if  not args.no_cuda:
@@ -1293,7 +1285,7 @@ def generate(args):
         paras["comet_mask_st"] = comet_mask_st
         paras["emo_dist"] = emo_dist
         paras["emo_in_dist"] = emo_in_dist
-        paras["output_mutual_attentions"] = True
+        paras["output_mutual_attentions"] = False
 
         # batch_size = decoder_strategy_ids.shape[0]
         # onehot = torch.zeros(batch_size, 8).to(decoder_strategy_ids.device)

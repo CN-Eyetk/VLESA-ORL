@@ -1893,7 +1893,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         # retrieve encoder hidden states
         encoder = self.get_encoder()
         encoder_kwargs = {
-            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") #Update 9-27
+            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") and not argument.startswith("emo_in_dist") #Update 9-27
         }
         #encoder_kwargs["output_mutual_attentions"] = True #Update 9-27
 
