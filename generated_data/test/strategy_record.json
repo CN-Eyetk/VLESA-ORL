@@ -1,0 +1,7058 @@
+[
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Restatement or Paraphrasing]",
+    "hyp strategy": "[Restatement or Paraphrasing]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Reflection of feelings]",
+    "hyp strategy": "[Reflection of feelings]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Question]",
+    "hyp strategy": "[Question]"
+  },
+  {
+    "ref strategy": "[Providing Suggestions]",
+    "hyp strategy": "[Providing Suggestions]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Self-disclosure]",
+    "hyp strategy": "[Self-disclosure]"
+  },
+  {
+    "ref strategy": "[Information]",
+    "hyp strategy": "[Information]"
+  },
+  {
+    "ref strategy": "[Affirmation and Reassurance]",
+    "hyp strategy": "[Affirmation and Reassurance]"
+  },
+  {
+    "ref strategy": "[Others]",
+    "hyp strategy": "[Others]"
+  }
+]

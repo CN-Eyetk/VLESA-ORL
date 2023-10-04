@@ -171,7 +171,11 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.use_emo_in_dist = kwargs["use_emo_in_dist"] if "use_emo_in_dist" in kwargs.keys() else False
         self.use_emb_prep = kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
         self.use_copy = kwargs["use_copy"] if "use_copy" in kwargs.keys() else False
-
+        self.st_from_eos = kwargs["st_from_eos"] if "st_from_eos" in kwargs.keys() else False
+        self.use_st_seq = kwargs["use_st_seq"] if "use_st_seq" in kwargs.keys() else False
+        self.lstm_st_seq = kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
+        self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
+        self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

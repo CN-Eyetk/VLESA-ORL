@@ -1,19 +1,44 @@
-USE_TRANS = True
-USE_PREPEND = False
-USE_EMB_PREP = False
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--use_trans", action= "store_true")
+parser.add_argument("--use_prepend", action= "store_true")
+parser.add_argument("--use_emb_prep", action= "store_true")
+parser.add_argument("--merge", action= "store_true")
+parser.add_argument("--encode_situ", action= "store_true")
+parser.add_argument("--no_fuse", action= "store_true")
+parser.add_argument("--over_write", action= "store_true")
+args_g = parser.parse_args()
+USE_TRANS = args_g.use_trans
+USE_PREPEND = args_g.use_prepend
+USE_EMB_PREP = args_g.use_emb_prep
 MISC = False
 KL = True
 ST_FROM_EOS = False
+USE_ST_SEQ = False
+LSTM_ST_SEQ = False
 EMO_FROM_EOS = True
 EMO_FROM_SITU = False
 COPY = False
-ENCODE_SITU = True
+ENCODE_SITU = args_g.encode_situ
 EMO_CRO_ATTN = False
 USE_EMO_IN_DIST = False
+MERGE = args_g.merge
+NO_FUSE = args_g.no_fuse
+OVERWRITE = args_g.over_write
 
-TAG = "all_loss" + ("kl" if KL else "") + ("copy" if COPY else "") + ("-Situ" if ENCODE_SITU else "") + ("-Emoin" if USE_EMO_IN_DIST else "") + ("Sit_emo" if EMO_FROM_SITU else "")
+TAG = "all_loss" + ("kl" if KL else "") \
+    + ("_copy" if COPY else "")\
+    + ("-Situ" if ENCODE_SITU else "") \
+    + ("-Emoin" if USE_EMO_IN_DIST else "") \
+    + ("-Sit_emo" if EMO_FROM_SITU else "") \
+    + ("-ST_seq" if USE_ST_SEQ else "") \
+     + ("-lstm" if LSTM_ST_SEQ else "") \
+        + ("-merge" if MERGE else "") \
+            + ("-pp" if USE_PREPEND else "-nopp") \
+            + ("-empp" if USE_EMB_PREP else "") \
+                + ("-no_fuse" if NO_FUSE else "")
 
-GROUP = "-TRANS4" if USE_EMB_PREP else (("-TRANS3" if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
+GROUP = ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
 
 import torch
 from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
@@ -50,7 +75,7 @@ else:
                                         load_model,
                                         logger
                                         )
-    output_dir = os.path.join('blender-our' + GROUP, TAG)
+    output_dir = os.path.join('blender-our', GROUP, TAG)
     generation_dir = "our_generated_data/" + GROUP + "/" + TAG
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
@@ -70,9 +95,9 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./102_noprep_cached",
+            "data_cache_dir":"./103_{}_cached".format("noprep" if not USE_PREPEND else "prep"),
             "model_type":"misc_model" if MISC else "mymodel",
-            "overwrite_cache":False,
+            "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M",
             "model_cache_dir":"./blender-small",
             "strategy":False,
@@ -103,6 +128,8 @@ def load_arg():
             "use_th_attn":not MISC,
             "add_emo_cross_attn":EMO_CRO_ATTN,
             "st_from_eos":ST_FROM_EOS,
+            "use_st_seq":USE_ST_SEQ,
+            "lstm_st_seq":LSTM_ST_SEQ,
             "emo_from_eos":EMO_FROM_EOS,
             "emo_from_situ":EMO_FROM_SITU,
             "use_kl":KL,
@@ -113,6 +140,9 @@ def load_arg():
             "use_emo_in_dist":USE_EMO_IN_DIST,
             "use_emb_prep":USE_EMB_PREP,
             "use_copy":COPY,
+            "merge":MERGE,
+            "no_fuse":NO_FUSE
+            
             }
     args = argparse.Namespace(**args)
     return args
