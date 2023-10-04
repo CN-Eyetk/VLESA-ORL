@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2021 The Facebook, Inc. and The HuggingFace Inc. team. All rights reserved.
+# Copyright 2021 The Fairseq Authors and The HuggingFace Inc. team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" PyTorch BlenderbotSmall model. """
+""" PyTorch BART model. """
 
 
 import math
 import random
+import warnings
 from typing import Optional, Tuple, Any, Dict, Optional, Tuple
 
 import torch
@@ -26,6 +27,7 @@ from torch.nn import CrossEntropyLoss, NLLLoss
 
 from ...activations import ACT2FN
 from ...file_utils import (
+    add_code_sample_docstrings,
     add_end_docstrings,
     add_start_docstrings,
     add_start_docstrings_to_model_forward,
@@ -36,28 +38,28 @@ from ...modeling_outputs import (
     BaseModelOutputWithPastAndCrossAttentions,
     Seq2SeqLMOutput,
     Seq2SeqModelOutput,
+    Seq2SeqQuestionAnsweringModelOutput,
+    Seq2SeqSequenceClassifierOutput,
 )
 from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
-from .configuration_blenderbot_small import BlenderbotSmallConfig
+from .configuration_bart import BartConfig
 from .modules.modules import EmoTrans
-
 
 
 logger = logging.get_logger(__name__)
 
-_CONFIG_FOR_DOC = "BlenderbotSmallConfig"
-_TOKENIZER_FOR_DOC = "BlenderbotSmallTokenizer"
+_CONFIG_FOR_DOC = "BartConfig"
+_TOKENIZER_FOR_DOC = "BartTokenizer"
 
 
-BLENDERBOT_SMALL_PRETRAINED_MODEL_ARCHIVE_LIST = [
-    "facebook/blenderbot_small-90M",
-    # See all BlenderbotSmall models at https://huggingface.co/models?filter=blenderbot_small
+BART_PRETRAINED_MODEL_ARCHIVE_LIST = [
+    "facebook/bart-large",
+    # See all BART models at https://huggingface.co/models?filter=bart
 ]
 
 
-# Copied from transformers.models.bart.modeling_bart.shift_tokens_right
 def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int, decoder_start_token_id: int):
     """
     Shift input ids one token to the right.
@@ -73,7 +75,6 @@ def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int, decoder_start
     return shifted_input_ids
 
 
-# Copied from transformers.models.bart.modeling_bart._make_causal_mask
 def _make_causal_mask(input_ids_shape: torch.Size, dtype: torch.dtype, past_key_values_length: int = 0):
     """
     Make causal mask used for bi-directional self-attention.
@@ -89,7 +90,6 @@ def _make_causal_mask(input_ids_shape: torch.Size, dtype: torch.dtype, past_key_
     return mask[None, None, :, :].expand(bsz, 1, tgt_len, tgt_len + past_key_values_length)
 
 
-# Copied from transformers.models.bart.modeling_bart._expand_mask
 def _expand_mask(mask: torch.Tensor, dtype: torch.dtype, tgt_len: Optional[int] = None):
     """
     Expands attention_mask from `[bsz, seq_len]` to `[bsz, 1, tgt_seq_len, src_seq_len]`.
@@ -104,89 +104,17 @@ def _expand_mask(mask: torch.Tensor, dtype: torch.dtype, tgt_len: Optional[int] 
     return inverted_mask.masked_fill(inverted_mask.bool(), torch.finfo(dtype).min)
 
 
-
-class Mutual_Attn(nn.Module):
-    "The implemention of the mutual attention between two representations X and Y in the same hidden dim. "
-    def __init__(
-        self,
-        embed_dim: int,
-        num_heads: int = 1,
-        dropout: float = 0.0,
-        layer_norm_eps: float = 1e-8,
-        bias: bool = True,
-    ):
-        super().__init__()
-        self.embed_dim = embed_dim
-        self.layer_norm_eps = layer_norm_eps
-        self.dropout = dropout
-        self.num_heads = num_heads
-        self.head_dim = embed_dim // num_heads
-        assert (
-            self.head_dim * num_heads == self.embed_dim
-        ), f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim} and `num_heads`: {num_heads})."
-        self.scaling = self.embed_dim ** -0.5
-        
-        self.q_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.k_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.v1_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.v2_proj = nn.Linear(embed_dim, embed_dim, bias=bias)   
-        self.layerNorm_1 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-        self.layerNorm_2 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-        self.FN = nn.Linear(embed_dim, embed_dim,  bias=bias)
-        self.layerNorm_3 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-
-    def forward(
-        self,
-        hidden_states_1,
-        hidden_states_2,
-        attention_mask_1=None,
-        attention_mask_2=None,
-        output_attentions=False
-    ):
-        """Input shape: Batch x Time x Channel"""
-
-        bsz, len_1, embed_dim = hidden_states_1.size()
-        bsz, len_2, embed_dim = hidden_states_2.size()
-        query_states = self.q_proj(hidden_states_1)
-        key_states = self.k_proj(hidden_states_2)
-        value_states_1 = self.v1_proj(hidden_states_1)
-        value_states_2 = self.v2_proj(hidden_states_2)
-        
-        # print(query_states.shape, key_states.shape)
-
-        mask1 = torch.where(attention_mask_1 == 1, torch.zeros_like(attention_mask_1, dtype=torch.float),
-                            -1e8 * torch.ones_like(attention_mask_1, dtype=torch.float))
-
-        mask2 = torch.where(attention_mask_2 == 1, torch.zeros_like(attention_mask_2, dtype=torch.float),
-                            -1e8 * torch.ones_like(attention_mask_2, dtype=torch.float))
-
-        attn = torch.bmm(query_states, key_states.transpose(1, 2)) / self.scaling
-        attn_weight_1 = F.softmax(attn + mask2.unsqueeze(1).repeat([1, len_1, 1]), dim=-1)
-        attn_weight_2 = F.softmax(attn.transpose(1, 2) + mask1.unsqueeze(1).repeat([1, len_2, 1]), dim=-1)
-        
-        # print(attn_weight_1.shape, value_states_1.shape)
-
-        # temp_value_states_1 = value_states_1
-        # temp_value_states_2 = value_states_2
-
-        # value_states_1 = self.layerNorm_1(torch.bmm(attn_weight_1, temp_value_states_2) + value_states_1)
-        value_states_2 = self.layerNorm_2(torch.bmm(attn_weight_2, value_states_1) + value_states_2)
-        # value_states_2 = F.relu(F.dropout(self.FN(value_states_2), p=self.dropout, training=self.training))
-        # value_states_2 = self.layerNorm_3(F.relu(F.dropout(self.FN(value_states_2), p=self.dropout, training=self.training)) + value_states_2)
-        value_states_2 = self.layerNorm_3(F.dropout(F.relu(self.FN(value_states_2)), p=self.dropout, training=self.training) + value_states_2)
-
-        return value_states_1, value_states_2, attn_weight_1
-
-
-# Copied from transformers.models.blenderbot.modeling_blenderbot.BlenderbotLearnedPositionalEmbedding with Blenderbot->BlenderbotSmall
-class BlenderbotSmallLearnedPositionalEmbedding(nn.Embedding):
+class BartLearnedPositionalEmbedding(nn.Embedding):
     """
     This module learns positional embeddings up to a fixed maximum size.
     """
 
     def __init__(self, num_embeddings: int, embedding_dim: int, padding_idx: int):
         assert padding_idx is not None, "`padding_idx` should not be None, but of type int"
-        super().__init__(num_embeddings, embedding_dim, padding_idx=padding_idx)
+        # Bart is set up so that if padding_idx is specified then offset the embedding ids by 2
+        # and adjust num_embeddings appropriately. Other models dont have this hack
+        self.offset = 2
+        super().__init__(num_embeddings + self.offset, embedding_dim, padding_idx=padding_idx)
 
     def forward(self, input_ids_shape: torch.Size, past_key_values_length: int = 0):
         """`input_ids_shape` is expected to be [bsz x seqlen]."""
@@ -194,11 +122,10 @@ class BlenderbotSmallLearnedPositionalEmbedding(nn.Embedding):
         positions = torch.arange(
             past_key_values_length, past_key_values_length + seq_len, dtype=torch.long, device=self.weight.device
         )
-        return super().forward(positions)
+        return super().forward(positions + self.offset)
 
 
-# Copied from transformers.models.bart.modeling_bart.BartAttention with Bart->BlenderbotSmall
-class BlenderbotSmallAttention(nn.Module):
+class BartAttention(nn.Module):
     """Multi-headed attention from 'Attention Is All You Need' paper"""
 
     def __init__(
@@ -246,12 +173,10 @@ class BlenderbotSmallAttention(nn.Module):
         # get query proj
         query_states = self.q_proj(hidden_states) * self.scaling
         # get key, value proj
-
         if is_cross_attention and past_key_value is not None:
             # reuse k,v, cross_attentions
             key_states = past_key_value[0]
             value_states = past_key_value[1]
-
         elif is_cross_attention:
             # cross_attentions
             key_states = self._shape(self.k_proj(key_value_states), -1, bsz)
@@ -334,41 +259,27 @@ class BlenderbotSmallAttention(nn.Module):
         return attn_output, attn_weights_reshaped, past_key_value
 
 
-# Copied from transformers.models.bart.modeling_bart.BartEncoderLayer with Bart->BlenderbotSmall
-class BlenderbotSmallEncoderLayer(nn.Module):
-    def __init__(self, config: BlenderbotSmallConfig):
+class BartEncoderLayer(nn.Module):
+    def __init__(self, config: BartConfig):
         super().__init__()
         self.embed_dim = config.d_model
-        self.self_attn = BlenderbotSmallAttention(
+        self.self_attn = BartAttention(
             embed_dim=self.embed_dim,
             num_heads=config.encoder_attention_heads,
             dropout=config.attention_dropout,
         )
         self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim)
-        self.attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
         self.dropout = config.dropout
         self.activation_fn = ACT2FN[config.activation_function]
         self.activation_dropout = config.activation_dropout
         self.fc1 = nn.Linear(self.embed_dim, config.encoder_ffn_dim)
         self.fc2 = nn.Linear(config.encoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
-        # for param in self.parameters():
-        #     param.requires_grad = False
-        self.use_th_attn = config.use_th_attn
-        if config.use_th_attn:
-            self.muAttn = BlenderbotSmallAttention(embed_dim=self.embed_dim,
-                                                    num_heads=config.encoder_attention_heads,
-                                                    dropout=config.attention_dropout,)
-        else:
-            self.muAttn = Mutual_Attn(embed_dim=config.d_model)
-            self.muAttn_st = Mutual_Attn(embed_dim=config.d_model)
-
-            
-
-        
+        self.muAttn = BartAttention(embed_dim=self.embed_dim,
+                                                num_heads=config.encoder_attention_heads,
+                                                dropout=config.attention_dropout,)
 
     def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, comet_hidden_states :torch.Tensor,  attention_mask_for_muAttn :torch.Tensor, comet_mask :torch.Tensor, comet_hidden_states_st :torch.Tensor,  comet_mask_st :torch.Tensor, output_attentions: bool = False, output_mutual_attentions: bool=False):
-
         """
         Args:
             hidden_states (:obj:`torch.FloatTensor`): input to the layer of shape `(seq_len, batch, embed_dim)`
@@ -393,48 +304,30 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
         hidden_states = residual + hidden_states
         hidden_states = self.final_layer_norm(hidden_states)
-        if self.use_th_attn:
-            if comet_hidden_states is not None and comet_hidden_states_st is not None:
-                hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
-                len_1 = hidden_states.size(1)
-                len_2 = comet_hidden_states.size(1)
-                len_3 = comet_hidden_states_st.size(1)
-                hidden_cat, attn_weights, _ = self.muAttn(
-                    hidden_cat, 
-                    attention_mask = attention_mask_for_muAttn,
-                    output_attentions = output_mutual_attentions
-                )
-                #attn_weights shape [b, n_head, seq_len, seq_len]
-                #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
-                #hidden_states = hidden_cat[:,:len_1,:]
-                comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
-                comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
-                if output_mutual_attentions:
-                    mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
-                    mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
-                if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
-                    clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
-                    comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
-                if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
-                    clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
-                    comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
-        else:
-            if comet_hidden_states is not None:
-                #使用comet的话要切换过来
-                _, comet_hidden_states, mutual_attn_weights = self.muAttn(hidden_states, comet_hidden_states, attention_mask_for_muAttn, comet_mask)
-                if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
-                    clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
-                    comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
-            if comet_hidden_states_st is not None:
-                _, comet_hidden_states_st, mutual_attn_weights_st = self.muAttn_st(hidden_states, comet_hidden_states_st,
-                                                                        attention_mask_for_muAttn, comet_mask_st)
-                if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
-                    clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
-                    comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
-        ######################################
-        # hidden_states = hidden_states_sp + hidden_states_st
-        # hidden_states = self.attn_layer_norm_comet(hidden_states)
-
+        if comet_hidden_states is not None and comet_hidden_states_st is not None:
+            hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
+            len_1 = hidden_states.size(1)
+            len_2 = comet_hidden_states.size(1)
+            len_3 = comet_hidden_states_st.size(1)
+            hidden_cat, attn_weights, _ = self.muAttn(
+                hidden_cat, 
+                attention_mask = attention_mask_for_muAttn,
+                output_attentions = output_mutual_attentions
+            )
+            #attn_weights shape [b, n_head, seq_len, seq_len]
+            #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
+            #hidden_states = hidden_cat[:,:len_1,:]
+            comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
+            comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
+            if output_mutual_attentions:
+                mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
+                mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
+            if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
+                clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
+                comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
+            if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
+                clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
+                comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
         if torch.isinf(hidden_states).any() or torch.isnan(hidden_states).any():
             clamp_value = torch.finfo(hidden_states.dtype).max - 1000
             hidden_states = torch.clamp(hidden_states, min=-clamp_value, max=clamp_value)
@@ -446,17 +339,15 @@ class BlenderbotSmallEncoderLayer(nn.Module):
             outputs['mutual_attn_weights'] = mutual_attn_weights
             outputs['mutual_attn_weights_st'] = mutual_attn_weights_st
 
-
         return outputs
 
 
-# Copied from transformers.models.bart.modeling_bart.BartDecoderLayer with Bart->BlenderbotSmall
-class BlenderbotSmallDecoderLayer(nn.Module):
-    def __init__(self, config: BlenderbotSmallConfig):
+class BartDecoderLayer(nn.Module):
+    def __init__(self, config: BartConfig):
         super().__init__()
         self.embed_dim = config.d_model
 
-        self.self_attn = BlenderbotSmallAttention(
+        self.self_attn = BartAttention(
             embed_dim=self.embed_dim,
             num_heads=config.decoder_attention_heads,
             dropout=config.attention_dropout,
@@ -467,8 +358,7 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         self.activation_dropout = config.activation_dropout
 
         self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim)
-        
-        self.encoder_attn = BlenderbotSmallAttention(
+        self.encoder_attn = BartAttention(
             self.embed_dim,
             config.decoder_attention_heads,
             dropout=config.attention_dropout,
@@ -476,13 +366,13 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         )
         self.use_merge = config.merge
         if not config.merge:
-            self.encoder_attn_comet = BlenderbotSmallAttention(
+            self.encoder_attn_comet = BartAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
                 dropout=config.attention_dropout,
                 is_decoder=True,
             )
-            self.encoder_attn_comet_st = BlenderbotSmallAttention(
+            self.encoder_attn_comet_st = BartAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
                 dropout=config.attention_dropout,
@@ -493,7 +383,7 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             self.encoder_attn_comet_st = None
 
         if not config.use_emb_prep:
-            self.encoder_attn_strategy= BlenderbotSmallAttention(
+            self.encoder_attn_strategy= BartAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
                 dropout=config.attention_dropout,
@@ -501,19 +391,16 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             )
         else:
             self.encoder_attn_strategy = None
-
         self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
         self.encoder_attn_layer_norm_strategy = nn.LayerNorm(self.embed_dim)
         self.encoder_attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
         self.encoder_attn_layer_norm_total = nn.LayerNorm(self.embed_dim)
-        # self.fc_multimodule = nn.Linear(self.embed_dim*3, self.embed_dim)
-
         self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
-        
+
         if config.add_emo_cross_attn and not config.use_emb_prep:
-            self.encoder_attn_emo= BlenderbotSmallAttention(
+            self.encoder_attn_emo= BartAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
                 dropout=config.attention_dropout,
@@ -569,59 +456,19 @@ class BlenderbotSmallDecoderLayer(nn.Module):
 
         # Cross-Attention Block
         cross_attn_present_key_value = None
-
         cross_attn_weights = None
         if encoder_hidden_states is not None:
-            # residual_root = hidden_states
             residual = hidden_states
 
             # cross_attn cached key/values tuple is at positions 3,4 of present_key_value tuple
             cross_attn_past_key_value = past_key_value[-2:] if past_key_value is not None else None
-
-            # hidden_states_1, cross_attn_weights, cross_attn_present_key_value = self.encoder_attn(
-            #     hidden_states=hidden_states,
-            #     key_value_states=encoder_hidden_states,
-            #     attention_mask=encoder_attention_mask,
-            #     past_key_value=cross_attn_past_key_value,
-            #     output_attentions=output_attentions,
-            # )
-            # hidden_states_2, _, _ = self.encoder_attn_comet(
-            #     hidden_states=hidden_states,
-            #     key_value_states=comet_hidden_states,
-            #     attention_mask=comet_mask,
-            # )
-            # hidden_states_3, _, _ = self.encoder_attn_comet_st(
-            #     hidden_states=hidden_states,
-            #     key_value_states=comet_hidden_states_st,
-            #     attention_mask=comet_mask_st,
-            # )
-            #
-            # hidden_states_4, _, _ = self.encoder_attn_strategy(
-            #     hidden_states=hidden_states,
-            #     key_value_states=strategy_embs,
-            # )
-            #
-            # hidden_states_1 = F.dropout(hidden_states_1, p=self.dropout, training=self.training)
-            # hidden_states_2 = F.dropout(hidden_states_2, p=self.dropout, training=self.training)
-            # hidden_states_3 = F.dropout(hidden_states_3, p=self.dropout, training=self.training)
-            # hidden_states_4 = F.dropout(hidden_states_4, p=self.dropout, training=self.training)
-
-
-            # print(1 / 0)
-            # comet_hidden_states_pack = torch.cat([comet_hidden_states, comet_hidden_states_st], dim=1)
-            # comet_mask_pack = torch.cat([comet_mask, comet_mask_st], dim=1)
-            # comet_hidden_states_pack = torch.cat([comet_hidden_states_st], dim=1)
-            # comet_mask_pack = torch.cat([comet_hidden_states_st], dim=1)
-
-            # comet_mask_pack = _expand_mask(comet_mask_pack, hidden_states.dtype, hidden_states.shape[1])
-
             hidden_states_encoder, cross_attn_weights, cross_attn_present_key_value = self.encoder_attn(
-                hidden_states=hidden_states,
-                key_value_states=encoder_hidden_states,
-                attention_mask=encoder_attention_mask,
-                past_key_value=cross_attn_past_key_value,
-                output_attentions=output_attentions,
-            )
+                            hidden_states=hidden_states,
+                            key_value_states=encoder_hidden_states,
+                            attention_mask=encoder_attention_mask,
+                            past_key_value=cross_attn_past_key_value,
+                            output_attentions=output_attentions,
+                        )
             hidden_states_encoder = F.dropout(hidden_states_encoder, p=self.dropout, training=self.training)
             if self.encoder_attn_strategy is not None:
                 hidden_states_strategy, _, _ = self.encoder_attn_strategy(
@@ -671,52 +518,6 @@ class BlenderbotSmallDecoderLayer(nn.Module):
             if self.encoder_attn_emo is not None:
                 hidden_states += hidden_states_emo
             hidden_states = self.encoder_attn_layer_norm(hidden_states)
-
-
-            # hidden_states = residual + hidden_states_strategy
-            # hidden_states = self.encoder_attn_layer_norm_strategy(hidden_states)
-            #
-            # residual = hidden_states
-
-
-
-
-            # hidden_states = residual + hidden_states
-            # hidden_states = self.encoder_attn_layer_norm(hidden_states)
-            #
-            # residual = hidden_states
-            #
-
-
-
-            # hidden_states = residual + hidden_states_st + hidden_states_sp
-            # hidden_states = residual + hidden_states_st
-
-
-
-            # hidden_states = residual + hidden_states_1
-            # hidden_states = self.encoder_attn_layer_norm(hidden_states)
-            # strategy_weight = torch.einsum('bsd,bad->bsa', hidden_states, strategy_embs)
-            # hidden_states = torch.einsum('bsd,bsa->bsd', hidden_states, strategy_weight)
-            # hidden_states = =torch.einsum('bsd,bad->bsa', hidden_states, strategy_weight)
-            # residual = hidden_states
-            # hidden_states = self.activation_fn(self.fc_comet(hidden_states))
-            # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
-
-
-            # hidden_states = self.activation_fn(self.fc_comet(hidden_states))
-            # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
-
-            # residual = hidden_states
-
-
-
-            # hidden_states = residual + hidden_states
-            # hidden_states = self.encoder_attn_layer_norm(hidden_states)
-
-            # hidden_states = residual_root + hidden_states
-            # hidden_states =self.encoder_attn_layer_norm_total(hidden_states)
-            # add cross-attn to positions 3,4 of present_key_value tuple
             present_key_value = present_key_value + cross_attn_present_key_value
 
         # Fully Connected
@@ -739,8 +540,32 @@ class BlenderbotSmallDecoderLayer(nn.Module):
         return outputs
 
 
-class BlenderbotSmallPreTrainedModel(PreTrainedModel):
-    config_class = BlenderbotSmallConfig
+class BartClassificationHead(nn.Module):
+    """Head for sentence-level classification tasks."""
+
+    def __init__(
+        self,
+        input_dim: int,
+        inner_dim: int,
+        num_classes: int,
+        pooler_dropout: float,
+    ):
+        super().__init__()
+        self.dense = nn.Linear(input_dim, inner_dim)
+        self.dropout = nn.Dropout(p=pooler_dropout)
+        self.out_proj = nn.Linear(inner_dim, num_classes)
+
+    def forward(self, hidden_states: torch.Tensor):
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.dense(hidden_states)
+        hidden_states = torch.tanh(hidden_states)
+        hidden_states = self.dropout(hidden_states)
+        hidden_states = self.out_proj(hidden_states)
+        return hidden_states
+
+
+class BartPretrainedModel(PreTrainedModel):
+    config_class = BartConfig
     base_model_prefix = "model"
 
     def _init_weights(self, module):
@@ -754,7 +579,6 @@ class BlenderbotSmallPreTrainedModel(PreTrainedModel):
             if module.padding_idx is not None:
                 module.weight.data[module.padding_idx].zero_()
 
-
     @property
     def dummy_inputs(self):
         pad_token = self.config.pad_token_id
@@ -762,12 +586,19 @@ class BlenderbotSmallPreTrainedModel(PreTrainedModel):
         dummy_inputs = {
             "attention_mask": input_ids.ne(pad_token),
             "input_ids": input_ids,
-            "decoder_input_ids": input_ids,
         }
         return dummy_inputs
 
 
-BLENDERBOT_SMALL_START_DOCSTRING = r"""
+class PretrainedBartModel(BartPretrainedModel):
+    def __init_subclass__(self):
+        warnings.warn(
+            "The class `PretrainedBartModel` has been depreciated, please use `BartPretrainedModel` instead.",
+            FutureWarning,
+        )
+
+
+BART_START_DOCSTRING = r"""
     This model inherits from :class:`~transformers.PreTrainedModel`. Check the superclass documentation for the generic
     methods the library implements for all its model (such as downloading or saving, resizing the input embeddings,
     pruning heads etc.)
@@ -777,47 +608,51 @@ BLENDERBOT_SMALL_START_DOCSTRING = r"""
     general usage and behavior.
 
     Parameters:
-        config (:class:`~transformers.BlenderbotSmallConfig`):
+        config (:class:`~transformers.BartConfig`):
             Model configuration class with all the parameters of the model. Initializing with a config file does not
             load the weights associated with the model, only the configuration. Check out the
             :meth:`~transformers.PreTrainedModel.from_pretrained` method to load the model weights.
 """
 
-BLENDERBOT_SMALL_GENERATION_EXAMPLE = r"""
-    Conversation example::
+BART_GENERATION_EXAMPLE = r"""
+    Summarization example::
 
-        >>> from transformers import BlenderbotSmallTokenizer, BlenderbotSmallForConditionalGeneration
-        >>> mname = 'facebook/blenderbot_small-90M'
-        >>> model = BlenderbotSmallForConditionalGeneration.from_pretrained(mname)
-        >>> tokenizer = BlenderbotSmallTokenizer.from_pretrained(mname)
-        >>> UTTERANCE = "My friends are cool but they eat too many carbs."
-        >>> print("Human: ", UTTERANCE)
-        >>> inputs = tokenizer([UTTERANCE], return_tensors='pt')
-        >>> inputs.pop("token_type_ids")
-        >>> reply_ids = model.generate(**inputs)
-        >>> print("Bot: ", tokenizer.batch_decode(reply_ids, skip_special_tokens=True)[0])
-        what kind of carbs do they eat? i don't know much about carbs.
+        >>> from transformers import BartTokenizer, BartForConditionalGeneration, BartConfig
 
-        >>> REPLY = "I'm not sure"
-        >>> print("Human: ", REPLY)
-        >>> NEXT_UTTERANCE = (
-        ... "My friends are cool but they eat too many carbs.</s> "
-        ... "<s>what kind of carbs do they eat? i don't know much about carbs.</s> "
-        ... "<s>I'm not sure."
-        ... )
-        >>> inputs = tokenizer([NEXT_UTTERANCE], return_tensors='pt')
-        >>> inputs.pop("token_type_ids")
-        >>> next_reply_ids = model.generate(**inputs)
-        >>> print("Bot: ", tokenizer.batch_decode(next_reply_ids, skip_special_tokens=True)[0])
+        >>> model = BartForConditionalGeneration.from_pretrained('facebook/bart-large')
+        >>> tokenizer = BartTokenizer.from_pretrained('facebook/bart-large')
+
+        >>> ARTICLE_TO_SUMMARIZE = "My friends are cool but they eat too many carbs."
+        >>> inputs = tokenizer([ARTICLE_TO_SUMMARIZE], max_length=1024, return_tensors='pt')
+
+        >>> # Generate Summary
+        >>> summary_ids = model.generate(inputs['input_ids'], num_beams=4, max_length=5, early_stopping=True)
+        >>> print([tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in summary_ids])
+
+    Mask filling example::
+
+        >>> from transformers import BartTokenizer, BartForConditionalGeneration
+        >>> tokenizer = BartTokenizer.from_pretrained('facebook/bart-large')
+        >>> TXT = "My friends are <mask> but they eat too many carbs."
+
+        >>> model = BartForConditionalGeneration.from_pretrained('facebook/bart-large')
+        >>> input_ids = tokenizer([TXT], return_tensors='pt')['input_ids']
+        >>> logits = model(input_ids).logits
+
+        >>> masked_index = (input_ids[0] == tokenizer.mask_token_id).nonzero().item()
+        >>> probs = logits[0, masked_index].softmax(dim=0)
+        >>> values, predictions = probs.topk(5)
+
+        >>> tokenizer.decode(predictions).split()
 """
 
-BLENDERBOT_SMALL_INPUTS_DOCSTRING = r"""
+BART_INPUTS_DOCSTRING = r"""
     Args:
         input_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`):
             Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you provide
             it.
 
-            Indices can be obtained using :class:`~transformers.BlenderbotSmallTokenizer`. See
+            Indices can be obtained using :class:`~transformers.BartTokenizer`. See
             :meth:`transformers.PreTrainedTokenizer.encode` and :meth:`transformers.PreTrainedTokenizer.__call__` for
             details.
 
@@ -832,22 +667,26 @@ BLENDERBOT_SMALL_INPUTS_DOCSTRING = r"""
         decoder_input_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, target_sequence_length)`, `optional`):
             Indices of decoder input sequence tokens in the vocabulary.
 
-            Indices can be obtained using :class:`~transformers.BlenderbotSmallTokenizer`. See
+            Indices can be obtained using :class:`~transformers.BartTokenizer`. See
             :meth:`transformers.PreTrainedTokenizer.encode` and :meth:`transformers.PreTrainedTokenizer.__call__` for
             details.
 
             `What are input IDs? <../glossary.html#input-ids>`__
 
-            BlenderbotSmall uses the :obj:`bos_token_id` as the starting token for :obj:`decoder_input_ids` generation.
-            If :obj:`past_key_values` is used, optionally only the last :obj:`decoder_input_ids` have to be input (see
+            Bart uses the :obj:`eos_token_id` as the starting token for :obj:`decoder_input_ids` generation. If
+            :obj:`past_key_values` is used, optionally only the last :obj:`decoder_input_ids` have to be input (see
             :obj:`past_key_values`).
+
+            For translation and summarization training, :obj:`decoder_input_ids` should be provided. If no
+            :obj:`decoder_input_ids` is provided, the model will create this tensor by shifting the :obj:`input_ids` to
+            the right for denoising pre-training following the paper.
         decoder_attention_mask (:obj:`torch.LongTensor` of shape :obj:`(batch_size, target_sequence_length)`, `optional`):
             Default behavior: generate a tensor that ignores pad tokens in :obj:`decoder_input_ids`. Causal mask will
             also be used by default.
 
-            If you want to change padding behavior, you should read
-            :func:`modeling_blenderbot_small._prepare_decoder_inputs` and modify to your needs. See diagram 1 in `the
-            paper <https://arxiv.org/abs/1910.13461>`__ for more information on the default strategy.
+            If you want to change padding behavior, you should read :func:`modeling_bart._prepare_decoder_inputs` and
+            modify to your needs. See diagram 1 in `the paper <https://arxiv.org/abs/1910.13461>`__ for more
+            information on the default strategy.
         encoder_outputs (:obj:`tuple(tuple(torch.FloatTensor)`, `optional`):
             Tuple consists of (:obj:`last_hidden_state`, `optional`: :obj:`hidden_states`, `optional`:
             :obj:`attentions`) :obj:`last_hidden_state` of shape :obj:`(batch_size, sequence_length, hidden_size)`,
@@ -885,40 +724,38 @@ BLENDERBOT_SMALL_INPUTS_DOCSTRING = r"""
 """
 
 
-class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
+class BartEncoder(BartPretrainedModel):
     """
     Transformer encoder consisting of *config.encoder_layers* self attention layers. Each layer is a
-    :class:`BlenderbotSmallEncoderLayer`.
+    :class:`BartEncoderLayer`.
 
     Args:
-        config: BlenderbotSmallConfig
+        config: BartConfig
         embed_tokens (torch.nn.Embedding): output embedding
     """
 
-    def __init__(self, config: BlenderbotSmallConfig, embed_tokens: Optional[nn.Embedding] = None):
+    def __init__(self, config: BartConfig, embed_tokens: Optional[nn.Embedding] = None):
         super().__init__(config)
 
         self.dropout = config.dropout
         self.layerdrop = config.encoder_layerdrop
 
         embed_dim = config.d_model
-        self.eos_token = config.eos_token_id
         self.padding_idx = config.pad_token_id
         self.max_source_positions = config.max_position_embeddings
         self.embed_scale = math.sqrt(embed_dim) if config.scale_embedding else 1.0
-        
+
         if embed_tokens is not None:
             self.embed_tokens = embed_tokens
         else:
             self.embed_tokens = nn.Embedding(config.vocab_size, embed_dim, self.padding_idx)
 
-        self.embed_positions = BlenderbotSmallLearnedPositionalEmbedding(
+        self.embed_positions = BartLearnedPositionalEmbedding(
             config.max_position_embeddings,
             embed_dim,
             self.padding_idx,
         )
-
-        self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config) for _ in range(config.encoder_layers)])
+        self.layers = nn.ModuleList([BartEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
         self.use_emo_in_dist = config.use_emo_in_dist
         self.n_emo_situ = 11
@@ -964,6 +801,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         else:
             self.trans_mat = None
         self.init_weights()
+
     def forward(
         self,
         input_ids=None,
@@ -985,14 +823,13 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         spt_eos_indice=None,
         #strat_seq=None
     ):
-
         r"""
         Args:
             input_ids (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`):
                 Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you
                 provide it.
 
-                Indices can be obtained using :class:`~transformers.BlenderbotSmallTokenizer`. See
+                Indices can be obtained using :class:`~transformers.BartTokenizer`. See
                 :meth:`transformers.PreTrainedTokenizer.encode` and :meth:`transformers.PreTrainedTokenizer.__call__`
                 for details.
 
@@ -1023,7 +860,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
-
         # retrieve input_ids and inputs_embeds
         if input_ids is not None and inputs_embeds is not None:
             raise ValueError("You cannot specify both input_ids and inputs_embeds at the same time")
@@ -1037,16 +873,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
-        if role_ids is not None:
-            role_embeds = 0
-            #role_embeds = self.wre(role_ids)
-        else:
-            role_embeds = 0
-        if turn_ids is not None:
-            turn_embeds = 0
-            #turn_embeds = self.wte(turn_ids)
-        else:
-            turn_embeds = 0
+
         embed_pos = self.embed_positions(input_shape)
 
         hidden_states = inputs_embeds + embed_pos
@@ -1054,7 +881,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
         with torch.no_grad():
             last_token_index = attention_mask.sum(-1) - 1
-         #concat attention mask for three-way self attention
+        #concat attention mask for three-way self attention
         if self.use_th_attn and comet_mask is not None and comet_mask_st is not None:
             attention_mask_for_muAttn = torch.cat((attention_mask, comet_mask, comet_mask_st), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
             attention_mask_for_muAttn = _expand_mask(attention_mask_for_muAttn, inputs_embeds.dtype)
@@ -1074,7 +901,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         all_attentions = () if output_attentions else None
         all_mutual_attentions = () if output_mutual_attentions else None
         all_mutual_attentions_st = () if output_mutual_attentions else None
-
         for encoder_layer in self.layers:
             if output_hidden_states:
                 encoder_states = encoder_states + (hidden_states,)
@@ -1098,8 +924,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                         comet_embs,
                     )
                 else:
-                    #print("1014 hidden_states",hidden_states.shape)
-                    #print("1015 attention_mask",attention_mask.shape)
                     layer_outputs = encoder_layer(hidden_states, attention_mask, comet_hidden_states=comet_hidden_states, attention_mask_for_muAttn=attention_mask_for_muAttn, comet_mask=comet_mask, comet_hidden_states_st=comet_hidden_states_st, comet_mask_st=comet_mask_st, output_mutual_attentions=output_mutual_attentions)
 
                 hidden_states = layer_outputs['hidden_states']
@@ -1114,7 +938,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         if output_hidden_states:
             encoder_states = encoder_states + (hidden_states,)
-
         #calculate emo and strat logits
         if comet_embs is not None and comet_embs_st is not None:
 
@@ -1160,8 +983,8 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             emotion_intensity = None
             strategy_logits = None
             strategy_seq_logits = None
-
-        #get strategy embedding
+        
+        # get strategy embedding
         if strategy_logits is not None:
             batch_size = strategy_logits.shape[0]
 
@@ -1173,7 +996,6 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             if strategy_logit_ground is not None:
                 strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
             else:
-                #strategy_logits = self.batchNorm_strategy(strategy_logits)
                 strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
                                           self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
 
@@ -1191,24 +1013,21 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
             emotion_logits = emotion_logits, emotion_intensity = emotion_intensity, strategy_logits = strategy_logits, strategy_embs = strategy_embs, comet_mask = comet_mask,
             comet_mask_st=comet_mask_st,
-            
             emo_out_embs=emo_out_embs,
             emo_out_prob=emo_out_prob,
             strategy_seq_logits=strategy_seq_logits,
         )
 
-
-class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
+class BartDecoder(BartPretrainedModel):
     """
-    Transformer decoder consisting of *config.decoder_layers* layers. Each layer is a
-    :class:`BlenderbotSmallDecoderLayer`
+    Transformer decoder consisting of *config.decoder_layers* layers. Each layer is a :class:`BartDecoderLayer`
 
     Args:
-        config: BlenderbotSmallConfig
+        config: BartConfig
         embed_tokens (torch.nn.Embedding): output embedding
     """
 
-    def __init__(self, config: BlenderbotSmallConfig, embed_tokens: Optional[nn.Embedding] = None):
+    def __init__(self, config: BartConfig, embed_tokens: Optional[nn.Embedding] = None):
         super().__init__(config)
         self.dropout = config.dropout
         self.layerdrop = config.decoder_layerdrop
@@ -1220,15 +1039,13 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
             self.embed_tokens = embed_tokens
         else:
             self.embed_tokens = nn.Embedding(config.vocab_size, config.d_model, self.padding_idx)
-        self.wre = nn.Embedding(2, config.d_model, self.padding_idx)
-        self.wte = nn.Embedding(128, config.d_model, self.padding_idx)
 
-        self.embed_positions = BlenderbotSmallLearnedPositionalEmbedding(
+        self.embed_positions = BartLearnedPositionalEmbedding(
             config.max_position_embeddings,
             config.d_model,
             self.padding_idx,
         )
-        self.layers = nn.ModuleList([BlenderbotSmallDecoderLayer(config) for _ in range(config.decoder_layers)])
+        self.layers = nn.ModuleList([BartDecoderLayer(config) for _ in range(config.decoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(config.d_model)
         self.use_merge = config.merge
         self.init_weights()
@@ -1260,7 +1077,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
                 Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you
                 provide it.
 
-                Indices can be obtained using :class:`~transformers.BlenderbotSmallTokenizer`. See
+                Indices can be obtained using :class:`~transformers.BartTokenizer`. See
                 :meth:`transformers.PreTrainedTokenizer.encode` and :meth:`transformers.PreTrainedTokenizer.__call__`
                 for details.
 
@@ -1325,12 +1142,11 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
         # past_key_values_length
         past_key_values_length = past_key_values[0][0].shape[2] if past_key_values is not None else 0
 
-
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
 
         # create causal mask
-        # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len
+        # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
         combined_attention_mask = None
         if input_shape[-1] > 1:
             combined_attention_mask = _make_causal_mask(
@@ -1356,35 +1172,10 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
 
         # embed positions
         positions = self.embed_positions(input_shape, past_key_values_length)
-        #print("positions", positions.shape)
-        #if self.use_emb_prep:
-        #    positions_prepend = self.embed_positions((input_shape[0],1), past_key_values_length)
-        #    print("positions_prepend", positions_prepend.shape)
-        #    positions_prepend = positions_prepend.repeat(1, 2)
-        #    print("positions_prepend", positions_prepend.shape)
-        #    positions = torch.cat((positions_prepend, positions), dim = 1)
-
-        if role_ids is not None:
-            role_embeds = 0
-        else:
-            role_embeds = 0
-        if turn_ids is not None:
-            turn_embeds = 0
-        else:
-            turn_embeds = 0
-
-        # BlenderbotSmall applies layer norm on hidden_states
-
-        # print(positions, role_embeds, turn_embeds)
-        # print(1/0)
-        # hidden_states = inputs_embeds + positions + role_embeds + turn_embeds
-        # hidden_states = inputs_embeds + positions
-        # if strategy_embs is not None:
-        #     hidden_states = inputs_embeds + strategy_embs + positions
-        # else:
 
         hidden_states = inputs_embeds + positions
         hidden_states = self.layernorm_embedding(hidden_states)
+
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
 
         # decoder layers
@@ -1392,7 +1183,6 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
         all_self_attns = () if output_attentions else None
         all_cross_attentions = () if output_attentions else None
         next_decoder_cache = () if use_cache else None
-
         for idx, decoder_layer in enumerate(self.layers):
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
             if output_hidden_states:
@@ -1425,6 +1215,7 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
                     None,
                 )
             else:
+
                 layer_outputs = decoder_layer(
                     hidden_states,
                     attention_mask=combined_attention_mask,
@@ -1470,18 +1261,18 @@ class BlenderbotSmallDecoder(BlenderbotSmallPreTrainedModel):
 
 
 @add_start_docstrings(
-    "The bare BlenderbotSmall Model outputting raw hidden-states without any specific head on top.",
-    BLENDERBOT_SMALL_START_DOCSTRING,
+    "The bare BART Model outputting raw hidden-states without any specific head on top.",
+    BART_START_DOCSTRING,
 )
-class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
-    def __init__(self, config: BlenderbotSmallConfig):
+class BartModel(BartPretrainedModel):
+    def __init__(self, config: BartConfig):
         super().__init__(config)
 
         padding_idx, vocab_size = config.pad_token_id, config.vocab_size
         self.shared = nn.Embedding(vocab_size, config.d_model, padding_idx)
 
-        self.encoder = BlenderbotSmallEncoder(config, self.shared)
-        self.decoder = BlenderbotSmallDecoder(config, self.shared)
+        self.encoder = BartEncoder(config, self.shared)
+        self.decoder = BartDecoder(config, self.shared)
 
         self.init_weights()
 
@@ -1499,8 +1290,13 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
     def get_decoder(self):
         return self.decoder
 
-    @add_start_docstrings_to_model_forward(BLENDERBOT_SMALL_INPUTS_DOCSTRING)
-    @replace_return_docstrings(output_type=Seq2SeqModelOutput, config_class=_CONFIG_FOR_DOC)
+    @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
+    @add_code_sample_docstrings(
+        tokenizer_class=_TOKENIZER_FOR_DOC,
+        checkpoint="facebook/bart-large",
+        output_type=Seq2SeqModelOutput,
+        config_class=_CONFIG_FOR_DOC,
+    )
     def forward(
         self,
         input_ids=None,
@@ -1522,24 +1318,15 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
         use_cache=None,
         output_attentions=None,
         output_hidden_states=None,
-        return_dict=None,
-    ):
-        r"""
-        Returns:
+        return_dict=None,    ):
 
-        Example::
+        # different to other models, Bart automatically creates decoder_input_ids from
+        # input_ids if no decoder_input_ids are provided
+        if decoder_input_ids is None and decoder_inputs_embeds is None:
+            decoder_input_ids = shift_tokens_right(
+                input_ids, self.config.pad_token_id, self.config.decoder_start_token_id
+            )
 
-            >>> from transformers import BlenderbotSmallTokenizer, BlenderbotSmallModel
-
-            >>> model = BlenderbotSmallModel.from_pretrained("facebook/blenderbot_small-90M")
-            >>> tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
-
-            >>> input_ids = tokenizer("Studies have been shown that owning a dog is good for you", return_tensors="pt").input_ids  # Batch size 1
-            >>> decoder_input_ids = tokenizer("Studies show that", return_tensors="pt").input_ids  # Batch size 1
-            >>> outputs = model(input_ids=input_ids, decoder_input_ids=decoder_input_ids)
-
-            >>> last_hidden_states = outputs.last_hidden_state
-        """
         output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
         output_hidden_states = (
             output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
@@ -1562,11 +1349,6 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
                 turn_ids=turn_ids,
                 return_dict=return_dict,
             )
-            # if comet_embs is not None:
-            #     print(encoder_outputs)
-            #     print(len(encoder_outputs))
-            #     return
-
         # If the user passed a tuple for encoder_outputs, we wrap it in a BaseModelOutput when return_dict=True
         elif return_dict and not isinstance(encoder_outputs, BaseModelOutput):
             encoder_outputs = BaseModelOutput(
@@ -1575,16 +1357,7 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
                 attentions=encoder_outputs[2] if len(encoder_outputs) > 2 else None,
             )
 
-
-
-        # print(decoder_input_ids)
-        # print(encoder_outputs.last_comet_hidden_state.shape)
-        # stategy = decoder_input_ids[:, 1]
-        # print(stategy)
-
         # decoder outputs consists of (dec_features, past_key_value, dec_hidden, dec_attn)
-        # print(encoder_outputs.last_comet_hidden_state)
-        # print(1 / 0)
         decoder_outputs = self.decoder(
             input_ids=decoder_input_ids,
             attention_mask=decoder_attention_mask,
@@ -1622,10 +1395,9 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
 
 
 @add_start_docstrings(
-    "The BlenderbotSmall Model with a language modeling head. Can be used for summarization.",
-    BLENDERBOT_SMALL_START_DOCSTRING,
+    "The BART Model with a language modeling head. Can be used for summarization.", BART_START_DOCSTRING
 )
-class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
+class BartForConditionalGeneration(BartPretrainedModel):
     base_model_prefix = "model"
     _keys_to_ignore_on_load_missing = [
         r"final_logits_bias",
@@ -1634,16 +1406,15 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         r"lm_head\.weight",
     ]
 
-    def __init__(self, config: BlenderbotSmallConfig):
+    def __init__(self, config: BartConfig):
         super().__init__(config)
-        self.model = BlenderbotSmallModel(config)
+        self.model = BartModel(config)
         self.register_buffer("final_logits_bias", torch.zeros((1, self.model.shared.num_embeddings)))
         self.lm_head = nn.Linear(config.d_model, self.model.shared.num_embeddings, bias=False)
         self.use_th_attn = config.use_th_attn
         self.use_trans_mat = config.use_trans_mat
         self.prepend = config.prepend
         self.use_emb_prep = config.use_emb_prep
-        
         self.n_emo_out = config.n_emo_out
         self.dropout = config.dropout
         self.use_kl = config.use_kl
@@ -1687,15 +1458,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
     def set_output_embeddings(self, new_embeddings):
         self.lm_head = new_embeddings
 
-    @add_start_docstrings_to_model_forward(BLENDERBOT_SMALL_INPUTS_DOCSTRING)
+    @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
-    @add_end_docstrings(BLENDERBOT_SMALL_GENERATION_EXAMPLE)
-    def init_strategy_embedding(self, weights):
-        with torch.no_grad():
-            self.encoder.strategy_embedding.weight[:weights.size(0),:] = weights
-    def init_emotion_embedding(self, weights):
-        with torch.no_grad():
-            self.encoder.trans_mat.emotion_embedding.weight[:weights.size(0),:] = weights    
+    @add_end_docstrings(BART_GENERATION_EXAMPLE)
     def forward(
         self,
         input_ids=None,#[batch_size, max_len]
@@ -1728,9 +1493,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         spt_eos_indice=None,
         strat_seq=None,
         return_dict=None,
-        
     ):
-
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
             Labels for computing the masked language modeling loss. Indices should either be in ``[0, ...,
@@ -1739,13 +1502,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
         Returns:
         """
-        # if comet_embs is not None:
-        #     print(input_ids[0])
-        #     print(1/0)
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         generate = True if encoder_outputs is not None else False
         strategy_label = decoder_strategy_ids
-        
+
         if not generate:
             batch_size = strategy_label.shape[0]
             onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
@@ -1754,6 +1514,11 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         else:
             strategy_logit_ground = None
 
+        if labels is not None:
+            if decoder_input_ids is None:
+                decoder_input_ids = shift_tokens_right(
+                    labels, self.config.pad_token_id, self.config.decoder_start_token_id
+                )
         attention_mask = attention_mask.long()
         if encoder_outputs is None:
             encoder_outputs = self.model.encoder(
@@ -1786,17 +1551,6 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         else:
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
-            
-        # if decoder_input_ids.shape[-1] > 1 and not generate:
-        #     strategy_label = decoder_input_ids[:, 0] - 54944
-        #     decoder_input_ids = decoder_input_ids[:, 1:]
-        # print(decoder_input_ids)
-
-        if labels is not None:
-            decoder_input_ids = shift_tokens_right(
-                decoder_input_ids, self.config.pad_token_id, self.config.decoder_start_token_id
-            )
-            
 
         src_len = encoder_outputs.last_hidden_state.size(1)
         if self.use_emb_prep:
@@ -1811,7 +1565,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         if self.use_merge:
             encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.last_comet_hidden_state, encoder_outputs.last_comet_hidden_state_st], dim = 1)
             attention_mask = torch.cat([attention_mask, encoder_outputs.comet_mask, encoder_outputs.comet_mask_st], dim = 1)
-        
+    
         decoder_outputs = self.model.decoder(
             input_ids=decoder_input_ids,
             attention_mask=decoder_attention_mask,
@@ -1832,29 +1586,20 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-
+        
         if self.use_emb_prep and decoder_input_ids is None:
             lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):,:]) + self.final_logits_bias
         else:
             lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
-
-        if self.use_copy:
-            cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)
-            decoder_hidden_state = decoder_outputs[0]
-            encoder_hidden_state = encoder_outputs.last_hidden_state
-            p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, encoder_hidden_state, cross_attn[:,:src_len], input_ids) #+ self.final_logits_bias
-            lm_logits = p_gen * lm_logits + (1-p_gen) * copy_logits
 
         loss = None
         masked_lm_loss = None
         emo_loss = None
         intensity_loss = None
         strategy_loss = None
-
         emotion_logits = encoder_outputs.emotion_logits
         strategy_logits = encoder_outputs.strategy_logits
         emo_out_prob = encoder_outputs.emo_out_prob
-        #strategy_seq_logits = encoder_outputs.strategy_seq_logits
         if labels is not None:
             loss_fct = CrossEntropyLoss()
             if self.prepend and not lm_logits.requires_grad:
@@ -1864,27 +1609,17 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                                     labels.reshape(-1))
             loss = masked_lm_loss.clone()
 
-
         if emotion is not None:
             emo_loss_fct = CrossEntropyLoss()
             # print(emotion_logits.shape, emotion)
             emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
             loss += emo_loss
 
-        #intensity_loss = None
         if strategy_label is not None:
             strategy_loss_fct = CrossEntropyLoss()
-            #if not self.lstm_st_seq:
             strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
-            #else:
-                
-            #    strategy_seq_logits = strategy_seq_logits.reshape(-1, 8)
-                #print("strategy_seq_logits",strategy_seq_logits.shape)
-            #    strat_seq = strat_seq.reshape(-1)
-                #print("strat_seq",strat_seq.shape)
-            #    strategy_loss = strategy_loss_fct(strategy_seq_logits, strat_seq)
             loss += strategy_loss
-        
+
         if self.use_trans_mat and emo_out_prob is not None:
             if len(emo_out_prob.size()) == 1:
                 emo_out_prob = emo_out_prob.unsqueeze(0)
@@ -1898,8 +1633,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                     emo_out_label = emo_dist.argmax(-1).squeeze()
                     emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
                 loss += emo_out_loss #10月2日修改【Junlin】，
-            
-
+        #if not return_dict:
+        #    output = (lm_logits,) + outputs[1:]
+        #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
         return Seq2SeqLMOutput(
             loss=loss,
@@ -1920,18 +1656,6 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
             
         )
-    def _compute_output_dist_light(self, decoder_hidden_states, encoder_hidden_states, attn, input_ids_to_copy): #https://github.com/OpenNMT/OpenNMT-py/blob/fb14f48cb4e185c5169183a65ae26e532e522764/onmt/modules/copy_generator.py
-        #print("using copy")
-        batch_size, seq_length = input_ids_to_copy.size(0), input_ids_to_copy.size(1)
-        context_vectors = attn @ encoder_hidden_states
-        total_states = torch.cat((context_vectors, decoder_hidden_states), dim=-1)
-        p_gen = torch.sigmoid(self.pgen_decoder_output_layer(total_states)) #[16, tl ,1]
-        input_one_hot = input_ids_to_copy.new_zeros(batch_size, seq_length, self.config.vocab_size)
-        input_one_hot.scatter_(-1, input_ids_to_copy[:, :, None], 1)
-        input_one_hot = input_one_hot.float()
-        logits = attn @ input_one_hot
-        
-        return p_gen, logits
     def _prepare_encoder_decoder_kwargs_for_generation(
         self, input_ids: torch.LongTensor, model_kwargs
     ) -> Dict[str, Any]:
@@ -1959,9 +1683,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             "attention_mask": attention_mask,
             "use_cache": use_cache,  # change this to avoid caching (presumably for debugging)
         }
-
     def adjust_logits_during_generation(self, logits, cur_len, max_length):
-        if cur_len == max_length - 1 and self.config.eos_token_id is not None:
+        if cur_len == 1 and self.config.force_bos_token_to_be_generated:
+            self._force_token_id_to_be_generated(logits, self.config.bos_token_id)
+        elif cur_len == max_length - 1 and self.config.eos_token_id is not None:
             self._force_token_id_to_be_generated(logits, self.config.eos_token_id)
         return logits
 
