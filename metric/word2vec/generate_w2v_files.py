@@ -26,4 +26,5 @@ def generate(path):
 
 
 if __name__ == "__main__":
-    generate('/home/zhengchujie/wordvector/english/glove6B')
+    generate('/glove')
+

@@ -7,7 +7,7 @@ import nltk
 from typing import List
 from collections import Counter
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
-
+from nltk import word_tokenize
 
 def my_lcs(string, sub):
     """
@@ -34,9 +34,10 @@ def my_lcs(string, sub):
 
 
 class Metric(object):
-    def __init__(self, toker, hyp_path, ref_path):
+    def __init__(self, toker, hyp_path, ref_path, use_nltk = False):
         self.refs = []
         self.hyps = []
+        self.use_nltk = use_nltk
         with open(hyp_path, 'r', encoding='utf-8') as f:
             hyps = json.load(f)
         with open(ref_path, 'r', encoding='utf-8') as f:
@@ -53,8 +54,12 @@ class Metric(object):
         #     self.refs.append([nltk.word_tokenize(e.lower()) for e in refs])
         #     self.hyps.append(nltk.word_tokenize(hyp.lower()))
         # else:
-        self.refs.append([self.toker.tokenize(e) for e in refs])
-        self.hyps.append(self.toker.tokenize(hyp))
+        if self.use_nltk:
+            self.refs.append([word_tokenize(e.lower()) for e in refs])
+            self.hyps.append(word_tokenize(hyp.lower()))
+        else:
+            self.refs.append([self.toker.tokenize(e) for e in refs])
+            self.hyps.append(self.toker.tokenize(hyp))
         # print(self.refs)
         # print(self.hyps)
         # return     

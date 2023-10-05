@@ -12,8 +12,8 @@ except ImportError:
 
 class Embedding(object):
     def __init__(self):
-        path = '/home/zhengchujie/wordvector/english/glove6B' # please modify the path manually
-        self.m = KeyedVectors.load(os.path.join(path, 'glove.6B.300d.model.bin'), mmap='r')
+        path = '/mnt/c/Users/admin/Desktop/PolyuSem4/EmoSp/glove' # please modify the path manually
+        self.m = KeyedVectors.load_word2vec_format(os.path.join(path, 'glove.6B.300d.txt'), binary=False)
         try:
             self.unk = self.m.vectors.mean(axis=0)
         except AttributeError:

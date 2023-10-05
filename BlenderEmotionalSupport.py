@@ -954,8 +954,6 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
     import numpy as np
     np.set_printoptions(threshold=np.inf)
     for epoch in train_iterator:
-        if epoch > 4:
-            break
             
         # if epoch < 3:
         #     for paras in model.model.encoder.parameters():
@@ -1455,10 +1453,17 @@ def generate(args):
 
         chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
             input_ids,
-            **paras, max_length=512,min_length=5,num_beams=1,
-            pad_token_id=0,use_cache=True,
+            **paras, max_length=512,
+            min_length=5,
+            num_beams=1,
+            pad_token_id=0,
+            use_cache=True,
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
-            top_p=0.3, top_k = 30, do_sample=True, repetition_penalty=1.03) #top_p 0.9, topk 30
+            top_p=0.3, 
+            top_k = 30, 
+            do_sample=True, 
+            repetition_penalty=1.03
+            ) #top_p 0.9, topk 30
 
         if mutual_attention is not None:
             chat_history_ids, mutual_attention, mutual_attention_st = chat_history_ids.cpu(), mutual_attention[-1][0].cpu(), mutual_attention_st[-1][0].cpu()

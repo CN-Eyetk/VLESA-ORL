@@ -7,6 +7,8 @@ parser.add_argument("--merge", action= "store_true")
 parser.add_argument("--encode_situ", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
+parser.add_argument("--use_emo_in", action= "store_true")
+parser.add_argument("--kl", action= "store_true")
 parser.add_argument("--over_write", action= "store_true")
 args_g = parser.parse_args()
 USE_TRANS = args_g.use_trans
@@ -22,7 +24,7 @@ EMO_FROM_SITU = False
 COPY = False
 ENCODE_SITU = args_g.encode_situ
 EMO_CRO_ATTN = False
-USE_EMO_IN_DIST = False
+USE_EMO_IN_DIST = args_g.use_emo_in
 MERGE = args_g.merge
 NO_FUSE = args_g.no_fuse
 OVERWRITE = args_g.over_write
@@ -83,7 +85,7 @@ else:
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":True,
+    args = {"do_train":False,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -97,7 +99,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./103_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else ""),
+            "data_cache_dir":"./105_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
