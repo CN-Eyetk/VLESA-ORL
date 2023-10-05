@@ -1686,16 +1686,15 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
     def set_output_embeddings(self, new_embeddings):
         self.lm_head = new_embeddings
-
-    @add_start_docstrings_to_model_forward(BLENDERBOT_SMALL_INPUTS_DOCSTRING)
-    @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
-    @add_end_docstrings(BLENDERBOT_SMALL_GENERATION_EXAMPLE)
     def init_strategy_embedding(self, weights):
         with torch.no_grad():
             self.encoder.strategy_embedding.weight[:weights.size(0),:] = weights
     def init_emotion_embedding(self, weights):
         with torch.no_grad():
             self.encoder.trans_mat.emotion_embedding.weight[:weights.size(0),:] = weights    
+    @add_start_docstrings_to_model_forward(BLENDERBOT_SMALL_INPUTS_DOCSTRING)
+    @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
+    @add_end_docstrings(BLENDERBOT_SMALL_GENERATION_EXAMPLE)
     def forward(
         self,
         input_ids=None,#[batch_size, max_len]
@@ -1748,9 +1747,10 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         
         if not generate:
             batch_size = strategy_label.shape[0]
-            onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
-            strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
-            strategy_logit_ground.float()
+            strategy_logit_ground = None
+            #onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
+            #strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
+            #strategy_logit_ground.float()
         else:
             strategy_logit_ground = None
 

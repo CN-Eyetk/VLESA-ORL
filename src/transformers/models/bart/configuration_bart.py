@@ -169,7 +169,22 @@ class BartConfig(PretrainedConfig):
         self.gradient_checkpointing = gradient_checkpointing
         self.scale_embedding = scale_embedding  # scale factor will be sqrt(d_model) if True
         self.force_bos_token_to_be_generated = force_bos_token_to_be_generated  # only relevant for CNN
-
+        self.n_emo_out = kwargs["n_emo_out"] if "n_emo_out" in kwargs.keys() else False
+        self.use_th_attn = kwargs["use_th_attn"] if "use_th_attn" in kwargs.keys() else False
+        self.use_trans_mat = kwargs["use_trans_mat"] if "use_trans_mat" in kwargs.keys() else False
+        self.add_emo_cross_attn = kwargs["add_emo_cross_attn"] if "add_emo_cross_attn" in kwargs.keys() else False
+        self.prepend = kwargs["prepend"] if "prepend" in kwargs.keys() else False
+        self.use_kl = kwargs["use_kl"] if "use_kl" in kwargs.keys() else False
+        self.emo_from_eos = kwargs["emo_from_eos"] if "emo_from_eos" in kwargs.keys() else False
+        self.emo_from_situ = kwargs["emo_from_situ"] if "emo_from_situ" in kwargs.keys() else False
+        self.use_emo_in_dist = kwargs["use_emo_in_dist"] if "use_emo_in_dist" in kwargs.keys() else False
+        self.use_emb_prep = kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
+        self.use_copy = kwargs["use_copy"] if "use_copy" in kwargs.keys() else False
+        self.st_from_eos = kwargs["st_from_eos"] if "st_from_eos" in kwargs.keys() else False
+        self.use_st_seq = kwargs["use_st_seq"] if "use_st_seq" in kwargs.keys() else False
+        self.lstm_st_seq = kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
+        self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
+        self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

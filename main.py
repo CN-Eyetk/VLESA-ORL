@@ -6,6 +6,7 @@ parser.add_argument("--use_emb_prep", action= "store_true")
 parser.add_argument("--merge", action= "store_true")
 parser.add_argument("--encode_situ", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
+parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--over_write", action= "store_true")
 args_g = parser.parse_args()
 USE_TRANS = args_g.use_trans
@@ -25,6 +26,7 @@ USE_EMO_IN_DIST = False
 MERGE = args_g.merge
 NO_FUSE = args_g.no_fuse
 OVERWRITE = args_g.over_write
+BART = args_g.use_bart
 
 TAG = "all_loss" + ("kl" if KL else "") \
     + ("_copy" if COPY else "")\
@@ -36,12 +38,12 @@ TAG = "all_loss" + ("kl" if KL else "") \
         + ("-merge" if MERGE else "") \
             + ("-pp" if USE_PREPEND else "-nopp") \
             + ("-empp" if USE_EMB_PREP else "") \
-                + ("-no_fuse" if NO_FUSE else "")
+                + ("-no_fuse" if NO_FUSE else "") \
+                    + ("-bart" if BART else "")
 
 GROUP = ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
 
 import torch
-from src.transformers import BlenderbotSmallForConditionalGeneration, BlenderbotSmallTokenizer, BlenderbotSmallConfig
 import argparse
 import os
 import logging
@@ -95,10 +97,11 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./103_{}_cached".format("noprep" if not USE_PREPEND else "prep"),
+            "data_cache_dir":"./103_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
-            "model_name_or_path":"facebook/blenderbot_small-90M",
+            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
+            "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
             "local_rank":-1,
@@ -141,7 +144,8 @@ def load_arg():
             "use_emb_prep":USE_EMB_PREP,
             "use_copy":COPY,
             "merge":MERGE,
-            "no_fuse":NO_FUSE
+            "no_fuse":NO_FUSE,
+            "use_bart":BART
             
             }
     args = argparse.Namespace(**args)

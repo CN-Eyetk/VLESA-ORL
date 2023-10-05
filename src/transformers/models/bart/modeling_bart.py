@@ -18,12 +18,12 @@
 import math
 import random
 import warnings
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any, Dict, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, NLLLoss
 
 from ...activations import ACT2FN
 from ...file_utils import (
@@ -41,9 +41,11 @@ from ...modeling_outputs import (
     Seq2SeqQuestionAnsweringModelOutput,
     Seq2SeqSequenceClassifierOutput,
 )
+from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_bart import BartConfig
+from .modules.modules import EmoTrans
 
 
 logger = logging.get_logger(__name__)
@@ -273,8 +275,11 @@ class BartEncoderLayer(nn.Module):
         self.fc1 = nn.Linear(self.embed_dim, config.encoder_ffn_dim)
         self.fc2 = nn.Linear(config.encoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
+        self.muAttn = BartAttention(embed_dim=self.embed_dim,
+                                                num_heads=config.encoder_attention_heads,
+                                                dropout=config.attention_dropout,)
 
-    def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, output_attentions: bool = False):
+    def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, comet_hidden_states :torch.Tensor,  attention_mask_for_muAttn :torch.Tensor, comet_mask :torch.Tensor, comet_hidden_states_st :torch.Tensor,  comet_mask_st :torch.Tensor, output_attentions: bool = False, output_mutual_attentions: bool=False):
         """
         Args:
             hidden_states (:obj:`torch.FloatTensor`): input to the layer of shape `(seq_len, batch, embed_dim)`
@@ -299,15 +304,40 @@ class BartEncoderLayer(nn.Module):
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
         hidden_states = residual + hidden_states
         hidden_states = self.final_layer_norm(hidden_states)
-
+        if comet_hidden_states is not None and comet_hidden_states_st is not None:
+            hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
+            len_1 = hidden_states.size(1)
+            len_2 = comet_hidden_states.size(1)
+            len_3 = comet_hidden_states_st.size(1)
+            hidden_cat, attn_weights, _ = self.muAttn(
+                hidden_cat, 
+                attention_mask = attention_mask_for_muAttn,
+                output_attentions = output_mutual_attentions
+            )
+            #attn_weights shape [b, n_head, seq_len, seq_len]
+            #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
+            #hidden_states = hidden_cat[:,:len_1,:]
+            comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
+            comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
+            if output_mutual_attentions:
+                mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
+                mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
+            if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
+                clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
+                comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
+            if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
+                clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
+                comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
         if torch.isinf(hidden_states).any() or torch.isnan(hidden_states).any():
             clamp_value = torch.finfo(hidden_states.dtype).max - 1000
             hidden_states = torch.clamp(hidden_states, min=-clamp_value, max=clamp_value)
 
-        outputs = (hidden_states,)
-
+        outputs = {'hidden_states': hidden_states, 'comet_hidden_states':comet_hidden_states, 'comet_hidden_states_st':comet_hidden_states_st}
         if output_attentions:
-            outputs += (attn_weights,)
+            outputs['attn_weights'] = attn_weights
+        if output_mutual_attentions:
+            outputs['mutual_attn_weights'] = mutual_attn_weights
+            outputs['mutual_attn_weights_st'] = mutual_attn_weights_st
 
         return outputs
 
@@ -334,17 +364,63 @@ class BartDecoderLayer(nn.Module):
             dropout=config.attention_dropout,
             is_decoder=True,
         )
+        self.use_merge = config.merge
+        if not config.merge:
+            self.encoder_attn_comet = BartAttention(
+                self.embed_dim,
+                config.decoder_attention_heads,
+                dropout=config.attention_dropout,
+                is_decoder=True,
+            )
+            self.encoder_attn_comet_st = BartAttention(
+                self.embed_dim,
+                config.decoder_attention_heads,
+                dropout=config.attention_dropout,
+                is_decoder=True,
+            )
+        else:
+            self.encoder_attn_comet = None
+            self.encoder_attn_comet_st = None
+
+        if not config.use_emb_prep:
+            self.encoder_attn_strategy= BartAttention(
+                self.embed_dim,
+                config.decoder_attention_heads,
+                dropout=config.attention_dropout,
+                is_decoder=True,
+            )
+        else:
+            self.encoder_attn_strategy = None
         self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
+        self.encoder_attn_layer_norm_strategy = nn.LayerNorm(self.embed_dim)
+        self.encoder_attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
+        self.encoder_attn_layer_norm_total = nn.LayerNorm(self.embed_dim)
         self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)
 
+        if config.add_emo_cross_attn and not config.use_emb_prep:
+            self.encoder_attn_emo= BartAttention(
+                self.embed_dim,
+                config.decoder_attention_heads,
+                dropout=config.attention_dropout,
+                is_decoder=True,
+            )
+            self.encoder_attn_layer_norm_emo = nn.LayerNorm(self.embed_dim)
+        else:
+            self.encoder_attn_emo = None
     def forward(
         self,
         hidden_states: torch.Tensor,
         attention_mask: Optional[torch.Tensor] = None,
         encoder_hidden_states: Optional[torch.Tensor] = None,
         encoder_attention_mask: Optional[torch.Tensor] = None,
+        comet_hidden_states: Optional[torch.Tensor] = None,
+        comet_mask: Optional[torch.Tensor] = None,
+        comet_hidden_states_st: Optional[torch.Tensor] = None,
+        comet_mask_st: Optional[torch.Tensor] = None,
+        strategy_embs: Optional[torch.Tensor] = None,
+        emo_out_embs: Optional[torch.Tensor] = None,
         past_key_value: Optional[Tuple[torch.Tensor]] = None,
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = True,
@@ -386,18 +462,62 @@ class BartDecoderLayer(nn.Module):
 
             # cross_attn cached key/values tuple is at positions 3,4 of present_key_value tuple
             cross_attn_past_key_value = past_key_value[-2:] if past_key_value is not None else None
-            hidden_states, cross_attn_weights, cross_attn_present_key_value = self.encoder_attn(
-                hidden_states=hidden_states,
-                key_value_states=encoder_hidden_states,
-                attention_mask=encoder_attention_mask,
-                past_key_value=cross_attn_past_key_value,
-                output_attentions=output_attentions,
-            )
-            hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
-            hidden_states = residual + hidden_states
-            hidden_states = self.encoder_attn_layer_norm(hidden_states)
+            hidden_states_encoder, cross_attn_weights, cross_attn_present_key_value = self.encoder_attn(
+                            hidden_states=hidden_states,
+                            key_value_states=encoder_hidden_states,
+                            attention_mask=encoder_attention_mask,
+                            past_key_value=cross_attn_past_key_value,
+                            output_attentions=output_attentions,
+                        )
+            hidden_states_encoder = F.dropout(hidden_states_encoder, p=self.dropout, training=self.training)
+            if self.encoder_attn_strategy is not None:
+                hidden_states_strategy, _, _ = self.encoder_attn_strategy(
+                    hidden_states=hidden_states,
+                    key_value_states=strategy_embs,
+                )
+                hidden_states_strategy = F.dropout(hidden_states_strategy, p=self.dropout, training=self.training)
 
-            # add cross-attn to positions 3,4 of present_key_value tuple
+            if self.encoder_attn_emo is not None:
+                hidden_states_emo, _, _ = self.encoder_attn_emo(
+                    hidden_states=hidden_states,
+                    key_value_states=emo_out_embs,
+                )
+                hidden_states_emo = F.dropout(hidden_states_emo, p=self.dropout, training=self.training)
+            if self.encoder_attn_comet is not None:
+                hidden_states_sp, _, _ = self.encoder_attn_comet(
+                    hidden_states=hidden_states,
+                    key_value_states=comet_hidden_states,
+                    attention_mask=comet_mask,
+                )
+                hidden_states_sp = F.dropout(hidden_states_sp, p=self.dropout, training=self.training)
+            if self.encoder_attn_comet is not None:
+                hidden_states_st, _, _ = self.encoder_attn_comet_st(
+                    hidden_states=hidden_states,
+                    key_value_states=comet_hidden_states_st,
+                    attention_mask=comet_mask_st,
+                )
+                hidden_states_st = F.dropout(hidden_states_st, p=self.dropout, training=self.training)
+
+            # hidden_states = torch.cat([hidden_states_encoder, hidden_states_strategy, hidden_states_st, hidden_states_sp], dim=-1)
+            # hidden_states = self.activation_fn(self.fc_multimodule(hidden_states))
+            # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
+            # hidden_states = residual + hidden_states
+            # hidden_states = residual + hidden_states_encoder + hidden_states_strategy + hidden_states_st + hidden_states_sp
+            # hidden_states = torch.cat([hidden_states_encoder, hidden_states_st, hidden_states_sp], dim=-1)
+            # hidden_states = self.activation_fn(self.fc_multimodule(hidden_states))
+            # hidden_states = F.dropout(hidden_states, p=self.activation_dropout, training=self.training)
+            # hidden_states = residual + hidden_states
+            # hidden_states = residual + hidden_states_encoder + hidden_states_strategy
+            hidden_states = residual + hidden_states_encoder
+            if self.encoder_attn_comet is not None:
+                hidden_states += hidden_states_sp
+            if self.encoder_attn_comet_st is not None:
+                hidden_states += hidden_states_st
+            if self.encoder_attn_strategy is not None:
+                hidden_states += hidden_states_strategy
+            if self.encoder_attn_emo is not None:
+                hidden_states += hidden_states_emo
+            hidden_states = self.encoder_attn_layer_norm(hidden_states)
             present_key_value = present_key_value + cross_attn_present_key_value
 
         # Fully Connected
@@ -637,7 +757,49 @@ class BartEncoder(BartPretrainedModel):
         )
         self.layers = nn.ModuleList([BartEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
+        self.use_emo_in_dist = config.use_emo_in_dist
+        self.n_emo_situ = 11
+        self.n_emo_in = config.n_emo_out if config.use_emo_in_dist else self.n_emo_situ
+        
+        self.n_emo_out = config.n_emo_out
+        self.n_strat = 8
+        self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
+        
+        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
+        self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
+        #self.dropout_emotion = nn.Dropout(0.2)
+        #self.dropout_strategy = nn.Dropout(0.2)
 
+        self.strategy_embedding = nn.Embedding(8 + 1, embed_dim, 8)
+        self.strategy_id = torch.tensor(range(8), dtype=torch.long)
+        self.multi_state_LayerNorm = nn.LayerNorm(config.d_model)
+
+        #our change
+        self.use_th_attn = config.use_th_attn
+        self.use_trans_mat = config.use_trans_mat
+        self.emo_from_eos = config.emo_from_eos
+        self.st_from_eos = config.st_from_eos
+        self.emo_from_situ = config.emo_from_situ
+        self.use_st_seq = config.use_st_seq
+        self.lstm_st_seq = config.lstm_st_seq
+        if self.use_st_seq:
+            if self.lstm_st_seq:
+                self.strategy_lstm = nn.GRU(input_size = config.d_model, hidden_size  = config.d_model, num_layers = 1, batch_first = True)
+                self.strategy_head = nn.Linear(config.d_model, self.n_strat)
+                #self.strategy_head = None
+            else:
+                self.strategy_lstm = None
+                self.strategy_head = nn.Linear(config.d_model, self.n_strat)
+        else:
+            self.strategy_head = nn.Linear(config.d_model, self.n_strat)
+        if config.use_trans_mat:
+            self.trans_mat = EmoTrans(n_emo_in = self.n_emo_in, 
+                                      n_emo_out = self.n_emo_out,
+                                      n_strat = self.n_strat,
+                                      embed_dim = config.d_model
+                                      )
+        else:
+            self.trans_mat = None
         self.init_weights()
 
     def forward(
@@ -645,9 +807,21 @@ class BartEncoder(BartPretrainedModel):
         input_ids=None,
         attention_mask=None,
         inputs_embeds=None,
+        comet_embs=None,
+        comet_mask=None,
+        comet_embs_st=None,
+        comet_mask_st=None,
+        role_ids=None,
+        turn_ids=None,
+        cls_position=None,
+        next_strategy_id=None,
         output_attentions=None,
+        output_mutual_attentions=None,
         output_hidden_states=None,
         return_dict=None,
+        strategy_logit_ground=None,
+        spt_eos_indice=None,
+        #strat_seq=None
     ):
         r"""
         Args:
@@ -705,14 +879,28 @@ class BartEncoder(BartPretrainedModel):
         hidden_states = inputs_embeds + embed_pos
         hidden_states = self.layernorm_embedding(hidden_states)
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
+        with torch.no_grad():
+            last_token_index = attention_mask.sum(-1) - 1
+        #concat attention mask for three-way self attention
+        if self.use_th_attn and comet_mask is not None and comet_mask_st is not None:
+            attention_mask_for_muAttn = torch.cat((attention_mask, comet_mask, comet_mask_st), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
+            attention_mask_for_muAttn = _expand_mask(attention_mask_for_muAttn, inputs_embeds.dtype)
+        else:
+            attention_mask_for_muAttn = attention_mask.clone()
 
         # expand attention_mask
         if attention_mask is not None:
             # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
             attention_mask = _expand_mask(attention_mask, inputs_embeds.dtype)
 
+        comet_hidden_states = comet_embs
+
+        comet_hidden_states_st = comet_embs_st
+
         encoder_states = () if output_hidden_states else None
         all_attentions = () if output_attentions else None
+        all_mutual_attentions = () if output_mutual_attentions else None
+        all_mutual_attentions_st = () if output_mutual_attentions else None
         for encoder_layer in self.layers:
             if output_hidden_states:
                 encoder_states = encoder_states + (hidden_states,)
@@ -733,24 +921,102 @@ class BartEncoder(BartPretrainedModel):
                         create_custom_forward(encoder_layer),
                         hidden_states,
                         attention_mask,
+                        comet_embs,
                     )
                 else:
-                    layer_outputs = encoder_layer(hidden_states, attention_mask, output_attentions=output_attentions)
+                    layer_outputs = encoder_layer(hidden_states, attention_mask, comet_hidden_states=comet_hidden_states, attention_mask_for_muAttn=attention_mask_for_muAttn, comet_mask=comet_mask, comet_hidden_states_st=comet_hidden_states_st, comet_mask_st=comet_mask_st, output_mutual_attentions=output_mutual_attentions)
 
-                hidden_states = layer_outputs[0]
+                hidden_states = layer_outputs['hidden_states']
+                comet_hidden_states = layer_outputs['comet_hidden_states']
+                comet_hidden_states_st = layer_outputs['comet_hidden_states_st']
 
             if output_attentions:
-                all_attentions = all_attentions + (layer_outputs[1],)
+                all_attentions = all_attentions + (layer_outputs['attn_weights'],)
+            if output_mutual_attentions:
+                all_mutual_attentions = all_mutual_attentions + (layer_outputs['mutual_attn_weights'],)
+                all_mutual_attentions_st = all_mutual_attentions_st + (layer_outputs['mutual_attn_weights_st'],)
 
         if output_hidden_states:
             encoder_states = encoder_states + (hidden_states,)
+        #calculate emo and strat logits
+        if comet_embs is not None and comet_embs_st is not None:
 
-        if not return_dict:
-            return tuple(v for v in [hidden_states, encoder_states, all_attentions] if v is not None)
+            if self.emo_from_eos:
+                last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                emotion_logits = self.emotion_head(last_eos_state)
+            elif self.emo_from_situ:
+                last_eos_state = None
+                emotion_logits = self.emotion_head(hidden_states[:,0,:])
+            else:
+                last_eos_state = None
+                emotion_logits = self.emotion_head(comet_hidden_states[:,0,:])
+
+            emotion_logits = self.batchNorm_emotion(emotion_logits)
+            emotion_intensity = None
+            if self.use_st_seq:
+                spt_eos_emb = hidden_states[torch.arange(hidden_states.size(0))[:,None], spt_eos_indice, :].squeeze(0)
+                if len(spt_eos_emb.size()) == 2:
+                    spt_eos_emb = spt_eos_emb.unsqueeze(0)
+                if self.strategy_lstm is not None:
+                    spt_eos_mask = spt_eos_indice.ne(-1)
+                    last_state_indice = spt_eos_mask.long().sum(-1) - 1
+                    strategy_seq_logits = self.strategy_head(self.strategy_lstm(spt_eos_emb)[0])#[torch.arange(hidden_states.size(0)),last_state_indice,:]
+                    strategy_logits = strategy_seq_logits[torch.arange(hidden_states.size(0)),last_state_indice,:]
+                else:
+                    spt_eos_emb = spt_eos_emb.permute(0,2,1)
+                    spt_eos_mask = spt_eos_indice.ne(-1).float()
+                    spt_eos_emb_mean = torch.bmm(spt_eos_emb, spt_eos_mask.unsqueeze(-1)).squeeze(-1)
+                    strategy_logits = self.strategy_head(spt_eos_emb_mean)
+                    strategy_seq_logits = None
+
+            elif self.st_from_eos:
+                if last_eos_state is None:
+                    last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                strategy_logits = self.strategy_head(last_eos_state)
+                strategy_seq_logits = None
+            else:
+                strategy_logits = self.strategy_head(hidden_states[:, 0, :])
+                strategy_seq_logits = None
+        else:
+            multi_state = None
+            emotion_logits = None
+            emotion_intensity = None
+            strategy_logits = None
+            strategy_seq_logits = None
+        
+        # get strategy embedding
+        if strategy_logits is not None:
+            batch_size = strategy_logits.shape[0]
+
+            strategy_id = self.strategy_id.to(strategy_logits.device)
+
+            strategy_logits = self.batchNorm_strategy(strategy_logits)
+            #strategy_logits = self.dropout_strategy(strategy_logits)
+
+            if strategy_logit_ground is not None:
+                strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+            else:
+                strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
+                                          self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+
+
+        else:
+            strategy_embs=None
+        #get emo out logits
+        if self.trans_mat is not None and strategy_logits is not None and emotion_logits is not None:
+            emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
+        else:
+            emo_out_embs = None
+            emo_out_prob = None
         return BaseModelOutput(
-            last_hidden_state=hidden_states, hidden_states=encoder_states, attentions=all_attentions
+            last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
+            hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
+            emotion_logits = emotion_logits, emotion_intensity = emotion_intensity, strategy_logits = strategy_logits, strategy_embs = strategy_embs, comet_mask = comet_mask,
+            comet_mask_st=comet_mask_st,
+            emo_out_embs=emo_out_embs,
+            emo_out_prob=emo_out_prob,
+            strategy_seq_logits=strategy_seq_logits,
         )
-
 
 class BartDecoder(BartPretrainedModel):
     """
@@ -781,7 +1047,7 @@ class BartDecoder(BartPretrainedModel):
         )
         self.layers = nn.ModuleList([BartDecoderLayer(config) for _ in range(config.decoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(config.d_model)
-
+        self.use_merge = config.merge
         self.init_weights()
 
     def forward(
@@ -790,9 +1056,17 @@ class BartDecoder(BartPretrainedModel):
         attention_mask=None,
         encoder_hidden_states=None,
         encoder_attention_mask=None,
+        comet_hidden_states=None,
+        comet_mask=None,
+        comet_hidden_states_st=None,
+        comet_mask_st=None,
+        strategy_embs=None,
+        emo_out_embs=None,
         past_key_values=None,
         inputs_embeds=None,
         use_cache=None,
+        role_ids=None,
+        turn_ids=None,
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
@@ -889,6 +1163,12 @@ class BartDecoder(BartPretrainedModel):
         if encoder_hidden_states is not None and encoder_attention_mask is not None:
             # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
             encoder_attention_mask = _expand_mask(encoder_attention_mask, inputs_embeds.dtype, tgt_len=input_shape[-1])
+        if comet_hidden_states is not None and comet_mask is not None:
+            # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+            comet_mask = _expand_mask(comet_mask, inputs_embeds.dtype, tgt_len=input_shape[-1])
+        if comet_hidden_states_st is not None and comet_mask_st is not None:
+            # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+            comet_mask_st = _expand_mask(comet_mask_st, inputs_embeds.dtype, tgt_len=input_shape[-1])
 
         # embed positions
         positions = self.embed_positions(input_shape, past_key_values_length)
@@ -941,6 +1221,12 @@ class BartDecoder(BartPretrainedModel):
                     attention_mask=combined_attention_mask,
                     encoder_hidden_states=encoder_hidden_states,
                     encoder_attention_mask=encoder_attention_mask,
+                    comet_hidden_states = comet_hidden_states,
+                    comet_mask = comet_mask,
+                    comet_hidden_states_st=comet_hidden_states_st,
+                    comet_mask_st=comet_mask_st,
+                    strategy_embs = strategy_embs,
+                    emo_out_embs=emo_out_embs,
                     past_key_value=past_key_value,
                     output_attentions=output_attentions,
                     use_cache=use_cache,
@@ -1020,12 +1306,19 @@ class BartModel(BartPretrainedModel):
         encoder_outputs=None,
         past_key_values=None,
         inputs_embeds=None,
+        decoder_role_ids=None,
+        decoder_turn_ids=None,
+        role_ids=None,
+        turn_ids=None,
         decoder_inputs_embeds=None,
+        comet_embs=None,
+        comet_mask=None,
+        comet_embs_st=None,
+        comet_mask_st=None,
         use_cache=None,
         output_attentions=None,
         output_hidden_states=None,
-        return_dict=None,
-    ):
+        return_dict=None,    ):
 
         # different to other models, Bart automatically creates decoder_input_ids from
         # input_ids if no decoder_input_ids are provided
@@ -1046,8 +1339,14 @@ class BartModel(BartPretrainedModel):
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 inputs_embeds=inputs_embeds,
+                comet_embs=comet_embs,
+                comet_mask=comet_mask,
+                comet_embs_st=comet_embs_st,
+                comet_mask_st=comet_mask_st,
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
+                role_ids=role_ids,
+                turn_ids=turn_ids,
                 return_dict=return_dict,
             )
         # If the user passed a tuple for encoder_outputs, we wrap it in a BaseModelOutput when return_dict=True
@@ -1062,11 +1361,17 @@ class BartModel(BartPretrainedModel):
         decoder_outputs = self.decoder(
             input_ids=decoder_input_ids,
             attention_mask=decoder_attention_mask,
-            encoder_hidden_states=encoder_outputs[0],
+            encoder_hidden_states=encoder_outputs.last_hidden_state,
             encoder_attention_mask=attention_mask,
+            comet_hidden_states=encoder_outputs.last_comet_hidden_state,
+            comet_mask=comet_mask,
+            comet_hidden_states_st=encoder_outputs.last_comet_hidden_state_st,
+            comet_mask_st=comet_mask_st,
             past_key_values=past_key_values,
             inputs_embeds=decoder_inputs_embeds,
             use_cache=use_cache,
+            role_ids=decoder_role_ids,
+            turn_ids=decoder_turn_ids,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
@@ -1077,6 +1382,8 @@ class BartModel(BartPretrainedModel):
 
         return Seq2SeqModelOutput(
             last_hidden_state=decoder_outputs.last_hidden_state,
+            last_comet_hidden_state = encoder_outputs.last_comet_hidden_state,
+            last_comet_hidden_state_st = encoder_outputs.last_comet_hidden_state_st,
             past_key_values=decoder_outputs.past_key_values,
             decoder_hidden_states=decoder_outputs.hidden_states,
             decoder_attentions=decoder_outputs.attentions,
@@ -1104,7 +1411,25 @@ class BartForConditionalGeneration(BartPretrainedModel):
         self.model = BartModel(config)
         self.register_buffer("final_logits_bias", torch.zeros((1, self.model.shared.num_embeddings)))
         self.lm_head = nn.Linear(config.d_model, self.model.shared.num_embeddings, bias=False)
-
+        self.use_th_attn = config.use_th_attn
+        self.use_trans_mat = config.use_trans_mat
+        self.prepend = config.prepend
+        self.use_emb_prep = config.use_emb_prep
+        self.n_emo_out = config.n_emo_out
+        self.dropout = config.dropout
+        self.use_kl = config.use_kl
+        self.add_emo_cross_attn = config.add_emo_cross_attn
+        self.use_emo_in_dist = config.use_emo_in_dist
+        self.n_emo_in = self.n_emo_out if self.use_emo_in_dist else 11
+        self.use_copy = config.use_copy
+        self.pad_token_id = config.pad_token_id
+        self.lstm_st_seq = config.lstm_st_seq
+        self.no_fuse = config.no_fuse
+        if self.use_copy:
+            self.pgen_decoder_output_layer = nn.Linear(2 * config.d_model, 1, bias=True)
+        if config.use_trans_mat:
+            self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
+        self.use_merge = config.merge
         self.init_weights()
 
     def get_encoder(self):
@@ -1138,18 +1463,35 @@ class BartForConditionalGeneration(BartPretrainedModel):
     @add_end_docstrings(BART_GENERATION_EXAMPLE)
     def forward(
         self,
-        input_ids=None,
+        input_ids=None,#[batch_size, max_len]
         attention_mask=None,
         decoder_input_ids=None,
         decoder_attention_mask=None,
         encoder_outputs=None,
         past_key_values=None,
         inputs_embeds=None,
+        situ_ids = None,
+        role_ids=None,
+        decoder_role_ids=None,
+        turn_ids=None,
+        decoder_turn_ids=None,
         decoder_inputs_embeds=None,
+        decoder_strategy_ids=None,
         labels=None,
         use_cache=None,
+        cls_position=None,
+        next_strategy_id=None,
+        comet_embs=None,#[batch_size, n_attr, hidden]
+        comet_mask=None,#[batch_size, n_attr]
+        comet_embs_st=None,#[batch_size, n_attr, hidden]
+        comet_mask_st=None,#[batch_size, n_attr]
+        emotion=None,
         output_attentions=None,
         output_hidden_states=None,
+        emo_dist=None,
+        emo_in_dist=None,
+        spt_eos_indice=None,
+        strat_seq=None,
         return_dict=None,
     ):
         r"""
@@ -1161,66 +1503,187 @@ class BartForConditionalGeneration(BartPretrainedModel):
         Returns:
         """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        generate = True if encoder_outputs is not None else False
+        strategy_label = decoder_strategy_ids
+
+        #if not generate:
+        #    batch_size = strategy_label.shape[0]
+        #    onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
+        #    strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
+        #    strategy_logit_ground.float()
+        #else:
+        strategy_logit_ground = None
 
         if labels is not None:
-            if decoder_input_ids is None:
-                decoder_input_ids = shift_tokens_right(
-                    labels, self.config.pad_token_id, self.config.decoder_start_token_id
-                )
+            #if decoder_input_ids is None:
+            decoder_input_ids = shift_tokens_right(
+                labels, self.config.pad_token_id, self.config.decoder_start_token_id
+            )
+        attention_mask = attention_mask.long()
+        if encoder_outputs is None:
+            encoder_outputs = self.model.encoder(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                inputs_embeds=inputs_embeds,
+                comet_embs=comet_embs,
+                comet_mask=comet_mask,
+                comet_embs_st=comet_embs_st,
+                comet_mask_st=comet_mask_st,
+                output_attentions=output_attentions,
+                output_hidden_states=output_hidden_states,
+                role_ids=role_ids,
+                turn_ids=decoder_turn_ids[:, 0],
+                return_dict=return_dict,
+                strategy_logit_ground = strategy_logit_ground,
+                spt_eos_indice=spt_eos_indice,
+            )
 
-        outputs = self.model(
-            input_ids,
-            attention_mask=attention_mask,
-            decoder_input_ids=decoder_input_ids,
-            encoder_outputs=encoder_outputs,
-            decoder_attention_mask=decoder_attention_mask,
+        if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
+            if self.no_fuse:
+                strategy_embs = torch.cat((encoder_outputs.emo_out_embs,encoder_outputs.strategy_embs), dim = 1)
+                #print("acted!")
+                emo_out_embs = None
+            else:
+                strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embs,encoder_outputs.strategy_embs), dim = -1))
+                #print("acted!")
+                emo_out_embs = None
+                #emo_out_embs = None
+        else:
+            strategy_embs = encoder_outputs.strategy_embs
+            emo_out_embs = None
+
+        src_len = encoder_outputs.last_hidden_state.size(1)
+        if self.use_emb_prep:
+            if decoder_input_ids[0][0].item() == 1:
+                decoder_inputs_embeds = self.model.decoder.embed_tokens(decoder_input_ids) * self.model.decoder.embed_scale
+                decoder_inputs_embeds = torch.cat((strategy_embs, decoder_inputs_embeds), dim = 1)
+                decoder_input_ids = None
+            else:
+                pass
+        else:
+            decoder_inputs_embeds = None
+        if self.use_merge:
+            encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.last_comet_hidden_state, encoder_outputs.last_comet_hidden_state_st], dim = 1)
+            attention_mask = torch.cat([attention_mask, encoder_outputs.comet_mask, encoder_outputs.comet_mask_st], dim = 1)
+        #print("decoder_input_ids",decoder_input_ids)
+        #print("labels",labels)
+        decoder_outputs = self.model.decoder(
+            input_ids=decoder_input_ids,
+            attention_mask=decoder_attention_mask,
+            encoder_hidden_states=encoder_outputs.last_hidden_state if not self.use_merge else encoder_hidden_states,
+            encoder_attention_mask=attention_mask,
+            comet_hidden_states=encoder_outputs.last_comet_hidden_state if not self.use_merge else None,
+            comet_mask=encoder_outputs.comet_mask if not self.use_merge else None,
+            comet_hidden_states_st=encoder_outputs.last_comet_hidden_state_st if not self.use_merge else None,
+            comet_mask_st=encoder_outputs.comet_mask_st if not self.use_merge else None,
+            strategy_embs=strategy_embs,#encoder_outputs.strategy_embs,
+            emo_out_embs=emo_out_embs,
             past_key_values=past_key_values,
-            inputs_embeds=inputs_embeds,
-            decoder_inputs_embeds=decoder_inputs_embeds,
+            inputs_embeds=decoder_inputs_embeds,
             use_cache=use_cache,
-            output_attentions=output_attentions,
+            role_ids=decoder_role_ids,
+            turn_ids=decoder_turn_ids,
+            output_attentions=True if self.use_copy else output_attentions, #COPY机制需要输出corss
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
-        lm_logits = self.lm_head(outputs[0]) + self.final_logits_bias
+        
+        if self.use_emb_prep and decoder_input_ids is None:
+            lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):,:]) + self.final_logits_bias
+        else:
+            lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
 
+        loss = None
         masked_lm_loss = None
+        emo_loss = None
+        intensity_loss = None
+        strategy_loss = None
+        emotion_logits = encoder_outputs.emotion_logits
+        strategy_logits = encoder_outputs.strategy_logits
+        emo_out_prob = encoder_outputs.emo_out_prob
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            masked_lm_loss = loss_fct(lm_logits.view(-1, self.config.vocab_size), labels.view(-1))
+            if self.prepend and not lm_logits.requires_grad:
+                lm_logits = lm_logits[:,1:,:]
+                labels = labels[:,1:]
+            masked_lm_loss = loss_fct(lm_logits.reshape(-1, self.config.vocab_size),
+                                    labels.reshape(-1))
+            loss = masked_lm_loss.clone()
 
-        if not return_dict:
-            output = (lm_logits,) + outputs[1:]
-            return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
+        if emotion is not None:
+            emo_loss_fct = CrossEntropyLoss()
+            # print(emotion_logits.shape, emotion)
+            emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
+            loss += emo_loss
+
+        if strategy_label is not None:
+            strategy_loss_fct = CrossEntropyLoss()
+            strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
+            loss += strategy_loss
+
+        if self.use_trans_mat and emo_out_prob is not None:
+            if len(emo_out_prob.size()) == 1:
+                emo_out_prob = emo_out_prob.unsqueeze(0)
+            assert emo_out_prob.size(1) > 1
+            if emo_dist is not None:
+                if self.use_kl:
+                    emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
+                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist)
+                else:
+                    emo_out_loss_fct = NLLLoss()
+                    emo_out_label = emo_dist.argmax(-1).squeeze()
+                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
+                loss += emo_out_loss #10月2日修改【Junlin】，
+        #if not return_dict:
+        #    output = (lm_logits,) + outputs[1:]
+        #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
         return Seq2SeqLMOutput(
-            loss=masked_lm_loss,
-            logits=lm_logits,
-            past_key_values=outputs.past_key_values,
-            decoder_hidden_states=outputs.decoder_hidden_states,
-            decoder_attentions=outputs.decoder_attentions,
-            cross_attentions=outputs.cross_attentions,
-            encoder_last_hidden_state=outputs.encoder_last_hidden_state,
-            encoder_hidden_states=outputs.encoder_hidden_states,
-            encoder_attentions=outputs.encoder_attentions,
-        )
+            loss=loss,
+            lm_loss=masked_lm_loss,
+            emo_loss=emo_loss,
+            intensity_loss=intensity_loss,
+            strategy_loss=strategy_loss,
+            lm_logits=lm_logits,
+            emo_logits=emotion_logits,
+            strategy_logits=strategy_logits,
+            past_key_values=decoder_outputs.past_key_values,
+            decoder_hidden_states=decoder_outputs.hidden_states,
+            decoder_attentions=decoder_outputs.attentions,
+            cross_attentions=decoder_outputs.cross_attentions,
+            encoder_last_hidden_state=encoder_outputs.last_hidden_state,
+            encoder_hidden_states=encoder_outputs.hidden_states,
+            encoder_attentions=encoder_outputs.attentions,
 
+            
+        )
+    def _prepare_encoder_decoder_kwargs_for_generation(
+        self, input_ids: torch.LongTensor, model_kwargs
+    ) -> Dict[str, Any]:
+        encoder = self.get_encoder()
+        encoder_kwargs = {
+            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") and not argument.startswith("emo_in_dist") #Update 9-27
+        }
+        model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
+
+        if self.use_copy:
+            print("getting encoder input ids")
+            model_kwargs["encoder_input_ids"] = input_ids #10-1如果使用copy机制，generation需要输入input_ids
+        return model_kwargs
     def prepare_inputs_for_generation(
         self, decoder_input_ids, past=None, attention_mask=None, use_cache=None, encoder_outputs=None, **kwargs
     ):
-        # cut decoder_input_ids if past is used
         if past is not None:
             decoder_input_ids = decoder_input_ids[:, -1:]
 
         return {
-            "input_ids": None,  # encoder_outputs is defined. input_ids not needed
+            "input_ids": None if not self.use_copy else kwargs["encoder_input_ids"],  # encoder_outputs is defined. input_ids not needed
             "encoder_outputs": encoder_outputs,
             "past_key_values": past,
             "decoder_input_ids": decoder_input_ids,
             "attention_mask": attention_mask,
             "use_cache": use_cache,  # change this to avoid caching (presumably for debugging)
         }
-
     def adjust_logits_during_generation(self, logits, cur_len, max_length):
         if cur_len == 1 and self.config.force_bos_token_to_be_generated:
             self._force_token_id_to_be_generated(logits, self.config.bos_token_id)
@@ -1242,7 +1705,6 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 tuple(past_state.index_select(0, beam_idx) for past_state in layer_past[:2]) + layer_past[2:],
             )
         return reordered_past
-
 
 @add_start_docstrings(
     """

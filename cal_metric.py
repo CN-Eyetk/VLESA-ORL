@@ -16,15 +16,16 @@ dirs.append("transESC_generated_data")
 all_res = {}
 gpt_ppl = GPT_PPL('openai-gpt')
 for dir in dirs:
+    print(dir)
     hyp_path = f"{dir}/hyp_strategy.json"
     ref_path = f"{dir}/ref_strategy.json"
     metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path)
     text = json.load(open(hyp_path))
-    ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
+    #ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
     # print(metric.hyps)
     result, result_list = metric.close()
-    result["gpt_ppl"] = ppl
-    result["mid_gpt_ppl"] = md_ppl
+    #result["gpt_ppl"] = ppl
+    #result["mid_gpt_ppl"] = md_ppl
     print(result)
     print("="*100)
     # print(result_list)

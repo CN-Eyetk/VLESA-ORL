@@ -8,6 +8,7 @@ using a masked language modeling (MLM) loss.
 """
 import os
 import sys
+import copy
 import warnings
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
@@ -46,6 +47,7 @@ from src.transformers import (
 )
 
 from src.transformers import (BlenderbotSmallTokenizer, BlenderbotSmallForConditionalGeneration, BlenderbotSmallConfig)
+from src.transformers import (BartForConditionalGeneration, BartTokenizer, BartConfig)
 #from utils.data_parallel import BalancedDataParallel
 from add_emo import EmoExtracter
 model_dirs = ["j-hartmann/emotion-english-distilroberta-base","SamLowe/roberta-base-go_emotions"]
@@ -110,12 +112,18 @@ def load_config(args, eval = False):
 
 def load_model_for_eval(args):
     config = load_config(args, eval = True)
-    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
+    if args.use_bart:
+        model = BartForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
+    else:
+        model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
     return model
 
 def load_model(args, tokenizer):
     config = load_config(args)
-    model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
+    if args.use_bart:
+        model = BartForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
+    else:
+        model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
     print(model.config)
     #model = BlenderbotSmallForConditionalGeneration(config)
     model.resize_token_embeddings(len(tokenizer))
@@ -123,8 +131,13 @@ def load_model(args, tokenizer):
     return model
 
 def load_tokenizer(args):
-    config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-    tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    if args.use_bart:
+        config = BartConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+        tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    else:
+        config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+        tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+    print(f"vocab size = {tokenizer.vocab_size}")
     
     additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
@@ -341,7 +354,7 @@ def _get_comet_input(comet_row, tokenizer, max_num_attr=30, max_len_attr=10):
     return comet_ids, comet_mask
 
 
-def _make_feature(id_, sents, rls, ts, eos, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False):
+def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False):
     # we did't use role label and turn number in modeling as they did't carry significant improvement. However, codes still remain here.
     if len(sents) == 0:
         return InputFeatures_train([], [], [], [], [],
@@ -356,8 +369,9 @@ def _make_feature(id_, sents, rls, ts, eos, pad=False, block_size=512, strategy_
     strategy_ids = []
     is_strat_targ = []
     #hist_strat_labels = []
+    #print("strategy_labels",strategy_labels)
     spt_strategy_labels = [x for x in strategy_labels if x < 8]
-
+    #print("spt_strategy_labels",spt_strategy_labels)
     
     #print("situation", situation)
     strat_step = 0
@@ -439,7 +453,7 @@ def _make_feature(id_, sents, rls, ts, eos, pad=False, block_size=512, strategy_
     # pad to multiples of 8
     if pad:
         while len(input_ids) % 8 != 0:
-            input_ids.append(0)
+            input_ids.append(pad_token_id)
             token_type_ids.append(0)
             lm_labels.append(-100)
             roles.append(0)
@@ -462,7 +476,7 @@ def _make_feature(id_, sents, rls, ts, eos, pad=False, block_size=512, strategy_
         cls_position = len(input_ids)-1-input_ids[::-1].index(eos,input_ids[::-1].index(eos)+1)
     if evaluate and strategy_labels[-1]!=8:
         try:
-            lm_labels[lm_labels.index(strategy_labels[-1]+50257+4687)] = -100
+            lm_labels[lm_labels.index(strategy_labels[-1]+args.base_vocab_size)] = -100
         except Exception:
             pass
     #print("input_ids:",input_ids)
@@ -485,7 +499,7 @@ def _norm_text(text):
     return emo, r, t, toks
 
 
-def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_dist = False, get_emo_in_dist = False, prepend_emotion = False):
+def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_dist = False, get_emo_in_dist = False, prepend_emotion = False, args = None): #bart 
     srcs = text.strip()
     inputs = []
     roles = []
@@ -505,9 +519,9 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         context_id = tokenizer.encode(src)
 
         if not strategy:
-            context_id = [i  for i in context_id if i< 50257+4687]
+            context_id = [i  for i in context_id if i< args.base_vocab_size]
         elif cls:
-            context_id = tokenizer.cls + [i for i in context_id if i< 50257+4687]
+            context_id = tokenizer.cls + [i for i in context_id if i< args.base_vocab_size]
         else:
             pass
 
@@ -517,7 +531,12 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
             except Exception as e:
                 strategy_labels.append(8)
             else:
-                strategy_labels.append(tokenizer.encode([label])[0] - 50257-4687)
+                #print(1/0)
+                strategy_label = tokenizer.convert_tokens_to_ids([label])[0] - args.base_vocab_size
+                strategy_labels.append(strategy_label)
+                #print(f"{label}-- id = {tokenizer.encode([label])[0]} minus --{args.base_vocab_size} res--{strategy_label}")
+                #print(tokenizer.convert_ids_to_tokens([args.base_vocab_size + i for i in range(20)]))
+                #print(tokenizer.convert_ids_to_tokens(tokenizer.encode([label])[0]))
         else:
             strategy_labels.append(8)
 
@@ -544,21 +563,26 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         inputs = inputs[:-1] + [last_context_id]
     return inputs, roles, turns, strategy_labels, emotion, emo_dist, emo_in_dist
 
-def construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None, prepend_emotion = False, use_emo_in_dist = False):
+def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None, prepend_emotion = False, use_emo_in_dist = False):
 
     #  process input text
     #print("row",row)
     
-    inputs, roles, turns, strategy_labels, _, _, emo_in_dist = _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist else False))
+    inputs, roles, turns, strategy_labels, _, _, emo_in_dist = _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist else False),
+                                                                                     args = args
+                                                                                     )
     # process output (decoder input) text
-    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _ = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion)
-    situ_ids = tokenizer.encode(situation) + [tokenizer.eos_token_id]
+    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _ = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args)
+    situ_ids = tokenizer.encode(situation) 
+    if situ_ids[-1] !=  tokenizer.eos_token_id:
+        situ_ids.append(tokenizer.eos_token_id)
+    #print(f"situ_ids-{tokenizer.decode(situ_ids)}")
     #print("situ_ids in construct_conv_ESD", situ_ids)
     #print("situation", situation)
     # make feature for input text
-    feature = _make_feature(idx, inputs, roles, turns, tokenizer.eos_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
+    feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
     # make feature for output (decoder input) text
-    d_feature = _make_feature(idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
+    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
     
     comet_ids, comet_mask = _get_comet_input(comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(comet_st_row, tokenizer, max_num_attr=20)
@@ -572,6 +596,7 @@ class ESDDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer, args, df, comet, comet_st, block_size=512, evaluate=False, strategy=True, test=False, situations = None):
         block_size = block_size - (tokenizer.model_max_length - tokenizer.max_len_single_sentence)
         self.tokenizer = tokenizer
+        self.collate_verbose_step = 10
         directory = args.data_cache_dir
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -601,36 +626,21 @@ class ESDDataset(Dataset):
             if situations is not None:
                 assert len(comet_st) == len(situations)
             self.features = []
-            if situations is None:
-                for idx, (row, comet_row, comet_st_row) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1])):
-                    
-                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist)
-                    if len(conv.input_ids) >= block_size:
-                        #reduced_length = block_size - len(conv.input_ids)
-                        conv.input_ids = conv.input_ids[-block_size:]
-                        conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
-                        conv.is_strat_targ = conv.is_strat_targ[-block_size:]
-                        conv.is_strat_targ[0] = 8
-                        #conv.spt_eos_indice = [x - reduced_length for x in conv.spt_eos_indice]
-                    else:
-                        conv.input_ids = tokenizer.encode(tokenizer.cls_token) + conv.input_ids
-                        conv.is_strat_targ = [8] + conv.is_strat_targ 
-                    self.features.append(conv)
-            else:
-                for idx, (row, comet_row, comet_st_row, situation) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1], situations[:-1])):
-                    #print("row", row)
-                    #print("comet_row", comet_row)
-                    #print("situation", situation)
-                    conv = construct_conv_ESD(idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist)
-                    if len(conv.input_ids) >= block_size:
-                        conv.input_ids = conv.input_ids[-block_size:]
-                        conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
-                        conv.is_strat_targ = conv.is_strat_targ[-block_size:]
-                        conv.is_strat_targ[0] = 8
-                    else:
-                        conv.input_ids = tokenizer.encode(tokenizer.cls_token) + conv.input_ids
-                        conv.is_strat_targ = [8] + conv.is_strat_targ 
-                    self.features.append(conv)
+
+            for idx, (row, comet_row, comet_st_row, situation) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1], situations[:-1])):
+                #print("row", row)
+                #print("comet_row", comet_row)
+                #print("situation", situation)
+                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist)
+                if len(conv.input_ids) >= block_size:
+                    conv.input_ids = conv.input_ids[-block_size:]
+                    conv.is_strat_targ = conv.is_strat_targ[-block_size:]
+                    conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False)[0]
+                    conv.is_strat_targ[0] = 8
+                else:
+                    conv.input_ids = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False) + conv.input_ids
+                    conv.is_strat_targ = [8] + conv.is_strat_targ 
+                self.features.append(conv)
 
             # Note that we are loosing the last truncated example here for the sake of simplicity (no padding)
             # If your dataset is small, first you should loook for a bigger one :-) and second you
@@ -648,8 +658,8 @@ class ESDDataset(Dataset):
     def __getitem__(self, item):
         return self.features[item]
 
-    @staticmethod
-    def collate(features):
+    #@staticmethod
+    def collate(self,features):
         #print("features",features)
         example = 0
         f = features[example]
@@ -658,7 +668,7 @@ class ESDDataset(Dataset):
         #assert len(f.input_ids) == len(f.is_strat_targ)
         input_ids = pad_sequence([torch.tensor(f.input_ids, dtype=torch.long)
                                 for f in features],
-                                batch_first=True, padding_value=0)
+                                batch_first=True, padding_value=self.tokenizer.pad_token_id)
         #print("input_ids in collate",input_ids)
         position_ids = pad_sequence([torch.tensor(f.position_ids,
                                                 dtype=torch.long)
@@ -678,7 +688,7 @@ class ESDDataset(Dataset):
         if features[0].situ_ids is not None:
             situations = pad_sequence([torch.tensor(f.situ_ids, dtype=torch.long)
                             for f in features],
-                            batch_first=True, padding_value=0)
+                            batch_first=True, padding_value=self.tokenizer.pad_token_id)
         else:
             situations = None
         cls_positions = torch.tensor([f.cls_position for f in features], dtype=torch.long)
@@ -697,7 +707,7 @@ class ESDDataset(Dataset):
 
         decoder_input_ids = pad_sequence([torch.tensor(f.decoder_input_ids, dtype=torch.long)
                                 for f in features],
-                                batch_first=True, padding_value=0)
+                                batch_first=True, padding_value=self.tokenizer.pad_token_id)
         decoder_position_ids = pad_sequence([torch.tensor(f.decoder_position_ids,
                                                 dtype=torch.long)
                                     for f in features],
@@ -739,7 +749,17 @@ class ESDDataset(Dataset):
         spt_eos_indice = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-1)
-        
+        if self.collate_verbose_step > 0:
+            inputs =  self.tokenizer.batch_decode(input_ids, )
+            decoder_inputs = self.tokenizer.batch_decode(decoder_input_ids,)
+            
+            new_labels = copy.deepcopy(decoder_labels)
+            new_labels[new_labels == -100] = 0
+            label_text = self.tokenizer.batch_decode(new_labels)
+            with open("verbose.txt","a+") as file:
+                for (i,d,l) in zip(inputs, decoder_inputs, label_text):
+                    file.write(f"{i}\n{d}\n{l}\n\n")
+            self.collate_verbose_step -= 1
         #example = 0
 
         #ids = input_ids[example]
@@ -828,7 +848,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
         return pad_sequence(examples, batch_first=True, padding_value=tokenizer.pad_token_id)
     train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
     train_dataloader = DataLoader(
-        train_dataset, sampler=train_sampler, batch_size=args.train_batch_size, collate_fn=ESDDataset.collate, drop_last = False
+        train_dataset, sampler=train_sampler, batch_size=args.train_batch_size, collate_fn=train_dataset.collate, drop_last = False
     )
 
     if args.max_steps > 0:
@@ -1083,7 +1103,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
-        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=ESDDataset.collate, drop_last = False
+        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=eval_dataset.collate, drop_last = False
     )
 
     if args.fp16:
@@ -1347,7 +1367,7 @@ def generate(args):
         # gts.append(" ".join(tokens[1:]))
         # = max(tokenizer.encode(tokens[0]))
         chat_history = c_text
-        f = construct_conv_ESD(idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ[idx], use_emo_in_dist = args.use_emo_in_dist)
+        f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ[idx], use_emo_in_dist = args.use_emo_in_dist)
         if len(f.input_ids) >= args.block_size:
             f.input_ids = f.input_ids[-args.block_size:]
             f.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
@@ -1457,10 +1477,10 @@ def generate(args):
         #     strategy_hits.append(0)
         refs.append(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
         print(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
-        strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+54944])})
+        strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+args.base_vocab_size])})
         # print({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([chat_history_ids[:, :][0][1]])})
-        print({"ref strategy": tokenizer.decode([next_strategy_id + 54944]),
-               "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + 54944])})
+        print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
+               "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
         if strategy_logits[0].argmax() == next_strategy_id:
             strategy_hits.append(1)
         else:
