@@ -896,6 +896,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.layerdrop = config.encoder_layerdrop
 
         embed_dim = config.d_model
+        
         self.eos_token = config.eos_token_id
         self.padding_idx = config.pad_token_id
         self.max_source_positions = config.max_position_embeddings
@@ -912,7 +913,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             self.padding_idx,
         )
         if config.use_th_attn:
-            self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config,is_fuse = i == len(config.encoder_layers)-1) for i in range(config.encoder_layers)])
+            self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config,is_fuse = i == config.encoder_layers-1) for i in range(config.encoder_layers)])
         else:
             self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config,is_fuse = False) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
@@ -964,6 +965,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         if config.use_cat_attn:
             self.strat_cat_attn = CatAttention(config.d_model, config.d_model)
             self.emo_cat_attn =  CatAttention(config.d_model, config.d_model)
+        self.use_role_embed = config.use_role_embed
         self.init_weights()
     def forward(
         self,
@@ -1038,11 +1040,11 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
-        if role_ids is not None:
-            role_embeds = 0
-            #role_embeds = self.wre(role_ids)
-        else:
-            role_embeds = 0
+            if self.use_role_embed and (comet_embs is not None and comet_embs_st is not None):
+                assert role_ids is not None
+                #inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
+                inputs_embeds += self.embed_tokens(role_ids) * self.embed_scale * 0.2
+
         if turn_ids is not None:
             turn_embeds = 0
             #turn_embeds = self.wte(turn_ids)
@@ -1589,6 +1591,7 @@ class BlenderbotSmallModel(BlenderbotSmallPreTrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         if encoder_outputs is None:
+            
             encoder_outputs = self.encoder(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
@@ -1684,7 +1687,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.use_trans_mat = config.use_trans_mat
         self.prepend = config.prepend
         self.use_emb_prep = config.use_emb_prep
-        
+        self.use_role_embed = config.use_role_embed
         self.n_emo_out = config.n_emo_out
         self.dropout = config.dropout
         self.use_kl = config.use_kl
@@ -1799,6 +1802,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
         attention_mask = attention_mask.long()
         if encoder_outputs is None:
+            if self.use_role_embed:
+                assert role_ids is not None
             encoder_outputs = self.model.encoder(
                 input_ids=input_ids,
                 attention_mask=attention_mask,

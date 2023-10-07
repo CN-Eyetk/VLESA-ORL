@@ -110,6 +110,7 @@ def load_config(args, eval = False):
     config.no_fuse = args.no_fuse
     config.use_cat_attn = args.use_cat_attn
     config.attend_eos = args.attend_eos
+    config.use_role_embed = args.use_role_embed
     return config
 
 def load_model_for_eval(args):
@@ -143,9 +144,13 @@ def load_tokenizer(args):
     
     additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
+
     tokenizer.add_tokens(additional_special_tokens)
     tokenizer.add_tokens(comet_additional_special_tokens)
     tokenizer.add_special_tokens({'cls_token': '[CLS]'})
+    if args.use_role_embed:
+        role_special_tokens = ["[SEK]","[SPT]"]
+        tokenizer.add_tokens(role_special_tokens)
     if args.prepend_emotion:
         emotion_special_tokens = [f"[{label}]" for label in emo_extracter.label_2_id.keys()]
         print(emotion_special_tokens)
@@ -604,6 +609,8 @@ class ESDDataset(Dataset):
         self.tokenizer = tokenizer
         self.collate_verbose_step = 10
         directory = args.data_cache_dir
+        self.args = args
+        self.role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]
         if not os.path.exists(directory):
             os.makedirs(directory)
         
@@ -687,10 +694,22 @@ class ESDDataset(Dataset):
                                                     dtype=torch.long)
                                     for f in features],
                                     batch_first=True, padding_value=0)
-        role_ids = pad_sequence([torch.tensor(f.role_ids, 
-                                            dtype=torch.long)
-                                    for f in features],
-                                    batch_first=True, padding_value=0)
+        if self.args.use_role_embed:
+            role_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [self.role_id_2_token_id[i] for i in f.role_ids], 
+                                                dtype=torch.long)
+                                        for f in features],
+                                        batch_first=True, padding_value=self.tokenizer.pad_token_id)
+            #role_ids = torch.cat((input_ids[:,0,:].unsqu))
+            #print("role_ids", role_ids.shape)
+            #print("input_ids", input_ids.shape)
+            role_ids = role_ids[:,:input_ids.size(1)]
+            assert role_ids is not None
+            #print("role_ids", role_ids)
+        else:
+            role_ids = pad_sequence([torch.tensor(f.role_ids, 
+                                                dtype=torch.long)
+                                        for f in features],
+                                        batch_first=True, padding_value=0)
         labels = pad_sequence([torch.tensor(f.lm_labels, dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-100)
@@ -772,13 +791,14 @@ class ESDDataset(Dataset):
             with open("verbose.txt","a+") as file:
                 for k,(i,d,l) in enumerate(zip(inputs, decoder_inputs, label_text)):
                     file.write(f"{i}\n{d}\n{l}\n\n")
-                    sp = strat_positions[k]
-                    ep = emo_positions[k]
-                    for m,t in enumerate(input_ids[k]):
-                        if m in sp:
-                            file.write(f"{m}\t+\t-\t{t}\n")
-                        elif m in ep:
-                            file.write(f"{m}\t-\t+\t{t}\n")
+                    #sp = strat_positions[k]
+                    #ep = emo_positions[k]
+                    for m,(tk,rl) in enumerate(zip(input_ids[k], role_ids[k])):
+                        file.write(f"{tk}\t{rl}\n")
+                        #if m in sp:
+                        #    file.write(f"{m}\t+\t-\t{t}\n")
+                        #elif m in ep:
+                        #    file.write(f"{m}\t-\t+\t{t}\n")
             self.collate_verbose_step -= 1
         #example = 0
 
@@ -1450,7 +1470,16 @@ def generate(args):
             comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
             comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
         comet_mask_st = comet_mask_st.to(args.device)
-
+        input_ids = torch.tensor([f.input_ids], dtype=torch.long).to(args.device)
+        role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]
+        if args.use_role_embed:
+            role_ids = torch.tensor([[tokenizer.pad_token_id] + [role_id_2_token_id[i] for i in f.role_ids]], 
+                                                dtype=torch.long)
+            #role_ids = role_ids[:,]
+            role_ids = role_ids[:,:input_ids.size(1)]
+            role_ids = role_ids.to(args.device)
+        else:
+            role_ids = None
         #if f.is_strat_targ is not None:
             
        #     spt_eos_indice = torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
@@ -1459,8 +1488,9 @@ def generate(args):
        #     print(1/0)
        #     spt_eos_indice = None
        #     strat_seq = None
+        #assert input_ids.size(0) == role_ids.size(0) == comet_embs.size(0)
         paras = {}
-        input_ids = torch.tensor([f.input_ids], dtype=torch.long).to(args.device)
+        
         paras["attention_mask"] =  input_ids.ne(tokenizer.pad_token_id)
         paras["comet_embs"] = comet_embs
         paras["comet_mask"] = comet_mask
@@ -1471,6 +1501,8 @@ def generate(args):
         paras["output_mutual_attentions"] = False
         paras["strat_positions"] = strat_positions
         paras["emo_positions"] = emo_positions
+        if args.use_role_embed:
+            paras["role_ids"] = role_ids
         #paras["strat_seq"] = strat_seq
 
         # batch_size = decoder_strategy_ids.shape[0]
@@ -1488,7 +1520,7 @@ def generate(args):
             **paras, max_length=512,
             min_length=5,
             num_beams=1,
-            pad_token_id=0,
+            pad_token_id=tokenizer.pad_token_id,
             use_cache=True,
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
             top_p=0.3, 
@@ -1615,8 +1647,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     comet_mask = comet_mask.to(args.device)
     comet_mask_st = comet_mask_st.to(args.device)
     input_ids = input_ids.to(args.device)
-    turn_ids = turn_ids.to(args.device)
-    role_ids = role_ids.to(args.device)
+    
+    
     decoder_input_ids = decoder_input_ids.to(args.device)
     decoder_turn_ids = decoder_turn_ids.to(args.device)
     decoder_label_ids = decoder_labels.to(args.device)
@@ -1633,10 +1665,15 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     #decoder_cls_labels = decoder_cls_labels.to(args.device)
     # model.train()
     # we did't use role label and turn number in modeling as they did't carry significant improvement. Codes still remain.
-    if not args.role:
+    if args.use_role_embed:
+        role_ids = role_ids.to(args.device)
+    else:
         role_ids = None
+    #print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@role_ids",role_ids)
     if not args.turn:
         turn_ids = None
+    else:
+        turn_ids = turn_ids.to(args.device)
     if args.use_st_seq:
         spt_eos_indice = spt_eos_indice.to(args.device)
         strat_seq = strat_seq.to(args.device)

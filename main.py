@@ -14,6 +14,7 @@ parser.add_argument("--use_cat_attn", action= "store_true")
 parser.add_argument("--attend_eos", action= "store_true")
 parser.add_argument("--use_copy", action= "store_true")
 parser.add_argument("--use_th_attn", action= "store_true")
+parser.add_argument("--use_role_embed", action= "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -28,7 +29,7 @@ ST_FROM_EOS = False
 USE_ST_SEQ = False
 LSTM_ST_SEQ = False
 EMO_FROM_EOS = args_g.emo_from_eos
-EMO_FROM_SITU = False
+EMO_FROM_SITU = True
 COPY = args_g.use_copy
 ENCODE_SITU = args_g.encode_situ
 EMO_CRO_ATTN = False
@@ -40,6 +41,7 @@ BART = args_g.use_bart
 CAT_ATTN = args_g.use_cat_attn
 ATTEN_EOS = args_g.attend_eos
 USE_SATTN = args_g.use_th_attn
+USE_ROLE = args_g.use_role_embed
 #EMO_IN_COEF = args_g.emo_in_coef
 #EMO_OUT_COEF = args_g.emo_out_ceof
 
@@ -57,6 +59,7 @@ TAG = "all_loss" + ("kl" if KL else "") \
                     + ("-bart" if BART else "") \
                     + ("-eosemo" if EMO_FROM_EOS else "") \
                         +("-sattn" if USE_SATTN else "") \
+                            +("-role" if USE_ROLE else "") \
                         +("-cat" +("eos" if ATTEN_EOS else "cmt") if CAT_ATTN else "") \
                             +args_g.tag
                             
@@ -103,7 +106,7 @@ else:
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":True,
+    args = {"do_train":False,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -167,7 +170,8 @@ def load_arg():
             "no_fuse":NO_FUSE,
             "use_bart":BART,
             "use_cat_attn":CAT_ATTN,
-            "attend_eos":ATTEN_EOS
+            "attend_eos":ATTEN_EOS,
+            "use_role_embed":USE_ROLE,
             
             }
     args = argparse.Namespace(**args)

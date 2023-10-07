@@ -1,16 +1,16 @@
 
 use_trans=(" --use_trans")
-use_th_attn=("" " --use_th_attn")
-use_emb_prep=(" --use_emb_prep" "")
+use_th_attn=("")
+use_emb_prep=(" --use_emb_prep")
 use_prepend=("")
-use_cat=(" --use_cat_attn" "")
+use_cat=("")
 use_bart=("")
-use_copy=(" --use_copy" "")
+use_role=(" --use_role_embed")
 
 
-comm="python3 main.py --no_fuse --use_kl --tag 107"
+comm="python3 main.py --no_fuse --use_kl --tag 107II"
 
-for u_cp in "${use_copy[@]}"; do
+for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do
     for u_t in "${use_trans[@]}"; do
         for u_e_p in "${use_emb_prep[@]}"; do
@@ -26,7 +26,7 @@ for u_cp in "${use_copy[@]}"; do
                             cur_comm+=$u_p
                             cur_comm+=$u_c
                             cur_comm+=$u_b
-                            cur_comm+=$u_cp
+                            cur_comm+=$u_r
                             $cur_comm
                         done
                     done

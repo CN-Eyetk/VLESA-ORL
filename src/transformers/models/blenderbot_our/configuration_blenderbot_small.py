@@ -177,7 +177,8 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
         self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
         self.use_cat_attn = kwargs["use_cat_attn"] if "use_cat_attn" in kwargs.keys() else False
-        self.use_cat_attn = kwargs["attend_eos"] if "attend_eos" in kwargs.keys() else False
+        self.attend_eos = kwargs["attend_eos"] if "attend_eos" in kwargs.keys() else False
+        self.use_role_embed = kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads
