@@ -108,6 +108,8 @@ def load_config(args, eval = False):
     config.lstm_st_seq= args.lstm_st_seq
     config.merge = args.merge
     config.no_fuse = args.no_fuse
+    config.use_cat_attn = args.use_cat_attn
+    config.attend_eos = args.attend_eos
     return config
 
 def load_model_for_eval(args):
@@ -213,7 +215,7 @@ class Args():
 
 class InputFeatures_train(object):
     def __init__(self, conv_id, input_ids, position_ids, token_type_ids,
-                 role_ids, lm_labels, cls_position, cls_label, strategy_ids, situ_ids, is_strat_targ = None, spt_eos_indice = None, input_len=None, hist_strat_labels = None):
+                 role_ids, lm_labels, cls_position, cls_label, strategy_ids, situ_ids, is_strat_targ = None, is_emo_targ = None, spt_eos_indice = None, input_len=None, hist_strat_labels = None):
         self.conv_id = conv_id
         self.input_ids = input_ids
         self.position_ids = position_ids
@@ -229,6 +231,7 @@ class InputFeatures_train(object):
             self.input_len = input_len
         self.situ_ids = situ_ids
         self.is_strat_targ = is_strat_targ
+        self.is_emo_targ = is_emo_targ
         self.spt_eos_indice = spt_eos_indice
         self.hist_strat_labels = hist_strat_labels
         
@@ -264,6 +267,7 @@ class InputFeatures_blender(object):
         #self.spt_eos_indice = encoder_feature.spt_eos_indice
         #self.strat_seq = encoder_feature.hist_strat_labels[:-1] + [self.decoder_strategy_ids[0]]
         self.is_strat_targ = encoder_feature.is_strat_targ
+        self.is_emo_targ = encoder_feature.is_emo_targ
         #assert len(self.spt_eos_indice) == len(self.strat_seq)
         #print("strat_seq",self.strat_seq)
         #print("spt_eos_indice",self.spt_eos_indice)
@@ -368,6 +372,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     roles = []
     strategy_ids = []
     is_strat_targ = []
+    is_emo_targ = []
     #hist_strat_labels = []
     #print("strategy_labels",strategy_labels)
     spt_strategy_labels = [x for x in strategy_labels if x < 8]
@@ -377,17 +382,6 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     strat_step = 0
 
     for i, s in enumerate(sents):
-        if i < len(sents) - 1:
-            next_rl = rls[i+1]            
-            if next_rl == 1:
-                is_strat_targ += [spt_strategy_labels[strat_step]] + [8] * (len(s))
-                strat_step += 1
-            else:
-                is_strat_targ += [8] * (len(s) + 1)
-        elif i == len(sents) - 1:
-            is_strat_targ += [-1] + [8] * (len(s))
-        else:
-            print(1/0)
         token_type_ids += [ts[i]] * (len(s) + 1)
         flag_str = -1
         if str_embd: #use for strategy embed but currently we treat strategy as token
@@ -400,13 +394,22 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
         else:
             lm_labels += (  s + [eos])
             roles += [rls[i]] * (len(s) + 1)
+
+            cur_rl = rls[i]     
+        if rls[i] == 1:
+            is_strat_targ +=  [0] * (len(s)) + [1]#attent to <eos> of seeker utternaces
+            is_emo_targ += [0] * (len(s) + 1)
+        else:
+            is_strat_targ +=  [0] * (len(s) + 1)
+            is_emo_targ +=  [0] * (len(s)) + [1]
+
     #print(hist_strat_labels)
     #print(spt_strategy_labels)
     #print(strategy_labels)
-    if strategy_labels[0] == 8:
-        assert strat_step == len(spt_strategy_labels)
-    else:
-        assert strat_step == len(spt_strategy_labels) - 1
+    #if strategy_labels[0] == 8:
+    #    assert strat_step == len(spt_strategy_labels)
+    #else:
+    #    assert strat_step == len(spt_strategy_labels) - 1
     #spt_eos_indice.append(len(input_ids)-1)
     #hist_strat_labels.append(-1) #要填入decoder strategy
 
@@ -422,6 +425,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     token_type_ids = token_type_ids[:i+1]
     roles = roles[:i+1]
     is_strat_targ = is_strat_targ[:i+1]
+    is_emo_targ = is_emo_targ[:i+1]
     #print("input_ids 395",input_ids)
     if not str_embd:
         strategy_ids = [8]*len(input_ids) # strategy is not used
@@ -432,7 +436,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
 
 
     assert (len(input_ids) == len(token_type_ids)
-            == len(lm_labels) == len(roles) == len(strategy_ids) == len(is_strat_targ))
+            == len(lm_labels) == len(roles) == len(strategy_ids) == len(is_strat_targ) == len(is_emo_targ))
     # cut according to block size
     if len(input_ids) > block_size:
         cut_index = input_ids.index(eos,-512) + 1
@@ -443,6 +447,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
         roles = roles[cut_index: ]
         strategy_ids = strategy_ids[cut_index: ]
         is_strat_targ = is_strat_targ[cut_index: ]
+        is_emo_targ = is_emo_targ[cut_index: ]
         #hist_strats = [(x,y) for x, y in zip(spt_eos_indice, hist_strat_labels)]
         #new_hist_strats = [(x- cut_index,y) for x, y in hist_strats if x- cut_index >= 0]
         #spt_eos_indice = [x for x,_ in new_hist_strats]
@@ -458,11 +463,12 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
             lm_labels.append(-100)
             roles.append(0)
             strategy_ids.append(8)
-            is_strat_targ.append(8)
+            is_strat_targ.append(0)
+            is_emo_targ.append(0)
         assert len(input_ids) % 8 == 0
     position_ids = list(range(len(input_ids)))
     assert (len(input_ids) == len(position_ids) == len(token_type_ids)
-            == len(lm_labels) == len(roles) == len(strategy_ids) == len(is_strat_targ))
+            == len(lm_labels) == len(roles) == len(strategy_ids) == len(is_strat_targ) == len(is_emo_targ))
     if len(input_ids) == 0:
         import pdb
         pdb.set_trace()
@@ -482,9 +488,9 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     #print("input_ids:",input_ids)
     #print("situation:",situation)
     #spt_eos_indice = [i for i, e in enumerate(is_strat_targ) if e != 8]
-    hist_strat_labels = [e for i,e in enumerate(is_strat_targ) if e != 8]
+    #hist_strat_labels = [e for i,e in enumerate(is_strat_targ) if e != 8]
     feature = InputFeatures_train(id_, input_ids, position_ids, token_type_ids, roles,
-                            lm_labels, cls_position , strategy_labels[-1], strategy_ids, situ_ids, is_strat_targ = is_strat_targ, hist_strat_labels = hist_strat_labels)
+                            lm_labels, cls_position , strategy_labels[-1], strategy_ids, situ_ids, is_strat_targ = is_strat_targ, is_emo_targ = is_emo_targ)
     return feature
 
 def _norm_text(text):
@@ -635,11 +641,14 @@ class ESDDataset(Dataset):
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.is_strat_targ = conv.is_strat_targ[-block_size:]
+                    conv.is_emo_targ = conv.is_emo_targ[-block_size:]
                     conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False)[0]
-                    conv.is_strat_targ[0] = 8
+                    conv.is_strat_targ[0] = 1
+                    conv.is_emo_targ[0] = 1
                 else:
                     conv.input_ids = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False) + conv.input_ids
-                    conv.is_strat_targ = [8] + conv.is_strat_targ 
+                    conv.is_strat_targ = [1] + conv.is_strat_targ 
+                    conv.is_emo_targ = [1] + conv.is_emo_targ
                 self.features.append(conv)
 
             # Note that we are loosing the last truncated example here for the sake of simplicity (no padding)
@@ -746,19 +755,30 @@ class ESDDataset(Dataset):
             emo_in_dist = torch.tensor([f.emo_in_dist for f in features], dtype=torch.float64).squeeze(1)
         else:
             emo_in_dist = None
-        spt_eos_indice = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
+        strat_positions = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x == 1], dtype=torch.long)
+                            for f in features],
+                            batch_first=True, padding_value=-1)
+        emo_positions = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_emo_targ) if x == 1], dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-1)
         if self.collate_verbose_step > 0:
             inputs =  self.tokenizer.batch_decode(input_ids, )
             decoder_inputs = self.tokenizer.batch_decode(decoder_input_ids,)
             
+            
             new_labels = copy.deepcopy(decoder_labels)
             new_labels[new_labels == -100] = 0
             label_text = self.tokenizer.batch_decode(new_labels)
             with open("verbose.txt","a+") as file:
-                for (i,d,l) in zip(inputs, decoder_inputs, label_text):
+                for k,(i,d,l) in enumerate(zip(inputs, decoder_inputs, label_text)):
                     file.write(f"{i}\n{d}\n{l}\n\n")
+                    sp = strat_positions[k]
+                    ep = emo_positions[k]
+                    for m,t in enumerate(input_ids[k]):
+                        if m in sp:
+                            file.write(f"{m}\t+\t-\t{t}\n")
+                        elif m in ep:
+                            file.write(f"{m}\t-\t+\t{t}\n")
             self.collate_verbose_step -= 1
         #example = 0
 
@@ -772,9 +792,9 @@ class ESDDataset(Dataset):
                 
         #        assert ids[t-1].item() in [2,54961]
                 
-        strat_seq = pad_sequence([torch.tensor([x if x > 0 else f.decoder_strategy_ids[0] for _,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
-                            for f in features],
-                            batch_first=True, padding_value=-100)
+        #strat_seq = pad_sequence([torch.tensor([x if x > 0 else f.decoder_strategy_ids[0] for _,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
+        #                    for f in features],
+        #                    batch_first=True, padding_value=-100)
         #print(strat_seq)
         #for i in strat_seq:
         #    for j in i:
@@ -783,7 +803,7 @@ class ESDDataset(Dataset):
         #            assert j.item() > -1
         
 
-        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist, emo_in_dist, situations, spt_eos_indice, strat_seq)
+        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist, emo_in_dist, situations, strat_positions, emo_positions)
 
 
 def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False, strategy=True, test=False, **kwargs):
@@ -955,7 +975,8 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
     np.set_printoptions(threshold=np.inf)
     for epoch in train_iterator:
             
-        # if epoch < 3:
+        if epoch > 5:
+            break
         #     for paras in model.model.encoder.parameters():
         #         paras.requires_grad = True
         #     for paras in model.model.decoder.parameters():
@@ -1401,6 +1422,16 @@ def generate(args):
         emo_dist = emo_dist.to(args.device) if emo_dist is not None else None
         emo_in_dist = emo_in_dist.to(args.device) if emo_in_dist is not None else None
 
+        if args.use_cat_attn:
+            strat_positions =torch.tensor([[i for i,x in enumerate(f.is_strat_targ) if x == 1]], dtype=torch.long)
+            #print("strat_positions",strat_positions.shape)
+            #strat_positions = torch.tensor([f.strat_positions], dtype = torch.long)
+            emo_positions = torch.tensor([[i for i,x in enumerate(f.is_emo_targ) if x == 1]], dtype=torch.long)
+            #print("emo_positions",emo_positions.shape)
+            strat_positions, emo_positions = strat_positions.to(args.device), emo_positions.to(args.device)
+        else:
+            strat_positions = None
+            emo_positions = None
         batch_size, n_attr, len_attr = comet_ids.shape
         comet_ids = comet_ids.view(-1, len_attr)
         comet_embs = model.model.encoder(comet_ids, attention_mask=comet_ids.ne(tokenizer.pad_token_id))[0][:, 0, :]
@@ -1420,14 +1451,14 @@ def generate(args):
             comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
         comet_mask_st = comet_mask_st.to(args.device)
 
-        if f.is_strat_targ is not None:
+        #if f.is_strat_targ is not None:
             
-            spt_eos_indice = torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
-            strat_seq = torch.tensor([x if x > 0 else f.decoder_strategy_ids[0] for _,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
-        else:
-            print(1/0)
-            spt_eos_indice = None
-            strat_seq = None
+       #     spt_eos_indice = torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
+       #     strat_seq = torch.tensor([x if x > 0 else f.decoder_strategy_ids[0] for _,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
+       # else:
+       #     print(1/0)
+       #     spt_eos_indice = None
+       #     strat_seq = None
         paras = {}
         input_ids = torch.tensor([f.input_ids], dtype=torch.long).to(args.device)
         paras["attention_mask"] =  input_ids.ne(tokenizer.pad_token_id)
@@ -1438,7 +1469,8 @@ def generate(args):
         paras["emo_dist"] = emo_dist
         paras["emo_in_dist"] = emo_in_dist
         paras["output_mutual_attentions"] = False
-        paras["spt_eos_indice"] = spt_eos_indice
+        paras["strat_positions"] = strat_positions
+        paras["emo_positions"] = emo_positions
         #paras["strat_seq"] = strat_seq
 
         # batch_size = decoder_strategy_ids.shape[0]
@@ -1544,7 +1576,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     else:
         model.eval()
     input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, spt_eos_indice, strat_seq= batch
+            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions = batch
 
     decoder_strategy_ids = decoder_strategy_ids[:, 0]
     decoder_strategy_ids = decoder_strategy_ids.to(args.device)
@@ -1579,6 +1611,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
         comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
     
+
     comet_mask = comet_mask.to(args.device)
     comet_mask_st = comet_mask_st.to(args.device)
     input_ids = input_ids.to(args.device)
@@ -1592,6 +1625,11 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         decoder_cls_labels = decoder_cls_labels.to(args.device) 
     emo_dist = emo_dist.to(args.device) if emo_dist is not None else None
     emo_in_dist = emo_in_dist.to(args.device) if emo_in_dist is not None else None
+    if args.use_cat_attn:
+        strat_positions, emo_positions = strat_positions.to(args.device), emo_positions.to(args.device)
+    else:
+        strat_positions = None
+        emo_positions = None
     #decoder_cls_labels = decoder_cls_labels.to(args.device)
     # model.train()
     # we did't use role label and turn number in modeling as they did't carry significant improvement. Codes still remain.
@@ -1605,10 +1643,10 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     else:
         spt_eos_indice = None
     if phase == "train":
-        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, spt_eos_indice = spt_eos_indice, strat_seq = strat_seq)
+        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions)
     else:
         with torch.no_grad():
-            outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, spt_eos_indice = spt_eos_indice, strat_seq = strat_seq)
+            outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions)
     return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
 if __name__ == "__main__":
     args = Args()

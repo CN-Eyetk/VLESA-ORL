@@ -41,7 +41,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
-from .modules.modules import EmoTrans
+from .modules.modules import EmoTrans, CatAttention
 
 
 
@@ -336,7 +336,7 @@ class BlenderbotSmallAttention(nn.Module):
 
 # Copied from transformers.models.bart.modeling_bart.BartEncoderLayer with Bart->BlenderbotSmall
 class BlenderbotSmallEncoderLayer(nn.Module):
-    def __init__(self, config: BlenderbotSmallConfig):
+    def __init__(self, config: BlenderbotSmallConfig, is_fuse: bool):
         super().__init__()
         self.embed_dim = config.d_model
         self.self_attn = BlenderbotSmallAttention(
@@ -355,13 +355,14 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         # for param in self.parameters():
         #     param.requires_grad = False
         self.use_th_attn = config.use_th_attn
-        if config.use_th_attn:
+        if is_fuse:
+            self.is_fuse = True
             self.muAttn = BlenderbotSmallAttention(embed_dim=self.embed_dim,
                                                     num_heads=config.encoder_attention_heads,
                                                     dropout=config.attention_dropout,)
         else:
-            self.muAttn = Mutual_Attn(embed_dim=config.d_model)
-            self.muAttn_st = Mutual_Attn(embed_dim=config.d_model)
+            self.is_fuse = False
+            self.muAttn = None
 
             
 
@@ -393,7 +394,8 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
         hidden_states = residual + hidden_states
         hidden_states = self.final_layer_norm(hidden_states)
-        if self.use_th_attn:
+        
+        if self.is_fuse:
             if comet_hidden_states is not None and comet_hidden_states_st is not None:
                 hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
                 len_1 = hidden_states.size(1)
@@ -409,25 +411,17 @@ class BlenderbotSmallEncoderLayer(nn.Module):
                 #hidden_states = hidden_cat[:,:len_1,:]
                 comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
                 comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
+                #if is_last_layer:
+                #   hidden_states = hidden_cat[:,:len_1,:]
                 if output_mutual_attentions:
                     mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
                     mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
+                #if torch.isinf(hidden_states).any() or torch.isnan(hidden_states).any():
+                #    clamp_value = torch.finfo(hidden_states.dtype).max - 1000
+                #    hidden_states = torch.clamp(hidden_states, min=-clamp_value, max=clamp_value)
                 if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
                     clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
                     comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
-                if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
-                    clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
-                    comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
-        else:
-            if comet_hidden_states is not None:
-                #使用comet的话要切换过来
-                _, comet_hidden_states, mutual_attn_weights = self.muAttn(hidden_states, comet_hidden_states, attention_mask_for_muAttn, comet_mask)
-                if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
-                    clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
-                    comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
-            if comet_hidden_states_st is not None:
-                _, comet_hidden_states_st, mutual_attn_weights_st = self.muAttn_st(hidden_states, comet_hidden_states_st,
-                                                                        attention_mask_for_muAttn, comet_mask_st)
                 if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
                     clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
                     comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
@@ -917,8 +911,10 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             embed_dim,
             self.padding_idx,
         )
-
-        self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config) for _ in range(config.encoder_layers)])
+        if config.use_th_attn:
+            self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config,is_fuse = i == len(config.encoder_layers)-1) for i in range(config.encoder_layers)])
+        else:
+            self.layers = nn.ModuleList([BlenderbotSmallEncoderLayer(config,is_fuse = False) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
         self.use_emo_in_dist = config.use_emo_in_dist
         self.n_emo_situ = 11
@@ -963,6 +959,11 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                                       )
         else:
             self.trans_mat = None
+        self.use_cat_attn = config.use_cat_attn
+        self.attend_eos = config.attend_eos
+        if config.use_cat_attn:
+            self.strat_cat_attn = CatAttention(config.d_model, config.d_model)
+            self.emo_cat_attn =  CatAttention(config.d_model, config.d_model)
         self.init_weights()
     def forward(
         self,
@@ -982,8 +983,8 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         output_hidden_states=None,
         return_dict=None,
         strategy_logit_ground=None,
-        spt_eos_indice=None,
-        #strat_seq=None
+        strat_positions = None,
+        emo_positions = None
     ):
 
         r"""
@@ -1075,7 +1076,11 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         all_mutual_attentions = () if output_mutual_attentions else None
         all_mutual_attentions_st = () if output_mutual_attentions else None
 
-        for encoder_layer in self.layers:
+        for i,encoder_layer in enumerate(self.layers):
+            if i == len(self.layers) - 1:
+                is_last_layer = True
+            else:
+                is_last_layer = False
             if output_hidden_states:
                 encoder_states = encoder_states + (hidden_states,)
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
@@ -1118,42 +1123,78 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         #calculate emo and strat logits
         if comet_embs is not None and comet_embs_st is not None:
 
-            if self.emo_from_eos:
-                last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                emotion_logits = self.emotion_head(last_eos_state)
-            elif self.emo_from_situ:
-                last_eos_state = None
-                emotion_logits = self.emotion_head(hidden_states[:,0,:])
-            else:
-                last_eos_state = None
-                emotion_logits = self.emotion_head(comet_hidden_states[:,0,:])
 
-            emotion_logits = self.batchNorm_emotion(emotion_logits)
-            emotion_intensity = None
-            if self.use_st_seq:
-                spt_eos_emb = hidden_states[torch.arange(hidden_states.size(0))[:,None], spt_eos_indice, :].squeeze(0)
-                if len(spt_eos_emb.size()) == 2:
-                    spt_eos_emb = spt_eos_emb.unsqueeze(0)
-                if self.strategy_lstm is not None:
-                    spt_eos_mask = spt_eos_indice.ne(-1)
-                    last_state_indice = spt_eos_mask.long().sum(-1) - 1
-                    strategy_seq_logits = self.strategy_head(self.strategy_lstm(spt_eos_emb)[0])#[torch.arange(hidden_states.size(0)),last_state_indice,:]
-                    strategy_logits = strategy_seq_logits[torch.arange(hidden_states.size(0)),last_state_indice,:]
+            if self.use_cat_attn:
+                #10-6 Add Cat attn
+                strat_hidden = hidden_states[:, 0, :]# if not self.st_from_eos else hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                if self.attend_eos:
+                    strat_src_hidden = hidden_states[torch.arange(hidden_states.size(0))[:,None], strat_positions, :].squeeze(0)
+                    strat_attn_mask = strat_positions.ne(-1).float()
                 else:
-                    spt_eos_emb = spt_eos_emb.permute(0,2,1)
-                    spt_eos_mask = spt_eos_indice.ne(-1).float()
-                    spt_eos_emb_mean = torch.bmm(spt_eos_emb, spt_eos_mask.unsqueeze(-1)).squeeze(-1)
-                    strategy_logits = self.strategy_head(spt_eos_emb_mean)
-                    strategy_seq_logits = None
-
-            elif self.st_from_eos:
-                if last_eos_state is None:
-                    last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                strategy_logits = self.strategy_head(last_eos_state)
-                strategy_seq_logits = None
+                    strat_src_hidden = comet_hidden_states
+                    strat_attn_mask = comet_mask.float()
+                    #print(strat_attn_mask)
+                    assert len(strat_attn_mask.size()) == 2
+                if len(strat_src_hidden.size()) == 2:
+                    strat_src_hidden = strat_src_hidden.unsqueeze(0)
+                _, strat_hidden = self.strat_cat_attn(strat_hidden, strat_src_hidden, strat_attn_mask)
+                strategy_logits = self.strategy_head(strat_hidden)
+                
+                #10-6 Add Cat attn
+                emo_hidden = hidden_states[:, 0, :]# if not self.emo_from_eos else hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                if self.attend_eos:
+                    emo_src_hidden = hidden_states[torch.arange(hidden_states.size(0))[:,None], emo_positions, :].squeeze(0)
+                    emo_attn_mask = emo_positions.ne(-1).float()
+                else:
+                    emo_src_hidden = comet_hidden_states
+                    emo_attn_mask = comet_mask.float()
+                if len(emo_src_hidden.size()) == 2:
+                    emo_src_hidden = emo_src_hidden.unsqueeze(0)
+                _, emo_hidden = self.emo_cat_attn(emo_hidden, emo_src_hidden, emo_attn_mask)
+                emotion_logits = self.emotion_head(emo_hidden)
+                emotion_logits = self.batchNorm_emotion(emotion_logits)
+                
+                emotion_intensity = None
+                
+                
             else:
-                strategy_logits = self.strategy_head(hidden_states[:, 0, :])
-                strategy_seq_logits = None
+                #Befor 10-6, 1144-1180
+                if self.emo_from_eos:
+                    
+                    last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                    emotion_logits = self.emotion_head(last_eos_state)
+                elif self.emo_from_situ:
+                    last_eos_state = None
+                    emotion_logits = self.emotion_head(hidden_states[:,0,:])
+                else:
+                    last_eos_state = None
+                    emotion_logits = self.emotion_head(comet_hidden_states[:,0,:])
+
+                emotion_logits = self.batchNorm_emotion(emotion_logits)
+                emotion_intensity = None
+                #spt_eos_emb = hidden_states[torch.arange(hidden_states.size(0))[:,None], spt_eos_indice, :].squeeze(0)
+                #    if len(spt_eos_emb.size()) == 2:
+                #        spt_eos_emb = spt_eos_emb.unsqueeze(0)
+                #    if self.strategy_lstm is not None:
+                #        spt_eos_mask = spt_eos_indice.ne(-1)
+                #        last_state_indice = spt_eos_mask.long().sum(-1) - 1
+                #        strategy_seq_logits = self.strategy_head(self.strategy_lstm(spt_eos_emb)[0])#[torch.arange(hidden_states.size(0)),last_state_indice,:]
+                #        strategy_logits = strategy_seq_logits[torch.arange(hidden_states.size(0)),last_state_indice,:]
+                #    else:
+                #        spt_eos_emb = spt_eos_emb.permute(0,2,1)
+                #        spt_eos_mask = spt_eos_indice.ne(-1).float()
+                #        spt_eos_emb_mean = torch.bmm(spt_eos_emb, spt_eos_mask.unsqueeze(-1)).squeeze(-1)
+                #        strategy_logits = self.strategy_head(spt_eos_emb_mean)
+                #        strategy_seq_logits = None
+
+                if self.st_from_eos:
+                    if last_eos_state is None:
+                        last_eos_state = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+                    strategy_logits = self.strategy_head(last_eos_state)
+                    strategy_seq_logits = None
+                else:
+                    strategy_logits = self.strategy_head(hidden_states[:, 0, :])
+                    strategy_seq_logits = None
         else:
             multi_state = None
             emotion_logits = None
@@ -1194,7 +1235,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             
             emo_out_embs=emo_out_embs,
             emo_out_prob=emo_out_prob,
-            strategy_seq_logits=strategy_seq_logits,
+            strategy_seq_logits=None,
         )
 
 
@@ -1656,7 +1697,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.no_fuse = config.no_fuse
         if self.use_copy:
             self.pgen_decoder_output_layer = nn.Linear(2 * config.d_model, 1, bias=True)
-        if config.use_trans_mat:
+            #if config.use_copy_attn:
+            #    self.copy_attn = Mutual_Attn(config.d_model, 1, 0.1)
+        if not self.no_fuse:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.use_merge = config.merge
         self.init_weights()
@@ -1724,8 +1767,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         output_hidden_states=None,
         emo_dist=None,
         emo_in_dist=None,
-        spt_eos_indice=None,
-        strat_seq=None,
+        strat_positions=None,
+        emo_positions=None,
         return_dict=None,
         
     ):
@@ -1748,9 +1791,9 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         if not generate:
             batch_size = strategy_label.shape[0]
             strategy_logit_ground = None
-            #onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
-            #strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
-            #strategy_logit_ground.float()
+            onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
+            strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
+            strategy_logit_ground.float()
         else:
             strategy_logit_ground = None
 
@@ -1770,7 +1813,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 turn_ids=decoder_turn_ids[:, 0],
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
-                spt_eos_indice=spt_eos_indice,
+                strat_positions=strat_positions,
+                emo_positions=strat_positions,
             )
 
         if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
@@ -1784,6 +1828,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 emo_out_embs = None
                 #emo_out_embs = None
         else:
+            
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
             
@@ -1835,14 +1880,18 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
         if self.use_emb_prep and decoder_input_ids is None:
             lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):,:]) + self.final_logits_bias
+            if self.use_copy:
+                cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)[:,strategy_embs.size(1):,:]
         else:
             lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
-
+            if self.use_copy:
+                cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)
         if self.use_copy:
-            cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)
-            decoder_hidden_state = decoder_outputs[0]
-            encoder_hidden_state = encoder_outputs.last_hidden_state
-            p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, encoder_hidden_state, cross_attn[:,:src_len], input_ids) #+ self.final_logits_bias
+            decoder_hidden_state = decoder_outputs[0][:,strategy_embs.size(1):,:] if self.use_emb_prep and decoder_input_ids is None else decoder_outputs[0]
+            #encoder_hidden_state = encoder_outputs.last_hidden_state
+            p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, strategy_embs = strategy_embs[:,0,:],
+                                                                  attn = cross_attn[:,:src_len], 
+                                                                  input_ids_to_copy = input_ids) #+ self.final_logits_bias
             lm_logits = p_gen * lm_logits + (1-p_gen) * copy_logits
 
         loss = None
@@ -1869,7 +1918,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             emo_loss_fct = CrossEntropyLoss()
             # print(emotion_logits.shape, emotion)
             emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
-            loss += emo_loss
+            loss +=  emo_loss
 
         #intensity_loss = None
         if strategy_label is not None:
@@ -1920,12 +1969,51 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
             
         )
-    def _compute_output_dist_light(self, decoder_hidden_states, encoder_hidden_states, attn, input_ids_to_copy): #https://github.com/OpenNMT/OpenNMT-py/blob/fb14f48cb4e185c5169183a65ae26e532e522764/onmt/modules/copy_generator.py
+    def _compute_output_dist_light(self, decoder_hidden_states, strategy_embs, attn, input_ids_to_copy): #https://github.com/OpenNMT/OpenNMT-py/blob/fb14f48cb4e185c5169183a65ae26e532e522764/onmt/modules/copy_generator.py
         #print("using copy")
+        #print("strategy_embs",strategy_embs.size())
+        #print("decoder_hidden_states",decoder_hidden_states.size())
+        #if strategy_embs.size(1) == 2:
+        #    strategy_embs = torch.cat((strategy_embs[:,0,:],strategy_embs[:,1,:]), dim = -1)
+        #else:
+        #    strategy_embs = strategy_embs.squeeze(1)
+        assert len(strategy_embs.size()) == 2
+        strategy_embs = strategy_embs.unsqueeze(1).repeat(1,decoder_hidden_states.size(1),1)
         batch_size, seq_length = input_ids_to_copy.size(0), input_ids_to_copy.size(1)
-        context_vectors = attn @ encoder_hidden_states
-        total_states = torch.cat((context_vectors, decoder_hidden_states), dim=-1)
-        p_gen = torch.sigmoid(self.pgen_decoder_output_layer(total_states)) #[16, tl ,1]
+        
+        #context_vectors = attn @ encoder_hidden_states
+        total_states = torch.cat((strategy_embs, decoder_hidden_states), dim=-1)
+        #print("strategy_embs",strategy_embs.size())
+        #print("decoder_hidden_states",decoder_hidden_states.size())
+        p_gen = torch.sigmoid(self.pgen_decoder_output_layer(total_states)) #[16, tl ,ts]
+        input_one_hot = input_ids_to_copy.new_zeros(batch_size, seq_length, self.config.vocab_size)
+        input_one_hot.scatter_(-1, input_ids_to_copy[:, :, None], 1)
+        input_one_hot = input_one_hot.float()
+        logits = attn @ input_one_hot
+        
+        return p_gen, logits
+    def _compute_output_dist_pro(self, decoder_hidden_states, encoder_hidden_states, strategy_embs, emo_embs, attn, input_ids_to_copy): #https://github.com/OpenNMT/OpenNMT-py/blob/fb14f48cb4e185c5169183a65ae26e532e522764/onmt/modules/copy_generator.py
+        #print("using copy")
+        #print("strategy_embs",strategy_embs.size())
+        #print("decoder_hidden_states",decoder_hidden_states.size())
+        #if strategy_embs.size(1) == 2:
+        #    strategy_embs = torch.cat((strategy_embs[:,0,:],strategy_embs[:,1,:]), dim = -1)
+        #else:
+        #    strategy_embs = strategy_embs.squeeze(1)
+        assert len(strategy_embs.size()) == 2
+        strategy_embs = strategy_embs.unsqueeze(1).repeat(1,decoder_hidden_states.size(1),1)
+        emo_embs = emo_embs.unsqueeze(1).repeat(1,decoder_hidden_states.size(1),1)
+        batch_size, seq_length = input_ids_to_copy.size(0), input_ids_to_copy.size(1)
+        
+        #context_vectors = attn @ encoder_hidden_states
+        total_states = torch.cat((strategy_embs, decoder_hidden_states), dim=-1)
+        #print("strategy_embs",strategy_embs.size())
+        #print("decoder_hidden_states",decoder_hidden_states.size())
+        p_gen = torch.sigmoid(self.pgen_decoder_output_layer(total_states)) #[16, tl ,ts]
+        
+        hidden_fuse_emo = self.fuse_emo_with_hidden(torch.cat((emo_embs, decoder_hidden_states), dim=-1))
+        new_attn, _, _ = self.copy_attn(encoder_hidden_states, hidden_fuse_emo, input_ids_to_copy.ne(self.config.pad_token_id).bool())
+        attn = new_attn + attn
         input_one_hot = input_ids_to_copy.new_zeros(batch_size, seq_length, self.config.vocab_size)
         input_one_hot.scatter_(-1, input_ids_to_copy[:, :, None], 1)
         input_one_hot = input_one_hot.float()

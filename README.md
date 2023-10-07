@@ -59,6 +59,8 @@ Result 10-4
 | gpt_ppl | _26.076_ | _26.882_ | 28.397 | _26.143_ | _25.262_ | _27.129_ | **23.464** | _26.823_ | _24.782_ | 28.576 | 29.446 | 27.448 | 72.033 |
 | mid_gpt_ppl | 15.216 | 15.363 | _14.341_ | _14.289_ | 15.495 | 16.075 | _14.371_ | **13.93** | _14.247_ | _14.347_ | _14.077_ | 14.709 | 14.716 |
 
+
+Current write result to: our_generated_data/-LIGHT-TRANS4/all_losskl-nopp-empp-no_fusebalance_loss/summary.txt
 Comparison with State of the Arts
 |       | MISC        | TransESC    | KEMI        | GLHG        | MultiESC | Our         |
 |-------|-------------|-------------|-------------|-------------|----------|-------------|

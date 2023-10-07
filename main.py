@@ -8,20 +8,28 @@ parser.add_argument("--encode_situ", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
-parser.add_argument("--kl", action= "store_true")
+parser.add_argument("--emo_from_eos", action= "store_true")
+parser.add_argument("--use_kl", action= "store_true")
+parser.add_argument("--use_cat_attn", action= "store_true")
+parser.add_argument("--attend_eos", action= "store_true")
+parser.add_argument("--use_copy", action= "store_true")
+parser.add_argument("--use_th_attn", action= "store_true")
+#parser.add_argument("--emo_out_coef", default = 1.0, type = float)
+#parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
+parser.add_argument("--tag", type=str)
 args_g = parser.parse_args()
 USE_TRANS = args_g.use_trans
 USE_PREPEND = args_g.use_prepend
 USE_EMB_PREP = args_g.use_emb_prep
 MISC = False
-KL = True
+KL = args_g.use_kl
 ST_FROM_EOS = False
 USE_ST_SEQ = False
 LSTM_ST_SEQ = False
-EMO_FROM_EOS = True
+EMO_FROM_EOS = args_g.emo_from_eos
 EMO_FROM_SITU = False
-COPY = False
+COPY = args_g.use_copy
 ENCODE_SITU = args_g.encode_situ
 EMO_CRO_ATTN = False
 USE_EMO_IN_DIST = args_g.use_emo_in
@@ -29,6 +37,11 @@ MERGE = args_g.merge
 NO_FUSE = args_g.no_fuse
 OVERWRITE = args_g.over_write
 BART = args_g.use_bart
+CAT_ATTN = args_g.use_cat_attn
+ATTEN_EOS = args_g.attend_eos
+USE_SATTN = args_g.use_th_attn
+#EMO_IN_COEF = args_g.emo_in_coef
+#EMO_OUT_COEF = args_g.emo_out_ceof
 
 TAG = "all_loss" + ("kl" if KL else "") \
     + ("_copy" if COPY else "")\
@@ -41,9 +54,14 @@ TAG = "all_loss" + ("kl" if KL else "") \
             + ("-pp" if USE_PREPEND else "-nopp") \
             + ("-empp" if USE_EMB_PREP else "") \
                 + ("-no_fuse" if NO_FUSE else "") \
-                    + ("-bart" if BART else "")
+                    + ("-bart" if BART else "") \
+                    + ("-eosemo" if EMO_FROM_EOS else "") \
+                        +("-sattn" if USE_SATTN else "") \
+                        +("-cat" +("eos" if ATTEN_EOS else "cmt") if CAT_ATTN else "") \
+                            +args_g.tag
+                            
 
-GROUP = ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
+GROUP = ("-LIGHT" if not USE_SATTN else "") + ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
 
 import torch
 import argparse
@@ -85,7 +103,7 @@ else:
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -99,7 +117,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./105_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
+            "data_cache_dir":"./106_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -130,7 +148,7 @@ def load_arg():
             "max_grad_norm":1.0,
             "prepend_emotion":USE_PREPEND,
             "use_trans_mat":USE_TRANS,
-            "use_th_attn":not MISC,
+            "use_th_attn":USE_SATTN,
             "add_emo_cross_attn":EMO_CRO_ATTN,
             "st_from_eos":ST_FROM_EOS,
             "use_st_seq":USE_ST_SEQ,
@@ -147,7 +165,9 @@ def load_arg():
             "use_copy":COPY,
             "merge":MERGE,
             "no_fuse":NO_FUSE,
-            "use_bart":BART
+            "use_bart":BART,
+            "use_cat_attn":CAT_ATTN,
+            "attend_eos":ATTEN_EOS
             
             }
     args = argparse.Namespace(**args)
