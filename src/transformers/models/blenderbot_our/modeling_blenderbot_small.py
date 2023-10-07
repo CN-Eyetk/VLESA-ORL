@@ -41,7 +41,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
-from .modules.modules import EmoTrans, CatAttention
+from .modules.modules import EmoTrans, CatAttention, EmoTransVAE, EmoTransVAE_MultiStrat
 
 
 

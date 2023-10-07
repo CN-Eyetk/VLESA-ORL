@@ -106,7 +106,7 @@ else:
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",

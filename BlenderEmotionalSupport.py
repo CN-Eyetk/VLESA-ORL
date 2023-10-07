@@ -607,7 +607,7 @@ class ESDDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer, args, df, comet, comet_st, block_size=512, evaluate=False, strategy=True, test=False, situations = None):
         block_size = block_size - (tokenizer.model_max_length - tokenizer.max_len_single_sentence)
         self.tokenizer = tokenizer
-        self.collate_verbose_step = 10
+        self.collate_verbose_step = 0
         directory = args.data_cache_dir
         self.args = args
         self.role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]

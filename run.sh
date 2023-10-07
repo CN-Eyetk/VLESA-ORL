@@ -1,5 +1,5 @@
 
-use_trans=(" --use_trans")
+use_trans=("")
 use_th_attn=("")
 use_emb_prep=(" --use_emb_prep")
 use_prepend=("")
