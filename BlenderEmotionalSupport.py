@@ -111,6 +111,8 @@ def load_config(args, eval = False):
     config.use_cat_attn = args.use_cat_attn
     config.attend_eos = args.attend_eos
     config.use_role_embed = args.use_role_embed
+    config.use_vae = args.use_vae
+    config.sample_strat_emb = args.sample_strat_emb
     return config
 
 def load_model_for_eval(args):
@@ -767,11 +769,11 @@ class ESDDataset(Dataset):
         comet_st_ids = torch.tensor([f.comet_st_ids for f in features], dtype=torch.long)
         comet_st_mask = torch.tensor([f.comet_st_mask for f in features], dtype=torch.long)
         if features[0].emo_dist is not None:
-            emo_dist = torch.tensor([f.emo_dist for f in features], dtype=torch.float64).squeeze(1)
+            emo_dist = torch.tensor([f.emo_dist for f in features], dtype=torch.float32).squeeze(1)
         else:
             emo_dist = None
         if features[0].emo_in_dist is not None:
-            emo_in_dist = torch.tensor([f.emo_in_dist for f in features], dtype=torch.float64).squeeze(1)
+            emo_in_dist = torch.tensor([f.emo_in_dist for f in features], dtype=torch.float32).squeeze(1)
         else:
             emo_in_dist = None
         strat_positions = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x == 1], dtype=torch.long)
@@ -1429,11 +1431,11 @@ def generate(args):
         comet_mask_st = torch.tensor([f.comet_st_mask], dtype=torch.long)
         #print("emo_dist", f.emo_dist)
         if f.emo_dist is not None:
-            emo_dist = torch.tensor([f.emo_dist], dtype = torch.float64).squeeze(1)
+            emo_dist = torch.tensor([f.emo_dist], dtype = torch.float32).squeeze(1)
         else:
             emo_dist = None
         if f.emo_in_dist is not None:
-            emo_in_dist = torch.tensor([f.emo_in_dist], dtype = torch.float64).squeeze(1)
+            emo_in_dist = torch.tensor([f.emo_in_dist], dtype = torch.float32).squeeze(1)
         else:
             emo_in_dist = None
         comet_ids = comet_ids.to(args.device)

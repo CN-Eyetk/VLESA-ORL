@@ -57,6 +57,8 @@ class BaseModelOutput(ModelOutput):
     emo_out_prob: torch.FloatTensor = None
     emo_out_embs: torch.FloatTensor = None
     strategy_seq_logits: torch.FloatTensor = None
+    vae_prior_output: Optional[Tuple[torch.FloatTensor]] = None
+    vae_posterior_output: Optional[Tuple[torch.FloatTensor]] = None
     #emo_out_logits: torch.FloatTensor = None
     
 
