@@ -16,6 +16,7 @@ parser.add_argument("--use_copy", action= "store_true")
 parser.add_argument("--use_th_attn", action= "store_true")
 parser.add_argument("--use_role_embed", action= "store_true")
 parser.add_argument("--sample_strat_emb", action= "store_true")
+parser.add_argument("--latent_dim", type = int, default=256)
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -44,6 +45,7 @@ ATTEN_EOS = args_g.attend_eos
 USE_SATTN = args_g.use_th_attn
 USE_ROLE = args_g.use_role_embed
 USE_VAE = True
+LATENT_DIM = args_g.latent_dim
 SMP_STRAT_EMB = args_g.sample_strat_emb
 #EMO_IN_COEF = args_g.emo_in_coef
 #EMO_OUT_COEF = args_g.emo_out_ceof
@@ -65,6 +67,7 @@ TAG = "all_loss" + ("kl" if KL else "") \
                             +("-role" if USE_ROLE else "") \
                         +("-cat" +("eos" if ATTEN_EOS else "cmt") if CAT_ATTN else "") \
                             +("-vae" if USE_VAE else "") \
+                                +(f"{LATENT_DIM}" if USE_VAE else "") \
                                 +("-smp_str" if SMP_STRAT_EMB else "")\
                             +args_g.tag
                             
@@ -178,6 +181,7 @@ def load_arg():
             "attend_eos":ATTEN_EOS,
             "use_role_embed":USE_ROLE,
             "use_vae":USE_VAE,
+            "latent_dim":LATENT_DIM,
             "sample_strat_emb":SMP_STRAT_EMB
             
             }

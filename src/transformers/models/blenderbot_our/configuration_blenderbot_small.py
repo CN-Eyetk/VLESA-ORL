@@ -180,6 +180,7 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.attend_eos = kwargs["attend_eos"] if "attend_eos" in kwargs.keys() else False
         self.use_role_embed = kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
         self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
+        self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:

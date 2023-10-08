@@ -956,6 +956,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         self.use_vae = config.use_vae
         if config.use_trans_mat:
             if self.use_vae:
+
                 self.trans_mat = EmoTransVAE_MultiStrat(config=config,
                                                         n_emo_in=self.n_emo_in,
                                                         n_emo_out=self.n_emo_out,

@@ -112,6 +112,7 @@ def load_config(args, eval = False):
     config.attend_eos = args.attend_eos
     config.use_role_embed = args.use_role_embed
     config.use_vae = args.use_vae
+    config.latent_dim = args.latent_dim
     config.sample_strat_emb = args.sample_strat_emb
     return config
 

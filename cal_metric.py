@@ -53,7 +53,7 @@ import pandas as pd
 import json
 import os
 dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
-dirs = [x for x in dirs if "108" in x or "vae" in x]
+dirs = [x for x in dirs if "vae" in x or "final" in x]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
 all_res = {}
@@ -63,15 +63,15 @@ for dir in dirs:
     hyp_path = f"{dir}/hyp_strategy.json"
     ref_path = f"{dir}/ref_strategy.json"
     metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path, use_nltk=True)
-    metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
+    #metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
     #ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
     # print(metric.hyps)
     result, result_list = metric.close()
-    result_2 = metric_2.res
+    #result_2 = metric_2.res
     #result["gpt_ppl"] = ppl
     #result["mid_gpt_ppl"] = md_ppl
     print(result)
-    print(result_2)
+    #print(result_2)
     print("="*100)
     # print(result_list)
     all_res[dir.replace("our_generated_data","")] = {k:round(v,3) for k,v in result.items()}
