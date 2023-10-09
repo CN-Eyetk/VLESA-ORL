@@ -53,7 +53,7 @@ import pandas as pd
 import json
 import os
 dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
-dirs = [x for x in dirs if "vae" in x or "final" in x]
+dirs = [x for x in dirs if "vae" not in x and "10" in x]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
 all_res = {}

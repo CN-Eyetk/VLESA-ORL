@@ -3,11 +3,11 @@ use_trans=(" --use_trans")
 use_th_attn=("")
 use_emb_prep=(" --use_emb_prep")
 use_prepend=("")
-use_cat=(" --use_cat_attn" "")
+use_cat=("" " --use_cat_attn" )
 use_bart=("")
 use_role=(" --use_role_embed")
-use_situ=("" " --encode_situ" )
-latent_dim=(64 96 128)
+use_situ=("")
+latent_dim=(32 48 56)
 
 
 comm="python3 main.py --no_fuse --use_kl --tag final"
