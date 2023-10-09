@@ -5,7 +5,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -17,15 +17,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -33,7 +33,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -45,15 +45,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -85,11 +85,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -101,15 +101,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -121,7 +121,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -129,11 +129,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
@@ -141,11 +141,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -153,19 +153,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
@@ -185,11 +185,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -197,7 +197,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -205,7 +205,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -225,15 +225,15 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -241,11 +241,11 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -265,7 +265,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -273,15 +273,15 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -293,7 +293,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -317,11 +317,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -333,7 +333,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -349,7 +349,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Information]",
@@ -361,7 +361,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -377,15 +377,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
@@ -393,7 +393,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -421,15 +421,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
@@ -441,7 +441,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -449,15 +449,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -465,7 +465,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -473,7 +473,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -481,7 +481,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -489,7 +489,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
@@ -505,7 +505,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -513,11 +513,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -529,7 +529,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -537,7 +537,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
@@ -561,7 +561,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -573,7 +573,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -597,11 +597,11 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -621,7 +621,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -645,11 +645,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -673,7 +673,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -685,7 +685,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -701,7 +701,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -713,7 +713,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -725,7 +725,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -769,11 +769,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -785,7 +785,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -793,7 +793,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -801,7 +801,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -813,15 +813,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -833,7 +833,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -845,7 +845,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -857,15 +857,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -873,7 +873,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -885,15 +885,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -901,7 +901,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -913,11 +913,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
@@ -933,11 +933,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -949,7 +949,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -965,19 +965,19 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -993,11 +993,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1009,15 +1009,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -1037,7 +1037,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -1053,15 +1053,15 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -1069,11 +1069,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
@@ -1081,35 +1081,35 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -1117,15 +1117,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -1133,11 +1133,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -1145,15 +1145,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Question]",
@@ -1169,7 +1169,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -1181,11 +1181,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -1209,15 +1209,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1233,7 +1233,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1265,15 +1265,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -1289,7 +1289,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1297,11 +1297,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Information]",
@@ -1325,7 +1325,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -1345,7 +1345,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1357,7 +1357,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -1369,7 +1369,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -1385,7 +1385,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1393,7 +1393,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -1401,11 +1401,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -1425,7 +1425,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1437,7 +1437,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -1453,7 +1453,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1465,7 +1465,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -1481,11 +1481,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1509,11 +1509,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -1533,7 +1533,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -1561,7 +1561,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1577,7 +1577,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -1585,11 +1585,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -1613,7 +1613,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -1629,7 +1629,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -1637,15 +1637,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -1653,7 +1653,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -1661,7 +1661,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1681,7 +1681,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1697,11 +1697,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -1713,7 +1713,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -1725,11 +1725,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1737,7 +1737,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -1765,11 +1765,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1781,15 +1781,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -1809,7 +1809,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -1817,11 +1817,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1849,7 +1849,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -1857,7 +1857,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -1869,19 +1869,19 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
@@ -1905,7 +1905,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -1917,7 +1917,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -1933,15 +1933,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -1953,11 +1953,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -1965,11 +1965,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -1989,23 +1989,23 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -2017,11 +2017,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2029,7 +2029,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2045,11 +2045,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2077,7 +2077,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -2097,11 +2097,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2109,7 +2109,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
@@ -2121,7 +2121,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2145,11 +2145,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -2157,7 +2157,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2173,27 +2173,27 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
@@ -2201,7 +2201,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
@@ -2209,11 +2209,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2221,11 +2221,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -2237,7 +2237,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2273,11 +2273,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -2285,7 +2285,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -2301,7 +2301,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -2317,7 +2317,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -2333,19 +2333,19 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -2353,7 +2353,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2361,7 +2361,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -2381,23 +2381,23 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -2405,7 +2405,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -2413,7 +2413,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -2421,7 +2421,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2437,7 +2437,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -2449,7 +2449,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -2461,7 +2461,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -2469,7 +2469,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2481,11 +2481,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2501,7 +2501,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -2509,15 +2509,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -2529,7 +2529,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2537,11 +2537,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2549,23 +2549,23 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2573,11 +2573,11 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -2589,19 +2589,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -2609,15 +2609,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2625,7 +2625,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
@@ -2661,15 +2661,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -2681,7 +2681,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2701,11 +2701,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -2713,11 +2713,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2729,7 +2729,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2741,11 +2741,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -2765,7 +2765,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -2777,7 +2777,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -2793,11 +2793,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -2817,7 +2817,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -2829,7 +2829,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2841,7 +2841,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -2849,23 +2849,23 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -2877,7 +2877,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -2893,7 +2893,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
@@ -2901,23 +2901,23 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -2933,15 +2933,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
@@ -2953,11 +2953,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -2969,11 +2969,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3001,15 +3001,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3021,7 +3021,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
@@ -3037,7 +3037,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3049,11 +3049,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -3061,15 +3061,15 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3085,7 +3085,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -3093,7 +3093,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3101,15 +3101,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -3117,7 +3117,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -3133,7 +3133,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -3145,11 +3145,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -3165,7 +3165,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3173,7 +3173,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -3181,7 +3181,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3189,7 +3189,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -3197,15 +3197,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -3213,7 +3213,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3221,7 +3221,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3241,7 +3241,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3249,7 +3249,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -3257,7 +3257,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3265,11 +3265,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3277,7 +3277,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3289,7 +3289,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
@@ -3305,23 +3305,23 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3333,7 +3333,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3345,7 +3345,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -3357,7 +3357,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3369,7 +3369,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3381,23 +3381,23 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3413,19 +3413,19 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3449,7 +3449,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -3457,7 +3457,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3465,11 +3465,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -3477,7 +3477,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3493,7 +3493,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -3505,7 +3505,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3521,7 +3521,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3533,7 +3533,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -3545,35 +3545,35 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3581,7 +3581,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3589,19 +3589,19 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
@@ -3645,7 +3645,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3669,7 +3669,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
@@ -3685,11 +3685,11 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -3713,7 +3713,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -3737,7 +3737,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3757,7 +3757,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
@@ -3765,7 +3765,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3785,7 +3785,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -3793,11 +3793,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3805,15 +3805,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -3837,7 +3837,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -3857,7 +3857,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3865,7 +3865,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3881,7 +3881,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
@@ -3889,11 +3889,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3901,7 +3901,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3909,11 +3909,11 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3921,7 +3921,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -3933,11 +3933,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -3945,15 +3945,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -3961,7 +3961,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -3969,7 +3969,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -3981,11 +3981,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -4005,11 +4005,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4017,15 +4017,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4045,7 +4045,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4053,7 +4053,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4081,7 +4081,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4089,7 +4089,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4097,19 +4097,19 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4145,15 +4145,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -4173,7 +4173,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -4181,7 +4181,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4201,15 +4201,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4221,7 +4221,7 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -4245,19 +4245,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -4265,7 +4265,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4277,11 +4277,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4293,7 +4293,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -4301,19 +4301,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -4329,11 +4329,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4341,7 +4341,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -4357,11 +4357,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4369,7 +4369,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -4377,7 +4377,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4393,7 +4393,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -4401,11 +4401,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -4413,7 +4413,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4433,11 +4433,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4461,7 +4461,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4469,23 +4469,23 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -4541,7 +4541,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4553,7 +4553,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4565,11 +4565,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4581,7 +4581,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -4597,7 +4597,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4605,7 +4605,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
@@ -4617,7 +4617,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4629,7 +4629,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4661,23 +4661,23 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -4689,7 +4689,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4697,11 +4697,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4713,7 +4713,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4721,19 +4721,19 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -4741,11 +4741,11 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -4753,11 +4753,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -4777,7 +4777,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -4789,11 +4789,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4809,7 +4809,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -4817,19 +4817,19 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Information]",
@@ -4865,7 +4865,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
@@ -4873,7 +4873,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4885,7 +4885,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -4925,7 +4925,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -4941,15 +4941,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -4961,7 +4961,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -4969,7 +4969,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -4977,7 +4977,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -4997,11 +4997,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -5025,15 +5025,15 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5053,7 +5053,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5061,7 +5061,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Question]",
@@ -5073,7 +5073,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5093,7 +5093,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -5117,7 +5117,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5129,11 +5129,11 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -5141,15 +5141,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5157,11 +5157,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
@@ -5169,15 +5169,15 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -5185,15 +5185,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -5209,7 +5209,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -5221,7 +5221,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
@@ -5237,11 +5237,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5257,7 +5257,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -5277,11 +5277,11 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -5289,15 +5289,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5309,7 +5309,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5317,7 +5317,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
@@ -5325,7 +5325,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -5337,19 +5337,19 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5365,7 +5365,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Others]",
@@ -5377,15 +5377,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5397,11 +5397,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5409,11 +5409,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -5429,7 +5429,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -5437,7 +5437,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5453,7 +5453,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -5461,7 +5461,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -5481,15 +5481,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5497,7 +5497,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -5513,7 +5513,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -5541,7 +5541,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5549,11 +5549,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5561,11 +5561,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -5589,11 +5589,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5605,11 +5605,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5621,11 +5621,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5633,15 +5633,15 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -5649,7 +5649,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5677,11 +5677,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Information]",
@@ -5689,7 +5689,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5701,15 +5701,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
@@ -5717,15 +5717,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5733,7 +5733,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5741,11 +5741,11 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -5753,7 +5753,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -5761,7 +5761,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -5769,7 +5769,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Others]",
@@ -5777,7 +5777,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -5789,31 +5789,31 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -5825,7 +5825,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5841,11 +5841,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5853,11 +5853,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -5877,7 +5877,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -5885,15 +5885,15 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -5905,7 +5905,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5921,7 +5921,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -5945,11 +5945,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -5965,7 +5965,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -5989,7 +5989,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6001,7 +6001,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -6013,15 +6013,15 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -6029,15 +6029,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Information]",
@@ -6045,11 +6045,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -6061,11 +6061,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -6085,7 +6085,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
@@ -6097,11 +6097,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -6109,7 +6109,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -6125,19 +6125,19 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -6145,7 +6145,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -6153,19 +6153,19 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -6173,7 +6173,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6181,7 +6181,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -6197,7 +6197,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -6205,7 +6205,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -6213,11 +6213,11 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6225,7 +6225,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6233,7 +6233,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
@@ -6245,19 +6245,19 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6313,7 +6313,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -6333,23 +6333,23 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -6357,23 +6357,23 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6397,7 +6397,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6413,7 +6413,7 @@
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -6421,15 +6421,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6437,11 +6437,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -6457,7 +6457,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -6465,7 +6465,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6485,7 +6485,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -6497,23 +6497,23 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -6521,7 +6521,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6533,15 +6533,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6549,7 +6549,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Information]",
@@ -6561,7 +6561,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -6569,7 +6569,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -6577,7 +6577,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
@@ -6589,7 +6589,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6601,15 +6601,15 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6617,7 +6617,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6629,7 +6629,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6641,15 +6641,15 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6665,19 +6665,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -6685,7 +6685,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -6697,35 +6697,35 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6745,11 +6745,11 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -6765,7 +6765,7 @@
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -6773,19 +6773,19 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Reflection of feelings]"
   },
   {
     "ref strategy": "[Question]",
@@ -6793,7 +6793,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Restatement or Paraphrasing]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
@@ -6809,11 +6809,11 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
@@ -6825,7 +6825,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -6849,11 +6849,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Information]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -6861,7 +6861,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -6877,7 +6877,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Information]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
@@ -6885,7 +6885,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Others]",
@@ -6893,7 +6893,7 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Question]",
@@ -6901,11 +6901,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6913,7 +6913,7 @@
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -6941,11 +6941,11 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Question]",
@@ -6953,11 +6953,11 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Self-disclosure]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
@@ -6965,19 +6965,19 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Others]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Providing Suggestions]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Restatement or Paraphrasing]",
@@ -6989,11 +6989,11 @@
   },
   {
     "ref strategy": "[Reflection of feelings]",
-    "hyp strategy": "[Reflection of feelings]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Others]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Affirmation and Reassurance]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -7005,7 +7005,7 @@
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Restatement or Paraphrasing]"
+    "hyp strategy": "[Question]"
   },
   {
     "ref strategy": "[Reflection of feelings]",
@@ -7017,15 +7017,15 @@
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Others]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Question]",
-    "hyp strategy": "[Question]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Providing Suggestions]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Others]",
@@ -7037,7 +7037,7 @@
   },
   {
     "ref strategy": "[Self-disclosure]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Self-disclosure]"
   },
   {
     "ref strategy": "[Self-disclosure]",
@@ -7045,7 +7045,7 @@
   },
   {
     "ref strategy": "[Information]",
-    "hyp strategy": "[Affirmation and Reassurance]"
+    "hyp strategy": "[Providing Suggestions]"
   },
   {
     "ref strategy": "[Affirmation and Reassurance]",
