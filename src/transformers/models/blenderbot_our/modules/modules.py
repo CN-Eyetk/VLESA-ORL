@@ -117,18 +117,16 @@ class EmoTransVAE(nn.Module):
         #self.Dense_z_posterior = nn.Linear(self.latent_dim, self.n_emo_out)
         
 
-    def prior(self, hidden_emo, hidden_strat, p_emo_in, p_strat):
-        h1_emo = F.relu(self.h_prior_emo(torch.cat((hidden_emo, p_emo_in), dim = -1)))
-        h1_strat = F.relu(self.h_prior_strat(torch.cat((hidden_strat, p_strat), dim = -1)))
-        mu = self.mu_prior(h1_emo)
-        logvar = self.logvar_prior(h1_strat)
+    def prior(self,  hidden_prior):
+        h1 = F.relu(self.h_prior(hidden_prior))
+        mu = self.mu_prior(h1)
+        logvar = self.logvar_prior(h1)
         return mu, logvar
     
-    def posterior(self, hidden_emo, hidden_strat, p_emo_in, p_strat, p_emo_out):
-        h1_emo = F.relu(self.h_posterior_emo(torch.cat((hidden_emo, p_emo_in, p_emo_out), dim = -1)))
-        h1_strat = F.relu(self.h_posterior_strat(torch.cat((hidden_strat, p_strat, p_emo_out), dim = -1)))
-        mu = self.mu_posterior(h1_emo)
-        logvar = self.logvar_posterior(h1_strat)
+    def posterior(self, hidden_prior, emo_out_emb):
+        h1 = F.relu(self.h_posterior(torch.cat((hidden_prior, emo_out_emb), dim = -1)))
+        mu = self.mu_posterior(h1)
+        logvar = self.logvar_posterior(h1)
         return mu, logvar
 
     def reparameterize(self, mu, logvar):
@@ -136,16 +134,16 @@ class EmoTransVAE(nn.Module):
         eps = torch.randn_like(std)
         return mu + eps * std
 
-    def forward(self, hidden_emo, hidden_strat, p_emo_in, p_strat):
+    def forward(self, hidden_prior, p_emo_in, p_strat, emo_out_emb):
         p_emo_in = self.dropout(p_emo_in)
         p_emo_in = F.softmax(p_emo_in)
         p_strat = self.dropout(p_strat)
         p_strat = F.softmax(p_strat)
         b = p_emo_in.size(0)
-        mu, logvar = self.prior(hidden_emo, hidden_strat, p_emo_in, p_strat)
+        mu, logvar = self.prior( hidden_prior, p_emo_in, p_strat)
         z = self.reparameterize(mu, logvar)
         E_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2) #[b, 1,n_emo]
-        emotion_id = self.emotion_id.to(hidden_emo.device) 
+        emotion_id = self.emotion_id.to(hidden_prior.device) 
         emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
         E_prob = torch.log(E_prob.squeeze(1))
         return emo_out_emb, mu, logvar, E_prob
@@ -171,10 +169,13 @@ class EmoTransVAE(nn.Module):
         """
         
         one = torch.FloatTensor([1.0]).to(mu_posterior.device)
+        b = mu_posterior.size(0)
+        
         if mu_prior == None:
             mu_prior = torch.FloatTensor([0.0]).to(mu_posterior.device)
             logvar_prior = torch.FloatTensor([0.0]).to(logvar_posterior.device)
         kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
+        kl_div = kl_div / b
         return kl_div
         
 
@@ -200,16 +201,17 @@ class EmoTransVAE_MultiStrat(nn.Module):
         self.hidden_dim_post= self.hidden_dim
         self.latent_dim = config.latent_dim
         
-        self.h_prior_emo = nn.Linear(self.hidden_dim_prior, self.latent_dim)
-        self.mu_priors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
-        self.logvar_priors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.h_prior_emo = nn.Linear(self.hidden_dim_prior, self.hidden_dim_prior)
+        self.mu_priors = nn.ModuleList([nn.Linear(self.hidden_dim_prior, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_priors = nn.ModuleList([nn.Linear(self.hidden_dim_prior, self.latent_dim)  for i in range(self.n_strat)])
         self.Dense_z_prior = nn.Linear(self.latent_dim, self.n_emo_out)
 
+
         self.hidden_dim_pos = self.hidden_dim_prior+self.hidden_dim
-        self.h_posterior_emo = nn.Linear(self.hidden_dim_pos, self.latent_dim)
+        self.h_posterior_emo = nn.Linear(self.hidden_dim_pos, self.hidden_dim_pos)
         #self.h_posterior_strat = nn.Linear(self.hidden_dim + self.n_strat + self.n_emo_out, self.latent_dim)
-        self.mu_posteriors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
-        self.logvar_posteriors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.mu_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim_pos, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim_pos, self.latent_dim)  for i in range(self.n_strat)])
         #self.Dense_z_posterior = nn.Linear(self.latent_dim, self.n_emo_out) 
         
 
@@ -238,8 +240,8 @@ class EmoTransVAE_MultiStrat(nn.Module):
         logvars = torch.zeros((b, self.latent_dim, self.n_strat)).to(h1_emo.device)
         for i in range(len(self.mu_priors)):
             
-            mu = self.mu_priors[i](h1_emo)
-            logvar = self.logvar_priors[i](h1_emo)
+            mu = self.mu_posteriors[i](h1_emo)
+            logvar = self.logvar_posteriors[i](h1_emo)
             mus[:,:,i] = mu
             logvars[:, :, i] = logvar
         return mus, logvars
@@ -251,10 +253,10 @@ class EmoTransVAE_MultiStrat(nn.Module):
 
     def forward(self, hidden_prior, p_emo_in, p_strat):
         b = p_emo_in.size(0)
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
-        p_strat = self.dropout(p_strat)
-        p_strat = F.softmax(p_strat)
+        #p_emo_in = self.dropout(p_emo_in)
+        #p_emo_in = F.softmax(p_emo_in)
+        #p_strat = self.dropout(p_strat)
+        #p_strat = F.softmax(p_strat)
         mus, logvars = self.prior(hidden_prior)
         zs = torch.zeros((b, self.latent_dim, self.n_strat)).to(hidden_prior.device)
         E_probs = torch.zeros((b, self.n_emo_out, self.n_strat)).to(hidden_prior.device) #[b, n_e_out, n_s]
@@ -273,10 +275,10 @@ class EmoTransVAE_MultiStrat(nn.Module):
         return emo_out_emb, mus, logvars, emo_out_prob
     
     def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): #p_emo_in 和 p_strat输入的都是logits
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
-        p_strat = self.dropout(p_strat)
-        p_strat = F.softmax(p_strat)
+        #p_emo_in = self.dropout(p_emo_in)
+        #p_emo_in = F.softmax(p_emo_in)
+        #p_strat = self.dropout(p_strat)
+        #p_strat = F.softmax(p_strat)
         b = p_emo_in.size(0)
         mus, logvars = self.posterior(hidden_prior, hidden_post)
         zs = torch.zeros((b, self.latent_dim, self.n_strat)).to(hidden_prior.device)
@@ -298,11 +300,13 @@ class EmoTransVAE_MultiStrat(nn.Module):
         This code is adapted from:
         https://github.com/ctr4si/A-Hierarchical-Latent-Structure-for-Variational-Conversation-Modeling/blob/83ca9dd96272d3a38978a1dfa316d06d5d6a7c77/model/utils/probability.py#L20
         """
+        b = mu_posterior.size(0)
         one = torch.FloatTensor([1.0]).to(mu_posterior.device)
         if mu_prior == None:
             mu_prior = torch.FloatTensor([0.0]).to(mu_posterior.device)
             logvar_prior = torch.FloatTensor([0.0]).to(logvar_posterior.device)
         kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
+        kl_div = kl_div  / b
         return kl_div
 
 class EmoTransVAE_MultiStrat_Light(nn.Module):
@@ -328,43 +332,30 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
         
         self.h_prior_emo = nn.Linear(self.hidden_dim_prior, self.latent_dim)
         self.mu_prior = nn.Linear(self.latent_dim, self.latent_dim)
-        self.logvar_priors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_prior = nn.Linear(self.latent_dim, self.latent_dim)
         self.Dense_z_prior = nn.Linear(self.latent_dim, self.n_emo_out)
 
         self.hidden_dim_pos = self.hidden_dim_prior+self.hidden_dim
         self.h_posterior_emo = nn.Linear(self.hidden_dim_pos, self.latent_dim)
         #self.h_posterior_strat = nn.Linear(self.hidden_dim + self.n_strat + self.n_emo_out, self.latent_dim)
         self.mu_posterior = nn.Linear(self.latent_dim, self.latent_dim)
-        self.logvar_posteriors = nn.ModuleList([nn.Linear(self.latent_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_posterior = nn.Linear(self.latent_dim, self.latent_dim)
         #self.Dense_z_posterior = nn.Linear(self.latent_dim, self.n_emo_out) 
         
 
     def prior(self, hidden_prior):
         b = hidden_prior.size(0)
         h1_emo = F.relu(self.h_prior_emo(hidden_prior))
-        #mus = torch.zeros((b, self.latent_dim, 1)).to(hidden_prior.device)
-        logvars = torch.zeros((b, self.latent_dim, self.n_strat)).to(hidden_prior.device)
         mu = self.mu_prior(h1_emo).to(h1_emo.device)
-        for i in range(len(self.logvar_priors)):
-            #print("h1_emo",h1_emo.shape)
-            logvar = self.logvar_priors[i](h1_emo)
-            logvars[:, :, i] = logvar
-        
-        return mu, logvars
+        logvar = self.logvar_prior(h1_emo).to(h1_emo.device)
+        return mu, logvar
     
     def posterior(self, hidden_prior, hidden_post):
         b = hidden_prior.size(0)
-        #print("hidden_emo",hidden_emo.dtype)
-        #print("p_emo_in",p_emo_in.dtype)
-        #print("p_emo_out",p_emo_out.dtype)
         h1_emo = F.relu(self.h_posterior_emo(torch.cat((hidden_prior, hidden_post), dim = -1)))
-        #h1_strat = F.relu(self.h_posterior_strat(torch.cat((hidden_strat, p_strat, p_emo_out), dim = -1)))
-        mu = self.mu_prior(h1_emo).to(h1_emo.device)
-        logvars = torch.zeros((b, self.latent_dim, self.n_strat)).to(h1_emo.device)
-        for i in range(len(self.logvar_priors)):            
-            logvar = self.logvar_priors[i](h1_emo)
-            logvars[:, :, i] = logvar
-        return mu, logvars
+        mu = self.mu_posterior(h1_emo).to(h1_emo.device) 
+        logvar = self.logvar_posterior(h1_emo).to(h1_emo.device) 
+        return mu, logvar
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5 * logvar).to(logvar.device)
@@ -372,51 +363,36 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
         return mu + eps * std
 
     def forward(self, hidden_prior, p_emo_in, p_strat):
-        b = p_emo_in.size(0)
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
+        b = hidden_prior.size(0)
         p_strat = self.dropout(p_strat)
         p_strat = F.softmax(p_strat)
-        mu, logvars = self.prior(hidden_prior)
-        zs = torch.zeros((b, self.latent_dim, self.n_strat)).to(hidden_prior.device)
-        E_probs = torch.zeros((b, self.n_emo_out, self.n_strat)).to(hidden_prior.device) #[b, n_e_out, n_s]
-        for i in range(self.n_strat):
-            z = self.reparameterize(mu, logvars[:,:,i])
-            z = z.to(hidden_prior.device)
-            #print("z",z.shape)
-            zs[:,:,i] = z
-            E_prob = torch.softmax(self.Dense_z_prior(z), dim=-1)
-            E_probs[:,:,i] = E_prob
-        emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
+        mu, logvar = self.prior(hidden_prior)
+        z = self.reparameterize(mu, logvar)
+        z = z.to(hidden_prior.device)
+        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1)
+        
+        #emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
         emotion_id = self.emotion_id.to(hidden_prior.device) 
+        if len(emo_out_prob.size() == 2):
+            emo_out_prob = emo_out_prob.unsqueeze(-2)
         emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        mus = mu.unsqueeze(-1).repeat(1,1,logvars.size(-1))
-        assert len(mus.size()) == 3
-        return emo_out_emb, mus, logvars, emo_out_prob
+        return emo_out_emb, mu, logvar, emo_out_prob
     
     def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): #p_emo_in 和 p_strat输入的都是logits
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
-        p_strat = self.dropout(p_strat)
-        p_strat = F.softmax(p_strat)
-        b = p_emo_in.size(0)
-        mu, logvars = self.posterior(hidden_prior, hidden_post)
-        zs = torch.zeros((b, self.latent_dim, self.n_strat)).to(hidden_prior.device)
-        E_probs = torch.zeros((b, self.n_emo_out, self.n_strat)).to(hidden_prior.device) #[b, n_e_out, n_s]
-        for i in range(self.n_strat):
-            z = self.reparameterize(mu, logvars[:,:,i])
-            z = z.to(hidden_prior.device)
-            zs[:,:,i] = z
-            E_prob = torch.softmax(self.Dense_z_prior(z), dim=-1)
-            E_probs[:,:,i] = E_prob
-        emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
+
+        b = hidden_prior.size(0)
+        mu, logvar = self.posterior(hidden_prior, hidden_post)
+        z = self.reparameterize(mu, logvar)
+        z = z.to(hidden_prior.device)
+        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1)
+        #emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
         emotion_id = self.emotion_id.to(hidden_prior.device) 
+        if len(emo_out_prob.size() == 2):
+            emo_out_prob = emo_out_prob.unsqueeze(-2)
         emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        mus = mu.unsqueeze(-1).repeat(1,1,logvars.size(-1))
-        assert len(mus.size()) == 3
-        return emo_out_emb, mus, logvars, emo_out_prob
+        return emo_out_emb,  mu, logvar, emo_out_prob
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """

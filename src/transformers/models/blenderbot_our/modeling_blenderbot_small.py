@@ -1253,7 +1253,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                     hidden_prior = emo_hidden
                 emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.trans_mat(hidden_prior = hidden_prior, 
                                                                                     p_emo_in = emotion_logits, 
-                                                                                    p_strat = strategy_logits)
+                                                                                    p_strat = F.softmax(strategy_logits, dim = -1))
             else:
                 emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
                 mu_prior = None
@@ -1277,7 +1277,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
 
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.trans_mat.forward_train(hidden_prior = hidden_prior, 
                                                                                                           p_emo_in = emotion_logits, 
-                                                                                                          p_strat = strategy_logits, 
+                                                                                                          p_strat = F.softmax(strategy_logits, dim = -1), 
                                                                                                           hidden_post = emo_out_emb_post)
             else:
                 mu_posterior = None
@@ -1851,7 +1851,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         
         if not generate:
             batch_size = strategy_label.shape[0]
-            strategy_logit_ground = None
+            #strategy_logit_ground = None
             onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
             strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
             strategy_logit_ground.float()
