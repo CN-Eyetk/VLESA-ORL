@@ -17,6 +17,7 @@ parser.add_argument("--use_th_attn", action= "store_true")
 parser.add_argument("--use_role_embed", action= "store_true")
 parser.add_argument("--sample_strat_emb", action= "store_true")
 parser.add_argument("--latent_dim", type = int, default=256)
+parser.add_argument("--use_vae", action= "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -44,7 +45,7 @@ CAT_ATTN = args_g.use_cat_attn
 ATTEN_EOS = args_g.attend_eos
 USE_SATTN = args_g.use_th_attn
 USE_ROLE = args_g.use_role_embed
-USE_VAE = True
+USE_VAE = args_g.use_vae
 LATENT_DIM = args_g.latent_dim
 SMP_STRAT_EMB = args_g.sample_strat_emb
 #EMO_IN_COEF = args_g.emo_in_coef

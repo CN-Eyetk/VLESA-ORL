@@ -3,14 +3,14 @@ use_trans=(" --use_trans")
 use_th_attn=("")
 use_emb_prep=(" --use_emb_prep" )
 use_prepend=("")
-use_cat=("" "--use_cat_attn")
+use_cat=(" --use_cat_attn" "")
 use_bart=("")
 use_role=(" --use_role_embed")
 use_situ=("")
-latent_dim=(20 24  128 256)
+latent_dim=(8 12 20 24 32 64)
 
 
-comm="python3 main.py --no_fuse --use_kl --tag final2"
+comm="python3 main.py --no_fuse --use_kl --use_vae --tag final3"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do

@@ -52,8 +52,8 @@ class CatAttention(nn.Module):
         
         self.W = nn.Linear(2*n_hidden_in, n_hidden_out, bias=False) 
         self.V = nn.Parameter(torch.rand(n_hidden_out))
-        self.batch_norm = nn.BatchNorm1d(n_hidden_out)
-        self.dropout = nn.Dropout(0.1)
+        #self.batch_norm = nn.BatchNorm1d(n_hidden_out)
+        #self.dropout = nn.Dropout(0.1)
     
     def forward(self, hidden_targ, hidden_src, mask):
         ''' 
@@ -69,26 +69,32 @@ class CatAttention(nn.Module):
         src_seq_len = hidden_src.size(1)
 
         hidden_targ_new = hidden_targ.unsqueeze(1).repeat(1, src_seq_len, 1)         #[b, src_seq_len, n_hidden_dec]
+        #print("hidden_targ_new",hidden_targ_new.shape)
         #print("hidden_targ_new", hidden_targ_new.shape)
         #print("hidden_src", hidden_src.shape)
         W_s_h = self.W(torch.cat((hidden_targ_new, hidden_src), dim=2))
-        W_s_h = self.batch_norm(W_s_h.permute(0,2,1)).permute(0,2,1)
+        #W_s_h = self.batch_norm(W_s_h.permute(0,2,1)).permute(0,2,1)
         tanh_W_s_h = torch.tanh(W_s_h)  #[b, src_seq_len, n_hidden_dec]
         #print("tanh_W_s_h", tanh_W_s_h.shape)
-        tanh_W_s_h = self.dropout(tanh_W_s_h)
+        #tanh_W_s_h = self.dropout(tanh_W_s_h)
         tanh_W_s_h = tanh_W_s_h.permute(0, 2, 1)       #[b, n_hidde_dec, seq_len]
+        #print("tanh_W_s_h",tanh_W_s_h.shape)
         
         V = self.V.repeat(batch_size, 1).unsqueeze(1)  #[b, 1, n_hidden_dec]
+        #print("V",V.shape)
         e = torch.bmm(V, tanh_W_s_h).squeeze(1)        #[b, seq_len]
+        #print("e",e.shape)
         mask[mask == 0] = -1e8
         e = e*mask
         att_weights = F.softmax(e, dim=1)              #[b, src_seq_len]
+        #print("att_weights",att_weights.shape)
         #att_weights = att_weights * mask
         hidden_output = torch.bmm(att_weights.unsqueeze(1), hidden_src).squeeze(1)        
         assert hidden_output.size() == hidden_targ.size()
-        hidden_output = hidden_output + hidden_targ
         return att_weights, hidden_output
 
+
+    
 class EmoTransVAE(nn.Module):
     def __init__(self, config, n_emo_in, n_emo_out, n_strat, embed_dim):
         super().__init__()
@@ -201,17 +207,17 @@ class EmoTransVAE_MultiStrat(nn.Module):
         self.hidden_dim_post= self.hidden_dim
         self.latent_dim = config.latent_dim
         
-        self.h_prior_emo = nn.Linear(self.hidden_dim_prior, self.hidden_dim_prior)
-        self.mu_priors = nn.ModuleList([nn.Linear(self.hidden_dim_prior, self.latent_dim)  for i in range(self.n_strat)])
-        self.logvar_priors = nn.ModuleList([nn.Linear(self.hidden_dim_prior, self.latent_dim)  for i in range(self.n_strat)])
+        self.h_prior_emo = nn.Linear(self.hidden_dim_prior, self.hidden_dim)
+        self.mu_priors = nn.ModuleList([nn.Linear(self.hidden_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_priors = nn.ModuleList([nn.Linear(self.hidden_dim, self.latent_dim)  for i in range(self.n_strat)])
         self.Dense_z_prior = nn.Linear(self.latent_dim, self.n_emo_out)
 
 
         self.hidden_dim_pos = self.hidden_dim_prior+self.hidden_dim
-        self.h_posterior_emo = nn.Linear(self.hidden_dim_pos, self.hidden_dim_pos)
+        self.h_posterior_emo = nn.Linear(self.hidden_dim_pos, self.hidden_dim)
         #self.h_posterior_strat = nn.Linear(self.hidden_dim + self.n_strat + self.n_emo_out, self.latent_dim)
-        self.mu_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim_pos, self.latent_dim)  for i in range(self.n_strat)])
-        self.logvar_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim_pos, self.latent_dim)  for i in range(self.n_strat)])
+        self.mu_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim, self.latent_dim)  for i in range(self.n_strat)])
+        self.logvar_posteriors = nn.ModuleList([nn.Linear(self.hidden_dim, self.latent_dim)  for i in range(self.n_strat)])
         #self.Dense_z_posterior = nn.Linear(self.latent_dim, self.n_emo_out) 
         
 

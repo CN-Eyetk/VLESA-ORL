@@ -1172,6 +1172,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                     emo_src_hidden = emo_src_hidden.unsqueeze(0)
                 _, emo_hidden_att_v = self.emo_cat_attn(emo_hidden, emo_src_hidden, emo_attn_mask)
                 emo_hidden = torch.cat((emo_hidden, emo_hidden_att_v), dim = -1)
+
                 emotion_logits = self.emotion_head(emo_hidden)
                 emotion_logits = self.batchNorm_emotion(emotion_logits)
                 
