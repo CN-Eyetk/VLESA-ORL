@@ -1272,14 +1272,14 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                 assert len(emo_out_dist.size()) == 2
                 #print(emo_out_dist)
                 b = emo_out_dist.size(0)
-                emo_out_emb_post = torch.bmm(emo_out_dist.unsqueeze(-2),  self.trans_mat.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
-                emo_out_emb_post = emo_out_emb_post.squeeze(-2)
+                #emo_out_emb_post = torch.bmm(emo_out_dist.unsqueeze(-2),  self.trans_mat.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+                #emo_out_emb_post = emo_out_emb_post.squeeze(-2)
                 #print(emo_out_emb_post.shape)
 
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.trans_mat.forward_train(hidden_prior = hidden_prior, 
                                                                                                           p_emo_in = emotion_logits, 
                                                                                                           p_strat = F.softmax(strategy_logits, dim = -1), 
-                                                                                                          hidden_post = emo_out_emb_post)
+                                                                                                          hidden_post = emo_out_dist)
             else:
                 mu_posterior = None
                 logvar_posterior = None
