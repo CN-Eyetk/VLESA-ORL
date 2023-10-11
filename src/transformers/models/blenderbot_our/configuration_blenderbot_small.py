@@ -182,6 +182,8 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
         self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
+        self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False
+        self.wo_emo = kwargs["wo_emo"] if "wo_emo" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

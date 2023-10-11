@@ -41,7 +41,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
-from .modules.modules import EmoTrans, CatAttention, EmoTransVAE, EmoTransVAE_MultiStrat
+from .modules.modules import EmoTrans, CatAttention, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, EmoTrans_wo_Emo
 
 
 
@@ -103,79 +103,6 @@ def _expand_mask(mask: torch.Tensor, dtype: torch.dtype, tgt_len: Optional[int] 
 
     return inverted_mask.masked_fill(inverted_mask.bool(), torch.finfo(dtype).min)
 
-
-
-class Mutual_Attn(nn.Module):
-    "The implemention of the mutual attention between two representations X and Y in the same hidden dim. "
-    def __init__(
-        self,
-        embed_dim: int,
-        num_heads: int = 1,
-        dropout: float = 0.0,
-        layer_norm_eps: float = 1e-8,
-        bias: bool = True,
-    ):
-        super().__init__()
-        self.embed_dim = embed_dim
-        self.layer_norm_eps = layer_norm_eps
-        self.dropout = dropout
-        self.num_heads = num_heads
-        self.head_dim = embed_dim // num_heads
-        assert (
-            self.head_dim * num_heads == self.embed_dim
-        ), f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim} and `num_heads`: {num_heads})."
-        self.scaling = self.embed_dim ** -0.5
-        
-        self.q_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.k_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.v1_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
-        self.v2_proj = nn.Linear(embed_dim, embed_dim, bias=bias)   
-        self.layerNorm_1 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-        self.layerNorm_2 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-        self.FN = nn.Linear(embed_dim, embed_dim,  bias=bias)
-        self.layerNorm_3 = nn.LayerNorm(embed_dim, eps=self.layer_norm_eps)
-
-    def forward(
-        self,
-        hidden_states_1,
-        hidden_states_2,
-        attention_mask_1=None,
-        attention_mask_2=None,
-        output_attentions=False
-    ):
-        """Input shape: Batch x Time x Channel"""
-
-        bsz, len_1, embed_dim = hidden_states_1.size()
-        bsz, len_2, embed_dim = hidden_states_2.size()
-        query_states = self.q_proj(hidden_states_1)
-        key_states = self.k_proj(hidden_states_2)
-        value_states_1 = self.v1_proj(hidden_states_1)
-        value_states_2 = self.v2_proj(hidden_states_2)
-        
-        # print(query_states.shape, key_states.shape)
-
-        mask1 = torch.where(attention_mask_1 == 1, torch.zeros_like(attention_mask_1, dtype=torch.float),
-                            -1e8 * torch.ones_like(attention_mask_1, dtype=torch.float))
-
-        mask2 = torch.where(attention_mask_2 == 1, torch.zeros_like(attention_mask_2, dtype=torch.float),
-                            -1e8 * torch.ones_like(attention_mask_2, dtype=torch.float))
-
-        attn = torch.bmm(query_states, key_states.transpose(1, 2)) / self.scaling
-        attn_weight_1 = F.softmax(attn + mask2.unsqueeze(1).repeat([1, len_1, 1]), dim=-1)
-        attn_weight_2 = F.softmax(attn.transpose(1, 2) + mask1.unsqueeze(1).repeat([1, len_2, 1]), dim=-1)
-        
-        # print(attn_weight_1.shape, value_states_1.shape)
-
-        # temp_value_states_1 = value_states_1
-        # temp_value_states_2 = value_states_2
-
-        # value_states_1 = self.layerNorm_1(torch.bmm(attn_weight_1, temp_value_states_2) + value_states_1)
-        value_states_2 = self.layerNorm_2(torch.bmm(attn_weight_2, value_states_1) + value_states_2)
-        # value_states_2 = F.relu(F.dropout(self.FN(value_states_2), p=self.dropout, training=self.training))
-        # value_states_2 = self.layerNorm_3(F.relu(F.dropout(self.FN(value_states_2), p=self.dropout, training=self.training)) + value_states_2)
-        value_states_2 = self.layerNorm_3(F.dropout(F.relu(self.FN(value_states_2)), p=self.dropout, training=self.training) + value_states_2)
-
-        return value_states_1, value_states_2, attn_weight_1
 
 
 # Copied from transformers.models.blenderbot.modeling_blenderbot.BlenderbotLearnedPositionalEmbedding with Blenderbot->BlenderbotSmall
@@ -964,12 +891,27 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                                                         embed_dim=config.d_model
                                                         )
             else:
-                self.trans_mat = EmoTrans(
-                                        n_emo_in = self.n_emo_in, 
-                                      n_emo_out = self.n_emo_out,
-                                      n_strat = self.n_strat,
-                                      embed_dim = config.d_model
-                                      )
+                if config.wo_stra:
+                    self.trans_mat = EmoTrans_wo_STRA(
+                                            n_emo_in = self.n_emo_in, 
+                                        n_emo_out = self.n_emo_out,
+                                        n_strat = self.n_strat,
+                                        embed_dim = config.d_model
+                                        )
+                elif config.wo_emo:
+                    self.trans_mat = EmoTrans_wo_Emo(
+                                            n_emo_in = self.n_emo_in, 
+                                        n_emo_out = self.n_emo_out,
+                                        n_strat = self.n_strat,
+                                        embed_dim = config.d_model
+                                        )
+                else:
+                    self.trans_mat = EmoTrans(
+                                            n_emo_in = self.n_emo_in, 
+                                        n_emo_out = self.n_emo_out,
+                                        n_strat = self.n_strat,
+                                        embed_dim = config.d_model
+                                        )
         else:
             self.trans_mat = None
         self.use_cat_attn = config.use_cat_attn
@@ -978,6 +920,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             self.strat_cat_attn = CatAttention(config.d_model, config.d_model)
             self.emo_cat_attn =  CatAttention(config.d_model, config.d_model)
         self.use_role_embed = config.use_role_embed
+        self.wo_stra = config.wo_stra
         self.init_weights()
     def forward(
         self,
@@ -1272,14 +1215,14 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                 assert len(emo_out_dist.size()) == 2
                 #print(emo_out_dist)
                 b = emo_out_dist.size(0)
-                #emo_out_emb_post = torch.bmm(emo_out_dist.unsqueeze(-2),  self.trans_mat.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
-                #emo_out_emb_post = emo_out_emb_post.squeeze(-2)
+                emo_out_emb_post = torch.bmm(emo_out_dist.unsqueeze(-2).float(),  self.trans_mat.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+                emo_out_emb_post = emo_out_emb_post.squeeze(-2)
                 #print(emo_out_emb_post.shape)
 
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.trans_mat.forward_train(hidden_prior = hidden_prior, 
                                                                                                           p_emo_in = emotion_logits, 
                                                                                                           p_strat = F.softmax(strategy_logits, dim = -1), 
-                                                                                                          hidden_post = emo_out_dist)
+                                                                                                          hidden_post = emo_out_emb_post)
             else:
                 mu_posterior = None
                 logvar_posterior = None
@@ -1759,8 +1702,6 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         self.use_vae = config.use_vae
         if self.use_copy:
             self.pgen_decoder_output_layer = nn.Linear(2 * config.d_model, 1, bias=True)
-            #if config.use_copy_attn:
-            #    self.copy_attn = Mutual_Attn(config.d_model, 1, 0.1)
         if not self.no_fuse:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.use_merge = config.merge
@@ -1852,7 +1793,6 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         
         if not generate:
             batch_size = strategy_label.shape[0]
-            #strategy_logit_ground = None
             onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
             strategy_logit_ground = onehot.scatter_(1, strategy_label.unsqueeze(1), 1)
             strategy_logit_ground.float()

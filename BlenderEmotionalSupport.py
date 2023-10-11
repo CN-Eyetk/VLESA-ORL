@@ -114,6 +114,8 @@ def load_config(args, eval = False):
     config.use_vae = args.use_vae
     config.latent_dim = args.latent_dim
     config.sample_strat_emb = args.sample_strat_emb
+    config.wo_stra = args.wo_stra
+    config.wo_emo = args.wo_emo
     return config
 
 def load_model_for_eval(args):

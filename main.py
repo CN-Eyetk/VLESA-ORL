@@ -18,6 +18,8 @@ parser.add_argument("--use_role_embed", action= "store_true")
 parser.add_argument("--sample_strat_emb", action= "store_true")
 parser.add_argument("--latent_dim", type = int, default=256)
 parser.add_argument("--use_vae", action= "store_true")
+parser.add_argument("--wo_Stra", action= "store_true")
+parser.add_argument("--wo_Emo", action= "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -48,6 +50,8 @@ USE_ROLE = args_g.use_role_embed
 USE_VAE = args_g.use_vae
 LATENT_DIM = args_g.latent_dim
 SMP_STRAT_EMB = args_g.sample_strat_emb
+WO_STRA = args_g.wo_Stra
+WO_EMO = args_g.wo_Emo
 #EMO_IN_COEF = args_g.emo_in_coef
 #EMO_OUT_COEF = args_g.emo_out_ceof
 
@@ -70,6 +74,8 @@ TAG = "all_loss" + ("kl" if KL else "") \
                             +("-vae" if USE_VAE else "") \
                                 +(f"{LATENT_DIM}" if USE_VAE else "") \
                                 +("-smp_str" if SMP_STRAT_EMB else "")\
+                                    +("-wo_Stra" if WO_STRA else "") \
+                                        +("-wo_Emo" if WO_EMO else "") \
                             +args_g.tag
                             
 
@@ -183,7 +189,9 @@ def load_arg():
             "use_role_embed":USE_ROLE,
             "use_vae":USE_VAE,
             "latent_dim":LATENT_DIM,
-            "sample_strat_emb":SMP_STRAT_EMB
+            "sample_strat_emb":SMP_STRAT_EMB,
+            "wo_stra":WO_STRA,
+            "wo_emo":WO_EMO
             
             }
     args = argparse.Namespace(**args)

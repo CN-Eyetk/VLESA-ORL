@@ -7,10 +7,10 @@ use_cat=( "")
 use_bart=("")
 use_role=(" --use_role_embed")
 use_situ=("")
-latent_dim=(32 16 64 56)
+latent_dim=( 32 24 56 48)
 
 
-comm="python3 main.py --no_fuse --use_kl --tag 1011"
+comm="python3 main.py --no_fuse --use_kl --use_vae --tag 1011"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do
@@ -20,7 +20,7 @@ for u_r in "${use_role[@]}"; do
                     for u_st in "${use_situ[@]}";do
                         for u_t_a in "${use_th_attn[@]}"; do
                             for u_b in "${use_bart[@]}"; do
-                                #for l_d in "${latent_dim[@]}"; do
+                                for l_d in "${latent_dim[@]}"; do
                                     cur_comm=$comm
                                     cur_comm+=$u_t
                                     cur_comm+=$u_t_a
@@ -30,9 +30,9 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=$u_b
                                     cur_comm+=$u_r
                                     cur_comm+=$u_st
-                                #    cur_comm+=" --latent_dim "$l_d
+                                    cur_comm+=" --latent_dim "$l_d
                                     $cur_comm
-                                #done
+                                done
                             done
                         done
                     done
