@@ -121,7 +121,7 @@ else:
 logger = logging.getLogger(__name__)
 def load_arg():
     
-    args = {"do_train":True,
+    args = {"do_train":False,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -156,7 +156,7 @@ def load_arg():
             "warmup_steps":120,
             "fp16":False,
             "fp16_opt_level":'O1',
-            "num_train_epochs":8,
+            "num_train_epochs":10,
             "role":False,
             "turn":False,
             "logging_steps":200,
