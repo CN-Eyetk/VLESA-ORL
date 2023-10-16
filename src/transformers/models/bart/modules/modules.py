@@ -169,6 +169,75 @@ class CatAttention(nn.Module):
         return att_weights, hidden_output
 
 
+class IntensityVAE(nn.Module):
+    def __init__(self, config, n_emo_in, n_strat):
+        super().__init__()
+        self.n_emo_in = n_emo_in
+        self.out_dim = 3
+        self.n_strat = n_strat
+        
+        self.hidden_dim = config.d_model + self.n_emo_in
+        self.hidden_dim_encoder = self.hidden_dim + self.out_dim
+        self.latent_dim = config.latent_dim
+        
+        self.h_prior = nn.Linear(self.hidden_dim, self.hidden_dim)
+        
+        self.mu_prior = nn.Linear(self.hidden_dim, self.latent_dim)
+        self.logvar_prior = nn.Linear(self.hidden_dim, self.latent_dim)
+        self.Dense_z_prior = nn.Linear(self.latent_dim, self.out_dim, bias = True)
+        
+        self.h_posterior = nn.Linear(self.hidden_dim_encoder, self.hidden_dim_encoder)
+        self.mu_posterior = nn.Linear(self.hidden_dim_encoder, self.latent_dim)
+        self.logvar_posterior = nn.Linear(self.hidden_dim_encoder, self.latent_dim)
+        self.project = nn.Linear(self.latent_dim, config.d_model, bias = False)
+        
+
+    def prior(self,  hidden_prior):
+        h1 = F.elu(self.h_prior(hidden_prior))
+        mu = self.mu_prior(h1)
+        logvar = self.logvar_prior(h1)
+        return mu, logvar
+    
+    def posterior(self, hidden_prior, intensity):
+        h1 = F.elu(self.h_posterior(torch.cat((hidden_prior, intensity), dim = -1)))
+        mu = self.mu_posterior(h1)
+        logvar = self.logvar_posterior(h1)
+        return mu, logvar
+
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
+
+    def forward(self, hidden_prior):
+        mu, logvar = self.prior(hidden_prior)
+        z = self.reparameterize(mu, logvar)
+        intensity = torch.sigmoid(self.Dense_z_prior(z))
+        emo_out_emb = self.project(z)
+        return emo_out_emb, mu, logvar, intensity
+    
+    def forward_train(self,  hidden_prior, intensity):
+        mu, logvar = self.posterior(hidden_prior, intensity)
+        z = self.reparameterize(mu, logvar)
+        intensity_reconst = torch.sigmoid(self.Dense_z_prior(z)) #[b, 1,n_emo]
+        emo_out_emb = self.project(z)
+        return emo_out_emb, mu, logvar, intensity_reconst
+    @staticmethod
+    def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
+        """
+        This code is adapted from:
+        https://github.com/ctr4si/A-Hierarchical-Latent-Structure-for-Variational-Conversation-Modeling/blob/83ca9dd96272d3a38978a1dfa316d06d5d6a7c77/model/utils/probability.py#L20
+        """
+        
+        one = torch.FloatTensor([1.0]).to(mu_posterior.device)
+        b = mu_posterior.size(0)
+        
+        if mu_prior == None:
+            mu_prior = torch.FloatTensor([0.0]).to(mu_posterior.device)
+            logvar_prior = torch.FloatTensor([0.0]).to(logvar_posterior.device)
+        kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
+        kl_div = kl_div / b
+        return kl_div
     
 class EmoTransVAE(nn.Module):
     def __init__(self, config, n_emo_in, n_emo_out, n_strat, embed_dim):

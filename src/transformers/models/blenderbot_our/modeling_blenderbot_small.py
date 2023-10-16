@@ -41,7 +41,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
-from .modules.modules import EmoTrans, CatAttention, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, EmoTrans_wo_Emo
+from .modules.modules import EmoTrans, CatAttention, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, EmoTrans_wo_Emo, IntensityVAE
 
 
 
@@ -914,6 +914,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
                                         )
         else:
             self.trans_mat = None
+
         self.use_cat_attn = config.use_cat_attn
         self.attend_eos = config.attend_eos
         if config.use_cat_attn:
@@ -921,6 +922,12 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             self.emo_cat_attn =  CatAttention(config.d_model, config.d_model)
         self.use_role_embed = config.use_role_embed
         self.wo_stra = config.wo_stra
+        self.rl_emb_ratio = config.rl_emb_ratio
+        #10-13
+        if config.intensity_vae:
+            self.intensity_vae = IntensityVAE(config, self.n_emo_in, self.n_strat)
+        else:
+            self.intensity_vae = None
         self.init_weights()
     def forward(
         self,
@@ -942,7 +949,9 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         strategy_logit_ground=None,
         strat_positions = None,
         emo_positions = None,
-        emo_out_dist=None
+        emo_out_dist=None,
+        intensity=None
+        
     ):
 
         r"""
@@ -1183,7 +1192,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             else:
                 #strategy_logits = self.batchNorm_strategy(strategy_logits)
                 strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
-                                          self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+                                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
 
 
         else:
@@ -1229,6 +1238,27 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         else:
             mu_posterior = None
             logvar_posterior = None
+
+        #intensity vae
+        if self.config.intensity_vae:
+            intensity_emb, mu_int_prior, logvar_int_prior, intensity_out = self.intensity_vae(
+                hidden_prior = torch.cat((strategy_embs.squeeze(-2), emo_out_prob), dim = -1)
+                                                                    )
+            if self.training:
+                intensity_emb, mu_int_posterior, logvar_int_posterior, intensity_out = self.intensity_vae.forward_train(
+                    hidden_prior = torch.cat((strategy_embs.squeeze(-2), emo_out_prob, intensity), dim = -1),
+                    intensity=intensity
+                )
+            else:
+                mu_int_posterior = None
+                logvar_int_posterior = None
+        else:
+            intensity_emb = None
+            mu_int_prior = None
+            logvar_int_prior = None
+            mu_int_posterior = None
+            logvar_int_posterior = None
+            intensity_out = None
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
@@ -1238,7 +1268,11 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             emo_out_prob=emo_out_prob,
             strategy_seq_logits=None,
             vae_prior_output= (mu_prior, logvar_prior),
-            vae_posterior_output = (mu_posterior, logvar_posterior)
+            vae_posterior_output = (mu_posterior, logvar_posterior),
+            intensity_emb = intensity_emb,
+            intensity_out = intensity_out,
+            intensity_vae_prior_output = (mu_int_prior, logvar_int_prior),
+            intensity_vae_posterior_output = (mu_int_posterior, logvar_int_posterior),
         )
 
 
@@ -1705,6 +1739,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         if not self.no_fuse:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.use_merge = config.merge
+        self.emo_loss_ratio = config.emo_loss_ratio
+        self.emo_out_loss_ratio = config.emo_out_loss_ratio
         self.init_weights()
 
     def get_encoder(self):
@@ -1772,6 +1808,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         emo_in_dist=None,
         strat_positions=None,
         emo_positions=None,
+        intensity=None,
         return_dict=None,
         
     ):
@@ -1899,8 +1936,8 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             decoder_hidden_state = decoder_outputs[0][:,strategy_embs.size(1):,:] if self.use_emb_prep and decoder_input_ids is None else decoder_outputs[0]
             #encoder_hidden_state = encoder_outputs.last_hidden_state
             p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, strategy_embs = strategy_embs[:,0,:],
-                                                                  attn = cross_attn[:,:src_len], 
-                                                                  input_ids_to_copy = input_ids) #+ self.final_logits_bias
+                                                                attn = cross_attn[:,:src_len], 
+                                                                input_ids_to_copy = input_ids) #+ self.final_logits_bias
             lm_logits = p_gen * lm_logits + (1-p_gen) * copy_logits
 
         loss = None
@@ -1955,7 +1992,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                     emo_out_loss_fct = NLLLoss()
                     emo_out_label = emo_dist.argmax(-1).squeeze()
                     emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
-                loss += emo_out_loss #10月2日修改【Junlin】，
+                loss += emo_out_loss 
             if self.use_vae:
                 mu_prior, logvar_prior = encoder_outputs.vae_prior_output
                 mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output

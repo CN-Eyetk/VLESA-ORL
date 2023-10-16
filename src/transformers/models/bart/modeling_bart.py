@@ -45,7 +45,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_bart import BartConfig
-from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat
+from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, CatAttention, IntensityVAE
 
 
 logger = logging.get_logger(__name__)
@@ -806,7 +806,6 @@ class BartEncoder(BartPretrainedModel):
         self.use_vae = config.use_vae
         if config.use_trans_mat:
             if self.use_vae:
-
                 self.trans_mat = EmoTransVAE_MultiStrat(config=config,
                                                         n_emo_in=self.n_emo_in,
                                                         n_emo_out=self.n_emo_out,
@@ -837,6 +836,7 @@ class BartEncoder(BartPretrainedModel):
                                         )
         else:
             self.trans_mat = None
+        
         self.use_cat_attn = config.use_cat_attn
         self.attend_eos = config.attend_eos
         if config.use_cat_attn:
@@ -844,7 +844,12 @@ class BartEncoder(BartPretrainedModel):
             self.emo_cat_attn =  CatAttention(config.d_model, config.d_model)
         self.use_role_embed = config.use_role_embed
         self.wo_stra = config.wo_stra
-        self.init_weights()
+        self.rl_emb_ratio = config.rl_emb_ratio
+        #10-13
+        if config.intensity_vae:
+            self.intensity_vae = IntensityVAE(config, self.n_emo_in, self.n_strat)
+        else:
+            self.intensity_vae = None
         self.init_weights()
 
     def forward(
@@ -867,7 +872,8 @@ class BartEncoder(BartPretrainedModel):
         strategy_logit_ground=None,
         strat_positions = None,
         emo_positions = None,
-        emo_out_dist=None
+        emo_out_dist=None,
+        intensity=None
     ):
         r"""
         Args:
@@ -921,7 +927,7 @@ class BartEncoder(BartPretrainedModel):
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
             if self.use_role_embed and (comet_embs is not None and comet_embs_st is not None):
                 assert role_ids is not None
-                role_embeds = self.embed_tokens(role_ids) * self.embed_scale * 0.2
+                role_embeds = self.embed_tokens(role_ids) * self.embed_scale * self.rl_emb_ratio
                 inputs_embeds += role_embeds
 
         embed_pos = self.embed_positions(input_shape)
@@ -1072,7 +1078,7 @@ class BartEncoder(BartPretrainedModel):
             else:
                 #strategy_logits = self.batchNorm_strategy(strategy_logits)
                 strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
-                                          self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+                                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
 
 
         else:
@@ -1109,15 +1115,41 @@ class BartEncoder(BartPretrainedModel):
                 #print(emo_out_emb_post.shape)
 
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.trans_mat.forward_train(hidden_prior = hidden_prior, 
-                                                                                                          p_emo_in = emotion_logits, 
-                                                                                                          p_strat = F.softmax(strategy_logits, dim = -1), 
-                                                                                                          hidden_post = emo_out_emb_post)
+                                                                                                        p_emo_in = emotion_logits, 
+                                                                                                        p_strat = F.softmax(strategy_logits, dim = -1), 
+                                                                                                        hidden_post = emo_out_emb_post)
             else:
                 mu_posterior = None
                 logvar_posterior = None
         else:
             mu_posterior = None
             logvar_posterior = None
+        
+        #intensity vae
+        if strategy_embs is not None and self.config.intensity_vae:
+            #print("emotion_logits",emotion_logits.shape)
+            #print("strategy_embs",strategy_embs.shape)
+            #print("intensity",intensity.shape)
+            intensity_emb, mu_int_prior, logvar_int_prior, intensity_out = self.intensity_vae(
+                hidden_prior = torch.cat((emo_hidden, emotion_logits), dim = -1)
+                                                                    )
+            if self.training:
+                intensity_emb, mu_int_posterior, logvar_int_posterior, intensity_out = self.intensity_vae.forward_train(
+                    hidden_prior = torch.cat((emo_hidden, emotion_logits), dim = -1),
+                    intensity=intensity
+                )
+            else:
+                mu_int_posterior = None
+                logvar_int_posterior = None
+        else:
+            intensity_emb = None
+            mu_int_prior = None
+            logvar_int_prior = None
+            mu_int_posterior = None
+            logvar_int_posterior = None
+            intensity_out = None
+            
+            
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
@@ -1127,7 +1159,12 @@ class BartEncoder(BartPretrainedModel):
             emo_out_prob=emo_out_prob,
             strategy_seq_logits=None,
             vae_prior_output= (mu_prior, logvar_prior),
-            vae_posterior_output = (mu_posterior, logvar_posterior)
+            vae_posterior_output = (mu_posterior, logvar_posterior),
+            intensity_emb = intensity_emb,
+            intensity_out = intensity_out,
+            intensity_vae_prior_output = (mu_int_prior, logvar_int_prior),
+            intensity_vae_posterior_output = (mu_int_posterior, logvar_int_posterior),
+
         )
 
 class BartDecoder(BartPretrainedModel):
@@ -1283,7 +1320,13 @@ class BartDecoder(BartPretrainedModel):
             comet_mask_st = _expand_mask(comet_mask_st, inputs_embeds.dtype, tgt_len=input_shape[-1])
 
         # embed positions
+        #token_inputs_embeds = inputs_embeds[:,2:,:]
         positions = self.embed_positions(input_shape, past_key_values_length)
+        #zero_positions = positions[0,:].unsqueeze(0).repeat(2,1)
+        #positions = torch.cat((zero_positions, positions), dim = -2)
+        #print("positions", positions.shape)
+        #print("zero_positions",zero_positions.shape)
+        #positions = torch.cat((zero_positions, positions), dim = -2)
 
         hidden_states = inputs_embeds + positions
         hidden_states = self.layernorm_embedding(hidden_states)
@@ -1544,6 +1587,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if config.use_trans_mat:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.use_merge = config.merge
+        self.emo_loss_ratio = config.emo_loss_ratio
+        self.emo_out_loss_ratio = config.emo_out_loss_ratio
+        self.intensity_vae = config.intensity_vae
         self.init_weights()
 
     def get_encoder(self):
@@ -1573,10 +1619,10 @@ class BartForConditionalGeneration(BartPretrainedModel):
         self.lm_head = new_embeddings
     def init_strategy_embedding(self, weights):
         with torch.no_grad():
-            self.encoder.strategy_embedding.weight[:weights.size(0),:] = weights
+            self.model.encoder.strategy_embedding.weight[:weights.size(0),:] = weights
     def init_emotion_embedding(self, weights):
         with torch.no_grad():
-            self.encoder.trans_mat.emotion_embedding.weight[:weights.size(0),:] = weights    
+            self.model.encoder.trans_mat.emotion_embedding.weight[:weights.size(0),:] = weights    
     @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
     @add_end_docstrings(BART_GENERATION_EXAMPLE)
@@ -1611,6 +1657,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         emo_in_dist=None,
         strat_positions=None,
         emo_positions=None,
+        intensity=None,
         return_dict=None,
     ):
         r"""
@@ -1660,41 +1707,49 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 turn_ids=decoder_turn_ids[:, 0],
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
-                emo_out_dist=emo_dist if self.use_vae else None
+                emo_out_dist=emo_dist if self.use_vae else None,
+                intensity=intensity
             )
 
         if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
             if self.no_fuse:
-                strategy_embs = torch.cat((encoder_outputs.emo_out_embs,encoder_outputs.strategy_embs), dim = 1)
-                #print("acted!")
+                strategy_embs = torch.cat((encoder_outputs.emo_out_embs, encoder_outputs.strategy_embs), dim = 1)
+                if self.intensity_vae:
+                    intensity_emb = encoder_outputs.intensity_emb.unsqueeze(-2)
+                    #print("intensity_emb",intensity_emb.shape)
+                    #print("strategy_embs",strategy_embs.shape)
+                    strategy_embs = torch.cat((intensity_emb, strategy_embs), dim = -2)
                 emo_out_embs = None
             else:
                 strategy_embs = self.fuse_st_emo(torch.cat((encoder_outputs.emo_out_embs,encoder_outputs.strategy_embs), dim = -1))
-                #print("acted!")
                 emo_out_embs = None
-                #emo_out_embs = None
         else:
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
 
         src_len = encoder_outputs.last_hidden_state.size(1)
+
         if self.use_emb_prep:
-            #print("decoder_input_ids[0][0].item()", decoder_input_ids[0][0].item())
             if decoder_input_ids[0][0].item() == self.config.decoder_start_token_id:
-                #print("running!")
+                decoder_attention_mask = decoder_input_ids.ne(self.config.pad_token_id).bool()
+                decoder_attention_mask = torch.cat((torch.ones(decoder_attention_mask.size(0), strategy_embs.size(1)).to(self.device), decoder_attention_mask), dim = 1)
                 decoder_inputs_embeds = self.model.decoder.embed_tokens(decoder_input_ids) * self.model.decoder.embed_scale
                 decoder_inputs_embeds = torch.cat((strategy_embs, decoder_inputs_embeds), dim = 1)
                 decoder_input_ids = None
+
             else:
-                #print(1/0)
                 pass
         else:
             decoder_inputs_embeds = None
+        
         if self.use_merge:
             encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.last_comet_hidden_state, encoder_outputs.last_comet_hidden_state_st], dim = 1)
             attention_mask = torch.cat([attention_mask, encoder_outputs.comet_mask, encoder_outputs.comet_mask_st], dim = 1)
         #print("decoder_input_ids",decoder_input_ids)
         #print("labels",labels)
+        #print("past_key_values",past_key_values.shape)
+        
+        #assert decoder_attention_mask is not None
         decoder_outputs = self.model.decoder(
             input_ids=decoder_input_ids,
             attention_mask=decoder_attention_mask,
@@ -1717,7 +1772,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         )
         
         if self.use_emb_prep and decoder_input_ids is None:
-            lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):,:]) + self.final_logits_bias
+
+            #decoder_out_hidden_start, strat_hidden, decoder_outputs_hidden_non_start = decoder_outputs[0].split([1, strategy_embs.size(1), decoder_outputs[0].size(1) - 1 - strategy_embs.size(1)], dim = 1)
+            lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):]) + self.final_logits_bias
             if self.use_copy:
                 cross_attn = decoder_outputs.cross_attentions[-1].mean(dim = 1)[:,strategy_embs.size(1):,:]
         else:
@@ -1728,8 +1785,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
             decoder_hidden_state = decoder_outputs[0][:,strategy_embs.size(1):,:] if self.use_emb_prep and decoder_input_ids is None else decoder_outputs[0]
             #encoder_hidden_state = encoder_outputs.last_hidden_state
             p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, strategy_embs = strategy_embs[:,0,:],
-                                                                  attn = cross_attn[:,:src_len], 
-                                                                  input_ids_to_copy = input_ids) #+ self.final_logits_bias
+                                                                attn = cross_attn[:,:src_len], 
+                                                                input_ids_to_copy = input_ids) #+ self.final_logits_bias
             lm_logits = p_gen * lm_logits + (1-p_gen) * copy_logits
 
         loss = None
@@ -1754,7 +1811,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
             emo_loss_fct = CrossEntropyLoss()
             # print(emotion_logits.shape, emotion)
             emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
-            loss += emo_loss
+            loss += self.emo_loss_ratio * emo_loss
 
         if strategy_label is not None:
             strategy_loss_fct = CrossEntropyLoss()
@@ -1773,7 +1830,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
                     emo_out_loss_fct = NLLLoss()
                     emo_out_label = emo_dist.argmax(-1).squeeze()
                     emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
-                loss += emo_out_loss 
+                loss += self.emo_out_loss_ratio * emo_out_loss 
             if self.use_vae:
                 mu_prior, logvar_prior = encoder_outputs.vae_prior_output
                 mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
@@ -1781,11 +1838,29 @@ class BartForConditionalGeneration(BartPretrainedModel):
                     for i in range(mu_posterior.size(-1)):
                         KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior[:,:,i], logvar_posterior[:,:,i], mu_prior[:,:,i], logvar_prior[:,:,i])
                         #KLLoss = KLLoss / batch_size
+                        
                         loss += KLLoss
         #if not return_dict:
         #    output = (lm_logits,) + outputs[1:]
         #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
+        #intensity vae
+        
+        if self.intensity_vae:
+            loss_func = torch.nn.MSELoss()
+            intensity_out = encoder_outputs.intensity_out
+            if not generate:
+                intensity_loss = loss_func(intensity.view(-1), intensity_out.view(-1))
+                loss += intensity_loss
+            mu_int_prior, logvar_int_prior = encoder_outputs.intensity_vae_prior_output
+            mu_int_posterior, logvar_int_posterior = encoder_outputs.intensity_vae_posterior_output
+            if mu_int_posterior is not None:
+                KLLoss_intensity = self.model.encoder.intensity_vae.kl_div(mu_int_posterior, logvar_int_posterior, mu_int_prior, logvar_int_prior)
+                loss += KLLoss_intensity
+            else:
+                KLLoss_intensity = None
+        else:
+            KLLoss_intensity = None
         return Seq2SeqLMOutput(
             loss=loss,
             lm_loss=masked_lm_loss,
@@ -1802,6 +1877,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,
             encoder_hidden_states=encoder_outputs.hidden_states,
             encoder_attentions=encoder_outputs.attentions,
+            KLLoss_intensity=KLLoss_intensity
 
             
         )
@@ -1822,9 +1898,10 @@ class BartForConditionalGeneration(BartPretrainedModel):
     def prepare_inputs_for_generation(
         self, decoder_input_ids, past=None, attention_mask=None, use_cache=None, encoder_outputs=None, **kwargs
     ):
+        past = None
         if past is not None:
             decoder_input_ids = decoder_input_ids[:, -1:]
-
+        
         return {
             "input_ids": None if not self.use_copy else kwargs["encoder_input_ids"],  # encoder_outputs is defined. input_ids not needed
             "encoder_outputs": encoder_outputs,

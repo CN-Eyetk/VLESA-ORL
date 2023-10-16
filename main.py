@@ -20,6 +20,11 @@ parser.add_argument("--latent_dim", type = int, default=256)
 parser.add_argument("--use_vae", action= "store_true")
 parser.add_argument("--wo_Stra", action= "store_true")
 parser.add_argument("--wo_Emo", action= "store_true")
+parser.add_argument("--use_vad_labels", action = "store_true")
+parser.add_argument("--rl_emb_ratio", type = float, default=0.2)
+parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
+parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
+parser.add_argument("--intensity_vae", action = "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -52,16 +57,21 @@ LATENT_DIM = args_g.latent_dim
 SMP_STRAT_EMB = args_g.sample_strat_emb
 WO_STRA = args_g.wo_Stra
 WO_EMO = args_g.wo_Emo
-#EMO_IN_COEF = args_g.emo_in_coef
-#EMO_OUT_COEF = args_g.emo_out_ceof
+RL_EMB_RAT = args_g.rl_emb_ratio
+EM_LS_RAT = args_g.emo_loss_ratio
+EM_OT_LS_RAT = args_g.emo_out_loss_ratio
+INT_VAE = args_g.intensity_vae
 
-TAG = "all_loss" + ("kl" if KL else "") \
+
+TAG = "all_loss" \
+    + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
+    + ("kl" if KL else "") \
     + ("_copy" if COPY else "")\
     + ("-Situ" if ENCODE_SITU else "") \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
     + ("-Sit_emo" if EMO_FROM_SITU else "") \
     + ("-ST_seq" if USE_ST_SEQ else "") \
-     + ("-lstm" if LSTM_ST_SEQ else "") \
+    + ("-lstm" if LSTM_ST_SEQ else "") \
         + ("-merge" if MERGE else "") \
             + ("-pp" if USE_PREPEND else "-nopp") \
             + ("-empp" if USE_EMB_PREP else "") \
@@ -72,7 +82,8 @@ TAG = "all_loss" + ("kl" if KL else "") \
                             +("-role" if USE_ROLE else "") \
                         +("-cat" +("eos" if ATTEN_EOS else "cmt") if CAT_ATTN else "") \
                             +("-vae" if USE_VAE else "") \
-                                +(f"{LATENT_DIM}" if USE_VAE else "") \
+                                +("-ivae" if INT_VAE else "") \
+                                +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
                                 +("-smp_str" if SMP_STRAT_EMB else "")\
                                     +("-wo_Stra" if WO_STRA else "") \
                                         +("-wo_Emo" if WO_EMO else "") \
@@ -115,13 +126,17 @@ else:
                                         load_model,
                                         logger
                                         )
-    output_dir = os.path.join('blender-our', GROUP, TAG)
+    if BART:
+        output_dir = os.path.join('bart-our', GROUP, TAG)
+    else:
+        output_dir = os.path.join('blender-our', GROUP, TAG)
     generation_dir = "our_generated_data/" + GROUP + "/" + TAG
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
+
 def load_arg():
     
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -135,7 +150,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./106_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
+            "data_cache_dir":"./116_II_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -156,7 +171,7 @@ def load_arg():
             "warmup_steps":120,
             "fp16":False,
             "fp16_opt_level":'O1',
-            "num_train_epochs":10,
+            "num_train_epochs":10 if BART else 8,
             "role":False,
             "turn":False,
             "logging_steps":200,
@@ -191,8 +206,12 @@ def load_arg():
             "latent_dim":LATENT_DIM,
             "sample_strat_emb":SMP_STRAT_EMB,
             "wo_stra":WO_STRA,
-            "wo_emo":WO_EMO
-            
+            "wo_emo":WO_EMO,
+            "rl_emb_ratio":RL_EMB_RAT,
+            "emo_loss_ratio":EM_LS_RAT,
+            "emo_out_loss_ratio":EM_OT_LS_RAT,
+            "intensity_vae":INT_VAE,
+            "use_vad_labels":args_g.use_vad_labels
             }
     args = argparse.Namespace(**args)
     return args
@@ -231,23 +250,49 @@ def load_dataset(args, tokenizer):
     test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
     return train_dataset, eval_dataset, test_dataset
 
+def plot(model):
+    with torch.no_grad():
+        mats = model.model.encoder.trans_mat.matrices
+        weights = []
+        for mat in mats:
+            weight = mat.detach().cpu()
+            print(weight.shape)
+            print(weight)
+            weights.append(weight)
+    return weights
 if __name__ == "__main__":
     args = load_arg()
     print(args.output_dir)
     set_seed(args)
     _, tokenizer = load_tokenizer(args = args)
+    #print(tokenizer.encode("[CLS]"))
+    #print(tokenizer.encode("[CLS]", add_special_tokens=False))
+    #print(1/0)
     train_dataset, eval_dataset, test_dataset = load_dataset(args, tokenizer)
     args.train_dataset = train_dataset
     args.eval_dataset = eval_dataset
     args.test_dataset = test_dataset
+
+    #args.data_cache_dir = "./116_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "")
+    #train_dataset_2, eval_dataset_2, test_dataset_2 = load_dataset(args, tokenizer)
+    #for i in range(len(train_dataset)):
+    #    old = getattr(train_dataset[i],"comet_ids")
+    #    new = getattr(train_dataset_2[i],"comet_ids")
+    #    try:
+    #        assert old == new
+    #    except:
+    #        print("old",len(old))
+    #        print("new",len(new))
+    #print(1/0)
     if args.do_train:
         model = load_model(args, tokenizer)
-        global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
+        global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
     
     model = load_model_for_eval(args)
     model.to(args.device)
     model.eval()
     with torch.no_grad():
+        #matrices = model.
         test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
         #args.device = "cpu"
         generate(args)

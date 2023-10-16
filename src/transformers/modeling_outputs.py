@@ -60,6 +60,11 @@ class BaseModelOutput(ModelOutput):
     vae_prior_output: Optional[Tuple[torch.FloatTensor]] = None
     vae_posterior_output: Optional[Tuple[torch.FloatTensor]] = None
     #emo_out_logits: torch.FloatTensor = None
+    intensity_emb: torch.FloatTensor = None
+    intensity_out: torch.FloatTensor = None
+    intensity_vae_prior_output: Optional[Tuple[torch.FloatTensor]] = None
+    intensity_vae_posterior_output: Optional[Tuple[torch.FloatTensor]] = None
+    
     
 
 
@@ -555,6 +560,7 @@ class Seq2SeqLMOutput(ModelOutput):
     lm_logits: torch.FloatTensor = None
     emo_logits: torch.FloatTensor = None
     strategy_logits: torch.FloatTensor = None
+    KLLoss_intensity: torch.FloatTensor = None
 
     past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
     decoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
@@ -563,6 +569,7 @@ class Seq2SeqLMOutput(ModelOutput):
     encoder_last_hidden_state: Optional[torch.FloatTensor] = None
     encoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
     encoder_attentions: Optional[Tuple[torch.FloatTensor]] = None
+    
 
 
 

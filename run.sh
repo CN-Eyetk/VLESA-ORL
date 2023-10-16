@@ -4,13 +4,15 @@ use_th_attn=("")
 use_emb_prep=(" --use_emb_prep" )
 use_prepend=("")
 use_cat=( "")
-use_bart=(" --use_bart")
+use_bart=(" ")
 use_role=(" --use_role_embed")
 use_situ=("")
-latent_dim=( 32 24 56 48)
+latent_dim=(4)
+rl_rat=(0.3 0.4 0.6 0.7 0.75 0.8 0.9)
+emo_loss_rat=(1.0)
 
 
-comm="python3 main.py --no_fuse --use_kl --tag 1011"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag 1016_II"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do
@@ -20,19 +22,25 @@ for u_r in "${use_role[@]}"; do
                     for u_st in "${use_situ[@]}";do
                         for u_t_a in "${use_th_attn[@]}"; do
                             for u_b in "${use_bart[@]}"; do
-                                #for l_d in "${latent_dim[@]}"; do
-                                    cur_comm=$comm
-                                    cur_comm+=$u_t
-                                    cur_comm+=$u_t_a
-                                    cur_comm+=$u_e_p
-                                    cur_comm+=$u_p
-                                    cur_comm+=$u_c
-                                    cur_comm+=$u_b
-                                    cur_comm+=$u_r
-                                    cur_comm+=$u_st
-                                    #cur_comm+=" --latent_dim "$l_d
-                                    $cur_comm
-                                #done
+                                for l_d in "${latent_dim[@]}"; do
+                                for rl_r in "${rl_rat[@]}"; do
+                                    for el_r in "${emo_loss_rat[@]}";do
+                                        cur_comm=$comm
+                                        cur_comm+=$u_t
+                                        cur_comm+=$u_t_a
+                                        cur_comm+=$u_e_p
+                                        cur_comm+=$u_p
+                                        cur_comm+=$u_c
+                                        cur_comm+=$u_b
+                                        cur_comm+=$u_r
+                                        cur_comm+=$u_st
+                                        cur_comm+=" --latent_dim "$l_d
+                                        cur_comm+=" --rl_emb_ratio "$rl_r
+                                        cur_comm+=" --emo_loss_rat "$el_r
+                                        $cur_comm
+                                    done
+                                    done
+                                done
                             done
                         done
                     done

@@ -167,32 +167,33 @@ class CatAttention(nn.Module):
 
 
     
-class EmoTransVAE(nn.Module):
-    def __init__(self, config, n_emo_in, n_emo_out, n_strat, embed_dim):
+class IntensityVAE(nn.Module):
+    def __init__(self, config, n_emo_in, n_strat):
         super().__init__()
         self.n_emo_in = n_emo_in
-        self.n_emo_out = n_emo_out
+        #self.n_emo_out = n_emo_out
+        self.out_dim = 3
         self.n_strat = n_strat
-        self.embed_dim = embed_dim
+        #self.embed_dim = embed_dim
         #self.matrices = nn.ParameterList([nn.Parameter(torch.Tensor(n_emo_in, n_emo_out)) for i in range(n_strat)])
-        self.emotion_embedding = nn.Embedding(n_emo_out, embed_dim)
-        self.emotion_id = torch.tensor(range(n_emo_out), dtype=torch.long)
+        #self.emotion_embedding = nn.Embedding(n_emo_out, embed_dim)
+        #self.emotion_id = torch.tensor(range(n_emo_out), dtype=torch.long)
         self.dropout = nn.Dropout(0.1)
         
-        self.hidden_dim = config.d_model
-        self.latent_dim = int(self.hidden_dim /2)
+        self.hidden_dim = config.d_model + self.n_emo_in
+        self.hidden_dim_encoder = self.hidden_dim + self.out_dim
+        self.latent_dim = config.latent_dim
         
-        self.h_prior_emo = nn.Linear(self.hidden_dim + self.n_emo_in, self.latent_dim)
-        self.h_prior_strat = nn.Linear(self.hidden_dim + self.n_strat, self.latent_dim)
+        self.h_prior = nn.Linear(self.hidden_dim, self.hidden_dim)
+        
         self.mu_prior = nn.Linear(self.hidden_dim, self.latent_dim)
         self.logvar_prior = nn.Linear(self.hidden_dim, self.latent_dim)
-        self.Dense_z_prior = nn.Linear(self.latent_dim, self.n_emo_out)
-
-        self.h_posterior_emo = nn.Linear(self.hidden_dim + self.n_emo_in + self.n_emo_out, self.latent_dim)
-        self.h_posterior_strat = nn.Linear(self.hidden_dim + self.n_strat + self.n_emo_out, self.latent_dim)
-        self.mu_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
-        self.logvar_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
-        #self.Dense_z_posterior = nn.Linear(self.latent_dim, self.n_emo_out)
+        self.Dense_z_prior = nn.Linear(self.latent_dim, self.out_dim, bias = True)
+        
+        self.h_posterior = nn.Linear(self.hidden_dim_encoder, self.hidden_dim_encoder)
+        self.mu_posterior = nn.Linear(self.hidden_dim_encoder, self.latent_dim)
+        self.logvar_posterior = nn.Linear(self.hidden_dim_encoder, self.latent_dim)
+        self.project = nn.Linear(self.latent_dim, self.hidden_dim)
         
 
     def prior(self,  hidden_prior):
@@ -201,8 +202,8 @@ class EmoTransVAE(nn.Module):
         logvar = self.logvar_prior(h1)
         return mu, logvar
     
-    def posterior(self, hidden_prior, emo_out_emb):
-        h1 = F.relu(self.h_posterior(torch.cat((hidden_prior, emo_out_emb), dim = -1)))
+    def posterior(self, hidden_prior, intensity):
+        h1 = F.relu(self.h_posterior(torch.cat((hidden_prior, intensity), dim = -1)))
         mu = self.mu_posterior(h1)
         logvar = self.logvar_posterior(h1)
         return mu, logvar
@@ -212,33 +213,19 @@ class EmoTransVAE(nn.Module):
         eps = torch.randn_like(std)
         return mu + eps * std
 
-    def forward(self, hidden_prior, p_emo_in, p_strat, emo_out_emb):
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
-        p_strat = self.dropout(p_strat)
-        p_strat = F.softmax(p_strat)
-        b = p_emo_in.size(0)
-        mu, logvar = self.prior( hidden_prior, p_emo_in, p_strat)
+    def forward(self, hidden_prior):
+        mu, logvar = self.prior(hidden_prior)
         z = self.reparameterize(mu, logvar)
-        E_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2) #[b, 1,n_emo]
-        emotion_id = self.emotion_id.to(hidden_prior.device) 
-        emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
-        E_prob = torch.log(E_prob.squeeze(1))
-        return emo_out_emb, mu, logvar, E_prob
+        intensity = torch.sigmoid(self.Dense_z_prior(z)).unsqueeze(-2)
+        emo_out_emb = self.project(z)
+        return emo_out_emb, mu, logvar, intensity
     
-    def forward_train(self,  hidden_emo, hidden_strat, p_emo_in, p_strat, p_emo_out):
-        p_emo_in = self.dropout(p_emo_in)
-        p_emo_in = F.softmax(p_emo_in)
-        p_strat = self.dropout(p_strat)
-        p_strat = F.softmax(p_strat)
-        b = p_emo_in.size(0)
-        mu, logvar = self.posterior(hidden_emo, hidden_strat, p_emo_in, p_strat, p_emo_out)
+    def forward_train(self,  hidden_prior, intensity):
+        mu, logvar = self.posterior(hidden_prior, intensity)
         z = self.reparameterize(mu, logvar)
-        E_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2) #[b, 1,n_emo]
-        emotion_id = self.emotion_id.to(hidden_emo.device) 
-        emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
-        E_prob = torch.log(E_prob.squeeze(1))
-        return emo_out_emb, mu, logvar, E_prob
+        intensity_reconst = torch.sigmoid(self.Dense_z_prior(z)).unsqueeze(-2) #[b, 1,n_emo]
+        emo_out_emb = self.project(z)
+        return emo_out_emb, mu, logvar, intensity_reconst
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """

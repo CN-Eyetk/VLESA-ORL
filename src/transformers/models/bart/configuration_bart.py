@@ -193,6 +193,10 @@ class BartConfig(PretrainedConfig):
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
         self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False
         self.wo_emo = kwargs["wo_emo"] if "wo_emo" in kwargs.keys() else False
+        self.rl_emb_ratio = kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
+        self.emo_loss_ratio = kwargs["emo_loss_ratio"] if "emo_loss_ratio" in kwargs.keys() else 1.0
+        self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
+        self.intensity_vae = kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

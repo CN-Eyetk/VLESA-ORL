@@ -57,6 +57,8 @@ class Metric(object):
         if self.use_nltk:
             self.refs.append([word_tokenize(e.lower()) for e in refs])
             self.hyps.append(word_tokenize(hyp.lower()))
+            #print("refs",self.refs[-1])
+            #print("hyps",self.hyps[-1])
         else:
             self.refs.append([self.toker.tokenize(e) for e in refs])
             self.hyps.append(self.toker.tokenize(hyp))

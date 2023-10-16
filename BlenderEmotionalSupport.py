@@ -12,7 +12,7 @@ import copy
 import warnings
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
-
+from attach_vad.VADTokenizer import W2VAD
 from metric.myMetrics import Metric
 import glob
 import logging
@@ -52,7 +52,7 @@ from src.transformers import (BartForConditionalGeneration, BartTokenizer, BartC
 from add_emo import EmoExtracter
 model_dirs = ["j-hartmann/emotion-english-distilroberta-base","SamLowe/roberta-base-go_emotions"]
 emo_extracter = EmoExtracter(model_dir=model_dirs[1])
-
+#vad_tokenizer = W2VAD("attach_vad/VAD_space.json")
 try:
     from torch.utils.tensorboard import SummaryWriter
 except ImportError:
@@ -87,10 +87,17 @@ def check(example):
 
         
 def load_config(args, eval = False):
+    
     if not eval:
-        config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+        if args.use_bart:
+            config = BartConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+        else:
+            config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
     else:
-        config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
+        if args.use_bart:
+            config = BartConfig.from_pretrained(args.output_dir)
+        else:
+            config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
     #config = BlenderbotSmallConfig.from_dict(config)
     config.use_th_attn = args.use_th_attn
     config.prepend = args.prepend_emotion
@@ -116,6 +123,10 @@ def load_config(args, eval = False):
     config.sample_strat_emb = args.sample_strat_emb
     config.wo_stra = args.wo_stra
     config.wo_emo = args.wo_emo
+    config.rl_emb_ratio = args.rl_emb_ratio
+    config.emo_loss_ratio = args.emo_loss_ratio
+    config.emo_out_loss_ratio = args.emo_out_loss_ratio
+    config.intensity_vae = args.intensity_vae
     return config
 
 def load_model_for_eval(args):
@@ -124,6 +135,7 @@ def load_model_for_eval(args):
         model = BartForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
     else:
         model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
+    
     return model
 
 def load_model(args, tokenizer):
@@ -160,7 +172,30 @@ def load_tokenizer(args):
         emotion_special_tokens = [f"[{label}]" for label in emo_extracter.label_2_id.keys()]
         print(emotion_special_tokens)
         tokenizer.add_tokens(emotion_special_tokens)
+    #if args.use_vad_labels:
+    #    vad_labels = vad_tokenizer.vad_labels
+    #    tokenizer.add_tokens(vad_labels)
     return config, tokenizer
+
+def load_emo_emb(model, tokenizer, emo_extracter):
+    labels = emo_extracter.label_2_id.keys()
+    vecs = torch.zeros((len(labels), model.config.d_model))
+    with torch.no_grad():
+        for i, label in enumerate(labels):
+            inputs = tokenizer(label, return_tensors = "pt")
+            hidden = model(**{k:v.to(model.device) for k,v in inputs.items()})[0][:,0,:]
+            vecs[i] = hidden
+    return vecs
+
+def load_stra_emb(model, tokenizer, strat_labels):
+    vecs = torch.zeros((len(strat_labels), model.config.d_model))
+    with torch.no_grad():
+        for i, label in enumerate(strat_labels):
+            inputs = tokenizer(label, return_tensors = "pt")
+            hidden = model(**{k:v.to(model.device) for k,v in inputs.items()})[0][:,0,:]
+            vecs[i] = hidden
+    return vecs
+        
 
 class Args():
    def __init__(self):
@@ -248,7 +283,7 @@ class InputFeatures_train(object):
 
 
 class InputFeatures_blender(object):
-    def __init__(self, encoder_feature, decoder_feature, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist = None, emo_in_dist = None):
+    def __init__(self, encoder_feature, decoder_feature, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist = None, emo_in_dist = None, intensity = None, vad_ids = None, decoder_vad_ids = None):
         self.conv_id = encoder_feature.conv_id
         self.input_ids = encoder_feature.input_ids
         self.position_ids = encoder_feature.position_ids
@@ -278,6 +313,9 @@ class InputFeatures_blender(object):
         #self.strat_seq = encoder_feature.hist_strat_labels[:-1] + [self.decoder_strategy_ids[0]]
         self.is_strat_targ = encoder_feature.is_strat_targ
         self.is_emo_targ = encoder_feature.is_emo_targ
+        self.intensity = intensity
+        self.vad_ids = vad_ids
+        self.decoder_vad_ids = decoder_vad_ids
         #assert len(self.spt_eos_indice) == len(self.strat_seq)
         #print("strat_seq",self.strat_seq)
         #print("spt_eos_indice",self.spt_eos_indice)
@@ -371,12 +409,14 @@ def _get_comet_input(args, comet_row, tokenizer, max_num_attr=30, max_len_attr=1
     return comet_ids, comet_mask
 
 
-def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False):
+def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False, vad_ids = None):
     # we did't use role label and turn number in modeling as they did't carry significant improvement. However, codes still remain here.
     if len(sents) == 0:
         return InputFeatures_train([], [], [], [], [],
                             [], [] , [], [])
     input_ids = [i for s in sents for i in s+[eos]] #添加eos
+    #vad_ids = [i for s in vad_ids for i in s+[-1]]
+
 
     input_ids = input_ids
     #print("input_ids 323",input_ids)
@@ -434,6 +474,8 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
             break
         i -= 1
     input_ids = input_ids[:i+1]
+    
+    #vad_ids = vad_ids[:i+1]
     lm_labels = lm_labels[:i+1]
     token_type_ids = token_type_ids[:i+1]
     roles = roles[:i+1]
@@ -454,7 +496,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     if len(input_ids) > block_size:
         cut_index = input_ids.index(eos,-512) + 1
         input_ids = input_ids[cut_index: ]
-
+        #vad_ids = vad_ids[cut_index:]
         token_type_ids = token_type_ids[cut_index: ]
         lm_labels = lm_labels[cut_index: ]
         roles = roles[cut_index: ]
@@ -472,9 +514,13 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     if pad:
         while len(input_ids) % 8 != 0:
             input_ids.append(pad_token_id)
+            #vad_ids.append(-1)
             token_type_ids.append(0)
             lm_labels.append(-100)
-            roles.append(-1)
+            if args.use_bart:
+                roles.append(-1)
+            else:
+                roles.append(0)
             strategy_ids.append(8)
             is_strat_targ.append(0)
             is_emo_targ.append(0)
@@ -518,11 +564,12 @@ def _norm_text(text):
     return emo, r, t, toks
 
 
-def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_dist = False, get_emo_in_dist = False, prepend_emotion = False, args = None, is_decoder = False): #bart 
+def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_dist = False, get_emo_in_dist = False, prepend_emotion = False, args = None, is_decoder = False, vad_tokenizer = None): #bart 
     srcs = text.strip()
     inputs = []
     roles = []
     turns = []
+    vad_ids = []
     strategy_labels=[]
     srcs = srcs.split(" EOS")
     emotion = None
@@ -535,12 +582,25 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         if emotion is None:
             emotion = src_emo
         if args.use_bart:
-            #if is_decoder:
-            #    context_id = tokenizer.encode(src)[1:-1]
-            #else:
             context_id = [tokenizer.bos_token_id] + tokenizer.encode(src)[1:-1]
+            #if args.use_vad_labels and vad_tokenizer is not None:
+            #context_id_new, _, vad_labels = vad_tokenizer.tokenizer_vad(src)
+            #assert len(context_id) == len(context_id_new) -1
+            #vad_labels = vad_labels[1:-1]
+            #token_vads = tokenizer.convert_tokens_to_ids(vad_labels)
+            #token_vads = [-1] + token_vads
+            #vad_ids.append(token_vads)
+            #else:
+            #    token_vads = None
         else:
             context_id = tokenizer.encode(src)
+            #if args.use_vad_labels and vad_tokenizer is not None:
+            #context_id_new, _, vad_labels = vad_tokenizer.tokenizer_vad(src)
+            #token_vads = tokenizer.convert_tokens_to_ids(vad_labels)
+            #assert len(context_id) == len(context_id_new)
+            #vad_ids.append(token_vads)
+            #else:
+            #    vad_ids = None
 
         if not strategy:
             context_id = [i  for i in context_id if i< args.base_vocab_size]
@@ -567,16 +627,19 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         inputs.append(context_id)
         roles.append(src_role)
         turns.append(src_turn)
+    clean_src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
     if get_emo_dist:
-        src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
-        emo_dist, pred = emo_extracter(src)
+        #clean_src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
+        emo_dist, pred = emo_extracter(clean_src)
     else:
         emo_dist = None
     if get_emo_in_dist:
-        src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
-        emo_in_dist, pred = emo_extracter(src)
+        #clean_src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
+        emo_in_dist, pred = emo_extracter(clean_src)
     else:
         emo_in_dist = None
+    
+    intensity = emo_extracter.get_intensity([clean_src])[0]
     if prepend_emotion:
         pred = pred[0]
         emo_label = f"[{pred}]"
@@ -585,18 +648,21 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         last_utt = inputs[-1]
         last_context_id = [emo_token_id] + [x for i,x in enumerate(last_utt)]
         inputs = inputs[:-1] + [last_context_id]
-    return inputs, roles, turns, strategy_labels, emotion, emo_dist, emo_in_dist
+    return inputs, roles, turns, strategy_labels, emotion, emo_dist, emo_in_dist, intensity#, vad_ids
 
-def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None, prepend_emotion = False, use_emo_in_dist = False):
+def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos = True, pad=True, cls=False, evaluate=False, strategy=True, generation=False, situation = None, prepend_emotion = False, use_emo_in_dist = False, vad_tokenizer = None):
 
     #  process input text
     #print("row",row)
     
-    inputs, roles, turns, strategy_labels, _, _, emo_in_dist = _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist else False),
-                                                                                     args = args
+    inputs, roles, turns, strategy_labels, _, _, emo_in_dist, _= _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist else False),
+                                                                                     args = args,
+                                                                                     #vad_tokenizer = vad_tokenizer 
                                                                                      )
     # process output (decoder input) text
-    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _ = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args, is_decoder = True)
+    d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _, intensity = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args, is_decoder = True,
+                                                                                                                      #vad_tokenizer = vad_tokenizer 
+                                                                                                                      )
     situ_ids = tokenizer.encode(situation) 
     if situ_ids[-1] !=  tokenizer.eos_token_id:
         situ_ids.append(tokenizer.eos_token_id)
@@ -610,16 +676,17 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     
     comet_ids, comet_mask = _get_comet_input(args, comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(args, comet_st_row, tokenizer, max_num_attr=20)
-    feature = InputFeatures_blender(feature, d_feature, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist = emo_dist, emo_in_dist = emo_in_dist)
+    feature = InputFeatures_blender(feature, d_feature, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist = emo_dist, emo_in_dist = emo_in_dist, intensity = intensity)
     return feature
 
 
     
 
 class ESDDataset(Dataset):
-    def __init__(self, tokenizer: PreTrainedTokenizer, args, df, comet, comet_st, block_size=512, evaluate=False, strategy=True, test=False, situations = None):
+    def __init__(self, tokenizer: PreTrainedTokenizer, args, df, comet, comet_st, block_size=512, evaluate=False, strategy=True, test=False, situations = None, vad_tokenizer = None):
         block_size = block_size - (tokenizer.model_max_length - tokenizer.max_len_single_sentence)
         self.tokenizer = tokenizer
+        self.vad_tokenizer = vad_tokenizer
         self.collate_verbose_step = 10
         directory = args.data_cache_dir
         self.args = args
@@ -657,10 +724,10 @@ class ESDDataset(Dataset):
                 #print("row", row)
                 #print("comet_row", comet_row)
                 #print("situation", situation)
-                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist)
+                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
-                    conv.role_ids = conv.role_ids[-block_size:][1:] #leave the 0-th id to pad in collate function
+                    conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
                     conv.is_strat_targ = conv.is_strat_targ[-block_size:]
                     conv.is_emo_targ = conv.is_emo_targ[-block_size:]
                     conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False)[0]
@@ -709,7 +776,7 @@ class ESDDataset(Dataset):
                                     for f in features],
                                     batch_first=True, padding_value=0)
         if self.args.use_role_embed:
-            role_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [self.role_id_2_token_id[i] if i > -1 else self.tokenizer.pad_token_id for i in f.role_ids ], 
+            role_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [self.role_id_2_token_id[i]  if i > -1 else self.tokenizer.pad_token_id for i in f.role_ids], 
                                                 dtype=torch.long)
                                         for f in features],
                                         batch_first=True, padding_value=self.tokenizer.pad_token_id)
@@ -794,6 +861,10 @@ class ESDDataset(Dataset):
         emo_positions = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_emo_targ) if x == 1], dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-1)
+        if self.args.intensity_vae:
+            intensity = torch.tensor([f.intensity for f in features], dtype=torch.float32)
+        else:
+            intensity = None
         if self.collate_verbose_step > 0:
             inputs =  self.tokenizer.batch_decode(input_ids, )
             decoder_inputs = self.tokenizer.batch_decode(decoder_input_ids,)
@@ -837,7 +908,7 @@ class ESDDataset(Dataset):
         #            assert j.item() > -1
         
 
-        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist, emo_in_dist, situations, strat_positions, emo_positions)
+        return (input_ids, position_ids, token_type_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_token_type_ids, decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist, emo_in_dist, situations, strat_positions, emo_positions, intensity)
 
 
 def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False, strategy=True, test=False, **kwargs):
@@ -845,7 +916,10 @@ def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False
         situations = kwargs["situations"]
     else:
         situations = None
-    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = situations)
+    #vad_tokenizer.load_transformer_tokenizer(args.model_name_or_path, args = args)
+    #args.zero_vad_token = "[0v0a0d]"
+    #args.zero_vad_token_id = tokenizer.convert_tokens_to_ids(args.zero_vad_token)
+    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = situations) #vad_tokenizer = vad_tokenizer)
 
 def set_seed(args):
     random.seed(args.seed)
@@ -890,7 +964,7 @@ def _rotate_checkpoints(args, checkpoint_prefix="checkpoint", use_mtime=False) -
         shutil.rmtree(checkpoint)
 
 # Training of model
-def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedTokenizer) -> Tuple[int, float]:
+def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedTokenizer) -> Tuple[int, float]:
     """ Train the model """
     if args.local_rank in [-1, 0]:
         tb_writer = SummaryWriter()
@@ -913,6 +987,11 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
     model = model.module if hasattr(model, "module") else model  # Take care of distributed/parallel training
     model.resize_token_embeddings(len(tokenizer))
+    
+    #emo_vecs = load_emo_emb(model.model.encoder, tokenizer, emo_extracter= emo_extracter)
+    #strat_vesc = load_stra_emb(model.model.encoder, tokenizer, strat_labels = ["Question","Reflection of feelings","Information","Restatement or Paraphrasing","Others","Self-disclosure","Affirmation and Reassurance","Providing Suggestions"])
+    #model.init_emotion_embedding(emo_vecs)
+    #model.init_strategy_embedding(strat_vesc)
     # Prepare optimizer and schedule (linear warmup and decay)
     no_decay = ["bias", "LayerNorm.weight"]
     optimizer_grouped_parameters = [
@@ -1174,6 +1253,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     logger.info("  Num examples = %d", len(eval_dataset))
     logger.info("  Batch size = %d", args.eval_batch_size)
     eval_loss = 0.0
+    intensity_loss = 0.0
     nb_eval_steps = 0
     model.eval()
 
@@ -1192,6 +1272,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             ppl = outputs.lm_loss
             emo_logits = outputs.emo_logits
             strategy_logits = outputs.strategy_logits
+            
 
             # print(strategy_logits.argmax(dim=-1))
             for idx, emo_logit in enumerate(emo_logits):
@@ -1217,16 +1298,18 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             lm_loss = outputs.lm_loss
             num_samples.append((decoder_label_ids.cpu().numpy() != -100).astype(np.int32).sum())
             eval_loss += lm_loss.sum().item() * (decoder_label_ids.cpu().numpy() != -100).astype(np.int32).sum()
-
+            if outputs.intensity_loss is not None:
+                intensity_loss += (outputs.intensity_loss.detach().cpu().item() - intensity_loss) / (nb_eval_steps + 1)
         nb_eval_steps += 1
 
     eval_loss = eval_loss/ sum(num_samples)
+    
     perplexity = torch.exp(torch.tensor(eval_loss)).item()
     # np_strategy = np.array(strategy_probs)
     # np_cls_labels = np.array(cls_labels_list)
     # result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits)/len(emo_hits), "eval_strategy_predict_accuracy": sum(strategy_hits)/len(strategy_hits), "eval_number_of_evaluated_examples": len(emo_hits)}
     result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits) / len(emo_hits),"eval_strategy_predict_accuracy": sum(strategy_hits) / len(strategy_hits),
-              "eval_number_of_evaluated_examples": len(emo_hits)}
+              "eval_number_of_evaluated_examples": len(emo_hits), "intensity_loss":intensity_loss}
     output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
 
 
@@ -1423,12 +1506,19 @@ def generate(args):
         f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ[idx], use_emo_in_dist = args.use_emo_in_dist)
         if len(f.input_ids) >= args.block_size:
             f.input_ids = f.input_ids[-args.block_size:]
-            f.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens=False)[0]
-            f.role_ids = f.role_ids[-args.block_size:]
-            f.role_ids = f.role_ids[1:]
+            if args.use_bart:
+                f.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens=False)[0]
+                #f.role_ids = f.role_ids[-args.block_size:]
+                #f.role_ids = f.role_ids[1:]
+            else:
+                
+                f.input_ids[0] = tokenizer.encode(tokenizer.cls_token)[0]
 
         else:
-            f.input_ids = tokenizer.encode(tokenizer.cls_token, add_special_tokens=False) + f.input_ids
+            if args.use_bart:
+                f.input_ids = tokenizer.encode(tokenizer.cls_token, add_special_tokens=False) + f.input_ids
+            else:
+                f.input_ids = tokenizer.encode(tokenizer.cls_token) + f.input_ids
 
         #print("input_ids",f.input_ids)
         
@@ -1447,6 +1537,8 @@ def generate(args):
         comet_mask = torch.tensor([f.comet_mask], dtype=torch.long)
         comet_ids_st = torch.tensor([f.comet_st_ids], dtype=torch.long)
         comet_mask_st = torch.tensor([f.comet_st_mask], dtype=torch.long)
+        intensity = torch.tensor([f.intensity], dtype=torch.float)
+        intensity = intensity.to(args.device)
         #print("emo_dist", f.emo_dist)
         if f.emo_dist is not None:
             emo_dist = torch.tensor([f.emo_dist], dtype = torch.float64).squeeze(1)
@@ -1521,6 +1613,7 @@ def generate(args):
         paras["output_mutual_attentions"] = False
         paras["strat_positions"] = strat_positions
         paras["emo_positions"] = emo_positions
+        paras["intensity"] = intensity
         if args.use_role_embed:
             paras["role_ids"] = role_ids
         #paras["strat_seq"] = strat_seq
@@ -1628,11 +1721,11 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     else:
         model.eval()
     input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions = batch
+            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity = batch
 
     decoder_strategy_ids = decoder_strategy_ids[:, 0]
     decoder_strategy_ids = decoder_strategy_ids.to(args.device)
-
+    
     
     assert input_ids.shape[1] <= 512 
     if not args.use_emo_in_dist:
@@ -1667,7 +1760,9 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     comet_mask = comet_mask.to(args.device)
     comet_mask_st = comet_mask_st.to(args.device)
     input_ids = input_ids.to(args.device)
-    
+    if args.intensity_vae:
+        intensity = intensity.to(args.device)
+    #print("intensity",intensity)
     
     decoder_input_ids = decoder_input_ids.to(args.device)
     decoder_turn_ids = decoder_turn_ids.to(args.device)
@@ -1700,10 +1795,10 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     else:
         spt_eos_indice = None
     if phase == "train":
-        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions)
+        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions, intensity = intensity)
     else:
         with torch.no_grad():
-            outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions)
+            outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions, intensity = intensity)
     return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
 if __name__ == "__main__":
     args = Args()

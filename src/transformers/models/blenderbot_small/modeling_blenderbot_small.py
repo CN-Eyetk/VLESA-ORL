@@ -875,6 +875,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
         output_hidden_states=None,
         return_dict=None,
         strategy_logit_ground=None,
+        intensity=None,
     ):
 
         r"""
@@ -1545,6 +1546,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         use_cache=None,
         cls_position=None,
         next_strategy_id=None,
+        intensity=None,
         comet_embs=None,
         comet_mask=None,
         comet_embs_st=None,
