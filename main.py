@@ -1,5 +1,6 @@
 import argparse
 parser = argparse.ArgumentParser()
+parser.add_argument("--explain", action= "store_true")
 parser.add_argument("--use_trans", action= "store_true")
 parser.add_argument("--use_prepend", action= "store_true")
 parser.add_argument("--use_emb_prep", action= "store_true")
@@ -136,7 +137,7 @@ logger = logging.getLogger(__name__)
 
 def load_arg():
     
-    args = {"do_train":True,
+    args = {"do_train":False,
             "data_path":"dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -251,15 +252,26 @@ def load_dataset(args, tokenizer):
     return train_dataset, eval_dataset, test_dataset
 
 def plot(model, strat_labels, emo_in_labels, emo_out_labels):
+    import pandas as pd
     with torch.no_grad():
         mats = model.model.encoder.trans_mat.matrices
         weights = []
-        for mat in mats:
+        for i,mat in enumerate(mats):
+            cur_strat = strat_labels[i]
             weight = mat.detach().cpu().numpy()
-            print(weight.shape)
-            print(weight)
-            weights.append(weight)
+            df = pd.DataFrame(weight, columns=emo_out_labels, index=emo_in_labels)
+            print(df.shape)
+            print(df)
+            df.to_csv(f"matrices/{cur_strat}.csv", sep = "\t")
+            weights.append(df)
     return weights
+
+def explain():
+    stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+    emo_in_labels = open("dataset/labels/esconv_emo_labels.txt","r+").read().split("\n")
+    emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
+    emo_out_labels = [v for k,v in emo_out_lables.items()]
+    plot(model, strat_labels=stra_labels, emo_in_labels=emo_in_labels, emo_out_labels=emo_out_labels)
 if __name__ == "__main__":
     args = load_arg()
     print(args.output_dir)
@@ -293,10 +305,12 @@ if __name__ == "__main__":
     model.eval()
     with torch.no_grad():
         #matrices = model.
-        plot(model)
-        test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
-        #args.device = "cpu"
-        generate(args)
+        if args_g.explain:
+            explain()
+        else:
+            test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+            #args.device = "cpu"
+            generate(args)
 
     #model.to(args.device)
     #model.eval()
