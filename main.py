@@ -250,12 +250,12 @@ def load_dataset(args, tokenizer):
     test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
     return train_dataset, eval_dataset, test_dataset
 
-def plot(model):
+def plot(model, strat_labels, emo_in_labels, emo_out_labels):
     with torch.no_grad():
         mats = model.model.encoder.trans_mat.matrices
         weights = []
         for mat in mats:
-            weight = mat.detach().cpu()
+            weight = mat.detach().cpu().numpy()
             print(weight.shape)
             print(weight)
             weights.append(weight)
@@ -293,6 +293,7 @@ if __name__ == "__main__":
     model.eval()
     with torch.no_grad():
         #matrices = model.
+        plot(model)
         test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
         #args.device = "cpu"
         generate(args)

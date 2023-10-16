@@ -8,7 +8,7 @@ use_bart=(" ")
 use_role=(" --use_role_embed")
 use_situ=("")
 latent_dim=(4)
-rl_rat=(0.3 0.4 0.6 0.7 0.75 0.8 0.9)
+rl_rat=(0.4 0.45 0.6 0.7 0.75 0.8 0.9)
 emo_loss_rat=(1.0)
 
 
