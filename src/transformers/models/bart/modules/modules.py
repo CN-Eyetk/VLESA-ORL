@@ -539,7 +539,7 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
         return emo_out_emb, mu, logvar, emo_out_prob
     
-    def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): #p_emo_in 和 p_strat输入的都是logits
+    def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): 
 
         b = hidden_prior.size(0)
         mu, logvar = self.posterior(hidden_prior, hidden_post)
