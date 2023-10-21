@@ -1,12 +1,10 @@
 blender_strategy/*
-blender-small/*
 blender_our/*
 blender_our2/*
 blender_our_TRANS/*
 blender_our_TRANS2/*
 blender_our_TRANS3/*
 blender-strategy/*
-blender-small/*
 blender-our/*
 blender-our2/*
 blender-our-TRANS/*
@@ -27,5 +25,5 @@ glove
 attach_vad
 *.zip
 *.pyc
-_pycache_
-*/_pycache_
+__pycache___
+*/__pycache__
