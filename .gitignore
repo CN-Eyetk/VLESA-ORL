@@ -26,3 +26,6 @@ MultiESC
 glove
 attach_vad
 *.zip
+*.pyc
+_pycache_
+*/_pycache_
