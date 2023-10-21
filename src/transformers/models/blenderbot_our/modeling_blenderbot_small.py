@@ -1919,7 +1919,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             use_cache=use_cache,
             role_ids=decoder_role_ids,
             turn_ids=decoder_turn_ids,
-            output_attentions=True if self.use_copy else output_attentions, #COPY机制需要输出corss
+            output_attentions=True if self.use_copy else output_attentions, 
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
         )
@@ -2089,7 +2089,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
 
         if self.use_copy:
             print("getting encoder input ids")
-            model_kwargs["encoder_input_ids"] = input_ids #10-1如果使用copy机制，generation需要输入input_ids
+            model_kwargs["encoder_input_ids"] = input_ids 
         return model_kwargs
     def prepare_inputs_for_generation(
         self, decoder_input_ids, past=None, attention_mask=None, use_cache=None, encoder_outputs=None, **kwargs
