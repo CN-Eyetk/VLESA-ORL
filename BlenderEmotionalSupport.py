@@ -12,7 +12,7 @@ import copy
 import warnings
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
-from attach_vad.VADTokenizer import W2VAD
+#from attach_vad.VADTokenizer import W2VAD
 from metric.myMetrics import Metric
 import glob
 import logging

@@ -63,14 +63,3 @@ class GPT_PPL:
         ppl = np.mean(scores)
         md_ppl = np.median(scores)
         return ppl, md_ppl, res
-if __name__ == "__main__":
-    text = json.load(open("/Users/lijunlin/Desktop/PolyU/PolySem4/EmoSp/ESCONV/our_generated_data/hyp_strategy.json","r+"))
-    #ppl, md_ppl, res = gpt_ppl(text)
-    #print(f"final_ppl={ppl}, md_ppl = {md_ppl}")
-    #with open("ppl.csv","w+") as file:
-    #    for s in res:
-    #        file.write(f"{s[0]}\t{s[1]}\n")
-#misc_generated_data final_ppl=27.447721265183613, md_ppl = 14.70841558687026, 
-#our_generated_data_prepend:final_ppl=25.448967686870894, md_ppl = 17.43002184408764
-#our_generated_data: final_ppl=27.222954333084914, md_ppl = 14.267879763321707
-#our_generated_data_wotrans=61.65571695841064, md_ppl = 14.3828678541351   

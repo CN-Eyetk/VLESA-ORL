@@ -74,6 +74,7 @@ for dir in dirs:
     # print(metric.hyps)
     result, result_list = metric.close()
     result_2 = metric_2.res
+    result_2 = {k:v for k,v in result_2.items() if not "Bleu" in k}
     #result["gpt_ppl"] = ppl
     #for k,v in result_2:
     #    result[k] = v
