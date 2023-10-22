@@ -12,11 +12,10 @@ except ImportError:
 from gensim.scripts.glove2word2vec import glove2word2vec
 def transfer(gloveFile, word2vecFile):
     glove2word2vec(gloveFile, word2vecFile)
-#transfer("/mnt/c/Users/admin/Desktop/PolyuSem4/EmoSp/glove/glove.6B.300d.txt","/mnt/c/Users/admin/Desktop/PolyuSem4/EmoSp/glove/glove.6B.300d.w2vformat.txt")
 
 class Embedding(object):
     def __init__(self):
-        path = '/mnt/c/Users/admin/Desktop/PolyuSem4/EmoSp/glove' # please modify the path manually
+        path = 'glove' # please modify the path manually
         self.m = KeyedVectors.load_word2vec_format(os.path.join(path, 'glove.6B.300d.w2vformat.txt'), binary=True)
         try:
             self.unk = self.m.vectors.mean(axis=0)
