@@ -9,7 +9,7 @@ use_role=(" --use_role_embed")
 use_situ=("")
 rl_rat=(0.9)
 emo_loss_rat=(1.0)
-comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 1016_II "
+comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 1130_III "
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do

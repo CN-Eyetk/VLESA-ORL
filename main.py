@@ -274,6 +274,7 @@ def explain():
     plot(model, strat_labels=stra_labels, emo_in_labels=emo_in_labels, emo_out_labels=emo_out_labels)
 if __name__ == "__main__":
     args = load_arg()
+    
     print(args.output_dir)
     set_seed(args)
     _, tokenizer = load_tokenizer(args = args)

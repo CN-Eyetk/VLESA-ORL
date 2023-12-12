@@ -925,6 +925,15 @@ def set_seed(args):
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+    if args.do_train:
+        torch.backends.cudnn.deterministic = True
+        torch.use_deterministic_algorithms(True)
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.enabled = False
+    
+        os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
     if args.n_gpu > 0:
         torch.cuda.manual_seed_all(args.seed)
 
