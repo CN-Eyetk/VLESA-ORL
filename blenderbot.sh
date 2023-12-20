@@ -8,9 +8,9 @@ use_bart=(" ")
 use_role=(" --use_role_embed")
 use_situ=("")
 latent_dim=(4)
-rl_rat=(0.2)
+rl_rat=(0.25 0.3 0.4 0.5 0.6 0.7)
 emo_loss_rat=(1.0)
-comm="python3 main.py --no_fuse --use_kl --tag 1016_II "
+comm="python3 main.py --no_fuse --use_kl --tag 1212_II "
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do

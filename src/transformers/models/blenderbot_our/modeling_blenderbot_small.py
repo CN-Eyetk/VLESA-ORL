@@ -1008,7 +1008,7 @@ class BlenderbotSmallEncoder(BlenderbotSmallPreTrainedModel):
             if self.use_role_embed and (comet_embs is not None and comet_embs_st is not None):
                 assert role_ids is not None
                 #inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
-                role_embeds = self.embed_tokens(role_ids) * self.embed_scale * 0.2
+                role_embeds = self.embed_tokens(role_ids) * self.embed_scale * self.rl_emb_ratio
                 #role_mask = role_ids.ne(self.config.pad_token_id).float().unsqueeze(-1)
                 #role_embeds = role_embeds.mul(role_mask)
                 #print(role_embeds[0])
