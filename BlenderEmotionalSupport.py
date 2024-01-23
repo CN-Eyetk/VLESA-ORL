@@ -141,7 +141,7 @@ def load_model_for_eval(args):
 def load_model(args, tokenizer):
     config = load_config(args)
     if args.use_bart:
-        model = BartForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
+        model = BartForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config)
     else:
         model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
     print(model.config)
@@ -158,8 +158,10 @@ def load_tokenizer(args):
         config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
         tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
     print(f"vocab size = {tokenizer.vocab_size}")
-    
-    additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+    if args.data_path == "converted_dataset":
+        additional_special_tokens = ["[Question]","[Reflection of feelings]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions or Information]","[Greeting]"]
+    else:
+        additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
 
     tokenizer.add_tokens(additional_special_tokens)
@@ -212,7 +214,7 @@ class Args():
        self.model_name_or_path = "facebook/blenderbot_small-90M"
        self.config_name = "facebook/blenderbot_small-90M"
        self.tokenizer_name = "facebook/blenderbot_small-90M"
-       self.data_path = "./dataset"
+       self.data_path = "./converted_dataset"
        self.train_file_name = "trainWithStrategy_short.tsv"
        self.eval_file_name = "devWithStrategy_short.tsv"
        self.test_file_name = "testWithStrategy_short.tsv"
@@ -663,16 +665,16 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _, intensity = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args, is_decoder = True,
                                                                                                                       #vad_tokenizer = vad_tokenizer 
                                                                                                                       )
-    situ_ids = tokenizer.encode(situation) 
-    if situ_ids[-1] !=  tokenizer.eos_token_id:
-        situ_ids.append(tokenizer.eos_token_id)
+    #situ_ids = tokenizer.encode(situation) 
+    #if situ_ids[-1] !=  tokenizer.eos_token_id:
+    #    situ_ids.append(tokenizer.eos_token_id)
     #print(f"situ_ids-{tokenizer.decode(situ_ids)}")
     #print("situ_ids in construct_conv_ESD", situ_ids)
     #print("situation", situation)
     # make feature for input text
-    feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
+    feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = None, evaluate=evaluate, str_embd=True, generation=generation)
     # make feature for output (decoder input) text
-    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
+    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = None, evaluate=evaluate, str_embd=True, generation=generation)
     
     comet_ids, comet_mask = _get_comet_input(args, comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(args, comet_st_row, tokenizer, max_num_attr=20)
@@ -720,11 +722,11 @@ class ESDDataset(Dataset):
                 assert len(comet_st) == len(situations)
             self.features = []
 
-            for idx, (row, comet_row, comet_st_row, situation) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1], situations[:-1])):
+            for idx, (row, comet_row, comet_st_row) in enumerate(zip(df[:-1], comet[:-1], comet_st[:-1])):
                 #print("row", row)
                 #print("comet_row", comet_row)
                 #print("situation", situation)
-                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situation, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
+                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = None, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
@@ -919,7 +921,7 @@ def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False
     #vad_tokenizer.load_transformer_tokenizer(args.model_name_or_path, args = args)
     #args.zero_vad_token = "[0v0a0d]"
     #args.zero_vad_token_id = tokenizer.convert_tokens_to_ids(args.zero_vad_token)
-    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = situations) #vad_tokenizer = vad_tokenizer)
+    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = None) #vad_tokenizer = vad_tokenizer)
 
 def set_seed(args):
     random.seed(args.seed)
@@ -1384,7 +1386,10 @@ def main(args):
 
     # Set seed
     set_seed(args)
-    additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+    if args.data_path == "converted_dataset":
+        additional_special_tokens = ["[Question]","[Reflection of feelings]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions or Information]","[Greeting]"]
+    else:
+        additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     # comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]","[xNeed]", "[xReact]", "[xWant]"]
     comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
 
@@ -1489,9 +1494,9 @@ def generate(args):
     with open(args.data_path+"/"+ args.test_comet_file, "r", encoding="utf-8") as f:
         comet = f.read().split("\n")
 
-    with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
-        situ = f.read().split("\n")
-    assert len(comet) == len(chat_texts) == len(comet_st) == len(situ)
+    #with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
+    #    situ = f.read().split("\n")
+    assert len(comet) == len(chat_texts) == len(comet_st)# == len(situ)
     gts = []
     refs = []
     mutual_attentions = []
@@ -1512,7 +1517,7 @@ def generate(args):
         # gts.append(" ".join(tokens[1:]))
         # = max(tokenizer.encode(tokens[0]))
         chat_history = c_text
-        f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ[idx], use_emo_in_dist = args.use_emo_in_dist)
+        f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = None, use_emo_in_dist = args.use_emo_in_dist)
         if len(f.input_ids) >= args.block_size:
             f.input_ids = f.input_ids[-args.block_size:]
             if args.use_bart:

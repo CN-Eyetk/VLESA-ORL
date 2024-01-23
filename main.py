@@ -1,5 +1,6 @@
 import argparse
 parser = argparse.ArgumentParser()
+parser.add_argument("--root_path", type = str, default=".")
 parser.add_argument("--explain", action= "store_true")
 parser.add_argument("--use_trans", action= "store_true")
 parser.add_argument("--use_prepend", action= "store_true")
@@ -31,6 +32,7 @@ parser.add_argument("--intensity_vae", action = "store_true")
 parser.add_argument("--over_write", action= "store_true")
 parser.add_argument("--tag", type=str)
 args_g = parser.parse_args()
+root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
 USE_PREPEND = args_g.use_prepend
 USE_EMB_PREP = args_g.use_emb_prep
@@ -128,17 +130,17 @@ else:
                                         logger
                                         )
     if BART:
-        output_dir = os.path.join('bart-our', GROUP, TAG)
+        output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
     else:
-        output_dir = os.path.join('blender-our', GROUP, TAG)
+        output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
     generation_dir = "our_generated_data/" + GROUP + "/" + TAG
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 
 def load_arg():
     
-    args = {"do_train":False,
-            "data_path":"dataset",
+    args = {"do_train":True,
+            "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
             "situation_train_comet_file":"trainComet_st.txt",
@@ -151,7 +153,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"./116_II_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
+            "data_cache_dir":"{}/123_II_{}_{}_{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -159,15 +161,15 @@ def load_arg():
             "model_cache_dir":"./blender-small",
             "strategy":False,
             "local_rank":-1,
-            "per_gpu_train_batch_size":20,
-            "per_gpu_eval_batch_size":20,
+            "per_gpu_train_batch_size":32,
+            "per_gpu_eval_batch_size":32,
             "save_total_limit":1,
             "n_gpu":torch.cuda.device_count(),
             "max_steps":-1,
             "gradient_accumulation_steps":1,
             "weight_decay":0,
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-            "learning_rate":2e-5,
+            "learning_rate":5e-5,
             "adam_epsilon":1e-8,
             "warmup_steps":120,
             "fp16":False,
@@ -246,9 +248,9 @@ def load_dataset(args, tokenizer):
         df_test = f.read().split("\n")
     with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
         st_test = f.read().split("\n")
-    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
-    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
-    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
+    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = None)
+    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = None)
+    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = None)
     return train_dataset, eval_dataset, test_dataset
 
 def plot(model, strat_labels, emo_in_labels, emo_out_labels):

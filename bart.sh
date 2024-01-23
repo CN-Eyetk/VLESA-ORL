@@ -9,7 +9,9 @@ use_role=(" --use_role_embed")
 use_situ=("")
 rl_rat=(0.9)
 emo_loss_rat=(1.0)
-comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 1130_III "
+root_path="/disk/junlin/EmoSp"
+export CUDA_VISIBLE_DEVICES=1
+comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 1130_III"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do
@@ -22,6 +24,7 @@ for u_r in "${use_role[@]}"; do
                                 for rl_r in "${rl_rat[@]}"; do
                                     for el_r in "${emo_loss_rat[@]}";do
                                         cur_comm=$comm
+                                        cur_comm+=" --root_path "$root_path
                                         cur_comm+=$u_t
                                         cur_comm+=$u_t_a
                                         cur_comm+=$u_e_p
