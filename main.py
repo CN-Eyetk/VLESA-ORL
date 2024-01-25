@@ -12,14 +12,18 @@ parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
 parser.add_argument("--emo_from_eos", action= "store_true")
 parser.add_argument("--use_kl", action= "store_true")
-parser.add_argument("--use_cat_attn", action= "store_true")
+parser.add_argument("--stg_use_cat_attn", action= "store_true")
+parser.add_argument("--emo_use_cat_attn", action= "store_true")
 parser.add_argument("--attend_eos", action= "store_true")
 parser.add_argument("--use_copy", action= "store_true")
 parser.add_argument("--use_th_attn", action= "store_true")
 parser.add_argument("--use_role_embed", action= "store_true")
+parser.add_argument("--lstm_st_seq", action= "store_true")
+parser.add_argument("--use_st_seq", action= "store_true")
 parser.add_argument("--sample_strat_emb", action= "store_true")
 parser.add_argument("--latent_dim", type = int, default=256)
 parser.add_argument("--use_vae", action= "store_true")
+parser.add_argument("--mixed_vae", action= "store_true")
 parser.add_argument("--wo_Stra", action= "store_true")
 parser.add_argument("--wo_Emo", action= "store_true")
 parser.add_argument("--use_vad_labels", action = "store_true")
@@ -39,11 +43,13 @@ USE_EMB_PREP = args_g.use_emb_prep
 MISC = False
 KL = args_g.use_kl
 ST_FROM_EOS = False
-USE_ST_SEQ = False
-LSTM_ST_SEQ = False
+USE_ST_SEQ = args_g.use_st_seq
+LSTM_ST_SEQ = args_g.lstm_st_seq
 EMO_FROM_EOS = args_g.emo_from_eos
 EMO_FROM_SITU = False
 COPY = args_g.use_copy
+STG_USE_CAT_ATTN = args_g.stg_use_cat_attn
+EMO_USE_CAT_ATTN = args_g.emo_use_cat_attn
 ENCODE_SITU = args_g.encode_situ
 EMO_CRO_ATTN = False
 USE_EMO_IN_DIST = args_g.use_emo_in
@@ -51,7 +57,6 @@ MERGE = args_g.merge
 NO_FUSE = args_g.no_fuse
 OVERWRITE = args_g.over_write
 BART = args_g.use_bart
-CAT_ATTN = args_g.use_cat_attn
 ATTEN_EOS = args_g.attend_eos
 USE_SATTN = args_g.use_th_attn
 USE_ROLE = args_g.use_role_embed
@@ -64,7 +69,7 @@ RL_EMB_RAT = args_g.rl_emb_ratio
 EM_LS_RAT = args_g.emo_loss_ratio
 EM_OT_LS_RAT = args_g.emo_out_loss_ratio
 INT_VAE = args_g.intensity_vae
-
+MIX_VAE = args_g.mixed_vae
 
 TAG = "all_loss" \
     + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
@@ -83,9 +88,11 @@ TAG = "all_loss" \
                     + ("-eosemo" if EMO_FROM_EOS else "") \
                         +("-sattn" if USE_SATTN else "") \
                             +("-role" if USE_ROLE else "") \
-                        +("-cat" +("eos" if ATTEN_EOS else "cmt") if CAT_ATTN else "") \
+                        +("-emocat" if EMO_USE_CAT_ATTN else "") \
+                            +("-stgcat" if STG_USE_CAT_ATTN else "") \
                             +("-vae" if USE_VAE else "") \
                                 +("-ivae" if INT_VAE else "") \
+                                    +("-mvae" if MIX_VAE else "") \
                                 +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
                                 +("-smp_str" if SMP_STRAT_EMB else "")\
                                     +("-wo_Stra" if WO_STRA else "") \
@@ -138,8 +145,9 @@ else:
 logger = logging.getLogger(__name__)
 
 def load_arg():
-    
-    args = {"do_train":True,
+    #torch.distributed.init_process_group(backend="nccl")
+    #local_rank = torch.distributed.get_rank()
+    args = {"do_train":False,
             "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -153,23 +161,23 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/123_II_{}_{}_{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
             "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
-            "local_rank":-1,
-            "per_gpu_train_batch_size":32,
-            "per_gpu_eval_batch_size":32,
+            "local_rank":-1,#local_rank,
+            "per_gpu_train_batch_size":20,
+            "per_gpu_eval_batch_size":20,
             "save_total_limit":1,
-            "n_gpu":torch.cuda.device_count(),
+            "n_gpu":1,
             "max_steps":-1,
             "gradient_accumulation_steps":1,
             "weight_decay":0,
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-            "learning_rate":5e-5,
+            "learning_rate":2e-5,
             "adam_epsilon":1e-8,
             "warmup_steps":120,
             "fp16":False,
@@ -202,10 +210,12 @@ def load_arg():
             "merge":MERGE,
             "no_fuse":NO_FUSE,
             "use_bart":BART,
-            "use_cat_attn":CAT_ATTN,
+            "stg_use_cat_attn":STG_USE_CAT_ATTN,
+            "emo_use_cat_attn":EMO_USE_CAT_ATTN,
             "attend_eos":ATTEN_EOS,
             "use_role_embed":USE_ROLE,
             "use_vae":USE_VAE,
+            "mixed_vae":MIX_VAE,
             "latent_dim":LATENT_DIM,
             "sample_strat_emb":SMP_STRAT_EMB,
             "wo_stra":WO_STRA,
@@ -216,6 +226,9 @@ def load_arg():
             "intensity_vae":INT_VAE,
             "use_vad_labels":args_g.use_vad_labels
             }
+    #torch.cuda.set_device(local_rank)
+    #device = torch.device("cuda", local_rank)
+    #args["device"] = device
     args = argparse.Namespace(**args)
     return args
 

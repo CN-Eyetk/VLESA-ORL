@@ -28,7 +28,7 @@ class NLTK_Metric:
         self.forword(hyps, refs)
         
         
-    def forword(self, decoder_preds, decoder_labels, no_glove=True):
+    def forword(self, decoder_preds, decoder_labels, no_glove=False):
         ref_list = []
         hyp_list = []
         for ref, hyp in zip(decoder_labels, decoder_preds):
@@ -42,9 +42,9 @@ class NLTK_Metric:
         from metric import NLGEval
         metric = NLGEval(no_glove=no_glove)
         metric_res, metric_res_list = metric.compute_metrics([ref_list], hyp_list, )
-        metric_res_list = {k:np.mean(v) for k,v in metric_res_list.items()}
+        #metric_res_list = {k:np.mean(v) for k,v in metric_res_list.items()}
         #print(metric_res_list)
-        self.res = metric_res_list
+        self.res = metric_res
 additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
 tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
 tokenizer.add_tokens(additional_special_tokens)
@@ -68,19 +68,19 @@ for dir in dirs:
     ref_path = f"{dir}/ref_strategy.json"
     
     metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path, use_nltk=True)
-    #metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
+    metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
     #text = read_text(hyp_path)
     #ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
     # print(metric.hyps)
     result, result_list = metric.close()
-    #result_2 = metric_2.res
+    result_2 = metric_2.res
     #result_2 = {k:v for k,v in result_2.items() if not "Bleu" in k}
     #result["gpt_ppl"] = ppl
     #for k,v in result_2:
     #    result[k] = v
     #result["mid_gpt_ppl"] = md_ppl
     print(result)
-    #print(result_2)
+    print(result_2)
     print("="*100)
     # print(result_list)
     all_res[dir.replace("our_generated_data","")] = {k:round(v,3) for k,v in result.items()}

@@ -7,11 +7,13 @@ use_cat=( "")
 use_bart=(" ")
 use_role=(" --use_role_embed")
 use_situ=("")
-rl_rat=(0.9)
-emo_loss_rat=(1.0)
+rl_rat=(0.2)
+emo_loss_rat=(0.2)
 root_path="/disk/junlin/EmoSp"
-export CUDA_VISIBLE_DEVICES=1
-comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 1130_III"
+#export CUDA_VISIBLE_DEVICES=0,1
+#comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
+export CUDA_VISIBLE_DEVICES=0
+comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 124_II --emo_out_loss_ratio 0.2 --use_vae --mixed_vae --use_emo_in --emo_use_cat_attn --stg_use_cat_attn --attend_eos"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do

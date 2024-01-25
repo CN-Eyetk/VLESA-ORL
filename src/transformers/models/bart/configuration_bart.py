@@ -185,10 +185,11 @@ class BartConfig(PretrainedConfig):
         self.lstm_st_seq = kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
         self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
         self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
-        self.use_cat_attn = kwargs["use_cat_attn"] if "use_cat_attn" in kwargs.keys() else False
-        self.attend_eos = kwargs["attend_eos"] if "attend_eos" in kwargs.keys() else False
+        self.stg_use_cat_attn = kwargs["stg_use_cat_attn"] if "stg_use_cat_attn" in kwargs.keys() else False
+        self.emo_use_cat_attn = kwargs["emo_use_cat_attn"] if "emo_use_cat_attn" in kwargs.keys() else False
         self.use_role_embed = kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
         self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
+        self.mixed_vae = kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
         self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
         self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False

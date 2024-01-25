@@ -1056,6 +1056,7 @@ class GenerationMixin:
         output_hidden_states: Optional[bool] = None,
         output_scores: Optional[bool] = None,
         return_dict_in_generate: Optional[bool] = None,
+        encoder_input_ids: Optional[bool] = None,
         **model_kwargs,
     ) -> Union[GreedySearchOutput, torch.LongTensor]:
         r"""
@@ -1155,6 +1156,14 @@ class GenerationMixin:
                 model_kwargs["encoder_outputs"].get("hidden_states") if output_hidden_states else None
             )
 
+        if "turn_ids" in model_kwargs:
+            cur_type_id = model_kwargs["turn_ids"][-1,-1] + 1
+
+        all_mutual_attentions =  model_kwargs["encoder_outputs"].get("all_mutual_attentions") if model_kwargs["output_mutual_attentions"] else None
+        all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
+            "output_mutual_attentions"] else None
+        strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+
         # init sequence length tensors
         sequence_lengths, unfinished_sequences, cur_len = self._init_sequence_length_for_generation(
             input_ids, max_length
@@ -1163,16 +1172,28 @@ class GenerationMixin:
         while cur_len < max_length:
             # prepare model inputs
             
+            model_kwargs["encoder_input_ids"] = encoder_input_ids
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
-
+            # print(model_kwargs)
+            # print(model_inputs)
+            # print(1/0)
             # forward pass to get next token
+            # print(model_inputs)
+            # print(1/0)
+            # print(model_inputs)
+            # print("=" * 10)
             outputs = self(
                 **model_inputs,
                 return_dict=True,
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
             )
-            next_token_logits = outputs.logits[:, -1, :]
+
+            next_token_logits = outputs.lm_logits[:, -1, :]
+
+            if next_token_logits.size()[1] >= 54954:  # strategy comet
+                for batch_idx in range(next_token_logits.size()[0]):
+                    next_token_logits[batch_idx, 54944:] = -float("inf")
 
             # Store scores, attentions and hidden_states when required
             if return_dict_in_generate:
@@ -1240,7 +1261,7 @@ class GenerationMixin:
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return input_ids
+            return input_ids, all_mutual_attentions, all_mutual_attentions_st, strategy_logits
 
     def sample(
         self,

@@ -15,8 +15,8 @@ def transfer(gloveFile, word2vecFile):
 
 class Embedding(object):
     def __init__(self):
-        path = 'glove' # please modify the path manually
-        self.m = KeyedVectors.load_word2vec_format(os.path.join(path, 'glove.6B.300d.w2vformat.txt'), binary=True)
+        path = '/disk/junlin/metric/word2vec' # please modify the path manually
+        self.m = KeyedVectors.load(os.path.join(path, 'glove.6B.300d.model.bin'), mmap='r')
         try:
             self.unk = self.m.vectors.mean(axis=0)
         except AttributeError:
