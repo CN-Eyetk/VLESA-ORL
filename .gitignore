@@ -24,7 +24,6 @@ runs
 *cached
 MultiESC
 glove
-attach_vad
 *.zip
 *.pyc
 __pycache___

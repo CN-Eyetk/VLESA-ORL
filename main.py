@@ -11,6 +11,7 @@ parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
 parser.add_argument("--emo_from_eos", action= "store_true")
+parser.add_argument("--stg_from_eos", action= "store_true")
 parser.add_argument("--use_kl", action= "store_true")
 parser.add_argument("--stg_use_cat_attn", action= "store_true")
 parser.add_argument("--emo_use_cat_attn", action= "store_true")
@@ -26,6 +27,7 @@ parser.add_argument("--use_vae", action= "store_true")
 parser.add_argument("--mixed_vae", action= "store_true")
 parser.add_argument("--wo_Stra", action= "store_true")
 parser.add_argument("--wo_Emo", action= "store_true")
+parser.add_argument("--wo_comet", action= "store_true")
 parser.add_argument("--use_vad_labels", action = "store_true")
 parser.add_argument("--rl_emb_ratio", type = float, default=0.2)
 parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
@@ -34,6 +36,8 @@ parser.add_argument("--intensity_vae", action = "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
+parser.add_argument("--freeze_emo_stag_params", action= "store_true")
+
 parser.add_argument("--tag", type=str)
 args_g = parser.parse_args()
 root_path = args_g.root_path
@@ -42,7 +46,7 @@ USE_PREPEND = args_g.use_prepend
 USE_EMB_PREP = args_g.use_emb_prep
 MISC = False
 KL = args_g.use_kl
-ST_FROM_EOS = False
+ST_FROM_EOS = args_g.stg_from_eos
 USE_ST_SEQ = args_g.use_st_seq
 LSTM_ST_SEQ = args_g.lstm_st_seq
 EMO_FROM_EOS = args_g.emo_from_eos
@@ -65,6 +69,7 @@ LATENT_DIM = args_g.latent_dim
 SMP_STRAT_EMB = args_g.sample_strat_emb
 WO_STRA = args_g.wo_Stra
 WO_EMO = args_g.wo_Emo
+WO_COMET = args_g.wo_comet
 RL_EMB_RAT = args_g.rl_emb_ratio
 EM_LS_RAT = args_g.emo_loss_ratio
 EM_OT_LS_RAT = args_g.emo_out_loss_ratio
@@ -97,6 +102,8 @@ TAG = "all_loss" \
                                 +("-smp_str" if SMP_STRAT_EMB else "")\
                                     +("-wo_Stra" if WO_STRA else "") \
                                         +("-wo_Emo" if WO_EMO else "") \
+                                            +("-wo_comet" if WO_COMET else "") \
+                                                +("-frz_stem" if args_g.freeze_emo_stag_params else "") \
                             +args_g.tag
                             
 
@@ -179,7 +186,7 @@ def load_arg():
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":2e-5,
             "adam_epsilon":1e-8,
-            "warmup_steps":120,
+            "warmup_steps":200,
             "fp16":False,
             "fp16_opt_level":'O1',
             "num_train_epochs":10 if BART else 8,
@@ -224,7 +231,9 @@ def load_arg():
             "emo_loss_ratio":EM_LS_RAT,
             "emo_out_loss_ratio":EM_OT_LS_RAT,
             "intensity_vae":INT_VAE,
-            "use_vad_labels":args_g.use_vad_labels
+            "wo_comet":WO_COMET,
+            "use_vad_labels":args_g.use_vad_labels,
+            "freeze_emo_stag_params":args_g.freeze_emo_stag_params
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

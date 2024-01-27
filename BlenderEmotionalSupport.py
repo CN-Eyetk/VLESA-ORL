@@ -12,7 +12,7 @@ import copy
 import warnings
 from tqdm import tqdm
 warnings.filterwarnings("ignore")
-#from attach_vad.VADTokenizer import W2VAD
+from attach_vad.VADTokenizer import W2VAD
 from metric.myMetrics import Metric
 import glob
 import logging
@@ -125,6 +125,7 @@ def load_config(args, eval = False):
     config.sample_strat_emb = args.sample_strat_emb
     config.wo_stra = args.wo_stra
     config.wo_emo = args.wo_emo
+    config.wo_comet = args.wo_comet
     config.rl_emb_ratio = args.rl_emb_ratio
     config.emo_loss_ratio = args.emo_loss_ratio
     config.emo_out_loss_ratio = args.emo_out_loss_ratio
@@ -593,7 +594,7 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         if args.use_bart:
             context_id = [tokenizer.bos_token_id] + tokenizer.encode(src)[1:-1]
             #if args.use_vad_labels and vad_tokenizer is not None:
-            #context_id_new, _, vad_labels = vad_tokenizer.tokenizer_vad(src)
+            #    context_id_new, _, vad_labels = vad_tokenizer.tokenizer_vad(src)
             #assert len(context_id) == len(context_id_new) -1
             #vad_labels = vad_labels[1:-1]
             #token_vads = tokenizer.convert_tokens_to_ids(vad_labels)
@@ -988,6 +989,32 @@ def _rotate_checkpoints(args, checkpoint_prefix="checkpoint", use_mtime=False) -
         shutil.rmtree(checkpoint)
 
 # Training of model
+def freeze_emo_stg_paras(model):
+    emo_stg_para_formats = ["emo","strategy","trans_mat"]
+    frozen_paras_names = []
+    for n, param in model.named_parameters():
+        if any(fm in n for fm in emo_stg_para_formats):
+            frozen_paras_names.append(n)
+            param.requires_grad = False
+            logger.info(f"freeze parameter,{n}")
+    print(f"frozen_paras_names {frozen_paras_names}")
+
+def load_optimizer_grouped_params_with_doubled_lr(model, no_decay, paras_to_double, lr, double_ratio):
+    #emo_stg_para_formats = ["emo","strategy","trans_mat"]
+    optimizer_grouped_parameters = [
+    {
+        "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay) and not n in paras_to_double],
+        "weight_decay": args.weight_decay,
+    },
+    {
+        "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay) and not n in paras_to_double], 
+        "weight_decay": 0.0},
+    {
+        "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay) and n in paras_to_double], 
+        "weight_decay": 0.0, "lr":lr * double_ratio},
+    ]
+    return optimizer_grouped_parameters
+
 def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedTokenizer) -> Tuple[int, float]:
     """ Train the model """
     if args.local_rank in [-1, 0]:
@@ -1019,13 +1046,24 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     #model.init_strategy_embedding(strat_vesc)
     # Prepare optimizer and schedule (linear warmup and decay)
     no_decay = ["bias", "LayerNorm.weight"]
-    optimizer_grouped_parameters = [
-        {
-            "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
-            "weight_decay": args.weight_decay,
-        },
-        {"params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
-    ]
+    if 1 == 2:
+        assert 1 == 2
+        emo_stg_para_formats = ["emo","strategy","trans_mat"]
+        frozen_paras_names = []
+        for n, param in model.named_parameters():
+            if any(fm in n for fm in emo_stg_para_formats):
+                frozen_paras_names.append(n)
+        optimizer_grouped_parameters = load_optimizer_grouped_params_with_doubled_lr(
+            model, no_decay, frozen_paras_names, args.lr, 1.5
+        )
+    else:
+        optimizer_grouped_parameters = [
+            {
+                "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
+                "weight_decay": args.weight_decay,
+            },
+            {"params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
+        ]
 
     total_params = sum(p.numel() for p in model.parameters())
     print(f'{total_params:,} total parameters.')
@@ -1115,7 +1153,8 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     np.set_printoptions(threshold=np.inf)
     for epoch in train_iterator:
             
-        #if epoch > 5:
+        if epoch > 3 and args.freeze_emo_stag_params:
+            freeze_emo_stg_paras(model)
         #    break
         #     for paras in model.model.encoder.parameters():
         #         paras.requires_grad = True
@@ -1570,10 +1609,30 @@ def generate(args):
         gts.append(tokenizer.decode(f.decoder_input_ids, skip_special_tokens=True))
 
         emotion = torch.tensor([f.emotion], dtype=torch.long)
-        comet_ids = torch.tensor([f.comet_ids], dtype=torch.long)
-        comet_mask = torch.tensor([f.comet_mask], dtype=torch.long)
-        comet_ids_st = torch.tensor([f.comet_st_ids], dtype=torch.long)
-        comet_mask_st = torch.tensor([f.comet_st_mask], dtype=torch.long)
+        if not args.wo_comet:
+            comet_ids = torch.tensor([f.comet_ids], dtype=torch.long)
+            comet_mask = torch.tensor([f.comet_mask], dtype=torch.long)
+            comet_ids_st = torch.tensor([f.comet_st_ids], dtype=torch.long)
+            comet_mask_st = torch.tensor([f.comet_st_mask], dtype=torch.long)
+            comet_ids = comet_ids.to(args.device)
+            comet_ids_st = comet_ids_st.to(args.device)
+            batch_size, n_attr, len_attr = comet_ids.shape
+            comet_ids = comet_ids.view(-1, len_attr)
+            comet_embs = model.model.encoder(comet_ids, attention_mask=comet_ids.ne(tokenizer.pad_token_id))[0][:, 0, :]
+            comet_embs = comet_embs.view(batch_size, n_attr, -1)
+            batch_size, n_attr, len_attr = comet_ids_st.shape
+            comet_ids_st = comet_ids_st.view(-1, len_attr)
+            comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
+            comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
+            comet_mask = comet_mask.to(args.device)
+            comet_mask_st = comet_mask_st.to(args.device)
+        else:
+            comet_ids = None
+            comet_mask = None
+            comet_ids_st = None
+            comet_mask_st = None
+            comet_embs = None
+            comet_embs_st = None
         intensity = torch.tensor([f.intensity], dtype=torch.float)
         intensity = intensity.to(args.device)
         #print("emo_dist", f.emo_dist)
@@ -1585,8 +1644,7 @@ def generate(args):
             emo_in_dist = torch.tensor([f.emo_in_dist], dtype = torch.float64).squeeze(1)
         else:
             emo_in_dist = None
-        comet_ids = comet_ids.to(args.device)
-        comet_ids_st = comet_ids_st.to(args.device)
+
         
         emo_dist = emo_dist.to(args.device) if emo_dist is not None else None
         emo_in_dist = emo_in_dist.to(args.device) if emo_in_dist is not None else None
@@ -1601,24 +1659,17 @@ def generate(args):
             emo_positions = emo_positions.to(args.device)
         else:
             emo_positions = None
-        batch_size, n_attr, len_attr = comet_ids.shape
-        comet_ids = comet_ids.view(-1, len_attr)
-        comet_embs = model.model.encoder(comet_ids, attention_mask=comet_ids.ne(tokenizer.pad_token_id))[0][:, 0, :]
-        comet_embs = comet_embs.view(batch_size, n_attr, -1)
 
-        batch_size, n_attr, len_attr = comet_ids_st.shape
-        comet_ids_st = comet_ids_st.view(-1, len_attr)
         
-        comet_mask = comet_mask.to(args.device)
-        if args.encode_situ:
-            situ_ids = torch.tensor([f.situ_ids], dtype=torch.long)
-            situ_ids = situ_ids.to(args.device)
-            comet_embs_st = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
-            comet_mask_st = situ_ids.ne(tokenizer.pad_token_id)
-        else:
-            comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
-            comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
-        comet_mask_st = comet_mask_st.to(args.device)
+
+        #if args.encode_situ:
+        #    situ_ids = torch.tensor([f.situ_ids], dtype=torch.long)
+        #    situ_ids = situ_ids.to(args.device)
+        #    comet_embs_st = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+        #    comet_mask_st = situ_ids.ne(tokenizer.pad_token_id)
+
+
+
         input_ids = torch.tensor([f.input_ids], dtype=torch.long).to(args.device)
         role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]
         if args.use_role_embed:
@@ -1772,29 +1823,26 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         emotion = emotion.to(args.device)
     else:
         emotion = emo_in_dist.argmax(-1).to(args.device)
-
-    comet_ids = comet_ids.to(args.device)
-
-    batch_size, n_attr, len_attr = comet_ids.shape
-    comet_ids = comet_ids.view(-1, len_attr)
     if situ_ids is not None:
         situ_ids = situ_ids.to(args.device)
-
-    with torch.no_grad():
-        if isinstance(model,torch.nn.DataParallel):
-            comet_embs = model.module.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
-        else:
-            comet_embs = model.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
-    comet_embs = comet_embs.view(batch_size, n_attr, -1)
-
-    if args.encode_situ:
+    if not args.wo_comet:
+        comet_ids = comet_ids.to(args.device)
+        batch_size, n_attr, len_attr = comet_ids.shape
+        comet_ids = comet_ids.view(-1, len_attr)
         with torch.no_grad():
             if isinstance(model,torch.nn.DataParallel):
-                comet_embs_st = model.module.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+                comet_embs = model.module.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
             else:
-                comet_embs_st = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
-            comet_mask_st = situ_ids.ne(tokenizer.pad_token_id)
-    else:
+                comet_embs = model.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
+        comet_embs = comet_embs.view(batch_size, n_attr, -1)
+        #if args.encode_situ:
+        #    with torch.no_grad():
+        #        if isinstance(model,torch.nn.DataParallel):
+        #            comet_embs_st = model.module.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+        #        else:
+        #            comet_embs_st = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+        #        comet_mask_st = situ_ids.ne(tokenizer.pad_token_id)
+        #else:
         comet_ids_st = comet_ids_st.to(args.device)
         batch_size, n_attr, len_attr = comet_ids_st.shape
         comet_ids_st = comet_ids_st.view(-1, len_attr)
@@ -1804,10 +1852,14 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             else:
                 comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
         comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
+        comet_mask = comet_mask.to(args.device)
+        comet_mask_st = comet_mask_st.to(args.device)
+    else:
+        comet_embs = None
+        comet_embs_st = None
+        comet_mask = None
+        comet_mask_st = None
     
-
-    comet_mask = comet_mask.to(args.device)
-    comet_mask_st = comet_mask_st.to(args.device)
     input_ids = input_ids.to(args.device)
     if args.intensity_vae:
         intensity = intensity.to(args.device)

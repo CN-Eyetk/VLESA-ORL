@@ -373,7 +373,7 @@ class BartDecoderLayer(nn.Module):
             is_decoder=True,
         )
         self.use_merge = config.merge
-        if not config.merge:
+        if not config.merge and not config.wo_comet:
             self.encoder_attn_comet = BartAttention(
                 self.embed_dim,
                 config.decoder_attention_heads,
@@ -849,6 +849,7 @@ class BartEncoder(BartPretrainedModel):
         
         self.stg_use_cat_attn = config.stg_use_cat_attn
         self.emo_use_cat_attn = config.emo_use_cat_attn
+        self.wo_comet = config.wo_comet
         if self.stg_use_cat_attn:
             self.strat_cat_attn = CatAttention(config.d_model, config.d_model)
         if self.emo_use_cat_attn:
@@ -1008,7 +1009,7 @@ class BartEncoder(BartPretrainedModel):
             encoder_states = encoder_states + (hidden_states,)
             
         #calculate emo and strat logits
-        if comet_embs is not None and comet_embs_st is not None:
+        if (comet_embs is not None and comet_embs_st is not None) or self.config.wo_comet:
             if self.stg_use_cat_attn:
                 #10-6 Add Cat attn
                 strat_hidden = hidden_states[:, 0, :]# if not self.st_from_eos else hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
@@ -1609,6 +1610,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if config.use_trans_mat:
             self.fuse_st_emo = nn.Linear(config.d_model * 2, config.d_model, bias = False)
         self.use_merge = config.merge
+        self.wo_comet = config.wo_comet
+        if self.wo_comet:
+            print("without comet")
         self.emo_loss_ratio = config.emo_loss_ratio
         self.emo_out_loss_ratio = config.emo_out_loss_ratio
         self.intensity_vae = config.intensity_vae
@@ -1732,6 +1736,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 emo_out_dist=emo_dist if self.use_vae else None,
                 intensity=intensity,
                 strat_positions=strat_positions,
+                emo_positions=emo_positions
+                
             )
 
         if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
@@ -1768,6 +1774,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if self.use_merge:
             encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.last_comet_hidden_state, encoder_outputs.last_comet_hidden_state_st], dim = 1)
             attention_mask = torch.cat([attention_mask, encoder_outputs.comet_mask, encoder_outputs.comet_mask_st], dim = 1)
+
         #print("decoder_input_ids",decoder_input_ids)
         #print("labels",labels)
         #print("past_key_values",past_key_values.shape)
@@ -1778,10 +1785,10 @@ class BartForConditionalGeneration(BartPretrainedModel):
             attention_mask=decoder_attention_mask,
             encoder_hidden_states=encoder_outputs.last_hidden_state if not self.use_merge else encoder_hidden_states,
             encoder_attention_mask=attention_mask,
-            comet_hidden_states=encoder_outputs.last_comet_hidden_state if not self.use_merge else None,
-            comet_mask=encoder_outputs.comet_mask if not self.use_merge else None,
-            comet_hidden_states_st=encoder_outputs.last_comet_hidden_state_st if not self.use_merge else None,
-            comet_mask_st=encoder_outputs.comet_mask_st if not self.use_merge else None,
+            comet_hidden_states=encoder_outputs.last_comet_hidden_state if not self.use_merge and not self.wo_comet else None,
+            comet_mask=encoder_outputs.comet_mask if not self.use_merge and not self.wo_comet else None,
+            comet_hidden_states_st=encoder_outputs.last_comet_hidden_state_st if not self.use_merge and not self.wo_comet else None,
+            comet_mask_st=encoder_outputs.comet_mask_st if not self.use_merge and not self.wo_comet else None,
             strategy_embs=strategy_embs,#encoder_outputs.strategy_embs,
             emo_out_embs=emo_out_embs,
             past_key_values=past_key_values,

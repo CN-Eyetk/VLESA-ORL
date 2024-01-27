@@ -13,7 +13,7 @@ root_path="/disk/junlin/EmoSp"
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 export CUDA_VISIBLE_DEVICES=0
-comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 124_II --emo_out_loss_ratio 0.2 --use_vae --mixed_vae --use_emo_in --emo_use_cat_attn --stg_use_cat_attn --attend_eos"
+comm="python3 main.py --no_fuse  --use_bart --use_kl --tag 124_II --emo_out_loss_ratio 0.2 --use_vae --mixed_vae --use_emo_in --emo_use_cat_attn --stg_use_cat_attn --wo_comet"
 
 for u_r in "${use_role[@]}"; do
     for u_c in "${use_cat[@]}"; do
@@ -37,6 +37,9 @@ for u_r in "${use_role[@]}"; do
                                         cur_comm+=$u_st
                                         cur_comm+=" --rl_emb_ratio "$rl_r
                                         cur_comm+=" --emo_loss_rat "$el_r
+                                        cur_comm+=" --stg_from_eos "
+                                        cur_comm+=" --emo_from_eos "
+                                        cur_comm+=" --freeze_emo_stag_params "
                                         $cur_comm
                                     done
                                 done

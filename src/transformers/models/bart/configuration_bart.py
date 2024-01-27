@@ -192,6 +192,7 @@ class BartConfig(PretrainedConfig):
         self.mixed_vae = kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
         self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
+        self.wo_comet = kwargs["wo_comet"] if "wo_comet" in kwargs.keys() else False
         self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False
         self.wo_emo = kwargs["wo_emo"] if "wo_emo" in kwargs.keys() else False
         self.rl_emb_ratio = kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
