@@ -130,6 +130,7 @@ def load_config(args, eval = False):
     config.emo_loss_ratio = args.emo_loss_ratio
     config.emo_out_loss_ratio = args.emo_out_loss_ratio
     config.intensity_vae = args.intensity_vae
+    config.use_situ = args.use_situ
     return config
 
 def load_model_for_eval(args):
@@ -673,16 +674,16 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _, intensity = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args, is_decoder = True,
                                                                                                                       #vad_tokenizer = vad_tokenizer 
                                                                                                                       )
-    #situ_ids = tokenizer.encode(situation) 
-    #if situ_ids[-1] !=  tokenizer.eos_token_id:
-    #    situ_ids.append(tokenizer.eos_token_id)
+    situ_ids = tokenizer.encode(situation) 
+    if situ_ids[-1] !=  tokenizer.eos_token_id:
+        situ_ids.append(tokenizer.eos_token_id)
     #print(f"situ_ids-{tokenizer.decode(situ_ids)}")
     #print("situ_ids in construct_conv_ESD", situ_ids)
     #print("situation", situation)
     # make feature for input text
-    feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = None, evaluate=evaluate, str_embd=True, generation=generation)
+    feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
     # make feature for output (decoder input) text
-    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = None, evaluate=evaluate, str_embd=True, generation=generation)
+    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation)
     
     comet_ids, comet_mask = _get_comet_input(args, comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(args, comet_st_row, tokenizer, max_num_attr=20)
@@ -734,7 +735,7 @@ class ESDDataset(Dataset):
                 #print("row", row)
                 #print("comet_row", comet_row)
                 #print("situation", situation)
-                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = None, prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
+                conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situations[idx], prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
@@ -935,7 +936,7 @@ def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False
     #vad_tokenizer.load_transformer_tokenizer(args.model_name_or_path, args = args)
     #args.zero_vad_token = "[0v0a0d]"
     #args.zero_vad_token_id = tokenizer.convert_tokens_to_ids(args.zero_vad_token)
-    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = None) #vad_tokenizer = vad_tokenizer)
+    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = situations) #vad_tokenizer = vad_tokenizer)
 
 def set_seed(args):
     random.seed(args.seed)
@@ -1556,9 +1557,9 @@ def generate(args):
     with open(args.data_path+"/"+ args.test_comet_file, "r", encoding="utf-8") as f:
         comet = f.read().split("\n")
 
-    #with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
-    #    situ = f.read().split("\n")
-    assert len(comet) == len(chat_texts) == len(comet_st)# == len(situ)
+    with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
+        situs = f.read().split("\n")
+    assert len(comet) == len(chat_texts) == len(comet_st) == len(situs)
     gts = []
     refs = []
     mutual_attentions = []
@@ -1569,7 +1570,7 @@ def generate(args):
     strategy_hits = []
     strategy_record = []
     strategy_hits_topk = [[] for _ in range(8)]
-    for idx, (c_text, comet_row, comet_st_row) in tqdm(enumerate(zip(chat_texts[:-1], comet[:-1], comet_st[:-1])), desc="Testing"):
+    for idx, (c_text, comet_row, comet_st_row, situ) in tqdm(enumerate(zip(chat_texts[:-1], comet[:-1], comet_st[:-1], situs[:-1])), desc="Testing"):
         if "EOS" not in c_text:
             continue
         # if idx>=100:
@@ -1579,7 +1580,7 @@ def generate(args):
         # gts.append(" ".join(tokens[1:]))
         # = max(tokenizer.encode(tokens[0]))
         chat_history = c_text
-        f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = None, use_emo_in_dist = args.use_emo_in_dist)
+        f = construct_conv_ESD(args, idx, chat_history, comet_row, comet_st_row, tokenizer, eos = True, pad=False, cls=False, strategy=False, generation=True, situation = situ, use_emo_in_dist = args.use_emo_in_dist)
         if len(f.input_ids) >= args.block_size:
             f.input_ids = f.input_ids[-args.block_size:]
             if args.use_bart:
@@ -1822,9 +1823,21 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     if not args.use_emo_in_dist:
         emotion = emotion.to(args.device)
     else:
-        emotion = emo_in_dist.argmax(-1).to(args.device)
-    if situ_ids is not None:
+        emotion = emo_in_dist.argmax(-1).to(args.device)        
+    if args.use_situ:
         situ_ids = situ_ids.to(args.device)
+        with torch.no_grad():
+            if isinstance(model,torch.nn.DataParallel):
+                situ_hidden = model.module.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+            else:
+                situ_hidden = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+            situ_attention_mask = situ_ids.ne(tokenizer.pad_token_id)
+        situ_hidden_states = situ_hidden.to(args.device)
+        situ_attention_mask = situ_attention_mask.to(args.device)
+    else:
+        assert 1 == 2
+        situ_hidden_states = None
+        situ_attention_mask = None
     if not args.wo_comet:
         comet_ids = comet_ids.to(args.device)
         batch_size, n_attr, len_attr = comet_ids.shape
@@ -1856,10 +1869,9 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         comet_mask_st = comet_mask_st.to(args.device)
     else:
         comet_embs = None
-        comet_embs_st = None
         comet_mask = None
+        comet_embs_st = None
         comet_mask_st = None
-    
     input_ids = input_ids.to(args.device)
     if args.intensity_vae:
         intensity = intensity.to(args.device)
@@ -1901,10 +1913,51 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     #else:
     #    spt_eos_indice = None
     if phase == "train":
-        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=None, decoder_role_ids=None, turn_ids=None, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions, intensity = intensity)
+        outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), 
+                        decoder_input_ids=decoder_input_ids, 
+                        decoder_turn_ids=None, 
+                        decoder_role_ids=None, 
+                        turn_ids=None, 
+                        role_ids=role_ids,
+                        labels = decoder_label_ids,
+                        decoder_strategy_ids=decoder_strategy_ids, 
+                        comet_embs=comet_embs, 
+                        comet_mask=comet_mask, 
+                        comet_embs_st=comet_embs_st, 
+                        comet_mask_st=comet_mask_st, 
+                        emotion=emotion,
+                        emo_dist = emo_dist, 
+                        emo_in_dist = emo_in_dist, 
+                        strat_positions = strat_positions, 
+                        emo_positions = emo_positions, 
+                        intensity = intensity,
+                        situ_hidden_states = situ_hidden_states,
+                        situ_attention_mask = situ_attention_mask
+                        )
     else:
         with torch.no_grad():
-            outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=None, decoder_role_ids=None, turn_ids=None, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions, intensity = intensity)
+            outputs = model(input_ids, 
+                            attention_mask = input_ids.ne(tokenizer.pad_token_id), 
+                            decoder_input_ids=decoder_input_ids,
+                            decoder_turn_ids=None, 
+                            decoder_role_ids=None, 
+                            turn_ids=None, 
+                            role_ids=role_ids,
+                            labels = decoder_label_ids, 
+                            decoder_strategy_ids=decoder_strategy_ids, 
+                            comet_embs=comet_embs, 
+                            comet_mask=comet_mask, 
+                            comet_embs_st=comet_embs_st, 
+                            comet_mask_st=comet_mask_st, 
+                            emotion=emotion, 
+                            emo_dist = emo_dist, 
+                            emo_in_dist = emo_in_dist, 
+                            strat_positions = strat_positions, 
+                            emo_positions = emo_positions, 
+                            intensity = intensity,
+                            situ_hidden_states = situ_hidden_states,
+                            situ_attention_mask = situ_attention_mask
+                            )
     return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
 if __name__ == "__main__":
     args = Args()

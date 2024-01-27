@@ -6,7 +6,7 @@ parser.add_argument("--use_trans", action= "store_true")
 parser.add_argument("--use_prepend", action= "store_true")
 parser.add_argument("--use_emb_prep", action= "store_true")
 parser.add_argument("--merge", action= "store_true")
-parser.add_argument("--encode_situ", action= "store_true")
+parser.add_argument("--use_situ", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
@@ -54,7 +54,7 @@ EMO_FROM_SITU = False
 COPY = args_g.use_copy
 STG_USE_CAT_ATTN = args_g.stg_use_cat_attn
 EMO_USE_CAT_ATTN = args_g.emo_use_cat_attn
-ENCODE_SITU = args_g.encode_situ
+USE_SITU = args_g.use_situ
 EMO_CRO_ATTN = False
 USE_EMO_IN_DIST = args_g.use_emo_in
 MERGE = args_g.merge
@@ -80,7 +80,7 @@ TAG = "all_loss" \
     + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
     + ("kl" if KL else "") \
     + ("_copy" if COPY else "")\
-    + ("-Situ" if ENCODE_SITU else "") \
+    + ("-Situ" if USE_SITU else "") \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
     + ("-Sit_emo" if EMO_FROM_SITU else "") \
     + ("-ST_seq" if USE_ST_SEQ else "") \
@@ -168,7 +168,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "", "w_situ" if USE_SITU else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -210,7 +210,7 @@ def load_arg():
             "no_cuda":False,
             "block_size":512,
             "generation_dir":generation_dir,
-            "encode_situ":ENCODE_SITU,
+            "use_situ":USE_SITU,
             "use_emo_in_dist":USE_EMO_IN_DIST,
             "use_emb_prep":USE_EMB_PREP,
             "use_copy":COPY,
@@ -270,9 +270,9 @@ def load_dataset(args, tokenizer):
         df_test = f.read().split("\n")
     with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
         st_test = f.read().split("\n")
-    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = None)
-    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = None)
-    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = None)
+    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
+    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
+    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
     return train_dataset, eval_dataset, test_dataset
 
 def plot(model, strat_labels, emo_in_labels, emo_out_labels):
@@ -333,7 +333,7 @@ if __name__ == "__main__":
         if args_g.explain:
             explain()
         else:
-            test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+            #test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
             generate(args)
 

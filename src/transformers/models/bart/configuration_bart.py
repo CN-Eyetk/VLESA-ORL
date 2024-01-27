@@ -199,6 +199,7 @@ class BartConfig(PretrainedConfig):
         self.emo_loss_ratio = kwargs["emo_loss_ratio"] if "emo_loss_ratio" in kwargs.keys() else 1.0
         self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
         self.intensity_vae = kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
+        self.use_situ = kwargs["use_situ"] if "use_situ" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

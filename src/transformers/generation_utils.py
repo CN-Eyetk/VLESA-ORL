@@ -1681,6 +1681,11 @@ class GenerationMixin:
         beam_scores[:, 1:] = -1e9
         beam_scores = beam_scores.view((batch_size * num_beams,))
 
+        all_mutual_attentions =  model_kwargs["encoder_outputs"].get("all_mutual_attentions") if model_kwargs["output_mutual_attentions"] else None
+        all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
+            "output_mutual_attentions"] else None
+        strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+
         while cur_len < max_length:
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
 
@@ -1690,7 +1695,7 @@ class GenerationMixin:
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
             )
-            next_token_logits = outputs.logits[:, -1, :]
+            next_token_logits = outputs.lm_logits[:, -1, :]
 
             # adjust tokens for Bart, *e.g.*
             next_token_logits = self.adjust_logits_during_generation(
@@ -1780,7 +1785,7 @@ class GenerationMixin:
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return sequence_outputs["sequences"]
+            return sequence_outputs["sequences"], all_mutual_attentions, all_mutual_attentions_st, strategy_logits
 
     def beam_sample(
         self,

@@ -39,7 +39,8 @@ for u_r in "${use_role[@]}"; do
                                         cur_comm+=" --emo_loss_rat "$el_r
                                         cur_comm+=" --stg_from_eos "
                                         cur_comm+=" --emo_from_eos "
-                                        cur_comm+=" --freeze_emo_stag_params "
+                                        cur_comm+=" --use_situ "
+                                        #cur_comm+=" --freeze_emo_stag_params "
                                         $cur_comm
                                     done
                                 done
