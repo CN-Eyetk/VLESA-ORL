@@ -36,6 +36,9 @@ from tqdm import tqdm, trange
 import time
 from pathlib import Path
 import json
+import wandb
+
+
 from src.transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
     WEIGHTS_NAME,
@@ -1249,7 +1252,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                                 global_step, (tr_loss - logging_loss) / args.logging_steps, (tr_lm_loss - logging_lm_loss) / args.logging_steps,
                                 (tr_emo_loss - logging_emo_loss) / args.logging_steps, (tr_strategy_loss - logging_strategy_loss) / args.logging_steps,
                                 (tr_intensity_loss - logging_intensity_loss) / args.logging_steps)
-
+                    
                     logging_loss = tr_loss
                     logging_lm_loss = tr_lm_loss
                     logging_emo_loss = tr_emo_loss
@@ -1395,7 +1398,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             logger.info("  %s = %s", key, str(result[key]))
             # print("  %s = %s" % (key, str(result[key])))
             writer.write("%s = %s\n" % (key, str(result[key])))
-
+    wandb.log(result)
     return result
 
 #collapse
@@ -1634,6 +1637,16 @@ def generate(args):
             comet_mask_st = None
             comet_embs = None
             comet_embs_st = None
+        if args.use_situ:
+            situ_ids = f.situ_ids.to(args.device)
+            with torch.no_grad():
+                if isinstance(model,torch.nn.DataParallel):
+                    situ_hidden = model.module.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+                else:
+                    situ_hidden = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
+                situ_attention_mask = situ_ids.ne(tokenizer.pad_token_id)
+            situ_hidden_states = situ_hidden.to(args.device)
+            situ_attention_mask = situ_attention_mask.to(args.device)
         intensity = torch.tensor([f.intensity], dtype=torch.float)
         intensity = intensity.to(args.device)
         #print("emo_dist", f.emo_dist)
@@ -1697,6 +1710,8 @@ def generate(args):
         paras["comet_mask"] = comet_mask
         paras["comet_embs_st"] = comet_embs_st
         paras["comet_mask_st"] = comet_mask_st
+        paras["situation_hidden_states"] = situ_hidden_states
+        paras["situ_attention_mask"] = situ_attention_mask
         paras["emo_dist"] = emo_dist
         paras["emo_in_dist"] = emo_in_dist
         paras["output_mutual_attentions"] = False
@@ -1799,7 +1814,7 @@ def generate(args):
 
     print("write result to:", summary_file_path)
     print("Generate finished~")
-    metric = Metric(toker=tokenizer, hyp_path=generate_file_path, ref_path=reference_file_path)
+    metric = Metric(toker=tokenizer, hyp_path=generate_file_path, ref_path=reference_file_path, use_nltk = True)
     result, result_list = metric.close()
     print(result)
     print("=" * 100)

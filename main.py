@@ -1,4 +1,5 @@
 import argparse
+import wandb
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
 parser.add_argument("--explain", action= "store_true")
@@ -37,7 +38,7 @@ parser.add_argument("--intensity_vae", action = "store_true")
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
 parser.add_argument("--freeze_emo_stag_params", action= "store_true")
-
+parser.add_argument("--lr", type=float, default=5e-5)
 parser.add_argument("--tag", type=str)
 args_g = parser.parse_args()
 root_path = args_g.root_path
@@ -79,6 +80,7 @@ MIX_VAE = args_g.mixed_vae
 TAG = "all_loss" \
     + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
     + ("kl" if KL else "") \
+        +f"-lr_{args_g.lr}" \
     + ("_copy" if COPY else "")\
     + ("-Situ" if USE_SITU else "") \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
@@ -103,7 +105,7 @@ TAG = "all_loss" \
                                     +("-wo_Stra" if WO_STRA else "") \
                                         +("-wo_Emo" if WO_EMO else "") \
                                             +("-wo_comet" if WO_COMET else "") \
-                                                +("-frz_stem" if args_g.freeze_emo_stag_params else "") \
+                                                +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
                             +args_g.tag
                             
 
@@ -184,7 +186,7 @@ def load_arg():
             "gradient_accumulation_steps":1,
             "weight_decay":0,
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-            "learning_rate":2e-5,
+            "learning_rate":args_g.lr,
             "adam_epsilon":1e-8,
             "warmup_steps":200,
             "fp16":False,
@@ -298,7 +300,7 @@ def explain():
     plot(model, strat_labels=stra_labels, emo_in_labels=emo_in_labels, emo_out_labels=emo_out_labels)
 if __name__ == "__main__":
     args = load_arg()
-    
+    wandb.init(config=args)
     print(args.output_dir)
     set_seed(args)
     _, tokenizer = load_tokenizer(args = args)
