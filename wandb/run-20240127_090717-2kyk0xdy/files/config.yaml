@@ -9,19 +9,9 @@ _wandb:
     is_jupyter_run: false
     is_kaggle_kernel: false
     python_version: 3.10.12
-    start_time: 1706343545
+    start_time: 1706346437
     t:
       1:
-      - 1
-      - 5
-      - 11
-      - 33
-      - 49
-      - 51
-      - 53
-      - 55
-      - 71
-      2:
       - 1
       - 5
       - 11
@@ -100,7 +90,7 @@ freeze_emo_stag_params:
   value: true
 generation_dir:
   desc: null
-  value: our_generated_data/-LIGHT-TRANS4/all_loss0.0_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
+  value: our_generated_data/-LIGHT-TRANS4/all_loss0.4_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
 gradient_accumulation_steps:
   desc: null
   value: 1
@@ -157,7 +147,7 @@ num_train_epochs:
   value: 10
 output_dir:
   desc: null
-  value: /disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.0_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
+  value: /disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.4_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
 overwrite_cache:
   desc: null
   value: false
@@ -172,7 +162,7 @@ prepend_emotion:
   value: false
 rl_emb_ratio:
   desc: null
-  value: 0.0
+  value: 0.4
 role:
   desc: null
   value: false

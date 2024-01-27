@@ -978,7 +978,7 @@ class BartEncoder(BartPretrainedModel):
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
-            if self.use_role_embed and (comet_embs is not None and comet_embs_st is not None):
+            if self.use_role_embed and role_ids is not None:
                 assert role_ids is not None
                 role_embeds = self.embed_tokens(role_ids) * self.embed_scale * self.rl_emb_ratio
                 inputs_embeds += role_embeds

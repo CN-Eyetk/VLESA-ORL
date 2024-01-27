@@ -1,9 +1,9 @@
-/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.0_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.4_0.2_0.2_kl-lr_5e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
 vocab size = 50265
-without comet
 Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-base and are newly initialized: ['encoder.layers.0.attn_layer_norm_comet.weight', 'encoder.layers.0.attn_layer_norm_comet.bias', 'encoder.layers.1.attn_layer_norm_comet.weight', 'encoder.layers.1.attn_layer_norm_comet.bias', 'encoder.layers.2.attn_layer_norm_comet.weight', 'encoder.layers.2.attn_layer_norm_comet.bias', 'encoder.layers.3.attn_layer_norm_comet.weight', 'encoder.layers.3.attn_layer_norm_comet.bias', 'encoder.layers.4.attn_layer_norm_comet.weight', 'encoder.layers.4.attn_layer_norm_comet.bias', 'encoder.layers.5.attn_layer_norm_comet.weight', 'encoder.layers.5.attn_layer_norm_comet.bias', 'encoder.layers.5.muAttn.k_proj.weight', 'encoder.layers.5.muAttn.k_proj.bias', 'encoder.layers.5.muAttn.v_proj.weight', 'encoder.layers.5.muAttn.v_proj.bias', 'encoder.layers.5.muAttn.q_proj.weight', 'encoder.layers.5.muAttn.q_proj.bias', 'encoder.layers.5.muAttn.out_proj.weight', 'encoder.layers.5.muAttn.out_proj.bias', 'encoder.emotion_head.weight', 'encoder.emotion_head.bias', 'encoder.batchNorm_emotion.weight', 'encoder.batchNorm_emotion.bias', 'encoder.batchNorm_emotion.running_mean', 'encoder.batchNorm_emotion.running_var', 'encoder.batchNorm_strategy.weight', 'encoder.batchNorm_strategy.bias', 'encoder.batchNorm_strategy.running_mean', 'encoder.batchNorm_strategy.running_var', 'encoder.strategy_embedding.weight', 'encoder.multi_state_LayerNorm.weight', 'encoder.multi_state_LayerNorm.bias', 'encoder.strategy_head.weight', 'encoder.strategy_head.bias', 'encoder.trans_mat.emotion_embedding.weight', 'encoder.trans_mat.h_prior_emo.weight', 'encoder.trans_mat.h_prior_emo.bias', 'encoder.trans_mat.h_prior_strat.weight', 'encoder.trans_mat.h_prior_strat.bias', 'encoder.trans_mat.mu_prior.weight', 'encoder.trans_mat.mu_prior.bias', 'encoder.trans_mat.logvar_prior.weight', 'encoder.trans_mat.logvar_prior.bias', 'encoder.trans_mat.Dense_z_prior.weight', 'encoder.trans_mat.Dense_z_prior.bias', 'encoder.trans_mat.h_posterior_emo.weight', 'encoder.trans_mat.h_posterior_emo.bias', 'encoder.trans_mat.h_posterior_strat.weight', 'encoder.trans_mat.h_posterior_strat.bias', 'encoder.trans_mat.mu_posterior.weight', 'encoder.trans_mat.mu_posterior.bias', 'encoder.trans_mat.logvar_posterior.weight', 'encoder.trans_mat.logvar_posterior.bias', 'encoder.strat_cat_attn.V', 'encoder.strat_cat_attn.W.weight', 'encoder.emo_cat_attn.V', 'encoder.emo_cat_attn.W.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.0.encoder_attn_layer_norm_comet.weight', 'decoder.layers.0.encoder_attn_layer_norm_comet.bias', 'decoder.layers.0.encoder_attn_layer_norm_total.weight', 'decoder.layers.0.encoder_attn_layer_norm_total.bias', 'decoder.layers.1.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.1.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.1.encoder_attn_layer_norm_comet.weight', 'decoder.layers.1.encoder_attn_layer_norm_comet.bias', 'decoder.layers.1.encoder_attn_layer_norm_total.weight', 'decoder.layers.1.encoder_attn_layer_norm_total.bias', 'decoder.layers.2.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.2.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.2.encoder_attn_layer_norm_comet.weight', 'decoder.layers.2.encoder_attn_layer_norm_comet.bias', 'decoder.layers.2.encoder_attn_layer_norm_total.weight', 'decoder.layers.2.encoder_attn_layer_norm_total.bias', 'decoder.layers.3.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.3.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.3.encoder_attn_layer_norm_comet.weight', 'decoder.layers.3.encoder_attn_layer_norm_comet.bias', 'decoder.layers.3.encoder_attn_layer_norm_total.weight', 'decoder.layers.3.encoder_attn_layer_norm_total.bias', 'decoder.layers.4.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.4.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.4.encoder_attn_layer_norm_comet.weight', 'decoder.layers.4.encoder_attn_layer_norm_comet.bias', 'decoder.layers.4.encoder_attn_layer_norm_total.weight', 'decoder.layers.4.encoder_attn_layer_norm_total.bias', 'decoder.layers.5.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.5.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.5.encoder_attn_layer_norm_comet.weight', 'decoder.layers.5.encoder_attn_layer_norm_comet.bias', 'decoder.layers.5.encoder_attn_layer_norm_total.weight', 'decoder.layers.5.encoder_attn_layer_norm_total.bias', 'fuse_st_emo.weight']
 You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
   0%|                                                                                                                            | 0/510 [00:00<?, ?it/s]
+without comet
 BartConfig {
   "_name_or_path": "facebook/bart-base",
   "activation_dropout": 0.1,
@@ -68,7 +68,7 @@ BartConfig {
   "num_hidden_layers": 6,
   "pad_token_id": 1,
   "prepend": false,
-  "rl_emb_ratio": 0.0,
+  "rl_emb_ratio": 0.4,
   "sample_strat_emb": false,
   "scale_embedding": false,
   "st_from_eos": true,
@@ -183,7 +183,7 @@ args.local_rank =  -1
 
 
 
- 78%|█████████████████████████████████████████████████████████████████████████████████████████▏                        | 399/510 [02:46<00:39,  2.81it/s]
+ 78%|████████████████████████████████████████████████████████████████████████████████████████▋                         | 397/510 [02:48<00:38,  2.92it/s]
 
 
 
@@ -202,8 +202,8 @@ args.local_rank =  -1
 
 
 
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:53<00:00,  2.18it/s]
 
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:56<00:00,  2.16it/s]
 
 
 
@@ -217,9 +217,9 @@ args.local_rank =  -1
 
 
 
- 17%|███████████████████▏                                                                                               | 85/510 [00:27<02:10,  3.25it/s]
 
 
+ 17%|████████████████████                                                                                               | 89/510 [00:29<02:15,  3.11it/s]
 
 
 
@@ -253,8 +253,8 @@ args.local_rank =  -1
 
 
 
+ 56%|███████████████████████████████████████████████████████████████▍                                                  | 284/510 [02:05<01:13,  3.06it/s]
 
- 57%|████████████████████████████████████████████████████████████████▌                                                 | 289/510 [02:07<01:11,  3.08it/s]
 
 
 
@@ -288,13 +288,12 @@ args.local_rank =  -1
 
 
 
+ 95%|████████████████████████████████████████████████████████████████████████████████████████████████████████████▍     | 485/510 [03:43<00:09,  2.73it/s]
 
- 95%|████████████████████████████████████████████████████████████████████████████████████████████████████████████▋     | 486/510 [03:46<00:08,  2.74it/s]
 
 
 
-
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:25<00:00,  1.92it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:22<00:00,  1.94it/s]
   0%|                                                                                                                            | 0/510 [00:00<?, ?it/s]
 
 
@@ -383,8 +382,8 @@ args.local_rank =  -1
 
 
 
- 99%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████▉ | 505/510 [03:32<00:01,  3.05it/s]
 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:34<00:00,  2.38it/s]
+  0%|▏                                                                                                                   | 1/510 [00:00<03:25,  2.47it/s]
 
 
 
@@ -396,8 +395,8 @@ args.local_rank =  -1
 
 
 
- 13%|███████████████▎                                                                                                   | 68/510 [00:22<02:29,  2.95it/s]
 
+ 14%|███████████████▌                                                                                                   | 69/510 [00:22<02:27,  3.00it/s]
 
 
 
@@ -432,7 +431,7 @@ args.local_rank =  -1
 
 
 
- 53%|████████████████████████████████████████████████████████████▏                                                     | 269/510 [01:42<01:20,  3.00it/s]
+ 53%|████████████████████████████████████████████████████████████▏                                                     | 269/510 [01:41<01:20,  3.01it/s]
 
 
 
@@ -466,8 +465,8 @@ args.local_rank =  -1
 
 
 
- 91%|████████████████████████████████████████████████████████████████████████████████████████████████████████▏         | 466/510 [03:00<00:14,  2.94it/s]
 
+ 92%|████████████████████████████████████████████████████████████████████████████████████████████████████████▊         | 469/510 [03:01<00:13,  3.10it/s]
 
 
 
@@ -475,8 +474,8 @@ args.local_rank =  -1
 
 
 
- 99%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████ | 506/510 [03:26<00:01,  3.17it/s]
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:28<00:00,  2.45it/s]
+ 99%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████▎| 507/510 [03:26<00:00,  3.08it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:27<00:00,  2.46it/s]
 
 
 
@@ -503,7 +502,7 @@ args.local_rank =  -1
 
 
 
- 31%|███████████████████████████████████▌                                                                              | 159/510 [00:52<01:53,  3.09it/s]
+ 31%|███████████████████████████████████▌                                                                              | 159/510 [00:52<01:53,  3.10it/s]
 
 
 
@@ -523,187 +522,3 @@ args.local_rank =  -1
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 70%|████████████████████████████████████████████████████████████████████████████████▏                                 | 359/510 [02:12<00:49,  3.02it/s]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:15<00:00,  2.61it/s]
-  1%|▉                                                                                                                   | 4/510 [00:01<02:41,  3.13it/s]
-
-
-
-
-
-
-
-
- 10%|███████████                                                                                                        | 49/510 [00:16<02:31,  3.05it/s]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 49%|███████████████████████████████████████████████████████▋                                                          | 249/510 [01:35<01:26,  3.03it/s]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 88%|████████████████████████████████████████████████████████████████████████████████████████████████████▎             | 449/510 [02:54<00:20,  3.00it/s]
-
-
-
-
-
-
-
-
-
-
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:27<00:00,  2.45it/s]
-  0%|                                                                                                                            | 0/510 [00:00<?, ?it/s]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 27%|███████████████████████████████                                                                                   | 139/510 [00:46<01:55,  3.21it/s]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 45%|██████████████████████████████████████████████████▋                                                               | 227/510 [01:28<01:50,  2.56it/s]
-Traceback (most recent call last):
-  File "/home/lijunlin/lijunlin/ESCONV/main.py", line 328, in <module>
-    global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
-  File "/home/lijunlin/lijunlin/ESCONV/BlenderEmotionalSupport.py", line 1219, in train
-    backward_loss.backward()
-  File "/home/lijunlin/miniconda3/envs/empchat/lib/python3.10/site-packages/torch/_tensor.py", line 492, in backward
-    torch.autograd.backward(
-  File "/home/lijunlin/miniconda3/envs/empchat/lib/python3.10/site-packages/torch/autograd/__init__.py", line 251, in backward
-    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
-torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.14 GiB. GPU 0 has a total capacty of 23.68 GiB of which 363.00 MiB is free. Including non-PyTorch memory, this process has 23.32 GiB memory in use. Of the allocated memory 20.60 GiB is allocated by PyTorch, and 1.62 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
