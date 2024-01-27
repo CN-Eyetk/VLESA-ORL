@@ -1154,7 +1154,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     np.set_printoptions(threshold=np.inf)
     for epoch in train_iterator:
             
-        if epoch > 3 and args.freeze_emo_stag_params:
+        if epoch > 1 and args.freeze_emo_stag_params:
             freeze_emo_stg_paras(model)
         #    break
         #     for paras in model.model.encoder.parameters():
@@ -1931,8 +1931,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
                         strat_positions = strat_positions, 
                         emo_positions = emo_positions, 
                         intensity = intensity,
-                        situ_hidden_states = situ_hidden_states,
-                        situ_attention_mask = situ_attention_mask
+                        situation_hidden_states = situ_hidden_states,
+                        situation_attention_mask = situ_attention_mask
                         )
     else:
         with torch.no_grad():
@@ -1955,8 +1955,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
                             strat_positions = strat_positions, 
                             emo_positions = emo_positions, 
                             intensity = intensity,
-                            situ_hidden_states = situ_hidden_states,
-                            situ_attention_mask = situ_attention_mask
+                            situation_hidden_states = situ_hidden_states,
+                            situation_attention_mask = situ_attention_mask
                             )
     return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
 if __name__ == "__main__":

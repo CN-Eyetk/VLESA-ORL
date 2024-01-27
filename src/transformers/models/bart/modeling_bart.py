@@ -287,8 +287,8 @@ class BartEncoderLayer(nn.Module):
     def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, 
                 comet_hidden_states :torch.Tensor,  attention_mask_for_muAttn :torch.Tensor, 
                 comet_mask :torch.Tensor, comet_hidden_states_st :torch.Tensor,  
-                situ_hidden_states: torch.Tensor,
-                situ_attention_mask: torch.Tensor,
+                situation_hidden_states: torch.Tensor,
+                situation_attention_mask: torch.Tensor,
                 comet_mask_st :torch.Tensor, output_attentions: bool = False, output_mutual_attentions: bool=False):
         """
         Args:
@@ -316,19 +316,19 @@ class BartEncoderLayer(nn.Module):
         hidden_states = self.final_layer_norm(hidden_states)
         
         if self.is_fuse:
-            if situ_hidden_states is not None:
-                hidden_cat = torch.cat((hidden_states, situ_hidden_states), dim = 1)
+            if situation_hidden_states is not None:
+                hidden_cat = torch.cat((hidden_states, situation_hidden_states), dim = 1)
                 len_1 = hidden_states.size(1)
-                len_2 = situ_hidden_states.size(1)
+                len_2 = situation_hidden_states.size(1)
                 hidden_cat, attn_weights, _ = self.muAttn(
                     hidden_cat, 
                     attention_mask = attention_mask_for_muAttn,
                     output_attentions = output_mutual_attentions
                 )
-                situ_hidden_states = hidden_cat[:,len_1:,:]
-                if torch.isinf(situ_hidden_states).any():
-                    clamp_value = torch.finfo(situ_hidden_states.dtype).max - 1000
-                    situ_hidden_states = torch.clamp(situ_hidden_states, min=-clamp_value, max=clamp_value)
+                situation_hidden_states = hidden_cat[:,len_1:,:]
+                if torch.isinf(situation_hidden_states).any():
+                    clamp_value = torch.finfo(situation_hidden_states.dtype).max - 1000
+                    situation_hidden_states = torch.clamp(situation_hidden_states, min=-clamp_value, max=clamp_value)
             elif comet_hidden_states is not None and comet_hidden_states_st is not None:
                 hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
                 len_1 = hidden_states.size(1)
@@ -362,7 +362,7 @@ class BartEncoderLayer(nn.Module):
         outputs = {'hidden_states': hidden_states, 
                    'comet_hidden_states':comet_hidden_states, 
                    'comet_hidden_states_st':comet_hidden_states_st,
-                   'situ_hidden_states':situ_hidden_states,
+                   'situation_hidden_states':situation_hidden_states,
                    }
         if output_attentions:
             outputs['attn_weights'] = attn_weights
@@ -925,8 +925,8 @@ class BartEncoder(BartPretrainedModel):
         emo_positions = None,
         emo_out_dist=None,
         intensity=None,
-        situ_hidden_states=None,
-        situ_attention_mask=None
+        situation_hidden_states=None,
+        situation_attention_mask=None
     ):
         r"""
         Args:
@@ -995,8 +995,8 @@ class BartEncoder(BartPretrainedModel):
             assert 1 == 2
             attention_mask_for_muAttn = torch.cat((attention_mask, comet_mask, comet_mask_st), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
             attention_mask_for_muAttn = _expand_mask(attention_mask_for_muAttn, inputs_embeds.dtype)
-        elif self.config.use_situ and situ_hidden_states is not None:
-            attention_mask_for_muAttn = torch.cat((attention_mask, situ_attention_mask), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
+        elif self.config.use_situ and situation_hidden_states is not None:
+            attention_mask_for_muAttn = torch.cat((attention_mask, situation_attention_mask), dim = 1)#self.layers[0].muAttn.get_attention_mask_for_muAttn(attention_mask, comet_mask, comet_mask_st)
             attention_mask_for_muAttn = _expand_mask(attention_mask_for_muAttn, inputs_embeds.dtype)
         else:
             attention_mask_for_muAttn = attention_mask.clone()
@@ -1043,15 +1043,15 @@ class BartEncoder(BartPretrainedModel):
                                                   comet_mask=comet_mask, 
                                                   comet_hidden_states_st=comet_hidden_states_st, 
                                                   comet_mask_st=comet_mask_st, 
-                                                  situ_hidden_states=situ_hidden_states,
-                                                  situ_attention_mask=situ_attention_mask,
+                                                  situation_hidden_states=situation_hidden_states,
+                                                  situation_attention_mask=situation_attention_mask,
                                                   output_mutual_attentions=output_mutual_attentions)
 
                 hidden_states = layer_outputs['hidden_states']
                 comet_hidden_states = layer_outputs['comet_hidden_states']
                 comet_hidden_states_st = layer_outputs['comet_hidden_states_st']
-                situ_hidden_states = layer_outputs['situ_hidden_states']
-                #situ_attention_mask = layer_outputs['situ_attention_mask']
+                situation_hidden_states = layer_outputs['situation_hidden_states']
+                #situation_attention_mask = layer_outputs['situation_attention_mask']
 
             if output_attentions:
                 all_attentions = all_attentions + (layer_outputs['attn_weights'],)
@@ -1241,8 +1241,8 @@ class BartEncoder(BartPretrainedModel):
             intensity_out = intensity_out,
             intensity_vae_prior_output = (mu_int_prior, logvar_int_prior),
             intensity_vae_posterior_output = (mu_int_posterior, logvar_int_posterior),
-            situ_hidden_states = situ_hidden_states
-            #situ_attention_mask = situ_attention_mask
+            situation_hidden_states = situation_hidden_states,
+            situation_attention_mask = situation_attention_mask
 
         )
 
@@ -1741,8 +1741,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
         emo_positions=None,
         intensity=None,
         return_dict=None,
-        situ_hidden_states=None,
-        situ_attention_mask=None
+        situation_hidden_states=None,
+        situation_attention_mask=None
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
@@ -1795,8 +1795,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 intensity=intensity,
                 strat_positions=strat_positions,
                 emo_positions=emo_positions,
-                situ_hidden_states=situ_hidden_states,
-                situ_attention_mask=situ_attention_mask,
+                situation_hidden_states=situation_hidden_states,
+                situation_attention_mask=situation_attention_mask,
                 
             )
 
@@ -1838,9 +1838,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if self.use_merge:
             encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.last_comet_hidden_state, encoder_outputs.last_comet_hidden_state_st], dim = 1)
             attention_mask = torch.cat([attention_mask, encoder_outputs.comet_mask, encoder_outputs.comet_mask_st], dim = 1)
-        #if self.use_situ:
-        #    encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.situ_hidden_states], dim = 1)
-        #    attention_mask = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.situ_attention_mask], dim = 1)
+        if self.config.use_situ:
+            encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.situation_hidden_states], dim = 1)
+            attention_mask = torch.cat([attention_mask, encoder_outputs.situation_attention_mask], dim = 1)
 
         #print("decoder_input_ids",decoder_input_ids)
         #print("labels",labels)
@@ -1850,7 +1850,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         decoder_outputs = self.model.decoder(
             input_ids=decoder_input_ids,
             attention_mask=decoder_attention_mask,
-            encoder_hidden_states=encoder_outputs.last_hidden_state if not self.use_merge else encoder_hidden_states,
+            encoder_hidden_states=encoder_outputs.last_hidden_state if not self.use_merge and not self.config.use_situ else encoder_hidden_states,
             encoder_attention_mask=attention_mask,
             comet_hidden_states=encoder_outputs.last_comet_hidden_state if not self.use_merge and not self.wo_comet else None,
             comet_mask=encoder_outputs.comet_mask if not self.use_merge and not self.wo_comet else None,
