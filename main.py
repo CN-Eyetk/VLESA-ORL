@@ -190,7 +190,7 @@ def load_arg():
             "num_train_epochs":10 if BART else 8,
             "role":False,
             "turn":False,
-            "logging_steps":200,
+            "logging_steps":300,
             "evaluate_during_training":True,
             "output_dir":output_dir,
             "seed":42,

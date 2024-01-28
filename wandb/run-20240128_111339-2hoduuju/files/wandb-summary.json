@@ -1,1 +1,1 @@
-{"eval_perplexity": 15.184321546389851, "eval_emotion_predict_accuracy": 0.6943413729128015, "eval_strategy_predict_accuracy": 0.325139146567718, "eval_number_of_evaluated_examples": 2156, "intensity_loss": 0.0, "_timestamp": 1706441824, "_runtime": 1405, "_step": 11}
+{"eval_perplexity": 15.153443673984164, "eval_emotion_predict_accuracy": 0.7059369202226345, "eval_strategy_predict_accuracy": 0.32838589981447125, "eval_number_of_evaluated_examples": 2156, "intensity_loss": 0.0, "_timestamp": 1706442132, "_runtime": 1713, "_step": 14}

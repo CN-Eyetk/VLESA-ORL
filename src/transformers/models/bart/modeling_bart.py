@@ -1686,6 +1686,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         self.emo_out_loss_ratio = config.emo_out_loss_ratio
         self.intensity_vae = config.intensity_vae
         self.use_vad_labels = config.use_vad_labels
+        self.copy_verbose = 5
         self.init_weights()
 
     def get_encoder(self):
@@ -1899,9 +1900,14 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if self.use_copy:
             decoder_hidden_state = decoder_outputs[0][:,strategy_embs.size(1):,:] if self.use_emb_prep and decoder_input_ids is None else decoder_outputs[0]
             #encoder_hidden_state = encoder_outputs.last_hidden_state
+            if src_len > 50:
+                copy_start_pos = src_len - 50
+
             p_gen, copy_logits = self._compute_output_dist_light(decoder_hidden_state, strategy_embs = strategy_embs[:,0,:],
-                                                                attn = cross_attn[:,:src_len], 
-                                                                input_ids_to_copy = input_ids) #+ self.final_logits_bias
+                                                                attn = cross_attn[:,:,copy_start_pos:src_len], 
+                                                                input_ids_to_copy = input_ids[:,copy_start_pos:src_len],
+                                                                
+                                                                ) #+ self.final_logits_bias
             lm_logits = p_gen * lm_logits + (1-p_gen) * copy_logits
 
         loss = None
@@ -1921,79 +1927,79 @@ class BartForConditionalGeneration(BartPretrainedModel):
             masked_lm_loss = loss_fct(lm_logits.reshape(-1, self.config.vocab_size),
                                     labels.reshape(-1))
             loss = masked_lm_loss.clone()
+        if self.training:
+            if emotion is not None:
+                emo_loss_fct = CrossEntropyLoss()
+                # print(emotion_logits.shape, emotion)
+                emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
+                loss += self.emo_loss_ratio * emo_loss
 
-        if emotion is not None:
-            emo_loss_fct = CrossEntropyLoss()
-            # print(emotion_logits.shape, emotion)
-            emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
-            loss += self.emo_loss_ratio * emo_loss
+            if strategy_label is not None:
+                strategy_loss_fct = CrossEntropyLoss()
+                strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
+                loss += 0.2 * strategy_loss
 
-        if strategy_label is not None:
-            strategy_loss_fct = CrossEntropyLoss()
-            strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
-            loss += 0.2 * strategy_loss
-
-        if self.use_trans_mat and emo_out_prob is not None:
-            if len(emo_out_prob.size()) == 1:
-                emo_out_prob = emo_out_prob.unsqueeze(0)
-            assert emo_out_prob.size(1) > 1
-            if emo_dist is not None:
-                if self.use_kl:
-                    emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
-                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist)
-                else:
-                    emo_out_loss_fct = NLLLoss()
-                    emo_out_label = emo_dist.argmax(-1).squeeze()
-                    emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
-                loss += self.emo_out_loss_ratio * emo_out_loss
-            if self.use_vae:
-                mu_prior, logvar_prior = encoder_outputs.vae_prior_output
-                mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
-                if mu_posterior is not None:
-                    if self.config.mixed_vae:
-                        KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior, logvar_posterior, mu_prior, logvar_prior)
+            if self.use_trans_mat and emo_out_prob is not None:
+                if len(emo_out_prob.size()) == 1:
+                    emo_out_prob = emo_out_prob.unsqueeze(0)
+                assert emo_out_prob.size(1) > 1
+                if emo_dist is not None:
+                    if self.use_kl:
+                        emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
+                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist)
                     else:
-                        for i in range(mu_posterior.size(-1)):
-                            KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior[:,:,i], logvar_posterior[:,:,i], mu_prior[:,:,i], logvar_prior[:,:,i])
-                            #KLLoss = KLLoss / batch_size
-                        
-                        loss += self.emo_out_loss_ratio * KLLoss
-        #if not return_dict:
-        #    output = (lm_logits,) + outputs[1:]
-        #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
+                        emo_out_loss_fct = NLLLoss()
+                        emo_out_label = emo_dist.argmax(-1).squeeze()
+                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
+                    loss += self.emo_out_loss_ratio * emo_out_loss
+                if self.use_vae:
+                    mu_prior, logvar_prior = encoder_outputs.vae_prior_output
+                    mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
+                    if mu_posterior is not None:
+                        if self.config.mixed_vae:
+                            KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior, logvar_posterior, mu_prior, logvar_prior)
+                        else:
+                            for i in range(mu_posterior.size(-1)):
+                                KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior[:,:,i], logvar_posterior[:,:,i], mu_prior[:,:,i], logvar_prior[:,:,i])
+                                #KLLoss = KLLoss / batch_size
+                            
+                            loss += self.emo_out_loss_ratio * KLLoss
+            #if not return_dict:
+            #    output = (lm_logits,) + outputs[1:]
+            #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
-        #intensity vae
-        
-        if self.intensity_vae:
-            loss_func = torch.nn.MSELoss()
-            intensity_out = encoder_outputs.intensity_out
-            if not generate:
-                intensity_loss = loss_func(intensity.view(-1), intensity_out.view(-1))
-                loss += intensity_loss
-            mu_int_prior, logvar_int_prior = encoder_outputs.intensity_vae_prior_output
-            mu_int_posterior, logvar_int_posterior = encoder_outputs.intensity_vae_posterior_output
-            if mu_int_posterior is not None:
-                KLLoss_intensity = self.model.encoder.intensity_vae.kl_div(mu_int_posterior, logvar_int_posterior, mu_int_prior, logvar_int_prior)
-                loss += KLLoss_intensity
+            #intensity vae
+            
+            if self.intensity_vae:
+                loss_func = torch.nn.MSELoss()
+                intensity_out = encoder_outputs.intensity_out
+                if not generate:
+                    intensity_loss = loss_func(intensity.view(-1), intensity_out.view(-1))
+                    loss += intensity_loss
+                mu_int_prior, logvar_int_prior = encoder_outputs.intensity_vae_prior_output
+                mu_int_posterior, logvar_int_posterior = encoder_outputs.intensity_vae_posterior_output
+                if mu_int_posterior is not None:
+                    KLLoss_intensity = self.model.encoder.intensity_vae.kl_div(mu_int_posterior, logvar_int_posterior, mu_int_prior, logvar_int_prior)
+                    loss += KLLoss_intensity
+                else:
+                    KLLoss_intensity = None
             else:
                 KLLoss_intensity = None
-        else:
-            KLLoss_intensity = None
-        #print("strategy_logits", strategy_logits.argmax(-1))
-        #Contrastive Loss
-        if torch.isinf(encoder_outputs.last_hidden_state).any() or torch.isnan(encoder_outputs.last_hidden_state).any():
-            assert 1 == 2
-            print("there is nan in encoder ouput")
-        if 1 == 2:
-            if decoder_strategy_ids is not None:
-                enocder_last_eos_hidden = encoder_outputs.last_hidden_state[torch.arange(batch_size)[:,None], last_eos_index, :]
-                #encoder_pooler_output = encoder_outputs.last_hidden_state[:, 0, :] #[b,h]
-                features = enocder_last_eos_hidden.unsqueeze(-2)
-                contrast_loss_fc = SupConLoss()
-                contrast_loss = contrast_loss_fc(features = features, labels = decoder_strategy_ids)
-                #print("contrast_loss",contrast_loss)
-                #print("features",features)
-                loss += 0.2 * contrast_loss
+            #print("strategy_logits", strategy_logits.argmax(-1))
+            #Contrastive Loss
+            if torch.isinf(encoder_outputs.last_hidden_state).any() or torch.isnan(encoder_outputs.last_hidden_state).any():
+                assert 1 == 2
+                print("there is nan in encoder ouput")
+            if 1 == 2:
+                if decoder_strategy_ids is not None:
+                    enocder_last_eos_hidden = encoder_outputs.last_hidden_state[torch.arange(batch_size)[:,None], last_eos_index, :]
+                    #encoder_pooler_output = encoder_outputs.last_hidden_state[:, 0, :] #[b,h]
+                    features = enocder_last_eos_hidden.unsqueeze(-2)
+                    contrast_loss_fc = SupConLoss()
+                    contrast_loss = contrast_loss_fc(features = features, labels = decoder_strategy_ids)
+                    #print("contrast_loss",contrast_loss)
+                    #print("features",features)
+                    loss += 0.2 * contrast_loss
         return Seq2SeqLMOutput(
             loss=loss,
             lm_loss=masked_lm_loss,
@@ -2010,7 +2016,6 @@ class BartForConditionalGeneration(BartPretrainedModel):
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,
             encoder_hidden_states=encoder_outputs.hidden_states,
             encoder_attentions=encoder_outputs.attentions,
-            KLLoss_intensity=KLLoss_intensity
 
             
         )
@@ -2021,14 +2026,20 @@ class BartForConditionalGeneration(BartPretrainedModel):
         total_states = torch.cat((strategy_embs, decoder_hidden_states), dim=-1)#[b,t,2*h]
         p_gen = torch.sigmoid(self.pgen_decoder_output_layer(total_states)) #[b,t,1]
         input_one_hot = input_ids_to_copy.new_zeros(batch_size, seq_length, self.config.vocab_size)
-        input_one_hot_mask = input_one_hot < 3
-        input_one_hot_mask = input_one_hot_mask.unsqueeze(-2).repeat(1,attn.size(1) ,1).float()
-        attn = attn * input_one_hot_mask
+        with torch.no_grad():
+            input_one_hot_mask = (input_ids_to_copy > 3).float().unsqueeze(-2).repeat(1, attn.size(1), 1)
+        
+        #print("input_one_hot_mask", input_one_hot_mask.shape)
+        #print("input_one_hot_mask", input_one_hot_mask.shape)
+        #input_one_hot_mask = input_one_hot_mask.unsqueeze(-2).repeat(1,attn.size(1) ,1).float()
+        #attn = attn[:,:,copy_start_pos:seq_length]
+        #print('attn',attn.shape)
+        #print('input_ids_to_copy',input_ids_to_copy.shape)
+        #print('input_one_hot_mask',input_one_hot_mask.shape)
+        attn = attn * input_one_hot_mask  #[b,t,s]*[b,t,s]
         input_one_hot.scatter_(-1, input_ids_to_copy[:, :, None], 1)
         input_one_hot = input_one_hot.float()
-        
-        logits = attn @ input_one_hot
-        
+        logits = attn @ input_one_hot #[b,t,s] * [b,s,v]
         return p_gen, logits
     def _prepare_encoder_decoder_kwargs_for_generation(
         self, input_ids: torch.LongTensor, model_kwargs
