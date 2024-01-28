@@ -1,0 +1,1077 @@
+2024-01-27 21:13:05,256 INFO    MainThread:3952295 [internal.py:wandb_internal():90] W&B internal server running at pid: 3952295, started at: 2024-01-27 21:13:05.255899
+2024-01-27 21:13:05,257 INFO    WriterThread:3952295 [datastore.py:open_for_write():75] open: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/run-3jnop1b2.wandb
+2024-01-27 21:13:05,257 DEBUG   SenderThread:3952295 [sender.py:send():236] send: header
+2024-01-27 21:13:05,257 DEBUG   SenderThread:3952295 [sender.py:send():236] send: run
+2024-01-27 21:13:05,699 INFO    SenderThread:3952295 [dir_watcher.py:__init__():216] watching files in: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files
+2024-01-27 21:13:05,700 INFO    SenderThread:3952295 [sender.py:_start_run_threads():815] run started: 3jnop1b2 with start time 1706389984
+2024-01-27 21:13:05,700 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: check_version
+2024-01-27 21:13:05,701 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:13:05,701 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:13:05,701 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: check_version
+2024-01-27 21:13:05,756 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: run_start
+2024-01-27 21:13:05,763 DEBUG   HandlerThread:3952295 [meta.py:__init__():35] meta init
+2024-01-27 21:13:05,763 DEBUG   HandlerThread:3952295 [meta.py:__init__():49] meta init done
+2024-01-27 21:13:05,763 DEBUG   HandlerThread:3952295 [meta.py:probe():209] probe
+2024-01-27 21:13:05,769 DEBUG   HandlerThread:3952295 [meta.py:_setup_git():199] setup git
+2024-01-27 21:13:05,774 DEBUG   HandlerThread:3952295 [meta.py:_setup_git():206] setup git done
+2024-01-27 21:13:05,774 DEBUG   HandlerThread:3952295 [meta.py:_save_pip():53] save pip
+2024-01-27 21:13:05,774 DEBUG   HandlerThread:3952295 [meta.py:_save_pip():67] save pip done
+2024-01-27 21:13:05,774 DEBUG   HandlerThread:3952295 [meta.py:_save_conda():74] save conda
+2024-01-27 21:13:06,700 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/conda-environment.yaml
+2024-01-27 21:13:06,701 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:13:06,701 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/requirements.txt
+2024-01-27 21:13:07,917 DEBUG   HandlerThread:3952295 [meta.py:_save_conda():84] save conda done
+2024-01-27 21:13:07,917 DEBUG   HandlerThread:3952295 [meta.py:probe():247] probe done
+2024-01-27 21:13:07,920 DEBUG   SenderThread:3952295 [sender.py:send():236] send: files
+2024-01-27 21:13:07,920 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-metadata.json with policy now
+2024-01-27 21:13:07,923 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:13:07,923 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:13:08,238 DEBUG   SenderThread:3952295 [sender.py:send():236] send: telemetry
+2024-01-27 21:13:08,505 INFO    Thread-11 :3952295 [upload_job.py:push():138] Uploaded file /tmp/tmp9fv0pju2wandb/3ua333sk-wandb-metadata.json
+2024-01-27 21:13:08,700 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/conda-environment.yaml
+2024-01-27 21:13:08,700 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-metadata.json
+2024-01-27 21:13:08,700 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:10,701 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:16,702 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:18,702 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:20,703 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:22,703 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:23,239 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:13:23,240 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:13:24,703 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:26,704 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:28,704 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:30,705 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:32,705 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:34,025 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:13:34,705 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:36,706 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:36,706 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/config.yaml
+2024-01-27 21:13:38,489 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:13:38,489 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:13:38,706 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:40,706 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:42,707 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:44,707 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:46,707 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:48,708 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:50,708 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:52,708 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:53,719 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:13:53,719 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:13:54,709 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:56,709 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:13:58,709 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:00,710 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:02,710 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:04,256 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:14:04,711 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:06,711 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:08,711 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:09,031 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:14:09,031 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:14:10,712 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:12,712 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:14,712 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:16,713 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:18,713 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:20,713 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:22,714 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:24,380 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:14:24,380 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:14:24,714 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:26,714 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:28,714 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:14:34,498 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:14:39,677 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:14:39,677 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:14:41,641 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:14:41,642 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:14:41,643 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:14:41,643 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:14:41,716 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:14:55,113 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:14:55,113 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:15:01,720 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:03,721 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:04,743 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:15:05,721 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:07,721 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:09,722 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:10,522 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:15:10,522 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:15:11,722 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:13,722 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:15,723 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:17,723 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:19,724 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:21,724 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:23,724 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:25,725 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:25,790 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:15:25,790 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:15:27,725 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:29,725 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:31,726 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:33,726 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:34,995 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:15:35,726 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:37,727 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:39,727 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:41,124 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:15:41,124 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:15:41,727 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:43,728 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:45,728 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:47,728 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:49,729 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:51,729 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:53,729 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:55,730 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:56,441 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:15:56,441 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:15:57,730 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:15:59,731 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:01,731 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:03,731 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:05,238 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:16:05,732 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:07,732 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:09,732 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:10,733 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:11,790 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:16:11,790 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:16:22,458 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:16:22,458 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:16:22,458 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:16:22,459 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:16:22,735 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:16:27,144 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:16:27,144 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:16:35,499 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:16:42,482 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:16:42,482 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:16:44,739 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:46,740 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:48,740 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:50,741 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:52,741 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:54,741 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:56,742 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:16:57,823 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:16:57,823 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:16:58,742 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:00,742 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:02,743 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:04,743 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:05,739 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:17:06,743 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:08,744 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:10,744 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:12,745 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:13,105 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:17:13,105 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:17:14,745 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:16,745 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:18,746 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:20,746 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:22,746 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:24,747 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:26,747 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:28,376 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:17:28,376 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:17:28,747 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:30,748 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:32,748 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:34,748 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:35,981 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:17:36,749 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:38,749 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:40,749 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:42,750 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:43,646 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:17:43,646 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:17:44,750 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:46,751 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:48,751 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:50,751 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:52,752 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:17:58,925 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:17:58,925 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:18:03,412 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:18:15,066 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:18:15,066 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:18:15,067 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:18:15,067 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:18:15,756 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:18:19,020 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:18:19,020 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:18:22,758 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:24,758 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:26,759 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:28,759 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:30,759 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:32,760 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:34,377 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:18:34,377 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:18:34,760 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:36,480 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:18:36,761 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:38,761 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:40,761 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:42,762 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:44,762 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:46,763 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:48,763 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:49,621 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:18:49,621 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:18:50,763 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:52,764 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:54,764 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:56,765 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:18:58,765 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:00,765 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:02,766 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:04,766 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:04,974 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:19:04,974 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:19:06,720 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:19:06,767 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:08,767 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:10,767 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:12,768 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:14,768 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:16,769 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:18,769 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:20,241 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:19:20,241 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:19:20,769 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:22,770 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:24,770 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:26,771 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:28,771 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:30,771 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:32,772 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:33,772 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:35,494 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:19:35,494 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:19:36,953 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:19:44,221 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:19:44,221 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:19:44,221 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:19:44,221 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:19:44,774 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:19:46,775 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:48,775 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:50,776 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:50,817 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:19:50,817 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:19:52,776 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:54,776 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:56,777 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:19:58,777 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:00,777 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:02,778 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:04,778 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:06,139 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:20:06,139 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:20:06,779 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:07,181 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:20:08,779 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:10,779 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:12,780 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:14,780 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:16,780 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:18,781 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:20,781 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:21,457 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:20:21,457 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:20:22,781 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:24,782 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:26,782 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:28,783 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:30,783 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:32,783 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:34,784 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:36,784 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:36,797 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:20:36,797 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:20:37,411 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:20:38,785 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:40,785 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:42,785 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:44,786 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:46,786 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:48,786 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:50,787 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:52,151 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:20:52,151 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:20:52,787 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:54,788 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:55,788 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:20:56,788 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:07,409 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:21:07,410 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:21:07,710 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:21:08,290 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:21:08,290 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:21:08,290 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:21:08,291 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:21:08,790 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:21:10,791 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:12,791 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:14,791 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:15,791 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:16,792 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:18,792 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:20,792 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:22,710 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:21:22,710 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:21:22,793 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:24,793 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:26,794 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:28,794 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:30,794 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:32,795 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:34,795 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:36,796 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:37,890 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:21:38,059 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:21:38,059 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:21:38,796 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:40,796 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:42,797 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:44,797 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:46,798 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:48,798 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:50,798 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:52,799 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:53,323 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:21:53,323 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:21:54,799 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:56,799 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:21:58,800 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:00,800 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:02,801 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:04,801 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:06,801 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:08,118 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:22:08,698 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:22:08,698 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:22:08,802 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:10,802 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:12,803 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:14,803 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:16,803 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:17,804 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:24,003 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:22:24,003 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:22:29,826 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:22:29,827 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:22:29,827 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:22:29,827 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:22:30,806 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:22:38,383 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:22:39,281 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:22:39,281 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:22:49,810 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:51,811 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:53,811 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:54,539 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:22:54,539 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:22:55,812 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:57,812 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:22:59,812 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:01,813 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:03,813 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:05,813 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:07,814 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:08,643 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:23:09,814 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:09,839 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:23:09,839 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:23:11,815 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:13,815 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:15,815 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:17,816 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:19,816 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:21,817 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:23,817 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:25,186 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:23:25,186 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:23:25,817 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:27,818 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:29,818 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:31,819 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:33,819 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:35,819 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:37,820 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:38,879 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:23:39,820 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:40,511 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:23:40,511 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:23:41,821 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:43,821 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:45,821 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:47,822 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:49,822 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:51,823 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:53,823 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:55,823 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:56,058 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:23:56,058 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:23:57,824 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:23:58,824 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:09,109 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:24:10,307 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:24:10,307 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:24:10,307 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:24:10,307 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:24:10,826 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:24:11,401 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:24:11,401 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:24:11,826 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:13,827 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:15,827 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:17,828 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:19,828 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:21,829 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:23,829 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:25,829 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:26,703 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:24:26,704 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:24:27,830 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:29,830 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:31,831 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:33,831 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:35,831 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:37,832 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:39,348 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:24:39,832 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:41,833 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:42,038 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:24:42,038 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:24:43,833 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:45,833 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:47,834 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:49,834 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:51,835 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:53,835 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:55,835 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:56,836 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:57,360 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:24:57,360 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:24:57,836 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:24:59,836 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:01,836 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:03,837 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:05,837 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:07,838 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:09,579 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:25:09,838 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:11,838 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:12,704 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:25:12,704 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:25:13,839 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:15,839 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:17,840 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:19,840 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:20,840 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:27,960 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:25:27,960 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:25:32,124 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:25:32,125 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:25:32,125 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:25:32,125 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:25:32,842 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:25:39,833 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:25:43,246 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:25:43,246 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:25:51,848 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:53,848 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:55,848 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:57,849 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:25:58,577 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:25:58,577 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:25:59,849 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:01,850 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:03,850 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:05,850 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:07,851 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:09,851 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:10,082 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:26:11,852 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:13,852 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:13,862 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:26:13,862 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:26:15,852 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:17,853 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:19,853 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:21,853 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:23,854 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:25,854 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:27,855 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:29,855 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:30,002 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:26:30,002 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:26:31,855 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:33,856 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:35,856 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:37,857 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:39,857 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:40,318 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:26:41,858 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:43,858 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:45,341 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:26:45,341 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:26:45,858 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:47,859 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:49,859 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:51,859 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:53,860 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:55,860 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:57,861 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:26:59,861 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:00,637 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:27:00,637 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:27:01,861 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:10,553 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:27:12,728 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:27:12,728 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:27:12,728 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:27:12,729 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:27:12,864 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:27:16,011 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:27:16,011 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:27:31,353 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:27:31,353 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:27:34,869 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:36,869 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:38,870 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:40,844 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:27:40,870 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:42,870 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:44,871 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:46,871 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:46,885 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:27:46,885 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:27:48,872 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:50,872 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:52,872 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:54,873 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:56,873 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:27:58,873 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:00,874 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:02,204 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:28:02,204 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:28:02,874 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:04,874 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:06,875 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:08,875 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:10,876 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:11,077 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:28:12,876 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:14,876 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:16,877 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:17,539 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:28:17,539 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:28:18,877 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:20,878 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:22,878 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:24,878 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:26,879 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:28,879 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:30,879 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:32,818 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:28:32,818 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:28:32,880 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:34,880 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:36,881 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:38,881 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:40,882 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:41,313 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:28:41,882 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:42,882 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:48,083 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:28:48,083 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:28:53,991 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:28:53,991 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:28:53,992 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:28:53,992 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:28:54,884 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:28:56,885 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:28:58,885 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:00,885 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:02,886 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:03,334 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:29:03,334 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:29:04,886 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:06,886 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:08,887 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:09,887 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:10,887 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:11,565 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:29:12,888 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:14,888 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:16,888 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:18,605 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:29:18,605 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:29:18,889 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:20,889 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:22,890 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:24,890 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:26,890 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:28,891 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:30,891 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:32,891 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:33,934 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:29:33,935 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:29:34,892 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:36,892 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:38,893 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:40,893 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:41,826 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:29:42,893 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:44,894 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:46,894 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:48,894 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:49,299 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:29:49,299 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:29:50,895 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:52,895 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:54,896 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:56,896 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:29:58,896 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:00,897 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:02,897 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:04,555 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:30:04,555 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:30:04,898 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:12,069 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:30:15,548 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:30:15,548 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:30:15,548 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:30:15,548 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:30:15,899 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:30:19,814 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:30:19,814 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:30:35,166 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:30:35,167 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:30:36,904 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:38,905 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:40,905 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:42,328 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:30:42,906 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:44,906 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:46,906 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:48,907 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:50,424 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:30:50,424 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:30:50,907 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:52,908 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:54,908 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:56,909 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:30:58,909 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:00,909 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:02,910 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:04,910 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:05,775 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:31:05,776 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:31:06,910 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:08,911 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:10,911 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:12,565 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:31:12,911 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:14,912 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:16,912 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:18,912 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:20,913 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:21,109 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:31:21,109 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:31:22,913 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:24,913 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:26,914 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:28,914 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:30,914 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:32,915 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:34,915 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:36,398 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:31:36,398 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:31:36,915 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:38,916 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:40,916 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:42,792 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:31:42,916 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:44,917 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:31:51,729 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:31:51,729 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:31:57,326 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:31:57,327 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:31:57,327 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:31:57,327 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:31:57,919 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:32:07,059 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:32:07,059 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:32:13,056 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:32:17,923 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:19,924 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:21,924 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:22,415 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:32:22,416 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:32:23,924 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:25,925 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:27,925 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:29,926 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:31,926 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:33,926 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:35,927 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:37,718 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:32:37,718 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:32:37,927 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:39,927 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:41,928 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:43,294 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:32:43,928 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:45,929 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:47,929 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:49,929 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:51,930 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:53,060 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:32:53,060 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:32:53,930 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:55,930 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:57,931 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:32:59,931 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:01,931 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:03,932 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:05,932 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:07,932 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:08,358 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:33:08,358 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:33:09,933 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:11,933 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:13,556 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:33:13,933 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:15,934 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:17,934 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:19,935 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:21,935 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:23,699 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:33:23,699 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:33:23,935 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:25,936 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:37,850 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:33:37,850 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:33:37,851 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:33:37,851 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:33:37,938 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:33:39,055 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:33:39,055 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:33:43,815 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:33:54,450 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:33:54,451 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:33:56,942 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:33:58,942 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:00,943 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:02,943 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:04,944 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:06,944 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:08,944 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:09,812 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:34:09,812 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:34:10,945 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:12,945 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:14,064 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:34:14,946 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:16,946 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:18,946 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:20,947 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:22,947 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:24,947 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:25,143 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:34:25,143 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:34:26,948 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:28,948 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:30,949 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:32,949 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:34,949 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:36,950 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:38,950 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:40,442 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:34:40,442 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:34:40,950 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:42,951 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:44,292 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:34:44,951 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:46,952 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:48,952 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:50,952 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:52,953 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:54,953 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:55,752 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:34:55,752 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:34:56,953 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:34:58,954 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:00,954 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:02,955 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:04,955 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:11,048 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:35:11,048 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:35:14,533 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:35:16,633 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:35:16,634 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:35:16,634 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:35:16,634 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:35:16,957 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:35:18,957 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:20,958 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:22,958 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:24,958 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:26,489 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:35:26,489 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:35:26,959 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:28,959 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:30,960 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:32,960 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:34,960 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:36,961 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:38,961 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:40,961 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:41,830 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:35:41,830 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:35:42,962 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:44,774 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:35:44,962 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:46,963 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:48,963 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:50,963 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:52,964 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:54,964 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:56,964 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:35:57,132 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:35:57,132 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:35:58,965 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:00,965 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:02,965 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:04,966 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:06,966 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:08,967 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:10,967 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:12,463 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:36:12,464 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:36:12,967 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:14,968 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:15,647 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:36:16,968 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:18,969 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:20,969 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:22,969 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:24,970 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:26,970 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:30,648 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:36:30,648 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:36:38,102 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:36:38,102 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:36:38,102 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:36:38,102 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:36:38,972 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:38,972 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:36:40,973 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:42,973 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:44,973 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:45,248 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:36:45,931 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:36:45,931 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:36:46,974 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:48,974 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:50,975 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:52,975 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:54,975 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:56,976 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:36:58,976 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:00,977 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:02,977 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:03,460 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:37:03,460 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:37:04,977 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:06,978 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:08,978 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:10,979 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:12,979 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:14,979 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:15,499 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:37:16,980 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:18,745 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:37:18,745 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:37:18,980 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:20,981 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:22,981 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:24,981 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:26,982 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:28,982 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:30,983 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:32,983 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:34,035 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:37:34,035 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:37:34,983 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:36,984 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:38,984 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:40,984 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:42,985 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:44,985 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:45,738 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:37:46,986 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:48,986 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:37:49,367 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:37:49,367 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:37:59,803 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: partial_history
+2024-01-27 21:37:59,804 DEBUG   SenderThread:3952295 [sender.py:send():236] send: history
+2024-01-27 21:37:59,804 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:37:59,805 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:37:59,988 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:38:04,670 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:38:04,671 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:38:16,005 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:38:18,992 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:20,031 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:38:20,031 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:38:20,993 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:22,993 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:24,993 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:26,994 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:28,994 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:30,994 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:32,995 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:34,995 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:35,382 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-27 21:38:35,382 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: stop_status
+2024-01-27 21:38:36,995 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:38,996 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:40,996 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:42,996 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:44,997 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:46,247 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:38:46,997 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:47,530 DEBUG   SenderThread:3952295 [sender.py:send():236] send: telemetry
+2024-01-27 21:38:48,998 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:49,880 DEBUG   SenderThread:3952295 [sender.py:send():236] send: exit
+2024-01-27 21:38:49,880 INFO    SenderThread:3952295 [sender.py:send_exit():372] handling exit code: 1
+2024-01-27 21:38:49,880 INFO    SenderThread:3952295 [sender.py:send_exit():374] handling runtime: 1544
+2024-01-27 21:38:49,881 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:49,881 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:38:49,881 INFO    SenderThread:3952295 [sender.py:send_exit():380] send defer
+2024-01-27 21:38:49,881 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:49,882 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,882 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 0
+2024-01-27 21:38:49,882 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,882 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 0
+2024-01-27 21:38:49,882 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 1
+2024-01-27 21:38:49,882 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,882 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 1
+2024-01-27 21:38:49,988 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:49,988 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,988 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 1
+2024-01-27 21:38:49,988 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 2
+2024-01-27 21:38:49,988 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:49,988 DEBUG   SenderThread:3952295 [sender.py:send():236] send: stats
+2024-01-27 21:38:49,989 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,989 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 2
+2024-01-27 21:38:49,989 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,989 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 2
+2024-01-27 21:38:49,989 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 3
+2024-01-27 21:38:49,989 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,990 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 3
+2024-01-27 21:38:49,990 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,990 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 3
+2024-01-27 21:38:49,990 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 4
+2024-01-27 21:38:49,990 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,990 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 4
+2024-01-27 21:38:49,990 DEBUG   SenderThread:3952295 [sender.py:send():236] send: summary
+2024-01-27 21:38:49,991 INFO    SenderThread:3952295 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-27 21:38:49,991 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,991 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 4
+2024-01-27 21:38:49,991 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 5
+2024-01-27 21:38:49,991 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:49,991 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 5
+2024-01-27 21:38:49,991 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:49,991 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 5
+2024-01-27 21:38:49,998 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:49,998 INFO    Thread-7  :3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:38:50,089 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:50,279 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 6
+2024-01-27 21:38:50,279 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:50,280 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:50,280 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 6
+2024-01-27 21:38:50,280 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:50,280 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 6
+2024-01-27 21:38:50,280 INFO    SenderThread:3952295 [dir_watcher.py:finish():353] shutting down directory watcher
+2024-01-27 21:38:50,381 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:50,999 INFO    SenderThread:3952295 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/config.yaml
+2024-01-27 21:38:50,999 INFO    SenderThread:3952295 [dir_watcher.py:finish():383] scan: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/requirements.txt requirements.txt
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-metadata.json wandb-metadata.json
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/config.yaml config.yaml
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json wandb-summary.json
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/conda-environment.yaml conda-environment.yaml
+2024-01-27 21:38:51,000 INFO    SenderThread:3952295 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log output.log
+2024-01-27 21:38:51,005 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 7
+2024-01-27 21:38:51,006 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,006 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:51,006 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 7
+2024-01-27 21:38:51,010 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:51,011 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 7
+2024-01-27 21:38:51,011 INFO    SenderThread:3952295 [file_pusher.py:finish():171] shutting down file pusher
+2024-01-27 21:38:51,109 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,109 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,210 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,210 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,311 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,311 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,412 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,412 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,513 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,513 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,612 INFO    Thread-13 :3952295 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/config.yaml
+2024-01-27 21:38:51,614 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,614 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,655 INFO    Thread-16 :3952295 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/output.log
+2024-01-27 21:38:51,685 INFO    Thread-12 :3952295 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/requirements.txt
+2024-01-27 21:38:51,716 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,716 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,736 INFO    Thread-14 :3952295 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/wandb-summary.json
+2024-01-27 21:38:51,741 INFO    Thread-15 :3952295 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/files/conda-environment.yaml
+2024-01-27 21:38:51,818 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,819 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,920 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:51,920 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:51,941 INFO    Thread-6 (_thread_body):3952295 [sender.py:transition_state():393] send defer: 8
+2024-01-27 21:38:51,942 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:51,942 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 8
+2024-01-27 21:38:51,942 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:51,942 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 8
+2024-01-27 21:38:52,022 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:52,804 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 9
+2024-01-27 21:38:52,804 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:52,805 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:52,805 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 9
+2024-01-27 21:38:52,805 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:52,805 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 9
+2024-01-27 21:38:52,805 INFO    SenderThread:3952295 [sender.py:transition_state():393] send defer: 10
+2024-01-27 21:38:52,806 DEBUG   SenderThread:3952295 [sender.py:send():236] send: final
+2024-01-27 21:38:52,806 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: defer
+2024-01-27 21:38:52,806 DEBUG   SenderThread:3952295 [sender.py:send():236] send: footer
+2024-01-27 21:38:52,806 INFO    HandlerThread:3952295 [handler.py:handle_request_defer():163] handle defer: 10
+2024-01-27 21:38:52,807 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: defer
+2024-01-27 21:38:52,807 INFO    SenderThread:3952295 [sender.py:send_request_defer():389] handle sender defer: 10
+2024-01-27 21:38:52,906 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-27 21:38:52,906 DEBUG   SenderThread:3952295 [sender.py:send_request():250] send_request: poll_exit
+2024-01-27 21:38:52,906 INFO    SenderThread:3952295 [file_pusher.py:join():176] waiting for file pusher
+2024-01-27 21:38:53,511 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: sampled_history
+2024-01-27 21:38:53,512 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: get_summary
+2024-01-27 21:38:53,513 DEBUG   HandlerThread:3952295 [handler.py:handle_request():140] handle_request: shutdown
+2024-01-27 21:38:53,513 INFO    HandlerThread:3952295 [handler.py:finish():806] shutting down handler
+2024-01-27 21:38:53,807 INFO    WriterThread:3952295 [datastore.py:close():279] close: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240127_211304-3jnop1b2/run-3jnop1b2.wandb
+2024-01-27 21:38:54,410 INFO    SenderThread:3952295 [sender.py:finish():1114] shutting down sender
+2024-01-27 21:38:54,410 INFO    SenderThread:3952295 [file_pusher.py:finish():171] shutting down file pusher
+2024-01-27 21:38:54,410 INFO    SenderThread:3952295 [file_pusher.py:join():176] waiting for file pusher
+2024-01-27 21:38:54,412 INFO    MainThread:3952295 [internal.py:handle_exit():80] Internal process exited

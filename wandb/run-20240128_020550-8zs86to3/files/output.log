@@ -1,0 +1,11 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
+vocab size = 50265
+without comet
+vocab size = 50265
+without comet
+Testing: 0it [00:01, ?it/s]
+Traceback (most recent call last):
+  File "/home/lijunlin/lijunlin/ESCONV/main.py", line 340, in <module>
+    generate(args)
+  File "/home/lijunlin/lijunlin/ESCONV/BlenderEmotionalSupport.py", line 1641, in generate
+    situ_ids = f.situ_ids.to(args.device)

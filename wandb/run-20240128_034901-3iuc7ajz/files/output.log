@@ -1,0 +1,9 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-vad-frz_stem124_II
+vad labels =['[0v0a0d]', '[-v+a-d2]', '[+v+a-d2]', '[-v-a-d1]', '[-v-a-d2]', '[+v-a-d2]', '[-v+a-d4]', '[-v-a-d4]', '[-v+a+d3]', '[+v-a-d1]', '[-v+a+d4]', '[-v+a-d3]', '[+v-a+d3]', '[+v-a+d4]', '[+v+a+d4]', '[+v-a-d3]', '[-v+a+d1]', '[-v+a+d2]', '[-v-a+d1]', '[+v-a+d2]', '[-v+a-d1]', '[+v-a+d1]', '[+v+a+d2]', '[-v-a-d3]', '[+v+a+d3]', '[-v-a+d3]', '[-v-a+d2]', '[+v-a-d4]', '[+v+a+d1]', '[+v+a-d4]', '[+v+a-d1]', '[+v+a-d3]', '[-v-a+d4]']
+vocab size = 50265
+Traceback (most recent call last):
+  File "/home/lijunlin/lijunlin/ESCONV/main.py", line 313, in <module>
+    _, tokenizer = load_tokenizer(args = args)
+  File "/home/lijunlin/lijunlin/ESCONV/BlenderEmotionalSupport.py", line 185, in load_tokenizer
+    vad_labels = vad_tokenizer.vad_labels
+NameError: name 'vad_tokenizer' is not defined

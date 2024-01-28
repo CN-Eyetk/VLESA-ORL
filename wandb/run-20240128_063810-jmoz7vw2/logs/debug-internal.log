@@ -1,0 +1,132 @@
+2024-01-28 06:38:11,195 INFO    MainThread:490791 [internal.py:wandb_internal():90] W&B internal server running at pid: 490791, started at: 2024-01-28 06:38:11.195247
+2024-01-28 06:38:11,196 INFO    WriterThread:490791 [datastore.py:open_for_write():75] open: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/run-jmoz7vw2.wandb
+2024-01-28 06:38:11,197 DEBUG   SenderThread:490791 [sender.py:send():236] send: header
+2024-01-28 06:38:11,197 DEBUG   SenderThread:490791 [sender.py:send():236] send: run
+2024-01-28 06:38:11,618 INFO    SenderThread:490791 [dir_watcher.py:__init__():216] watching files in: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files
+2024-01-28 06:38:11,618 INFO    SenderThread:490791 [sender.py:_start_run_threads():815] run started: jmoz7vw2 with start time 1706423890
+2024-01-28 06:38:11,621 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: check_version
+2024-01-28 06:38:11,621 DEBUG   SenderThread:490791 [sender.py:send():236] send: summary
+2024-01-28 06:38:11,621 INFO    SenderThread:490791 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-28 06:38:11,621 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: check_version
+2024-01-28 06:38:11,695 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: run_start
+2024-01-28 06:38:11,703 DEBUG   HandlerThread:490791 [meta.py:__init__():35] meta init
+2024-01-28 06:38:11,703 DEBUG   HandlerThread:490791 [meta.py:__init__():49] meta init done
+2024-01-28 06:38:11,703 DEBUG   HandlerThread:490791 [meta.py:probe():209] probe
+2024-01-28 06:38:11,709 DEBUG   HandlerThread:490791 [meta.py:_setup_git():199] setup git
+2024-01-28 06:38:11,716 DEBUG   HandlerThread:490791 [meta.py:_setup_git():206] setup git done
+2024-01-28 06:38:11,716 DEBUG   HandlerThread:490791 [meta.py:_save_pip():53] save pip
+2024-01-28 06:38:11,716 DEBUG   HandlerThread:490791 [meta.py:_save_pip():67] save pip done
+2024-01-28 06:38:11,716 DEBUG   HandlerThread:490791 [meta.py:_save_conda():74] save conda
+2024-01-28 06:38:12,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-summary.json
+2024-01-28 06:38:12,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/conda-environment.yaml
+2024-01-28 06:38:12,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/requirements.txt
+2024-01-28 06:38:13,753 DEBUG   HandlerThread:490791 [meta.py:_save_conda():84] save conda done
+2024-01-28 06:38:13,754 DEBUG   HandlerThread:490791 [meta.py:probe():247] probe done
+2024-01-28 06:38:13,756 DEBUG   SenderThread:490791 [sender.py:send():236] send: files
+2024-01-28 06:38:13,756 INFO    SenderThread:490791 [sender.py:_save_file():952] saving file wandb-metadata.json with policy now
+2024-01-28 06:38:13,759 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-28 06:38:13,760 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: stop_status
+2024-01-28 06:38:14,022 DEBUG   SenderThread:490791 [sender.py:send():236] send: telemetry
+2024-01-28 06:38:14,359 INFO    Thread-11 :490791 [upload_job.py:push():138] Uploaded file /tmp/tmp2a20g656wandb/3tozjvf7-wandb-metadata.json
+2024-01-28 06:38:14,618 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/conda-environment.yaml
+2024-01-28 06:38:14,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:14,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-metadata.json
+2024-01-28 06:38:16,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:18,619 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:23,498 DEBUG   SenderThread:490791 [sender.py:send():236] send: telemetry
+2024-01-28 06:38:25,621 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:25,878 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:25,879 DEBUG   SenderThread:490791 [sender.py:send():236] send: exit
+2024-01-28 06:38:25,879 INFO    SenderThread:490791 [sender.py:send_exit():372] handling exit code: 1
+2024-01-28 06:38:25,879 INFO    SenderThread:490791 [sender.py:send_exit():374] handling runtime: 14
+2024-01-28 06:38:25,879 INFO    SenderThread:490791 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-28 06:38:25,880 INFO    SenderThread:490791 [sender.py:send_exit():380] send defer
+2024-01-28 06:38:25,880 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:25,880 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,880 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 0
+2024-01-28 06:38:25,881 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,881 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 0
+2024-01-28 06:38:25,881 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 1
+2024-01-28 06:38:25,881 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,881 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 1
+2024-01-28 06:38:25,911 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,911 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 1
+2024-01-28 06:38:25,911 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 2
+2024-01-28 06:38:25,912 DEBUG   SenderThread:490791 [sender.py:send():236] send: stats
+2024-01-28 06:38:25,912 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,912 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 2
+2024-01-28 06:38:25,912 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,912 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 2
+2024-01-28 06:38:25,912 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 3
+2024-01-28 06:38:25,913 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,913 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 3
+2024-01-28 06:38:25,913 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,913 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 3
+2024-01-28 06:38:25,913 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 4
+2024-01-28 06:38:25,913 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,913 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 4
+2024-01-28 06:38:25,913 DEBUG   SenderThread:490791 [sender.py:send():236] send: summary
+2024-01-28 06:38:25,914 INFO    SenderThread:490791 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-28 06:38:25,914 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,914 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 4
+2024-01-28 06:38:25,914 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 5
+2024-01-28 06:38:25,914 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:25,914 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 5
+2024-01-28 06:38:25,914 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:25,914 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 5
+2024-01-28 06:38:25,981 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:26,250 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 6
+2024-01-28 06:38:26,250 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:26,251 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:26,251 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 6
+2024-01-28 06:38:26,251 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:26,251 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 6
+2024-01-28 06:38:26,251 INFO    SenderThread:490791 [dir_watcher.py:finish():353] shutting down directory watcher
+2024-01-28 06:38:26,352 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:26,622 INFO    Thread-7  :490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-summary.json
+2024-01-28 06:38:26,622 INFO    SenderThread:490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:26,622 INFO    SenderThread:490791 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/config.yaml
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():383] scan: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/requirements.txt requirements.txt
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-metadata.json wandb-metadata.json
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/config.yaml config.yaml
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-summary.json wandb-summary.json
+2024-01-28 06:38:26,623 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/conda-environment.yaml conda-environment.yaml
+2024-01-28 06:38:26,625 INFO    SenderThread:490791 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log output.log
+2024-01-28 06:38:26,632 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 7
+2024-01-28 06:38:26,632 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:26,635 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:26,635 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 7
+2024-01-28 06:38:26,635 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:26,635 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 7
+2024-01-28 06:38:26,635 INFO    SenderThread:490791 [file_pusher.py:finish():171] shutting down file pusher
+2024-01-28 06:38:26,736 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:26,736 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:26,836 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:26,836 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:26,937 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:26,937 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:27,038 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:27,038 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:27,139 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-28 06:38:27,139 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: poll_exit
+2024-01-28 06:38:27,207 WARNING MainThread:490791 [internal.py:wandb_internal():153] Internal process interrupt: 1
+2024-01-28 06:38:27,306 INFO    Thread-14 :490791 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/wandb-summary.json
+2024-01-28 06:38:27,311 INFO    Thread-15 :490791 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/conda-environment.yaml
+2024-01-28 06:38:27,347 INFO    Thread-12 :490791 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/requirements.txt
+2024-01-28 06:38:27,373 WARNING MainThread:490791 [internal.py:wandb_internal():153] Internal process interrupt: 2
+2024-01-28 06:38:27,373 ERROR   MainThread:490791 [internal.py:wandb_internal():156] Internal process interrupted.
+2024-01-28 06:38:27,380 INFO    Thread-16 :490791 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/output.log
+2024-01-28 06:38:27,685 INFO    Thread-13 :490791 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/files/config.yaml
+2024-01-28 06:38:27,886 INFO    Thread-6 (_thread_body):490791 [sender.py:transition_state():393] send defer: 8
+2024-01-28 06:38:27,886 DEBUG   HandlerThread:490791 [handler.py:handle_request():140] handle_request: defer
+2024-01-28 06:38:27,886 INFO    HandlerThread:490791 [handler.py:handle_request_defer():163] handle defer: 8
+2024-01-28 06:38:27,886 INFO    HandlerThread:490791 [handler.py:finish():806] shutting down handler
+2024-01-28 06:38:27,886 DEBUG   SenderThread:490791 [sender.py:send_request():250] send_request: defer
+2024-01-28 06:38:27,887 INFO    SenderThread:490791 [sender.py:send_request_defer():389] handle sender defer: 8
+2024-01-28 06:38:27,914 INFO    WriterThread:490791 [datastore.py:close():279] close: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_063810-jmoz7vw2/run-jmoz7vw2.wandb
+2024-01-28 06:38:28,194 INFO    SenderThread:490791 [sender.py:transition_state():393] send defer: 9
+2024-01-28 06:38:28,194 INFO    SenderThread:490791 [sender.py:finish():1114] shutting down sender
+2024-01-28 06:38:28,194 INFO    SenderThread:490791 [file_pusher.py:finish():171] shutting down file pusher
+2024-01-28 06:38:28,195 INFO    SenderThread:490791 [file_pusher.py:join():176] waiting for file pusher
+2024-01-28 06:38:28,196 INFO    MainThread:490791 [internal.py:handle_exit():80] Internal process exited

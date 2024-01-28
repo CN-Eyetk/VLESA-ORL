@@ -1,0 +1,1 @@
+{"eval_perplexity": 15.205805959080692, "eval_emotion_predict_accuracy": 0.7054730983302412, "eval_strategy_predict_accuracy": 0.3070500927643785, "eval_number_of_evaluated_examples": 2156, "intensity_loss": 0.0, "_timestamp": 1706359370, "_runtime": 1508, "_step": 15, "_wandb": {"runtime": 1536}}

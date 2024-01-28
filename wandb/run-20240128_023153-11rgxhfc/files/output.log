@@ -1,0 +1,902 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-frz_stem124_II
+vocab size = 50265
+without comet
+evaluating
+strategy_logits tensor([7, 0, 0, 6, 0, 5, 3, 6, 0, 7, 6, 0, 6, 2, 0, 0, 6, 6, 6, 0],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 4, 0, 6, 0, 6, 2, 0, 5, 7, 2, 3, 6, 1, 6, 0, 5, 5, 1],
+       device='cuda:0')
+strategy_logits tensor([5, 2, 5, 2, 4, 0, 6, 6, 7, 7, 5, 6, 1, 6, 0, 6, 7, 1, 7, 6],
+       device='cuda:0')
+strategy_logits tensor([2, 0, 6, 5, 3, 0, 5, 0, 6, 0, 4, 2, 6, 6, 7, 7, 6, 0, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 7, 0, 4, 5, 0, 0, 2, 6, 0, 1, 6, 0, 5, 4, 7, 4, 6, 5, 5],
+       device='cuda:0')
+strategy_logits tensor([0, 4, 7, 2, 5, 6, 6, 1, 4, 2, 6, 4, 6, 6, 7, 7, 6, 6, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([3, 6, 5, 2, 6, 1, 4, 0, 7, 2, 6, 5, 2, 2, 1, 7, 6, 5, 1, 5],
+       device='cuda:0')
+strategy_logits tensor([4, 0, 0, 0, 3, 3, 0, 6, 0, 0, 1, 6, 0, 6, 0, 0, 7, 2, 2, 0],
+       device='cuda:0')
+strategy_logits tensor([7, 0, 4, 5, 0, 4, 6, 1, 4, 4, 5, 5, 4, 6, 6, 7, 7, 5, 3, 7],
+       device='cuda:0')
+strategy_logits tensor([4, 6, 7, 2, 5, 5, 7, 1, 4, 0, 4, 0, 6, 3, 1, 6, 0, 4, 4, 7],
+       device='cuda:0')
+strategy_logits tensor([7, 5, 1, 0, 5, 6, 6, 7, 5, 4, 0, 4, 3, 6, 6, 1, 6, 2, 7, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 4, 6, 6, 2, 4, 6, 1, 0, 1, 5, 7, 7, 5, 7, 5, 6, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 4, 0, 6, 3, 2, 0, 6, 2, 6, 0, 5, 6, 5, 1, 2, 7, 1, 6],
+       device='cuda:0')
+strategy_logits tensor([1, 5, 6, 1, 0, 2, 2, 4, 5, 6, 6, 7, 0, 7, 2, 3, 6, 5, 4, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 0, 6, 7, 6, 5, 0, 6, 1, 0, 2, 4, 6, 6, 6, 2, 4, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([0, 3, 6, 6, 0, 6, 6, 7, 4, 6, 7, 6, 6, 4, 6, 7, 0, 6, 5, 4],
+       device='cuda:0')
+strategy_logits tensor([1, 6, 7, 6, 4, 2, 6, 5, 1, 1, 5, 4, 1, 2, 7, 2, 2, 0, 7, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 3, 6, 6, 1, 0, 4, 7, 5, 4, 3, 5, 6, 6, 0, 7, 2, 4, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 6, 4, 2, 6, 6, 6, 2, 5, 0, 5, 2, 3, 0, 4, 7, 0, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 4, 4, 2, 5, 4, 6, 0, 6, 2, 4, 6, 1, 0, 4, 5, 5, 6, 4, 1],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 6, 6, 0, 6, 6, 3, 7, 6, 1, 4, 3, 6, 5, 7, 6, 4, 0, 7],
+       device='cuda:0')
+strategy_logits tensor([0, 5, 2, 2, 1, 2, 7, 0, 6, 4, 6, 7, 0, 6, 7, 6, 1, 6, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 7, 0, 6, 0, 6, 2, 5, 6, 7, 2, 5, 2, 2, 1, 0, 6, 2, 4, 0],
+       device='cuda:0')
+strategy_logits tensor([5, 7, 3, 4, 6, 6, 4, 6, 3, 0, 1, 5, 6, 0, 6, 0, 0, 6, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([1, 6, 4, 6, 7, 4, 6, 4, 0, 1, 5, 6, 6, 6, 0, 5, 4, 1, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 4, 6, 0, 2, 6, 6, 4, 5, 6, 0, 4, 0, 6, 1, 1, 1, 7, 4, 0],
+       device='cuda:0')
+strategy_logits tensor([6, 4, 6, 1, 0, 3, 7, 2, 4, 0, 7, 0, 5, 6, 2, 4, 5, 6, 6, 2],
+       device='cuda:0')
+strategy_logits tensor([5, 4, 0, 1, 2, 4, 4, 5, 0, 6, 6, 6, 7, 5, 0, 1, 6, 4, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 5, 2, 7, 6, 0, 4, 6, 6, 5, 7, 6, 6, 3, 7, 0, 0, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 0, 6, 0, 5, 6, 4, 2, 4, 2, 0, 0, 7, 4, 0, 6, 6, 2, 6, 4],
+       device='cuda:0')
+strategy_logits tensor([5, 0, 0, 6, 5, 2, 6, 7, 5, 6, 6, 0, 1, 5, 6, 1, 0, 3, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([2, 2, 7, 4, 1, 6, 2, 3, 6, 4, 2, 7, 4, 5, 6, 3, 6, 7, 5, 4],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 7, 7, 6, 2, 1, 0, 7, 0, 6, 2, 0, 0, 2, 5, 5, 1, 7, 0],
+       device='cuda:0')
+strategy_logits tensor([4, 4, 0, 7, 7, 6, 5, 5, 3, 2, 6, 6, 7, 4, 7, 5, 3, 6, 4, 5],
+       device='cuda:0')
+strategy_logits tensor([5, 4, 4, 5, 3, 0, 0, 5, 6, 5, 1, 0, 7, 4, 4, 0, 5, 4, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([5, 1, 6, 0, 0, 0, 2, 2, 5, 6, 7, 6, 4, 7, 2, 6, 1, 0, 1, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 7, 5, 2, 1, 4, 1, 7, 7, 3, 5, 0, 7, 1, 2, 6, 0, 0, 6, 4],
+       device='cuda:0')
+strategy_logits tensor([3, 6, 6, 6, 6, 5, 3, 7, 4, 2, 4, 6, 7, 1, 0, 6, 1, 4, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 4, 0, 2, 6, 3, 6, 6, 6, 7, 0, 6, 4, 1, 4, 6, 6, 6, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([2, 4, 0, 6, 5, 6, 6, 4, 0, 0, 6, 6, 4, 2, 7, 1, 0, 7, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([7, 4, 6, 2, 7, 7, 1, 6, 5, 6, 5, 1, 4, 2, 6, 4, 2, 6, 4, 6],
+       device='cuda:0')
+strategy_logits tensor([5, 6, 6, 0, 4, 0, 6, 1, 4, 6, 4, 2, 7, 6, 0, 6, 7, 7, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([4, 4, 0, 4, 0, 6, 4, 0, 6, 3, 5, 6, 7, 1, 7, 0, 7, 6, 3, 2],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 4, 1, 6, 6, 6, 5, 4, 6, 1, 3, 0, 4, 6, 5, 1, 7, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 2, 4, 5, 6, 6, 7, 7, 5, 3, 4, 6, 0, 2, 6, 6, 5, 6, 0],
+       device='cuda:0')
+strategy_logits tensor([4, 7, 6, 6, 6, 2, 7, 6, 1, 1, 7, 6, 4, 4, 0, 7, 6, 6, 7, 1],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 7, 6, 2, 2, 6, 2, 4, 6, 5, 5, 0, 4, 6, 2, 6, 5, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([5, 3, 6, 1, 1, 6, 5, 5, 6, 4, 4, 6, 1, 1, 0, 2, 6, 6, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([2, 6, 4, 6, 6, 6, 6, 2, 6, 4, 2, 7, 6, 4, 1, 1, 4, 0, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([5, 1, 6, 5, 0, 5, 2, 6, 1, 4, 7, 6, 0, 6, 0, 6, 6, 7, 4, 2],
+       device='cuda:0')
+strategy_logits tensor([6, 7, 6, 5, 1, 0, 0, 6, 0, 0, 5, 7, 2, 4, 6, 7, 1, 0, 6, 4],
+       device='cuda:0')
+strategy_logits tensor([7, 4, 2, 7, 5, 0, 4, 5, 6, 4, 0, 7, 6, 6, 6, 6, 6, 4, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 5, 6, 0, 3, 2, 6, 5, 4, 6, 5, 0, 2, 6, 3, 2, 7, 3, 7],
+       device='cuda:0')
+strategy_logits tensor([0, 0, 1, 2, 4, 5, 5, 2, 2, 5, 6, 4, 7, 4, 5, 2, 6, 7, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 6, 7, 7, 7, 3, 6, 5, 7, 7, 5, 4, 3, 5, 5, 6, 2, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 7, 5, 7, 6, 2, 1, 6, 6, 2, 7, 5, 6, 6, 7, 5, 6, 4, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 2, 5, 7, 6, 0, 6, 4, 6, 3, 4, 5, 5, 0, 7, 4, 0, 5, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([5, 1, 1, 3, 0, 6, 2, 6, 1, 6, 3, 4, 1, 7, 0, 5, 4, 0, 2, 7],
+       device='cuda:0')
+strategy_logits tensor([4, 3, 2, 6, 7, 6, 6, 4, 0, 1, 6, 1, 5, 7, 6, 2, 6, 6, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([0, 3, 6, 5, 2, 4, 6, 2, 1, 1, 3, 0, 6, 6, 6, 0, 7, 7, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 3, 6, 6, 1, 2, 6, 5, 2, 0, 0, 7, 0, 6, 0, 0, 4, 2, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 4, 6, 0, 6, 3, 7, 6, 1, 2, 0, 1, 6, 7, 4, 6, 4, 6, 0, 3],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 1, 2, 6, 1, 5, 4, 4, 0, 6, 6, 6, 0, 0, 6, 7, 7, 0, 1],
+       device='cuda:0')
+strategy_logits tensor([3, 6, 0, 5, 2, 2, 1, 2, 6, 6, 7, 2, 6, 5, 6, 7, 4, 1, 0, 0],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 6, 7, 0, 6, 4, 2, 0, 5, 6, 7, 0, 1, 6, 7, 4, 2, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([2, 6, 3, 6, 2, 6, 1, 7, 0, 5, 6, 6, 6, 1, 0, 0, 1, 6, 5, 1],
+       device='cuda:0')
+strategy_logits tensor([4, 6, 0, 2, 4, 6, 0, 0, 6, 4, 2, 5, 4, 6, 6, 7, 5, 0, 4, 6],
+       device='cuda:0')
+strategy_logits tensor([4, 7, 7, 6, 6, 2, 7, 7, 7, 0, 0, 0, 6, 6, 6, 6, 6, 1, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([0, 0, 6, 0, 7, 4, 6, 1, 6, 6, 6, 6, 7, 4, 4, 7, 0, 7, 1, 2],
+       device='cuda:0')
+strategy_logits tensor([4, 1, 6, 5, 1, 7, 7, 7, 2, 6, 1, 6, 6, 0, 6, 6, 5, 7, 5, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 2, 6, 2, 5, 2, 6, 0, 5, 5, 7, 7, 0, 7, 2, 0, 2, 3, 7],
+       device='cuda:0')
+strategy_logits tensor([6, 3, 0, 4, 6, 1, 6, 6, 1, 5, 3, 5, 6, 6, 6, 7, 0, 4, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([1, 5, 6, 4, 3, 4, 4, 6, 6, 3, 6, 6, 6, 7, 0, 6, 6, 2, 4, 5],
+       device='cuda:0')
+strategy_logits tensor([5, 2, 1, 6, 6, 0, 0, 0, 0, 6, 2, 2, 5, 6, 6, 5, 6, 6, 7, 3],
+       device='cuda:0')
+strategy_logits tensor([5, 7, 5, 1, 1, 3, 7, 2, 4, 0, 6, 6, 2, 7, 6, 0, 3, 6, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 6, 4, 6, 6, 3, 3, 2, 1, 1, 7, 6, 7, 1, 0, 0, 6, 4, 5],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 7, 4, 4, 0, 6, 6, 0, 4, 0, 0, 5, 6, 2, 6, 6, 6, 7, 4],
+       device='cuda:0')
+strategy_logits tensor([1, 5, 6, 0, 5, 1, 4, 7, 5, 2, 4, 5, 6, 6, 7, 6, 1, 4, 0, 5],
+       device='cuda:0')
+strategy_logits tensor([6, 5, 6, 3, 4, 5, 4, 6, 4, 6, 3, 1, 0, 5, 0, 0, 7, 2, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 0, 2, 6, 6, 2, 1, 2, 6, 6, 1, 0, 4, 6, 2, 4, 2, 6, 7, 0],
+       device='cuda:0')
+strategy_logits tensor([4, 0, 1, 5, 6, 0, 2, 2, 3, 6, 6, 2, 6, 0, 3, 5, 5, 4, 5, 0],
+       device='cuda:0')
+strategy_logits tensor([0, 1, 4, 6, 1, 7, 6, 6, 2, 4, 7, 7, 6, 4, 5, 7, 7, 5, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 0, 6, 0, 0, 6, 5, 0, 6, 0, 6, 1, 3, 6, 0, 0, 2, 0, 2, 1],
+       device='cuda:0')
+strategy_logits tensor([6, 2, 5, 7, 6, 2, 6, 5, 3, 5, 7, 0, 6, 4, 2, 6, 6, 6, 7, 0],
+       device='cuda:0')
+strategy_logits tensor([5, 6, 7, 2, 7, 3, 0, 1, 7, 4, 0, 6, 1, 2, 0, 5, 1, 6, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 0, 1, 5, 4, 4, 7, 4, 4, 0, 7, 6, 7, 6, 5, 2, 0, 7, 7, 0],
+       device='cuda:0')
+strategy_logits tensor([5, 4, 6, 6, 2, 0, 1, 7, 6, 1, 7, 1, 4, 5, 7, 1, 6, 6, 1, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 5, 1, 6, 0, 7, 0, 3, 7, 0, 7, 6, 7, 2, 1, 7, 4, 6, 0],
+       device='cuda:0')
+strategy_logits tensor([6, 0, 1, 0, 2, 5, 6, 6, 0, 3, 6, 7, 6, 6, 6, 4, 5, 3, 0, 7],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 0, 6, 0, 7, 3, 3, 6, 2, 5, 2, 5, 7, 0, 6, 1, 1, 5, 7],
+       device='cuda:0')
+strategy_logits tensor([4, 4, 3, 6, 6, 0, 4, 2, 0, 3, 0, 7, 0, 0, 5, 6, 6, 0, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([5, 0, 0, 6, 4, 6, 6, 0, 2, 2, 4, 7, 7, 6, 5, 0, 0, 6, 0, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 7, 6, 6, 0, 4, 0, 6, 7, 3, 6, 7, 6, 2, 4, 3, 2, 6, 7, 4],
+       device='cuda:0')
+strategy_logits tensor([1, 4, 4, 0, 6, 4, 7, 4, 5, 2, 0, 5, 1, 4, 4, 7, 6, 4, 6, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 6, 0, 5, 7, 6, 1, 4, 6, 4, 1, 2, 2, 4, 7, 4, 4, 7, 6],
+       device='cuda:0')
+strategy_logits tensor([7, 5, 2, 6, 6, 6, 0, 6, 6, 5, 4, 6, 4, 6, 5, 7, 6, 0, 5, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 0, 6, 7, 5, 6, 1, 4, 7, 5, 4, 4, 0, 4, 1, 1, 6, 6, 1, 0],
+       device='cuda:0')
+strategy_logits tensor([5, 0, 4, 7, 0, 4, 6, 0, 0, 4, 6, 0, 6, 6, 6, 7, 0, 7, 7, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 6, 7, 7, 6, 4, 1, 0, 1, 4, 1, 6, 1, 4, 5, 6, 0, 4, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 2, 5, 2, 4, 6, 4, 4, 3, 6, 2, 1, 6, 6, 6, 1, 1, 2, 2, 6],
+       device='cuda:0')
+strategy_logits tensor([0, 7, 7, 7, 5, 4, 5, 4, 4, 2, 7, 0, 4, 0, 7, 0, 0, 7, 6, 5],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 6, 6, 4, 3, 7, 6, 0, 6, 2, 4, 0, 6, 7, 2, 7, 5, 1, 5],
+       device='cuda:0')
+strategy_logits tensor([5, 2, 0, 2, 2, 3, 0, 4, 6, 5, 6, 4, 4, 4, 0, 0, 7, 0, 2, 6],
+       device='cuda:0')
+strategy_logits tensor([6, 0, 7, 1, 6, 2, 5, 7, 5, 0, 0, 6, 2, 5, 5, 6, 6, 4, 7, 2],
+       device='cuda:0')
+strategy_logits tensor([3, 4, 0, 6, 1, 3, 5, 1, 6, 5, 6, 4, 6, 4, 0, 2, 2, 4, 7, 5],
+       device='cuda:0')
+strategy_logits tensor([5, 2, 0, 0, 5, 6, 6, 6, 6, 4, 5, 1, 6, 1, 0, 6, 7, 6, 0, 2],
+       device='cuda:0')
+strategy_logits tensor([2, 6, 2, 2, 2, 6, 4, 7, 5, 7, 2, 6, 6, 6, 2, 6, 6, 7, 0, 5],
+       device='cuda:0')
+strategy_logits tensor([7, 0, 2, 4, 3, 6, 7, 5, 7, 4, 1, 6, 0, 7, 5, 6, 7, 6, 7, 0],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 2, 7, 4, 5, 6, 6, 1, 5, 6, 7, 4, 6, 4, 7, 2, 1, 1, 3],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 0, 1, 4, 4, 3, 5, 0, 6, 6, 0, 6, 0, 7, 7, 6, 0, 2, 3],
+       device='cuda:0')
+strategy_logits tensor([6, 2, 7, 0, 0, 2, 0, 1, 4, 0, 7, 2, 7, 6, 5, 2, 6, 6, 4, 0],
+       device='cuda:0')
+strategy_logits tensor([7, 6, 4, 0, 6, 5, 0, 1, 6, 0, 0, 6, 6, 4, 6, 0, 0, 7, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([0, 6, 1, 7, 0, 6, 6, 2, 6, 2, 7, 7, 4, 2, 4, 7, 4, 4, 6, 7],
+       device='cuda:0')
+strategy_logits tensor([1, 0, 6, 6, 4, 7, 5, 4, 6, 5, 6, 1, 3, 5, 2, 0, 7, 0, 3, 5],
+       device='cuda:0')
+strategy_logits tensor([6, 6, 0, 4, 6, 6, 1, 5, 6, 6, 3, 6, 6, 6, 0], device='cuda:0')
+vocab size = 50265
+Testing: 0it [00:00, ?it/s]
+
+Testing: 15it [00:02,  6.69it/s]
+strategy_logits tensor([1], device='cuda:0')
+strategy_logits tensor([1], device='cuda:0')
+strategy_logits tensor([1], device='cuda:0')
+strategy_logits tensor([1], device='cuda:0')
+strategy_logits tensor([1], device='cuda:0')
+strategy_logits tensor([1], device='cuda:0')
+You are welcome.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Reflection of feelings]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sorry to hear that. I' m sure you are feeling lonely.
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I can understand how that would be. I have been in the same situation myself and it has been very difficult to get out of bed and take care of myself.
+{'ref strategy': '[Self-disclosure]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+you are very welcome.
+{'ref strategy': '[Reflection of feelings]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m doing well. How are you?
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sorry to hear that. I' m sure that you are feeling the same way.
+{'ref strategy': '[Restatement or Paraphrasing]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+You too.
+{'ref strategy': '[Greeting]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think you should try to meditate more frequently, and maybe you can get some relief from the stress.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sorry to hear that. I' ve been in that position before and I know how stressful it can be.
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+You are very welcome. I hope that things get better for you and your family soon.
+{'ref strategy': '[Affirmation and Reassurance]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+You are welcome, stay safe and have a nice day.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sorry to hear that. What is going on?
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think you are doing the right thing. I think you will find something soon.
+{'ref strategy': '[Others]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sorry to hear that. I' ve been in that situation myself. I have had to take a lot of classes to get through the first few months of school.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m so sorry to hear that. I' m sorry to see that. How long have you been together?
+{'ref strategy': '[Reflection of feelings]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+
+Testing: 31it [00:04,  8.15it/s]
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m doing well. What' s going on?
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+that' s great. I think you will make it through this.
+{'ref strategy': '[Reflection of feelings]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think that it would be best to just let things go and let things heal.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I can understand how that would feel! I have been in that situation myself. I have found that when I start feeling overwhelmed, it helps to take small steps to get things done.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+Hi, how are you today?
+{'ref strategy': '[Affirmation and Reassurance]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+take a man home with you.
+{'ref strategy': '[Affirmation and Reassurance]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think that you should be able to talk to a doctor about this.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think you are doing the right thing. I think you will be fine.
+{'ref strategy': '[Others]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+Hello, how are you doing today?
+{'ref strategy': '[Question]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I believe in you! You are very welcome!
+{'ref strategy': '[Self-disclosure]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I am sorry to hear that. What is going on?
+{'ref strategy': '[Restatement or Paraphrasing]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think that you should try to talk to them in person. You can also ask them if they have any other concerns.
+{'ref strategy': '[Providing Suggestions or Information]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I' m sure that you will find a way to make new friends. I think it' s important to keep in touch with her through social media and not just text.
+{'ref strategy': '[Restatement or Paraphrasing]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I am sorry to hear that. What is the problem?
+{'ref strategy': '[Others]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I would definitely try to find something that is more permanent.
+{'ref strategy': '[Self-disclosure]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think that you should be grateful for the support you have been able to give.
+{'ref strategy': '[Greeting]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+I think you are doing the right thing.
+{'ref strategy': '[Affirmation and Reassurance]', 'hyp strategy': '[Question]'}
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')
+strategy_logits tensor([0], device='cuda:0')

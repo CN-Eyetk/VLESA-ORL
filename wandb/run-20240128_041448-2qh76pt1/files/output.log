@@ -1,0 +1,21 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-vad-frz_stem124_II
+vocab size = 50265
+10192 10192 10192
+tokens= ['Hello', ',', 'Ġhow', 'Ġis', 'Ġyour', 'Ġhead', 'Ġor', 'Ġheart', 'Ġtoday', '?']
+words= ['Hello', ',', 'how', 'is', 'your', 'head', 'or', 'heart', 'today', '?']
+vad_labels 11
+context_id 11
+tokens 10
+vad_input Hello, how is your head or heart today?
+tokens= ['Hello', ',', 'ĠI', 'Ġwould', 'Ġlike', 'Ġto', 'Ġtalk', 'Ġto', 'Ġsomeone', 'Ġabout', 'Ġmy', 'Ġsituation', 'Ġat', 'Ġwork', '.']
+words= ['Hello', ',', 'I', 'would', 'like', 'to', 'talk', 'to', 'someone', 'about', 'my', 'situation', 'at', 'work', '.']
+vad_labels 16
+context_id 16
+tokens 15
+vad_input Hello, I would like to talk to someone about my situation at work.
+  0%|                                                                                                                                          | 0/10191 [00:00<?, ?it/s]
+tokens= ['I', 'Ġhear', 'Ġyou', 'Ġneed', 'Ġsomeone', 'Ġto', 'Ġtalk', 'Ġto', '.', 'ĠWhat', 'Ġis', 'Ġyour', 'Ġsituation', 'Ġat', 'Ġyour', 'Ġwork', '?']
+words= ['I', 'hear', 'you', 'need', 'someone', 'to', 'talk', 'to', '.', 'What', 'is', 'your', 'situation', 'at', 'your', 'work', '?']
+vad_labels 18
+context_id 18
+tokens 17

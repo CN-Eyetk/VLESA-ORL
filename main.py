@@ -7,7 +7,8 @@ parser.add_argument("--use_trans", action= "store_true")
 parser.add_argument("--use_prepend", action= "store_true")
 parser.add_argument("--use_emb_prep", action= "store_true")
 parser.add_argument("--merge", action= "store_true")
-parser.add_argument("--use_situ", action= "store_true")
+parser.add_argument("--use_situ_in_encoder", action= "store_true")
+parser.add_argument("--use_situ_in_decoder", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
@@ -31,6 +32,7 @@ parser.add_argument("--wo_Emo", action= "store_true")
 parser.add_argument("--wo_comet", action= "store_true")
 parser.add_argument("--use_vad_labels", action = "store_true")
 parser.add_argument("--rl_emb_ratio", type = float, default=0.2)
+parser.add_argument("--vad_emb_ratio", type = float, default=0.2)
 parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
 parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
 parser.add_argument("--intensity_vae", action = "store_true")
@@ -55,7 +57,6 @@ EMO_FROM_SITU = False
 COPY = args_g.use_copy
 STG_USE_CAT_ATTN = args_g.stg_use_cat_attn
 EMO_USE_CAT_ATTN = args_g.emo_use_cat_attn
-USE_SITU = args_g.use_situ
 EMO_CRO_ATTN = False
 USE_EMO_IN_DIST = args_g.use_emo_in
 MERGE = args_g.merge
@@ -81,22 +82,15 @@ TAG = "all_loss" \
     + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
     + ("kl" if KL else "") \
         +f"-lr_{args_g.lr}" \
-    + ("_copy" if COPY else "")\
-    + ("-Situ" if USE_SITU else "") \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
-    + ("-Sit_emo" if EMO_FROM_SITU else "") \
-    + ("-ST_seq" if USE_ST_SEQ else "") \
-    + ("-lstm" if LSTM_ST_SEQ else "") \
-        + ("-merge" if MERGE else "") \
             + ("-pp" if USE_PREPEND else "-nopp") \
             + ("-empp" if USE_EMB_PREP else "") \
-                + ("-no_fuse" if NO_FUSE else "") \
-                    + ("-bart" if BART else "") \
-                    + ("-eosemo" if EMO_FROM_EOS else "") \
-                        +("-sattn" if USE_SATTN else "") \
-                            +("-role" if USE_ROLE else "") \
-                        +("-emocat" if EMO_USE_CAT_ATTN else "") \
-                            +("-stgcat" if STG_USE_CAT_ATTN else "") \
+                + ("-ensitu" if args_g.use_situ_in_encoder else "") \
+                    + ("-desitu" if args_g.use_situ_in_decoder else "") \
+                    + ("-w_eosemo" if not EMO_FROM_EOS else "") \
+                            +("-w_role" if not USE_ROLE else "") \
+                        +("-w_emocat" if not EMO_USE_CAT_ATTN else "") \
+                            +("-w_stgcat" if not STG_USE_CAT_ATTN else "") \
                             +("-vae" if USE_VAE else "") \
                                 +("-ivae" if INT_VAE else "") \
                                     +("-mvae" if MIX_VAE else "") \
@@ -105,6 +99,7 @@ TAG = "all_loss" \
                                     +("-wo_Stra" if WO_STRA else "") \
                                         +("-wo_Emo" if WO_EMO else "") \
                                             +("-wo_comet" if WO_COMET else "") \
+                                                +("-vad" if args_g.use_vad_labels else "") \
                                                 +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
                             +args_g.tag
                             
@@ -139,6 +134,7 @@ else:
                                         train,
                                         evaluate,
                                         generate,
+                                        generate_new,
                                         load_tokenizer,
                                         set_seed,
                                         load_model_for_eval,
@@ -170,7 +166,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "", "w_situ" if USE_SITU else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "", "w_situ" if args_g.use_situ_in_decoder or args_g.use_situ_in_encoder else "","w_vad" if args_g.use_vad_labels else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -188,7 +184,7 @@ def load_arg():
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
             "adam_epsilon":1e-8,
-            "warmup_steps":200,
+            "warmup_steps":100,
             "fp16":False,
             "fp16_opt_level":'O1',
             "num_train_epochs":10 if BART else 8,
@@ -212,7 +208,8 @@ def load_arg():
             "no_cuda":False,
             "block_size":512,
             "generation_dir":generation_dir,
-            "use_situ":USE_SITU,
+            "use_situ_in_encoder":args_g.use_situ_in_encoder,
+            "use_situ_in_decoder":args_g.use_situ_in_decoder,
             "use_emo_in_dist":USE_EMO_IN_DIST,
             "use_emb_prep":USE_EMB_PREP,
             "use_copy":COPY,
@@ -230,6 +227,7 @@ def load_arg():
             "wo_stra":WO_STRA,
             "wo_emo":WO_EMO,
             "rl_emb_ratio":RL_EMB_RAT,
+            "vad_emb_ratio":args_g.vad_emb_ratio,
             "emo_loss_ratio":EM_LS_RAT,
             "emo_out_loss_ratio":EM_OT_LS_RAT,
             "intensity_vae":INT_VAE,
@@ -304,6 +302,8 @@ if __name__ == "__main__":
     print(args.output_dir)
     set_seed(args)
     _, tokenizer = load_tokenizer(args = args)
+
+        
     #print(tokenizer.encode("[CLS]"))
     #print(tokenizer.encode("[CLS]", add_special_tokens=False))
     #print(1/0)
@@ -335,9 +335,9 @@ if __name__ == "__main__":
         if args_g.explain:
             explain()
         else:
-            #test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+            test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
-            generate(args)
+            generate_new(args)
 
     #model.to(args.device)
     #model.eval()

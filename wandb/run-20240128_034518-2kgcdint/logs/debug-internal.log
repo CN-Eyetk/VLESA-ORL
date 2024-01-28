@@ -1,0 +1,57 @@
+2024-01-28 03:45:18,592 INFO    MainThread:255544 [internal.py:wandb_internal():90] W&B internal server running at pid: 255544, started at: 2024-01-28 03:45:18.591909
+2024-01-28 03:45:18,593 INFO    WriterThread:255544 [datastore.py:open_for_write():75] open: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/run-2kgcdint.wandb
+2024-01-28 03:45:18,594 DEBUG   SenderThread:255544 [sender.py:send():236] send: header
+2024-01-28 03:45:18,594 DEBUG   SenderThread:255544 [sender.py:send():236] send: run
+2024-01-28 03:45:18,927 INFO    SenderThread:255544 [dir_watcher.py:__init__():216] watching files in: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files
+2024-01-28 03:45:18,928 INFO    SenderThread:255544 [sender.py:_start_run_threads():815] run started: 2kgcdint with start time 1706413518
+2024-01-28 03:45:18,931 DEBUG   SenderThread:255544 [sender.py:send():236] send: summary
+2024-01-28 03:45:18,931 DEBUG   HandlerThread:255544 [handler.py:handle_request():140] handle_request: check_version
+2024-01-28 03:45:18,932 INFO    SenderThread:255544 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-28 03:45:18,932 DEBUG   SenderThread:255544 [sender.py:send_request():250] send_request: check_version
+2024-01-28 03:45:19,026 DEBUG   HandlerThread:255544 [handler.py:handle_request():140] handle_request: run_start
+2024-01-28 03:45:19,033 DEBUG   HandlerThread:255544 [meta.py:__init__():35] meta init
+2024-01-28 03:45:19,033 DEBUG   HandlerThread:255544 [meta.py:__init__():49] meta init done
+2024-01-28 03:45:19,034 DEBUG   HandlerThread:255544 [meta.py:probe():209] probe
+2024-01-28 03:45:19,040 DEBUG   HandlerThread:255544 [meta.py:_setup_git():199] setup git
+2024-01-28 03:45:19,046 DEBUG   HandlerThread:255544 [meta.py:_setup_git():206] setup git done
+2024-01-28 03:45:19,046 DEBUG   HandlerThread:255544 [meta.py:_save_pip():53] save pip
+2024-01-28 03:45:19,046 DEBUG   HandlerThread:255544 [meta.py:_save_pip():67] save pip done
+2024-01-28 03:45:19,046 DEBUG   HandlerThread:255544 [meta.py:_save_conda():74] save conda
+2024-01-28 03:45:19,929 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/conda-environment.yaml
+2024-01-28 03:45:19,929 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/requirements.txt
+2024-01-28 03:45:19,929 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/wandb-summary.json
+2024-01-28 03:45:21,105 DEBUG   HandlerThread:255544 [meta.py:_save_conda():84] save conda done
+2024-01-28 03:45:21,105 DEBUG   HandlerThread:255544 [meta.py:probe():247] probe done
+2024-01-28 03:45:21,108 DEBUG   SenderThread:255544 [sender.py:send():236] send: files
+2024-01-28 03:45:21,108 INFO    SenderThread:255544 [sender.py:_save_file():952] saving file wandb-metadata.json with policy now
+2024-01-28 03:45:21,111 DEBUG   HandlerThread:255544 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-28 03:45:21,111 DEBUG   SenderThread:255544 [sender.py:send_request():250] send_request: stop_status
+2024-01-28 03:45:21,416 DEBUG   SenderThread:255544 [sender.py:send():236] send: telemetry
+2024-01-28 03:45:21,750 INFO    Thread-11 :255544 [upload_job.py:push():138] Uploaded file /tmp/tmpxcujjf4zwandb/gkjq3g8r-wandb-metadata.json
+2024-01-28 03:45:21,928 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/conda-environment.yaml
+2024-01-28 03:45:21,928 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/wandb-metadata.json
+2024-01-28 03:45:21,929 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/output.log
+2024-01-28 03:45:23,529 DEBUG   SenderThread:255544 [sender.py:send():236] send: telemetry
+2024-01-28 03:45:23,929 INFO    Thread-7  :255544 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/output.log
+2024-01-28 03:45:25,049 WARNING MainThread:255544 [internal.py:wandb_internal():153] Internal process interrupt: 1
+2024-01-28 03:45:28,052 WARNING MainThread:255544 [internal.py:is_dead():387] Internal process exiting, parent pid 255355 disappeared
+2024-01-28 03:45:28,052 ERROR   MainThread:255544 [internal.py:wandb_internal():149] Internal process shutdown.
+2024-01-28 03:45:28,530 INFO    WriterThread:255544 [datastore.py:close():279] close: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/run-2kgcdint.wandb
+2024-01-28 03:45:28,530 INFO    SenderThread:255544 [sender.py:finish():1114] shutting down sender
+2024-01-28 03:45:28,530 INFO    SenderThread:255544 [dir_watcher.py:finish():353] shutting down directory watcher
+2024-01-28 03:45:28,534 INFO    HandlerThread:255544 [handler.py:finish():806] shutting down handler
+2024-01-28 03:45:28,930 INFO    SenderThread:255544 [dir_watcher.py:finish():383] scan: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files
+2024-01-28 03:45:28,930 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/requirements.txt requirements.txt
+2024-01-28 03:45:28,930 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/wandb-metadata.json wandb-metadata.json
+2024-01-28 03:45:28,930 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/config.yaml config.yaml
+2024-01-28 03:45:28,931 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/wandb-summary.json wandb-summary.json
+2024-01-28 03:45:28,936 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/conda-environment.yaml conda-environment.yaml
+2024-01-28 03:45:28,936 INFO    SenderThread:255544 [dir_watcher.py:finish():397] scan save: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/output.log output.log
+2024-01-28 03:45:28,936 INFO    SenderThread:255544 [file_pusher.py:finish():171] shutting down file pusher
+2024-01-28 03:45:28,939 INFO    SenderThread:255544 [file_pusher.py:join():176] waiting for file pusher
+2024-01-28 03:45:29,620 INFO    Thread-12 :255544 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/requirements.txt
+2024-01-28 03:45:29,642 INFO    Thread-15 :255544 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/conda-environment.yaml
+2024-01-28 03:45:29,654 INFO    Thread-13 :255544 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/config.yaml
+2024-01-28 03:45:29,698 INFO    Thread-16 :255544 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/output.log
+2024-01-28 03:45:29,771 INFO    Thread-14 :255544 [upload_job.py:push():138] Uploaded file /home/lijunlin/lijunlin/ESCONV/wandb/run-20240128_034518-2kgcdint/files/wandb-summary.json
+2024-01-28 03:45:30,648 INFO    MainThread:255544 [internal.py:handle_exit():80] Internal process exited

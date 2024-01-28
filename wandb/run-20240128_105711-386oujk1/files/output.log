@@ -1,0 +1,149 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-desitu-vae-mvae256-wo_comet-vad124_II
+vocab size = 50265
+Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-base and are newly initialized: ['encoder.layers.0.attn_layer_norm_comet.weight', 'encoder.layers.0.attn_layer_norm_comet.bias', 'encoder.layers.1.attn_layer_norm_comet.weight', 'encoder.layers.1.attn_layer_norm_comet.bias', 'encoder.layers.2.attn_layer_norm_comet.weight', 'encoder.layers.2.attn_layer_norm_comet.bias', 'encoder.layers.3.attn_layer_norm_comet.weight', 'encoder.layers.3.attn_layer_norm_comet.bias', 'encoder.layers.4.attn_layer_norm_comet.weight', 'encoder.layers.4.attn_layer_norm_comet.bias', 'encoder.layers.5.attn_layer_norm_comet.weight', 'encoder.layers.5.attn_layer_norm_comet.bias', 'encoder.layers.5.muAttn.k_proj.weight', 'encoder.layers.5.muAttn.k_proj.bias', 'encoder.layers.5.muAttn.v_proj.weight', 'encoder.layers.5.muAttn.v_proj.bias', 'encoder.layers.5.muAttn.q_proj.weight', 'encoder.layers.5.muAttn.q_proj.bias', 'encoder.layers.5.muAttn.out_proj.weight', 'encoder.layers.5.muAttn.out_proj.bias', 'encoder.emotion_head.weight', 'encoder.emotion_head.bias', 'encoder.batchNorm_emotion.weight', 'encoder.batchNorm_emotion.bias', 'encoder.batchNorm_emotion.running_mean', 'encoder.batchNorm_emotion.running_var', 'encoder.batchNorm_strategy.weight', 'encoder.batchNorm_strategy.bias', 'encoder.batchNorm_strategy.running_mean', 'encoder.batchNorm_strategy.running_var', 'encoder.strategy_embedding.weight', 'encoder.multi_state_LayerNorm.weight', 'encoder.multi_state_LayerNorm.bias', 'encoder.strategy_head.weight', 'encoder.strategy_head.bias', 'encoder.trans_mat.emotion_embedding.weight', 'encoder.trans_mat.h_prior_emo.weight', 'encoder.trans_mat.h_prior_emo.bias', 'encoder.trans_mat.h_prior_strat.weight', 'encoder.trans_mat.h_prior_strat.bias', 'encoder.trans_mat.mu_prior.weight', 'encoder.trans_mat.mu_prior.bias', 'encoder.trans_mat.logvar_prior.weight', 'encoder.trans_mat.logvar_prior.bias', 'encoder.trans_mat.Dense_z_prior.weight', 'encoder.trans_mat.Dense_z_prior.bias', 'encoder.trans_mat.h_posterior_emo.weight', 'encoder.trans_mat.h_posterior_emo.bias', 'encoder.trans_mat.h_posterior_strat.weight', 'encoder.trans_mat.h_posterior_strat.bias', 'encoder.trans_mat.mu_posterior.weight', 'encoder.trans_mat.mu_posterior.bias', 'encoder.trans_mat.logvar_posterior.weight', 'encoder.trans_mat.logvar_posterior.bias', 'encoder.strat_cat_attn.V', 'encoder.strat_cat_attn.W.weight', 'encoder.emo_cat_attn.V', 'encoder.emo_cat_attn.W.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.0.encoder_attn_layer_norm_comet.weight', 'decoder.layers.0.encoder_attn_layer_norm_comet.bias', 'decoder.layers.0.encoder_attn_layer_norm_total.weight', 'decoder.layers.0.encoder_attn_layer_norm_total.bias', 'decoder.layers.1.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.1.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.1.encoder_attn_layer_norm_comet.weight', 'decoder.layers.1.encoder_attn_layer_norm_comet.bias', 'decoder.layers.1.encoder_attn_layer_norm_total.weight', 'decoder.layers.1.encoder_attn_layer_norm_total.bias', 'decoder.layers.2.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.2.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.2.encoder_attn_layer_norm_comet.weight', 'decoder.layers.2.encoder_attn_layer_norm_comet.bias', 'decoder.layers.2.encoder_attn_layer_norm_total.weight', 'decoder.layers.2.encoder_attn_layer_norm_total.bias', 'decoder.layers.3.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.3.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.3.encoder_attn_layer_norm_comet.weight', 'decoder.layers.3.encoder_attn_layer_norm_comet.bias', 'decoder.layers.3.encoder_attn_layer_norm_total.weight', 'decoder.layers.3.encoder_attn_layer_norm_total.bias', 'decoder.layers.4.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.4.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.4.encoder_attn_layer_norm_comet.weight', 'decoder.layers.4.encoder_attn_layer_norm_comet.bias', 'decoder.layers.4.encoder_attn_layer_norm_total.weight', 'decoder.layers.4.encoder_attn_layer_norm_total.bias', 'decoder.layers.5.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.5.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.5.encoder_attn_layer_norm_comet.weight', 'decoder.layers.5.encoder_attn_layer_norm_comet.bias', 'decoder.layers.5.encoder_attn_layer_norm_total.weight', 'decoder.layers.5.encoder_attn_layer_norm_total.bias', 'fuse_st_emo.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  0%|                                                                                                                 | 0/340 [00:00<?, ?it/s]
+without comet
+BartConfig {
+  "_name_or_path": "facebook/bart-base",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_emo_cross_attn": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "emo_from_eos": true,
+  "emo_from_situ": false,
+  "emo_loss_ratio": 0.2,
+  "emo_out_loss_ratio": 0.2,
+  "emo_use_cat_attn": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "force_bos_token_to_be_generated": false,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "intensity_vae": false,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "latent_dim": 256,
+  "lstm_st_seq": false,
+  "max_position_embeddings": 1024,
+  "merge": false,
+  "mixed_vae": true,
+  "model_type": "bart",
+  "n_emo_out": 28,
+  "no_fuse": true,
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "prepend": false,
+  "rl_emb_ratio": 0.6,
+  "sample_strat_emb": false,
+  "scale_embedding": false,
+  "st_from_eos": true,
+  "stg_use_cat_attn": true,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "torch_dtype": "float32",
+  "transformers_version": "4.2.2",
+  "use_cache": true,
+  "use_copy": false,
+  "use_emb_prep": true,
+  "use_emo_in_dist": true,
+  "use_kl": true,
+  "use_role_embed": true,
+  "use_situ_in_decoder": true,
+  "use_situ_in_encoder": true,
+  "use_st_seq": false,
+  "use_th_attn": false,
+  "use_trans_mat": true,
+  "use_vad_labels": true,
+  "use_vae": true,
+  "vad_emb_ratio": 0.2,
+  "vocab_size": 50265,
+  "wo_comet": true,
+  "wo_emo": false,
+  "wo_stra": false
+}
+args.local_rank =  -1
+162,803,592 total parameters.
+
+  1%|▌                                                                                                        | 2/340 [00:02<05:38,  1.00s/it]
+labels tensor([6, 0, 5, 2, 5, 0, 1, 0, 3, 6, 0, 2, 5, 3, 1, 5, 0, 2, 4, 3, 0, 6, 6, 5,
+        3, 4, 3, 4, 7, 0], device='cuda:0')
+features torch.Size([30, 1, 768])
+mean_log_prob_pos tensor([-3.3485, -3.4911, -3.2411, -3.4264, -3.3138, -3.4831, -3.3495, -3.4493,
+        -3.3450, -3.2905, -3.4644, -3.4250, -3.2601, -3.2694, -3.5851, -3.2281,
+        -3.4965, -3.3897, -3.4335, -3.2346, -3.4932, -3.2543, -3.2519, -3.2742,
+        -3.3991, -3.3969, -3.4182, -3.4210,  0.0000, -3.5068], device='cuda:0',
+       grad_fn=<DivBackward0>)
+mask_pos_pairs tensor([3., 6., 4., 2., 4., 6., 1., 6., 4., 3., 6., 2., 4., 4., 1., 4., 6., 2.,
+        2., 4., 6., 3., 3., 4., 4., 2., 4., 2., 1., 6.], device='cuda:0')
+labels tensor([6, 0, 0, 1, 2, 5, 5, 0, 6, 1, 5, 0, 5, 5, 6, 5, 6, 0, 5, 2, 0, 6, 3, 7,
+        1, 0, 3, 2, 6, 3], device='cuda:0')
+features torch.Size([30, 1, 768])
+mean_log_prob_pos tensor([-3.3340, -3.2722, -3.2966, -3.4700, -3.3670, -3.4411, -3.4142, -3.2946,
+        -3.3501, -3.5483, -3.3971, -3.3083, -3.4170, -3.4589, -3.3652, -3.4215,
+        -3.3753, -3.3084, -3.4108, -3.3483, -3.3363, -3.3636, -3.3307,  0.0000,
+        -3.4928, -3.2945, -3.3986, -3.3741, -3.3344, -3.2966], device='cuda:0',
+       grad_fn=<DivBackward0>)
+mask_pos_pairs tensor([5., 6., 6., 2., 2., 6., 6., 6., 5., 2., 6., 6., 6., 6., 5., 6., 5., 6.,
+        6., 2., 6., 5., 2., 1., 2., 6., 2., 2., 5., 2.], device='cuda:0')
+labels tensor([7, 3, 6, 3, 7, 6, 3, 0, 3, 3, 6, 0, 2, 7, 0, 5, 6, 5, 5, 5, 3, 6, 0, 3,
+        1, 5, 0, 1, 0, 0], device='cuda:0')
+features torch.Size([30, 1, 768])
+mean_log_prob_pos tensor([-3.3670, -3.3592, -3.3929, -3.4033, -3.4291, -3.3885, -3.3886, -3.3286,
+        -3.3548, -3.3485, -3.3005, -3.3374,  0.0000, -3.2966, -3.3581, -3.4481,
+        -3.3390, -3.4660, -3.5139, -3.4488, -3.3511, -3.3940, -3.3905, -3.3707,
+        -3.3153, -3.4651, -3.3074, -3.3702, -3.3870, -3.3503], device='cuda:0',
+       grad_fn=<DivBackward0>)
+mask_pos_pairs tensor([2., 6., 4., 6., 2., 4., 6., 6., 6., 6., 4., 6., 1., 2., 6., 4., 4., 4.,

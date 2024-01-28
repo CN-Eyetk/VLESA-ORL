@@ -1,11 +1,15 @@
 vad_path = "VAD_space.json"
 import spacy
+import numpy as np
 import json
+from cleantext import clean
 #from allennlp.data.tokenizers.spacy_tokenizer import SpacyTokenizer
 from spacy.tokenizer import Tokenizer
 from spacy.lang.en import English
-from transformers import AutoTokenizer, BlenderbotTokenizerFast
+from transformers import AutoTokenizer, BlenderbotTokenizerFast, BlenderbotSmallTokenizerFast, BlenderbotSmallTokenizer
 from transformers import AddedToken
+import transformers
+import argparse
 nlp = English()
 #tokenizer = 
 #doc = nlp('Walking is one of the main gaits of terrestrial locomotion among legged animals')
@@ -13,6 +17,45 @@ nlp = English()
 #for token in doc:
 #    print(token.text + "-->" + token.lemma_)
 #tokens = tokenizer.tokenize("This is a test")
+def get_offset(source_tokens, target_tokens, process_on_source = lambda x:x.lower()):
+    memory = np.zeros((len(source_tokens)+1, len(target_tokens)+1))
+    memory[0,1:] = [-len("".join(x for x in target_tokens[:i+1])) for i,token in enumerate(target_tokens)]
+    memory[1:,0] = [len("".join(process_on_source(x) for x in source_tokens[:i+1])) for i, token in enumerate(source_tokens)]
+    for i in range(1,len(source_tokens)+1):
+        for j in range(1,len(target_tokens)+1):
+            new_target_distance = len(target_tokens[j-1])
+            new_source_distance = len(process_on_source(source_tokens[i-1]))
+            distances = np.array([memory[i-1,j] + new_source_distance, memory[i,j-1] - new_target_distance])
+            index = np.abs(distances).argmin()
+            memory[i,j] = distances[index]
+    offsets = []
+    offset_start = None
+    offseting = False
+    step = 0
+    last_state = np.argwhere(memory[0] == 0)[0][0]-1
+    for i in range(len(source_tokens)):
+        cur_state = np.argwhere(memory[i+1] == 0)
+        if len(cur_state) == 0:
+            cur_target_position = last_state + 1
+        else:
+            cur_target_position = cur_state[0][0] - 1
+            last_state = cur_target_position
+        offsets.append(cur_target_position)
+        
+    #    if 0 in memory[i+1]:
+    #        if offseting:
+    #            offsets.append((offset_start,i))
+    #            offseting = False
+    #        else:
+    #            offsets.append((i,i))
+    #    else:
+    #        if offseting:
+    #            continue
+    #        else:
+    #            offset_start = i  
+    #            offseting = True
+
+    return memory, offsets
 
 class W2VAD:
     def __init__(self, vad_path):
@@ -27,73 +70,97 @@ class W2VAD:
             if v not in self.vad_labels:
                 self.vad_labels.append(v)
         print(f"vad labels ={self.vad_labels}")
-    def load_transformer_tokenizer(self, model_name_or_path, args):
-        
-            
-        if args.use_bart:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+    def load_pretrained_tokenizer(self, model_name_or_path):
+        if "blenderbot_small" in model_name_or_path:
+            self.tokenizer = BlenderbotSmallTokenizer.from_pretrained(model_name_or_path)
         else:
-            self.tokenizer = BlenderbotTokenizerFast.from_pretrained(model_name_or_path)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
         for token in additional_special_tokens:
             self.tokenizer.add_tokens(AddedToken(token, lstrip = True, rstrip = True))
+    def load_tokenizer(self, tokenizer):
+        self.tokenizer = tokenizer
     def nlp_vad(self, sent):
         doc = self.nlp(sent)
+        words = [token.text for token in doc]
         stems = [token.lemma_ for token in doc]
         offsets = [(token.idx, token.idx + len(token.text)) for i,token in enumerate(doc)]
-        
         vads = [self.vad_mapper[stem] if stem in self.vad_mapper.keys() else "[0v0a0d]" for stem in stems]
-
-        return list(zip(stems, offsets, vads))
-    def tokenizer_vad(self, sent):
+        return list(zip(words, stems, offsets, vads))
+    def tokenizer_vad(self, sent, is_fast_tokenizer, char_to_remove = "@"):
         nlp_vad = self.nlp_vad(sent)
         #print("nlp_vad",nlp_vad)
-        ids = self.tokenizer(sent, return_offsets_mapping = True)
-        offsets = ids["offset_mapping"]
-        ids = ids["input_ids"]
-        res = []
-        cur_step = 0
-        for i, offset in enumerate(offsets):
-            start_id = offset[0]
-            end_id = offset[1]
+        if is_fast_tokenizer:
+            ids = self.tokenizer(sent, return_offsets_mapping = True)
+            offsets = ids["offset_mapping"]
+            print(offsets)
+            ids = ids["input_ids"]
+            res = []
+            cur_step = 0
+            for i, offset in enumerate(offsets):
+                start_id = offset[0]
+                end_id = offset[1]
 
-            if start_id + end_id > 0:
-                token_vad = []
-                for j, vad in enumerate(nlp_vad):
+                if start_id + end_id > 0:
+                    token_vad = []
+                    for j, vad in enumerate(nlp_vad):
+                        
+                        cur_vad = vad[3]
+                        cur_vad_start_id = vad[2][0]
+                        cur_vad_end_id = vad[2][1]
+                        if start_id >= cur_vad_start_id and end_id <= cur_vad_end_id:
+                            token_vad.append(cur_vad)
+
+                            cur_step = cur_vad_start_id
+                            break
+                        elif start_id < cur_vad_start_id:
+                            continue
+
+                        elif end_id > cur_vad_end_id:
+                            continue
                     
-                    cur_vad = vad[2]
-                    cur_vad_start_id = vad[1][0]
-                    cur_vad_end_id = vad[1][1]
-                    if start_id >= cur_vad_start_id and end_id <= cur_vad_end_id:
-                        token_vad.append(cur_vad)
+                    res.append((ids[i], self.tokenizer.convert_ids_to_tokens(ids[i]), token_vad[0]))
+                else:
+                    res.append((ids[i], self.tokenizer.convert_ids_to_tokens(ids[i]), "[0v0a0d]"))
+            input_ids = [token[0] for token in res]
+            input_ids = input_ids[1:-1]
+            texts = [token[1] for token in res]
+            tokens = texts[1:-1]
+            vad_tokens = [token[2] for token in res]
+            vad_tokens = vad_tokens[1:-1]
+        else:
+            #blenderbot encode does not include bos and eos
+            tokens = self.tokenizer.tokenize(sent)
+            #print("tokens",tokens)
+            input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+            words = [spc_token[0] for spc_token in nlp_vad]
+            #print("words",words)
+            #print("tokens=",tokens)
+            #print("words=",words)
+            memory, offsets = get_offset(tokens, words, process_on_source = lambda x:clean(x.replace(char_to_remove,""), no_emoji=True))
+            #print("memory",memory)
+            #print("offsets",offsets)
+            #print("memory",memory)
+            #print("offsets",offsets)
+            #print("offsets",offsets)
+            vad_tokens = []
+            for k in offsets:
+                if k < len(nlp_vad):
+                    vad_token = nlp_vad[k][-1]
+                else:
+                    print("something wrong with ",sent)
+                    vad_token = "[0v0a0d]"
+                vad_tokens.append(vad_token)
+        return input_ids, tokens, vad_tokens
 
-                        cur_step = cur_vad_start_id
-                        break
-                    elif start_id < cur_vad_start_id:
-                        continue
-
-                    elif end_id > cur_vad_end_id:
-                        continue
-                
-                res.append((ids[i], self.tokenizer.convert_ids_to_tokens(ids[i]), token_vad))
-            else:
-                res.append((ids[i], self.tokenizer.convert_ids_to_tokens(ids[i]), "[0v0a0d]"))
-        input_ids = [token[0] for token in res]
-        texts = [token[1] for token in res]
-        vad_token = [token[2] for token in res]
-        return input_ids, texts, vad_token
-
-
-        
 
 if __name__ == "__main__":
+    args = {"use_bart":True}
+    args = argparse.Namespace(**args)
     w2vad = W2VAD(vad_path = vad_path)
-    w2vad.load_transformer_tokenizer( model_name_or_path = "facebook/bart-base")
-    es = ["I have been getting low grades lately and am scared I will be thrown out of my University.",
-          "I accidentally shared a nude photo that was intended for private viewing to a group chat with several friends.",
-          "My friends got me banned from PlayStation because I got a girlfriend."
-          ]
+    w2vad.load_pretrained_tokenizer( model_name_or_path = "facebook/bart-base")#"facebook/blenderbot_small-90M")
+    es = ["get some books 📚.",]
     for e in es:
-        out = w2vad.tokenizer_vad(e)
-        print(list(zip(out)))
+        out = w2vad.tokenizer_vad(e, is_fast_tokenizer = False, char_to_remove = "Ġ")
+        print(list(zip(*out)))
         
