@@ -437,7 +437,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     input_ids = [i for s in sents for i in s+[eos]] #添加eos
     if args.use_vad_labels:
         vad_ids = [i for s in vad_ids for i in s+[-1]]
-    assert len(input_ids) == len(vad_ids)
+        assert len(input_ids) == len(vad_ids)
 
 
     input_ids = input_ids
@@ -683,7 +683,8 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
             #    vad_ids = None
         inputs.append(context_id)
         roles.append(src_role)
-        vad_ids.append(vad_id)
+        if vad_ids is not None:
+            vad_ids.append(vad_id)
         turns.append(src_turn)
     clean_src = re.compile("^\[[a-zA-Z- ]+\]\s").sub("",src)
     if get_emo_dist:
@@ -786,7 +787,8 @@ class ESDDataset(Dataset):
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
-                    conv.vad_ids = conv.vad_ids[-block_size:] #leave the 0-th id to pad in collate function
+                    if args.use_vad_labels:
+                        conv.vad_ids = conv.vad_ids[-block_size:] #leave the 0-th id to pad in collate function
                     conv.is_strat_targ = conv.is_strat_targ[-block_size:]
                     conv.is_emo_targ = conv.is_emo_targ[-block_size:]
                     conv.input_ids[0] = tokenizer.encode(tokenizer.cls_token, add_special_tokens = False)[0]

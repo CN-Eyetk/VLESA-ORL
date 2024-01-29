@@ -1286,6 +1286,7 @@ class BartEncoder(BartPretrainedModel):
                         comet_mask = None,
                         last_token_index = None,
                         strategy_logit_ground = None,
+                        generate_with_predicted_strategy = True
                         ):
         b = hidden_states.size(0)
         if self.stg_use_cat_attn:
@@ -1319,9 +1320,13 @@ class BartEncoder(BartPretrainedModel):
             strategy_logits = self.batchNorm_strategy(strategy_logits)
         if strategy_logit_ground is not None:
             strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+        elif generate_with_predicted_strategy:
+            #strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
+            #                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+            strategy_embs = self.strategy_embedding(strategy_logits.argmax(-1)).unsqueeze(-2)
         else:
             strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
-                                    self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+                                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
         return strategy_logits, strat_hidden, strategy_embs
     def p_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits):
         if isinstance(self.trans_mat, EmoTransVAE_MultiStrat):
