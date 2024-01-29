@@ -886,7 +886,10 @@ class Trainer:
                         tr_loss += self.training_step(model, inputs)
                 else:
                     tr_loss += self.training_step(model, inputs)
-                self._total_flos += self.floating_point_ops(inputs)
+                if type(inputs) is not Dict:
+                    self._total_flos += 0
+                else:
+                    self._total_flos += self.floating_point_ops(inputs)
 
                 if (step + 1) % self.args.gradient_accumulation_steps == 0 or (
                     # last step in epoch but step is always smaller than gradient_accumulation_steps

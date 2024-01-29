@@ -5,6 +5,9 @@ from torch import nn
 import random
 from src.transformers.trainer_pt_utils import nested_detach
 from torch.cuda.amp import autocast
+from src.transformers.file_utils import add_start_docstrings
+from src.transformers.training_args import TrainingArguments
+import argparse
 
 class MyLabelSmoother:
     """
@@ -38,6 +41,41 @@ def postprocess_text(preds, labels):
     # if len(preds) == 0:
     labels = [label.strip() for label in labels]
     return preds, labels
+
+import logging
+from dataclasses import dataclass, field
+
+
+
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+@add_start_docstrings(TrainingArguments.__doc__)
+class ESCONVTrainingArguments(TrainingArguments):
+    """
+    sortish_sampler (:obj:`bool`, `optional`, defaults to :obj:`False`):
+        Whether to use a `sortish sampler` or not. Only possible if the underlying datasets are `Seq2SeqDataset` for
+        now but will become generally available in the near future.
+
+        It sorts the inputs according to lengths in order to minimize the padding size, with a bit of randomness for
+        the training set.
+    predict_with_generate (:obj:`bool`, `optional`, defaults to :obj:`False`):
+        Whether to use generate to calculate generative metrics (ROUGE, BLEU).
+    """
+    use_situ_in_decoder: bool = field(default=False)
+    use_situ_in_encoder: bool = field(default=False)
+    wo_comet: bool = field(default=False)
+    intensity_vae: bool = field(default=False)
+    stg_use_cat_attn: bool = field(default=False)
+    emo_use_cat_attn: bool = field(default=False)
+    use_role_embed: bool = field(default=False)
+    use_vad_labels: bool = field(default=False)
+    sortish_sampler: bool = field(default=False, metadata={"help": "Whether to use SortishSampler or not."})
+    predict_with_generate: bool = field(
+        default=False, metadata={"help": "Whether to use generate to calculate generative metrics (ROUGE, BLEU)."}
+    )
 
 def compute_metrics(eval_preds):
     preds, labels = eval_preds
@@ -136,7 +174,7 @@ class ESCONVTrainer(Seq2SeqTrainer):
             vad_ids = vad_ids.to(self.args.device)
         else:
             vad_ids = None
-            paras = {}
+        paras = {}
         paras["input_ids"] = input_ids
         paras["decoder_input_ids"] = decoder_input_ids
         paras["decoder_strategy_ids"] = decoder_strategy_ids
@@ -152,7 +190,8 @@ class ESCONVTrainer(Seq2SeqTrainer):
             paras["situation_attention_mask"] = situ_attention_mask
         paras["emo_dist"] = emo_dist
         paras["emo_in_dist"] = emo_in_dist
-        paras["output_mutual_attentions"] = False
+        if phase == "generation":
+            paras["output_mutual_attentions"] = False
         paras["strat_positions"] = strat_positions
         paras["emo_positions"] = emo_positions
         if self.args.use_role_embed:

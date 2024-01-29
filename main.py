@@ -1,6 +1,6 @@
 import argparse
 import wandb
-from esconv_trainer import compute_metrics, ESCONVTrainer
+from esconv_trainer import compute_metrics, ESCONVTrainer, ESCONVTrainingArguments
 #from esconv_trainer import ESCONVTrainer
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
@@ -44,6 +44,7 @@ parser.add_argument("--over_write", action= "store_true")
 parser.add_argument("--freeze_emo_stag_params", action= "store_true")
 parser.add_argument("--lr", type=float, default=5e-5)
 parser.add_argument("--tag", type=str)
+parser.add_argument("--use_trainer", action= "store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -294,20 +295,45 @@ def plot(model, strat_labels, emo_in_labels, emo_out_labels):
             weights.append(df)
     return weights
 
-def use_trainer():
+def use_trainer(args):
     from math import ceil
-    optimizer = load_optimizer(args, model, ceil(len(train_dataset) / args.batch_size))
+    optimizer = load_optimizer(args, model, ceil(len(train_dataset) / args.per_gpu_train_batch_size))
+    training_argument  = ESCONVTrainingArguments(
+        output_dir = args.output_dir,
+        evaluation_strategy = "step",
+        eval_steps=100,
+        per_device_train_batch_size = 20,
+        learning_rate = args.learning_rate,
+        weight_decay = args.weight_decay,
+        adam_epsilon = args.adam_epsilon,
+        #logging_strategy = "epoch",
+        save_steps = 100,
+        seed = 42,
+        predict_with_generate = True,
+        use_situ_in_decoder = args.use_situ_in_decoder,
+        use_situ_in_encoder = args.use_situ_in_encoder,
+        wo_comet = args.wo_comet,
+        stg_use_cat_attn = args.stg_use_cat_attn,
+        emo_use_cat_attn = args.emo_use_cat_attn,
+        use_role_embed = args.use_role_embed,
+        use_vad_labels = args.use_vad_labels,
+        
+        
+    )
     trainer = ESCONVTrainer(
         model = model,
-        args = args,
-        data_collator = train_dataset.collate,
-        train_dataset = train_dataset,
-        eval_dataset = eval_dataset,
+        args = training_argument,
+        data_collator = args.train_dataset.collate,
+        train_dataset = args.train_dataset,
+        eval_dataset = args.eval_dataset,
+        #test_dataset = args.test_dataset,
         tokenizer = tokenizer,
         compute_metrics = compute_metrics,
         optimizers = optimizer,
     )
+    trainer.predict(args.test_dataset)
     trainer.train()
+    
 def explain():
     stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     emo_in_labels = open("dataset/labels/esconv_emo_labels.txt","r+").read().split("\n")
@@ -332,7 +358,10 @@ if __name__ == "__main__":
 
     if args.do_train:
         model = load_model(args, tokenizer)
-        global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
+        if args_g.use_trainer:
+            use_trainer(args)
+        else:
+            global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
     
     model = load_model_for_eval(args)
     model.to(args.device)

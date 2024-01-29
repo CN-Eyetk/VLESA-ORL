@@ -1105,12 +1105,12 @@ def load_optimizer(args, model, len_dataloader):
         },
         {"params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
     ]
-    t_total = len(len_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
+    t_total = len_dataloader // args.gradient_accumulation_steps * args.num_train_epochs
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
     scheduler = get_linear_schedule_with_warmup(
         optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
     )
-    return scheduler
+    return optimizer, scheduler
 
 
 def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedTokenizer) -> Tuple[int, float]:
@@ -1334,12 +1334,16 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     if (
                         args.local_rank == -1 and args.evaluate_during_training
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
-                        results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
+                        with torch.no_grad():
+                            results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                     else:
-                        results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
+                        with torch.no_grad():
+                            results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
+                    if hasattr(torch.cuda, 'empty_cache'):
+                        torch.cuda.empty_cache()
                     tb_writer.add_scalar("lr", scheduler.get_last_lr()[0], global_step)
                     tb_writer.add_scalar("loss", (tr_loss - logging_loss) / args.logging_steps, global_step)
                     logger.info("lr: %f, step: %d, loss: %f, lm_loss: %f, emo_loss: %f, strategy_loss: %f, intensity_loss: %f", scheduler.get_last_lr()[0],
@@ -1436,7 +1440,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     # strategy_hits_topk = [[] for _ in range(7)]
     strategy_hits = []
     with torch.no_grad():
-        for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True):
+        for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True, total = len(eval_dataloader)):
             outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids) = shared_steps(batch, model, tokenizer, args, phase = "eval")
 
         
@@ -2089,6 +2093,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             situ_attention_mask = situ_ids.ne(tokenizer.pad_token_id)
         situation_hidden_states = situation_hidden_states.to(args.device)
         situ_attention_mask = situ_attention_mask.to(args.device)
+        del situ_ids
     else:
         situation_hidden_states = None
         situ_attention_mask = None
@@ -2113,6 +2118,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
         comet_mask = comet_mask.to(args.device)
         comet_mask_st = comet_mask_st.to(args.device)
+        del comet_ids
+        del comet_ids_st
     else:
         comet_embs = None
         comet_mask = None

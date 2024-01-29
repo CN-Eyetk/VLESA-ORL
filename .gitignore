@@ -28,3 +28,4 @@ glove
 *.pyc
 __pycache___
 */__pycache__
+wandb
