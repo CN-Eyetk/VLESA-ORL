@@ -300,16 +300,17 @@ def use_trainer(args):
     optimizer = load_optimizer(args, model, ceil(len(train_dataset) / args.per_gpu_train_batch_size))
     training_argument  = ESCONVTrainingArguments(
         output_dir = args.output_dir,
-        evaluation_strategy = "step",
-        eval_steps=100,
+        evaluation_strategy = "steps",
+        eval_steps = 200,
         per_device_train_batch_size = 20,
+        per_device_eval_batch_size=20,
         learning_rate = args.learning_rate,
         weight_decay = args.weight_decay,
         adam_epsilon = args.adam_epsilon,
         #logging_strategy = "epoch",
-        save_steps = 100,
+        save_steps = 200,
         seed = 42,
-        predict_with_generate = True,
+        #predict_with_generate = True,
         use_situ_in_decoder = args.use_situ_in_decoder,
         use_situ_in_encoder = args.use_situ_in_encoder,
         wo_comet = args.wo_comet,
@@ -317,8 +318,8 @@ def use_trainer(args):
         emo_use_cat_attn = args.emo_use_cat_attn,
         use_role_embed = args.use_role_embed,
         use_vad_labels = args.use_vad_labels,
-        
-        
+        generation_max_length = 512,
+        num_train_epochs = 10,
     )
     trainer = ESCONVTrainer(
         model = model,
@@ -330,8 +331,10 @@ def use_trainer(args):
         tokenizer = tokenizer,
         compute_metrics = compute_metrics,
         optimizers = optimizer,
+        
     )
-    trainer.predict(args.test_dataset)
+    #trainer.predict(args.test_dataset[:10])
+    #trainer.evaluate()
     trainer.train()
     
 def explain():

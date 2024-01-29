@@ -1,12 +1,14 @@
-from src.transformers.trainer_seq2seq import Seq2SeqTrainer
+from transformers.trainer_seq2seq import Seq2SeqTrainer
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 import torch
 from torch import nn
+import numpy as np
 import random
-from src.transformers.trainer_pt_utils import nested_detach
+from transformers.trainer_pt_utils import nested_detach
 from torch.cuda.amp import autocast
-from src.transformers.file_utils import add_start_docstrings
-from src.transformers.training_args import TrainingArguments
+from transformers.file_utils import add_start_docstrings
+from transformers.training_args import TrainingArguments
+from transformers import Seq2SeqTrainingArguments
 import argparse
 
 class MyLabelSmoother:
@@ -53,7 +55,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 @add_start_docstrings(TrainingArguments.__doc__)
-class ESCONVTrainingArguments(TrainingArguments):
+class ESCONVTrainingArguments(Seq2SeqTrainingArguments):
     """
     sortish_sampler (:obj:`bool`, `optional`, defaults to :obj:`False`):
         Whether to use a `sortish sampler` or not. Only possible if the underlying datasets are `Seq2SeqDataset` for
@@ -77,32 +79,63 @@ class ESCONVTrainingArguments(TrainingArguments):
         default=False, metadata={"help": "Whether to use generate to calculate generative metrics (ROUGE, BLEU)."}
     )
 
+def clac_metric(decoder_preds, decoder_labels, no_glove=False):
+    ref_list = []
+    hyp_list = []
+    for ref, hyp in zip(decoder_labels, decoder_preds):
+        ref = ' '.join(nltk.word_tokenize(ref.lower()))
+        hyp = ' '.join(nltk.word_tokenize(hyp.lower()))
+        if len(hyp) == 0:
+            hyp = '&'
+        ref_list.append(ref)
+        hyp_list.append(hyp)    
+    from metric import NLGEval
+    metric = NLGEval(no_glove=no_glove)
+    metric_res, _ = metric.compute_metrics([ref_list], hyp_list)
+    #metric_2 = Metric(hyps = hyp_list, refs = ref_list)
+    #metric_2_res, _ = metric_2.close()
+    #metric_2_res = {f"new_{k}":v for k,v in metric_2_res.items()}
+    #metric_res.update(metric_2_res)
+    return metric_res
+
 def compute_metrics(eval_preds):
     preds, labels = eval_preds
-    # print()
-    if isinstance(preds, tuple):
-        preds = preds[0]
-    # print("one: before decoder")
-    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
-    if args.ignore_pad_token_for_loss:
-        # Replace -100 in the labels as we can't decode them.
-        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+    if "strategy_logits" in preds.keys():
+        generating = False
+    else:
+        generating = True
+    if not generating:
+        predicted_strategy = preds["strategy_logits"].argmax(-1)
+        strategy_acc = np.sum(predicted_strategy == labels) / len(labels)
+        ppl = np.exp(preds["lm_loss"]).mean().item()
+        return {
+            "ppl":ppl,
+            "strategy_acc":strategy_acc
+        }
+    else:
+        if isinstance(preds, tuple):
+            preds = preds[0]
+        # print("one: before decoder")
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+        #if args.ignore_pad_token_for_loss:
+        #    # Replace -100 in the labels as we can't decode them.
+        #    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-    # Some simple post-processing
-    x = random.choice(range(len(decoded_labels)))
-    print("preds: ", decoded_preds[x])
-    print("label: ", decoded_labels[x])
-    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
-    print("process_preds: ", decoded_preds[x])
-    print("process_label: ", decoded_labels[x])
-    my_metric = clac_metric(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
-    return my_metric
+        # Some simple post-processing
+        x = random.choice(range(len(decoded_labels)))
+        print("preds: ", decoded_preds[x])
+        print("label: ", decoded_labels[x])
+        decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+        print("process_preds: ", decoded_preds[x])
+        print("process_label: ", decoded_labels[x])
+        my_metric = clac_metric(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
+        return my_metric
 
 class ESCONVTrainer(Seq2SeqTrainer):
     def _prepare_inputs(self, inputs: Dict[str, Union[torch.Tensor, Any]], phase = "train")  -> Dict[str, Union[torch.Tensor, Any]]:
         input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-                decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = inputs
+                decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = inputs.values()
         decoder_strategy_ids = decoder_strategy_ids[:, 0]
         decoder_strategy_ids = decoder_strategy_ids.to(self.args.device)
         assert input_ids.shape[1] <= 512 
@@ -207,7 +240,7 @@ class ESCONVTrainer(Seq2SeqTrainer):
             ignore_keys: Optional[List[str]] = None,
         ):
         inputs = self._prepare_inputs(inputs)
-        self.label_names = ["labels","decoder_strategy_ids"]
+        self.label_names = ["decoder_strategy_ids"]
         has_labels = all(inputs.get(k) is not None for k in self.label_names)
         
         if ignore_keys is None:
@@ -218,26 +251,23 @@ class ESCONVTrainer(Seq2SeqTrainer):
         
 
         with torch.no_grad():
-            if self.use_amp:
-                with autocast():
-                    outputs = model(**inputs)
-            else:
-                outputs = model(**inputs)
+            outputs = model(**inputs)
+            lm_loss = outputs.lm_loss.item()
             if has_labels:
                 if self.label_smoother is not None and "labels" in inputs:
                     loss = self.label_smoother(outputs, inputs["labels"]).mean().detach()
                 else:
                     loss = (outputs.loss if isinstance(outputs, dict) else outputs[0]).mean().detach()
                 if isinstance(outputs, dict):
-                    logits = tuple(v for k, v in outputs.items() if k in ["lm_logits","strategy_logits"])
+                    logits = tuple(v for k, v in outputs.items() if k in ["strategy_logits"])
                 else:
-                    logits = (outputs.lm_logits, outputs.strategy_logits)
+                    logits = outputs.strategy_logits
             else:
                 loss = None
                 if isinstance(outputs, dict):
                     logits = tuple(v for k, v in outputs.items() if k not in ignore_keys)
                 else:
-                    logits = outputs
+                    logits = outputs.strategy_logits
             # TODO: this needs to be fixed and made cleaner later.
             if self.args.past_index >= 0:
                 self._past = outputs[self.args.past_index if has_labels else self.args.past_index - 1]
@@ -255,7 +285,14 @@ class ESCONVTrainer(Seq2SeqTrainer):
                 labels = labels[0]
         else:
             labels = None
-        return (loss, logits, labels)
+        if hasattr(torch.cuda, 'empty_cache'):
+            torch.cuda.empty_cache()
+        logits = logits.to("cpu")
+        labels = labels.to("cpu")
+        return (loss, 
+                {"strategy_logits":logits,
+                       "lm_loss": torch.tensor([lm_loss]),}, 
+                {"strategy_labels":labels})
 
     def prediction_step(
         self,
@@ -286,6 +323,7 @@ class ESCONVTrainer(Seq2SeqTrainer):
         """
         generation_ignore_keys = ["input_ids","labels","decoder_input_ids","emo_in_dist","emo_dist"]
         if not self.args.predict_with_generate or prediction_loss_only:
+            #print("not generating!")
             return self.prediction_step_non_generate(
                 model, inputs, prediction_loss_only=prediction_loss_only, ignore_keys=ignore_keys
             )
@@ -296,8 +334,21 @@ class ESCONVTrainer(Seq2SeqTrainer):
         paras = {k:v for k,v in inputs if not k in generation_ignore_keys}
 
         gen_kwargs = {
-            "max_length": self._max_length if self._max_length is not None else self.model.config.max_length,
-            "num_beams": self._num_beams if self._num_beams is not None else self.model.config.num_beams,
+            #"max_length": self._max_length if self._max_length is not None else self.model.config.max_length,
+            #"num_beams": self._num_beams if self._num_beams is not None else self.model.config.num_beams,
+            "max_length":512,
+            "min_length":5,
+            "num_beams":1,
+            "use_cache":True,
+            "pad_token_id":self.tokenizer.pad_token_id,
+            "early_stopping":True,
+            "eos_token_id":self.tokenizer.eos_token_id, 
+            "temperature":0.7,
+            "top_p":0.3, 
+            "top_k":30, 
+            "do_sample":True, 
+            #no_repeat_ngram_size=3,
+            "repetition_penalty":1.03
         }
 
         generated_tokens = self.model.generate(
@@ -311,11 +362,7 @@ class ESCONVTrainer(Seq2SeqTrainer):
             generated_tokens = self._pad_tensors_to_max_len(generated_tokens, gen_kwargs["max_length"])
 
         with torch.no_grad():
-            if self.use_amp:
-                with autocast():
-                    outputs = model(**inputs)
-            else:
-                outputs = model(**inputs)
+            outputs = model(**inputs)
             if has_labels:
                 if self.label_smoother is not None:
                     loss = self.label_smoother(outputs, inputs["labels"]).mean().detach()

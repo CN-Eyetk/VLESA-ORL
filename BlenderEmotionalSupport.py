@@ -981,31 +981,36 @@ class ESDDataset(Dataset):
         #            assert j.item() != 8
         #            assert j.item() > -1
         
-
-        return (input_ids, 
-                position_ids, 
-                token_type_ids, 
-                role_ids, labels, 
-                cls_positions, 
-                cls_labels, 
-                strategy_ids, 
-                decoder_input_ids, 
-                decoder_position_ids, 
-                decoder_token_type_ids, 
-                decoder_role_ids, 
-                decoder_labels, 
-                decoder_cls_positions, 
-                decoder_cls_labels, 
-                decoder_strategy_ids, 
-                comet_ids, comet_mask, 
-                emotion, 
-                comet_st_ids, comet_st_mask, 
-                emo_dist, emo_in_dist, 
-                situations, 
-                strat_positions, emo_positions, 
-                intensity,
-                vad_ids
-                )
+        return {
+            'input_ids': input_ids,
+            'position_ids': position_ids,
+            'token_type_ids': token_type_ids,
+            'role_ids': role_ids,
+            'labels': labels,
+            'cls_positions': cls_positions,
+            'cls_labels': cls_labels,
+            'strategy_ids': strategy_ids,
+            'decoder_input_ids': decoder_input_ids,
+            'decoder_position_ids': decoder_position_ids,
+            'decoder_token_type_ids': decoder_token_type_ids,
+            'decoder_role_ids': decoder_role_ids,
+            'decoder_labels': decoder_labels,
+            'decoder_cls_positions': decoder_cls_positions,
+            'decoder_cls_labels': decoder_cls_labels,
+            'decoder_strategy_ids': decoder_strategy_ids,
+            'comet_ids': comet_ids,
+            'comet_mask': comet_mask,
+            'emotion': emotion,
+            'comet_st_ids': comet_st_ids,
+            'comet_st_mask': comet_st_mask,
+            'emo_dist': emo_dist,
+            'emo_in_dist': emo_in_dist,
+            'situations': situations,
+            'strat_positions': strat_positions,
+            'emo_positions': emo_positions,
+            'intensity': intensity,
+            'vad_ids': vad_ids
+        }
 
 
 def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False, strategy=True, test=False, **kwargs):
@@ -2075,7 +2080,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         model.eval()
     
     input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = batch
+            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = batch.values()
     decoder_strategy_ids = decoder_strategy_ids[:, 0]
     decoder_strategy_ids = decoder_strategy_ids.to(args.device)
     assert input_ids.shape[1] <= 512 

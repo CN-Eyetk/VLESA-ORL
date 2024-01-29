@@ -43,6 +43,7 @@ for u_r in "${use_role[@]}"; do
                                         cur_comm+=" --use_trans "
                                         cur_comm+=" --use_situ_in_encoder "
                                         cur_comm+=" --use_vad_labels"
+                                        cur_comm+=" --wo_comet"
                                         #cur_comm+=" --use_copy"
                                         $cur_comm
                                         #cur_comm+=" --use_situ_in_decoder "
