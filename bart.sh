@@ -7,10 +7,10 @@ use_cat=( "")
 use_bart=(" ")
 lrs=(2e-5)
 use_role=(" --use_role_embed")
-rl_rat=(0.6) #)
-vad_rats=(0.3) # 0.3 0.8)
+rl_rat=(0.6 0.0) #)
+vad_rats=(0.3 0.5) # 0.3 0.8)
 emo_loss_rat=(0.2)
-latent_dims=(256) # 256)
+latent_dims=(256 128) # 256)
 root_path="/disk/junlin/EmoSp"
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"

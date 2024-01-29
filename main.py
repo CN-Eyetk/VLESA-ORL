@@ -341,6 +341,7 @@ def use_trainer(args):
     #trainer.predict(args.test_dataset[:10])
     #trainer.evaluate()
     trainer.train()
+    trainer.save_pretrained()
     
 def explain():
     stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
@@ -381,4 +382,4 @@ if __name__ == "__main__":
         else:
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
-            generate_new(args)
+            generate_new(args, model = model)

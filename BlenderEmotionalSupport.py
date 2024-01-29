@@ -1929,7 +1929,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args):
+def generate_new(args, model = None):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
@@ -1940,8 +1940,8 @@ def generate_new(args):
 
     _, tokenizer = load_tokenizer(args)
     
-
-    model = load_model_for_eval(args=args)
+    if model is None:
+        model = load_model_for_eval(args=args)
     model.eval()
     #C = model.model.encoder.strategy_embedding.weight[:8,:]
     #C = C.cpu().detach().numpy()
