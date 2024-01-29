@@ -301,14 +301,14 @@ def use_trainer(args):
     training_argument  = ESCONVTrainingArguments(
         output_dir = args.output_dir,
         evaluation_strategy = "steps",
-        eval_steps = 200,
+        eval_steps = 300,
         per_device_train_batch_size = 20,
         per_device_eval_batch_size=20,
         learning_rate = args.learning_rate,
         weight_decay = args.weight_decay,
         adam_epsilon = args.adam_epsilon,
         #logging_strategy = "epoch",
-        save_steps = 200,
+        save_steps = 300,
         seed = 42,
         #predict_with_generate = True,
         use_situ_in_decoder = args.use_situ_in_decoder,
@@ -320,6 +320,11 @@ def use_trainer(args):
         use_vad_labels = args.use_vad_labels,
         generation_max_length = 512,
         num_train_epochs = 10,
+        metric_for_best_model="ppl",
+        load_best_model_at_end=True,
+        greater_is_better = False,
+        save_total_limit = 1,
+        
     )
     trainer = ESCONVTrainer(
         model = model,
