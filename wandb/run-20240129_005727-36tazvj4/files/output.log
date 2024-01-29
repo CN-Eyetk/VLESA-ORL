@@ -1,0 +1,1225 @@
+/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae128-wo_comet-vad124_II
+vocab size = 50265
+without comet
+BartConfig {
+  "_name_or_path": "facebook/bart-base",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_emo_cross_attn": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "emo_from_eos": true,
+  "emo_from_situ": false,
+  "emo_loss_ratio": 0.2,
+  "emo_out_loss_ratio": 0.2,
+  "emo_use_cat_attn": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "force_bos_token_to_be_generated": false,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "intensity_vae": false,
+  "is_encoder_decoder": true,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "latent_dim": 128,
+  "lstm_st_seq": false,
+  "max_position_embeddings": 1024,
+  "merge": false,
+  "mixed_vae": true,
+  "model_type": "bart",
+  "n_emo_out": 28,
+  "no_fuse": true,
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "prepend": false,
+  "rl_emb_ratio": 0.6,
+  "sample_strat_emb": false,
+  "scale_embedding": false,
+  "st_from_eos": true,
+  "stg_use_cat_attn": true,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "torch_dtype": "float32",
+  "transformers_version": "4.2.2",
+  "use_cache": true,
+  "use_copy": false,
+  "use_emb_prep": true,
+  "use_emo_in_dist": true,
+  "use_kl": true,
+  "use_role_embed": true,
+  "use_situ_in_decoder": false,
+  "use_situ_in_encoder": true,
+  "use_st_seq": false,
+  "use_th_attn": false,
+  "use_trans_mat": true,
+  "use_vad_labels": true,
+  "use_vae": true,
+  "vad_emb_ratio": 0.8,
+  "vocab_size": 50265,
+  "wo_comet": true,
+  "wo_emo": false,
+  "wo_stra": false
+}
+args.local_rank =  -1
+161,816,456 total parameters.
+161,816,456 training parameters.
+Some weights of BartForConditionalGeneration were not initialized from the model checkpoint at facebook/bart-base and are newly initialized: ['encoder.layers.0.attn_layer_norm_comet.weight', 'encoder.layers.0.attn_layer_norm_comet.bias', 'encoder.layers.1.attn_layer_norm_comet.weight', 'encoder.layers.1.attn_layer_norm_comet.bias', 'encoder.layers.2.attn_layer_norm_comet.weight', 'encoder.layers.2.attn_layer_norm_comet.bias', 'encoder.layers.3.attn_layer_norm_comet.weight', 'encoder.layers.3.attn_layer_norm_comet.bias', 'encoder.layers.4.attn_layer_norm_comet.weight', 'encoder.layers.4.attn_layer_norm_comet.bias', 'encoder.layers.5.attn_layer_norm_comet.weight', 'encoder.layers.5.attn_layer_norm_comet.bias', 'encoder.layers.5.muAttn.k_proj.weight', 'encoder.layers.5.muAttn.k_proj.bias', 'encoder.layers.5.muAttn.v_proj.weight', 'encoder.layers.5.muAttn.v_proj.bias', 'encoder.layers.5.muAttn.q_proj.weight', 'encoder.layers.5.muAttn.q_proj.bias', 'encoder.layers.5.muAttn.out_proj.weight', 'encoder.layers.5.muAttn.out_proj.bias', 'encoder.emotion_head.weight', 'encoder.emotion_head.bias', 'encoder.batchNorm_emotion.weight', 'encoder.batchNorm_emotion.bias', 'encoder.batchNorm_emotion.running_mean', 'encoder.batchNorm_emotion.running_var', 'encoder.batchNorm_strategy.weight', 'encoder.batchNorm_strategy.bias', 'encoder.batchNorm_strategy.running_mean', 'encoder.batchNorm_strategy.running_var', 'encoder.strategy_embedding.weight', 'encoder.multi_state_LayerNorm.weight', 'encoder.multi_state_LayerNorm.bias', 'encoder.strategy_head.weight', 'encoder.strategy_head.bias', 'encoder.trans_mat.emotion_embedding.weight', 'encoder.trans_mat.h_prior_emo.weight', 'encoder.trans_mat.h_prior_emo.bias', 'encoder.trans_mat.h_prior_strat.weight', 'encoder.trans_mat.h_prior_strat.bias', 'encoder.trans_mat.mu_prior.weight', 'encoder.trans_mat.mu_prior.bias', 'encoder.trans_mat.logvar_prior.weight', 'encoder.trans_mat.logvar_prior.bias', 'encoder.trans_mat.Dense_z_prior.weight', 'encoder.trans_mat.Dense_z_prior.bias', 'encoder.trans_mat.h_posterior_emo.weight', 'encoder.trans_mat.h_posterior_emo.bias', 'encoder.trans_mat.h_posterior_strat.weight', 'encoder.trans_mat.h_posterior_strat.bias', 'encoder.trans_mat.mu_posterior.weight', 'encoder.trans_mat.mu_posterior.bias', 'encoder.trans_mat.logvar_posterior.weight', 'encoder.trans_mat.logvar_posterior.bias', 'encoder.strat_cat_attn.V', 'encoder.strat_cat_attn.W.weight', 'encoder.emo_cat_attn.V', 'encoder.emo_cat_attn.W.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.0.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.0.encoder_attn_layer_norm_comet.weight', 'decoder.layers.0.encoder_attn_layer_norm_comet.bias', 'decoder.layers.0.encoder_attn_layer_norm_total.weight', 'decoder.layers.0.encoder_attn_layer_norm_total.bias', 'decoder.layers.1.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.1.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.1.encoder_attn_layer_norm_comet.weight', 'decoder.layers.1.encoder_attn_layer_norm_comet.bias', 'decoder.layers.1.encoder_attn_layer_norm_total.weight', 'decoder.layers.1.encoder_attn_layer_norm_total.bias', 'decoder.layers.2.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.2.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.2.encoder_attn_layer_norm_comet.weight', 'decoder.layers.2.encoder_attn_layer_norm_comet.bias', 'decoder.layers.2.encoder_attn_layer_norm_total.weight', 'decoder.layers.2.encoder_attn_layer_norm_total.bias', 'decoder.layers.3.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.3.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.3.encoder_attn_layer_norm_comet.weight', 'decoder.layers.3.encoder_attn_layer_norm_comet.bias', 'decoder.layers.3.encoder_attn_layer_norm_total.weight', 'decoder.layers.3.encoder_attn_layer_norm_total.bias', 'decoder.layers.4.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.4.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.4.encoder_attn_layer_norm_comet.weight', 'decoder.layers.4.encoder_attn_layer_norm_comet.bias', 'decoder.layers.4.encoder_attn_layer_norm_total.weight', 'decoder.layers.4.encoder_attn_layer_norm_total.bias', 'decoder.layers.5.encoder_attn_layer_norm_strategy.weight', 'decoder.layers.5.encoder_attn_layer_norm_strategy.bias', 'decoder.layers.5.encoder_attn_layer_norm_comet.weight', 'decoder.layers.5.encoder_attn_layer_norm_comet.bias', 'decoder.layers.5.encoder_attn_layer_norm_total.weight', 'decoder.layers.5.encoder_attn_layer_norm_total.bias', 'fuse_st_emo.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 59%|█████████████████████████████████████████████████████████████████                                              | 299/510 [02:07<01:30,  2.32it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:08<00:00,  2.05it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 17%|███████████████████▌                                                                                            | 89/510 [00:37<02:55,  2.40it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 76%|████████████████████████████████████████████████████████████████████████████████████▋                          | 389/510 [03:13<00:48,  2.51it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:37<00:00,  1.84it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 35%|██████████████████████████████████████▌                                                                        | 177/510 [01:13<02:19,  2.39it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 93%|███████████████████████████████████████████████████████████████████████████████████████████████████████▍       | 475/510 [03:50<00:14,  2.37it/s]
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:37<00:00,  1.84it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 53%|██████████████████████████████████████████████████████████▎                                                    | 268/510 [01:51<01:42,  2.36it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:03<00:00,  2.10it/s]
+
+
+
+
+
+
+
+
+
+
+
+ 11%|████████████▎                                                                                                   | 56/510 [00:23<03:17,  2.29it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 70%|█████████████████████████████████████████████████████████████████████████████▍                                 | 356/510 [03:01<01:02,  2.46it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [04:18<00:00,  1.97it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 29%|███████████████████████████████▊                                                                               | 146/510 [01:00<02:28,  2.44it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 87%|█████████████████████████████████████████████████████████████████████████████████████████████████              | 446/510 [03:18<00:27,  2.36it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:58<00:00,  2.14it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 47%|████████████████████████████████████████████████████                                                           | 239/510 [01:39<01:49,  2.48it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:44<00:00,  2.27it/s]
+
+
+
+
+
+  5%|█████▉                                                                                                          | 27/510 [00:11<03:14,  2.48it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 64%|██████████████████████████████████████████████████████████████████████▉                                        | 326/510 [02:28<01:15,  2.44it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:57<00:00,  2.14it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 23%|█████████████████████████▉                                                                                     | 119/510 [00:50<02:55,  2.23it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 81%|██████████████████████████████████████████████████████████████████████████████████████████▎                    | 415/510 [03:06<00:43,  2.18it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:58<00:00,  2.14it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 41%|█████████████████████████████████████████████▍                                                                 | 209/510 [01:26<02:03,  2.43it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 99%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████▎| 507/510 [03:43<00:01,  2.49it/s]
+
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████▊| 509/510 [03:44<00:00,  2.31it/s]
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 510/510 [03:57<00:00,  2.15it/s]
+without comet
+evaluating
+vocab size = 50265
+without comet
+Testing:   0%|                                                                                                               | 0/2295 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/lijunlin/lijunlin/ESCONV/main.py", line 340, in <module>
+    generate_new(args)
+  File "/home/lijunlin/lijunlin/ESCONV/BlenderEmotionalSupport.py", line 2087, in generate_new
+    chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
+  File "/home/lijunlin/miniconda3/envs/empchat/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/lijunlin/lijunlin/ESCONV/src/transformers/generation_utils.py", line 924, in generate
+    return self.sample(
+  File "/home/lijunlin/lijunlin/ESCONV/src/transformers/generation_utils.py", line 1459, in sample
+    next_token_scores = logits_warper(input_ids, next_token_scores)
+  File "/home/lijunlin/lijunlin/ESCONV/src/transformers/generation_logits_process.py", line 89, in __call__
+    scores = processor(input_ids, scores)
+  File "/home/lijunlin/lijunlin/ESCONV/src/transformers/generation_logits_process.py", line 192, in __call__
+    cumulative_probs = sorted_logits.softmax(dim=-1).cumsum(dim=-1)
+RuntimeError: cumsum_cuda_kernel does not have a deterministic implementation, but you set 'torch.use_deterministic_algorithms(True)'. You can turn off determinism just for this operation, or you can use the 'warn_only=True' option, if that's acceptable for your application. You can also file an issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation.

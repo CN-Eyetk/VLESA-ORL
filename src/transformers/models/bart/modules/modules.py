@@ -435,7 +435,7 @@ class EmoTransVAE_MultiStrat(nn.Module):
         #print("emo_out_emb",emo_out_emb.shape)
         return emo_out_emb, mus, logvars, emo_out_prob
     
-    def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): #p_emo_in 和 p_strat输入的都是logits
+    def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post, q_0): #p_emo_in 和 p_strat输入的都是logits
         #p_emo_in = self.dropout(p_emo_in)
         #p_emo_in = F.softmax(p_emo_in)
         #p_strat = self.dropout(p_strat)
@@ -453,7 +453,7 @@ class EmoTransVAE_MultiStrat(nn.Module):
             E_probs[:,:,i] = E_prob
         emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
         emotion_id = self.emotion_id.to(hidden_prior.device) 
-        emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         #z_out = torch.bmm(zs, p_strat.unsqueeze(-1)).permute(0,2,1).squeeze(-2)
         #emo_out_emb = self.z_proj(z_out)
         #emo_out_emb = emo_out_emb.unsqueeze(-2)
@@ -544,14 +544,16 @@ class EmoTransVAE_MixStrat(nn.Module):
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
         return emo_out_emb, mus, logvars, emo_out_prob
     
-    def forward_train(self,  hidden_post_emo, hidden_post_strat): #p_emo_in 和 p_strat输入的都是logits
+    def forward_train(self,  hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
         b = hidden_post_emo.size(0)
         mus, logvars = self.posterior(hidden_post_emo, hidden_post_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_post_emo.device)
         emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2)
         emotion_id = self.emotion_id.to(emo_out_prob.device) 
-        emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        
+        emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  
+                                self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
         return emo_out_emb, mus, logvars, emo_out_prob
     @staticmethod

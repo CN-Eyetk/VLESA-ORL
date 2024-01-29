@@ -1,5 +1,7 @@
 import argparse
 import wandb
+from esconv_trainer import compute_metrics, ESCONVTrainer
+#from esconv_trainer import ESCONVTrainer
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
 parser.add_argument("--explain", action= "store_true")
@@ -99,7 +101,7 @@ TAG = "all_loss" \
                                     +("-wo_Stra" if WO_STRA else "") \
                                         +("-wo_Emo" if WO_EMO else "") \
                                             +("-wo_comet" if WO_COMET else "") \
-                                                +("-vad" if args_g.use_vad_labels else "") \
+                                                +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
                                                 +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
                             +args_g.tag
                             
@@ -122,7 +124,8 @@ if MISC:
                                         #load_tokenizer,
                                         set_seed,
                                         load_model_for_eval,
-                                        logger
+                                        logger,
+                                        load_optimizer
                                         )
     from BlenderEmotionalSupport import load_tokenizer
     output_dir = os.path.join('blender-small' + GROUP, TAG)
@@ -139,7 +142,8 @@ else:
                                         set_seed,
                                         load_model_for_eval,
                                         load_model,
-                                        logger
+                                        logger,
+                                        load_optimizer
                                         )
     if BART:
         output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
@@ -290,6 +294,20 @@ def plot(model, strat_labels, emo_in_labels, emo_out_labels):
             weights.append(df)
     return weights
 
+def use_trainer():
+    from math import ceil
+    optimizer = load_optimizer(args, model, ceil(len(train_dataset) / args.batch_size))
+    trainer = ESCONVTrainer(
+        model = model,
+        args = args,
+        data_collator = train_dataset.collate,
+        train_dataset = train_dataset,
+        eval_dataset = eval_dataset,
+        tokenizer = tokenizer,
+        compute_metrics = compute_metrics,
+        optimizers = optimizer,
+    )
+    trainer.train()
 def explain():
     stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     emo_in_labels = open("dataset/labels/esconv_emo_labels.txt","r+").read().split("\n")
@@ -312,17 +330,6 @@ if __name__ == "__main__":
     args.eval_dataset = eval_dataset
     args.test_dataset = test_dataset
 
-    #args.data_cache_dir = "./116_{}_{}_{}cached".format("noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "")
-    #train_dataset_2, eval_dataset_2, test_dataset_2 = load_dataset(args, tokenizer)
-    #for i in range(len(train_dataset)):
-    #    old = getattr(train_dataset[i],"comet_ids")
-    #    new = getattr(train_dataset_2[i],"comet_ids")
-    #    try:
-    #        assert old == new
-    #    except:
-    #        print("old",len(old))
-    #        print("new",len(new))
-    #print(1/0)
     if args.do_train:
         model = load_model(args, tokenizer)
         global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
@@ -338,13 +345,3 @@ if __name__ == "__main__":
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
             generate_new(args)
-
-    #model.to(args.device)
-    #model.eval()
-    #with torch.no_grad():
-    #    test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
-    #    generate(args)
-    #global_step, tr_loss = train(args, args.train_dataset, model, tokenizer)
-    #for k in range(10):
-    #    print_blender(train_dataset[k])
-    #    print("===========================")

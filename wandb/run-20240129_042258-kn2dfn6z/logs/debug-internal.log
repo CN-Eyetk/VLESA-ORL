@@ -1,0 +1,83 @@
+2024-01-29 04:22:59,325 INFO    MainThread:2220309 [internal.py:wandb_internal():90] W&B internal server running at pid: 2220309, started at: 2024-01-29 04:22:59.325781
+2024-01-29 04:22:59,326 INFO    WriterThread:2220309 [datastore.py:open_for_write():75] open: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/run-kn2dfn6z.wandb
+2024-01-29 04:22:59,327 DEBUG   SenderThread:2220309 [sender.py:send():236] send: header
+2024-01-29 04:22:59,327 DEBUG   SenderThread:2220309 [sender.py:send():236] send: run
+2024-01-29 04:22:59,672 INFO    SenderThread:2220309 [dir_watcher.py:__init__():216] watching files in: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files
+2024-01-29 04:22:59,672 INFO    SenderThread:2220309 [sender.py:_start_run_threads():815] run started: kn2dfn6z with start time 1706502179
+2024-01-29 04:22:59,674 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: check_version
+2024-01-29 04:22:59,674 DEBUG   SenderThread:2220309 [sender.py:send():236] send: summary
+2024-01-29 04:22:59,674 INFO    SenderThread:2220309 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-29 04:22:59,674 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: check_version
+2024-01-29 04:22:59,721 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: run_start
+2024-01-29 04:22:59,727 DEBUG   HandlerThread:2220309 [meta.py:__init__():35] meta init
+2024-01-29 04:22:59,727 DEBUG   HandlerThread:2220309 [meta.py:__init__():49] meta init done
+2024-01-29 04:22:59,727 DEBUG   HandlerThread:2220309 [meta.py:probe():209] probe
+2024-01-29 04:22:59,733 DEBUG   HandlerThread:2220309 [meta.py:_setup_git():199] setup git
+2024-01-29 04:22:59,737 DEBUG   HandlerThread:2220309 [meta.py:_setup_git():206] setup git done
+2024-01-29 04:22:59,737 DEBUG   HandlerThread:2220309 [meta.py:_save_pip():53] save pip
+2024-01-29 04:22:59,738 DEBUG   HandlerThread:2220309 [meta.py:_save_pip():67] save pip done
+2024-01-29 04:22:59,738 DEBUG   HandlerThread:2220309 [meta.py:_save_conda():74] save conda
+2024-01-29 04:23:00,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/requirements.txt
+2024-01-29 04:23:00,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/wandb-summary.json
+2024-01-29 04:23:00,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/conda-environment.yaml
+2024-01-29 04:23:01,964 DEBUG   HandlerThread:2220309 [meta.py:_save_conda():84] save conda done
+2024-01-29 04:23:01,964 DEBUG   HandlerThread:2220309 [meta.py:probe():247] probe done
+2024-01-29 04:23:01,966 DEBUG   SenderThread:2220309 [sender.py:send():236] send: files
+2024-01-29 04:23:01,966 INFO    SenderThread:2220309 [sender.py:_save_file():952] saving file wandb-metadata.json with policy now
+2024-01-29 04:23:01,970 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: stop_status
+2024-01-29 04:23:01,970 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: stop_status
+2024-01-29 04:23:02,287 DEBUG   SenderThread:2220309 [sender.py:send():236] send: telemetry
+2024-01-29 04:23:02,584 INFO    Thread-11 :2220309 [upload_job.py:push():138] Uploaded file /tmp/tmpp3xl6ee2wandb/1ays5qg3-wandb-metadata.json
+2024-01-29 04:23:02,672 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/conda-environment.yaml
+2024-01-29 04:23:02,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/output.log
+2024-01-29 04:23:02,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_created():269] file/dir created: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/wandb-metadata.json
+2024-01-29 04:23:04,673 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/output.log
+2024-01-29 04:23:10,674 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/output.log
+2024-01-29 04:23:12,675 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/output.log
+2024-01-29 04:23:12,856 DEBUG   SenderThread:2220309 [sender.py:send():236] send: telemetry
+2024-01-29 04:23:14,675 INFO    Thread-7  :2220309 [dir_watcher.py:_on_file_modified():286] file/dir modified: /home/lijunlin/lijunlin/ESCONV/wandb/run-20240129_042258-kn2dfn6z/files/output.log
+2024-01-29 04:23:15,156 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: poll_exit
+2024-01-29 04:23:15,156 DEBUG   SenderThread:2220309 [sender.py:send():236] send: exit
+2024-01-29 04:23:15,156 INFO    SenderThread:2220309 [sender.py:send_exit():372] handling exit code: 1
+2024-01-29 04:23:15,156 INFO    SenderThread:2220309 [sender.py:send_exit():374] handling runtime: 15
+2024-01-29 04:23:15,156 INFO    SenderThread:2220309 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-29 04:23:15,156 INFO    SenderThread:2220309 [sender.py:send_exit():380] send defer
+2024-01-29 04:23:15,157 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: poll_exit
+2024-01-29 04:23:15,157 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,157 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 0
+2024-01-29 04:23:15,157 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,157 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 0
+2024-01-29 04:23:15,157 INFO    SenderThread:2220309 [sender.py:transition_state():393] send defer: 1
+2024-01-29 04:23:15,157 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,157 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 1
+2024-01-29 04:23:15,215 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,216 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 1
+2024-01-29 04:23:15,216 INFO    SenderThread:2220309 [sender.py:transition_state():393] send defer: 2
+2024-01-29 04:23:15,216 DEBUG   SenderThread:2220309 [sender.py:send():236] send: stats
+2024-01-29 04:23:15,216 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,216 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 2
+2024-01-29 04:23:15,216 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,216 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 2
+2024-01-29 04:23:15,216 INFO    SenderThread:2220309 [sender.py:transition_state():393] send defer: 3
+2024-01-29 04:23:15,216 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,216 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 3
+2024-01-29 04:23:15,217 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 3
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:transition_state():393] send defer: 4
+2024-01-29 04:23:15,217 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,217 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 4
+2024-01-29 04:23:15,217 DEBUG   SenderThread:2220309 [sender.py:send():236] send: summary
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:_save_file():952] saving file wandb-summary.json with policy end
+2024-01-29 04:23:15,217 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 4
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:transition_state():393] send defer: 5
+2024-01-29 04:23:15,217 DEBUG   HandlerThread:2220309 [handler.py:handle_request():140] handle_request: defer
+2024-01-29 04:23:15,217 INFO    HandlerThread:2220309 [handler.py:handle_request_defer():163] handle defer: 5
+2024-01-29 04:23:15,217 DEBUG   SenderThread:2220309 [sender.py:send_request():250] send_request: defer
+2024-01-29 04:23:15,217 INFO    SenderThread:2220309 [sender.py:send_request_defer():389] handle sender defer: 5
+2024-01-29 04:23:15,247 WARNING MainThread:2220309 [internal.py:wandb_internal():153] Internal process interrupt: 1
+2024-01-29 04:23:15,433 WARNING MainThread:2220309 [internal.py:wandb_internal():153] Internal process interrupt: 2
+2024-01-29 04:23:15,433 ERROR   MainThread:2220309 [internal.py:wandb_internal():156] Internal process interrupted.
+2024-01-29 04:23:15,467 ERROR   SenderThread:2220309 [internal_api.py:execute():161] 409 response executing GraphQL.
+2024-01-29 04:23:15,467 ERROR   SenderThread:2220309 [internal_api.py:execute():162] {"errors":[{"message":"run 22038459r/ESCONV/kn2dfn6z was previously created and deleted; try a new run name","path":["upsertBucket"]}],"data":{"upsertBucket":null}}
+2024-01-29 04:23:15,557 INFO    MainThread:2220309 [internal.py:handle_exit():80] Internal process exited
