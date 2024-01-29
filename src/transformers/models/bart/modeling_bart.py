@@ -314,10 +314,6 @@ class BartEncoderLayer(nn.Module):
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
         hidden_states = residual + hidden_states
         hidden_states = self.final_layer_norm(hidden_states)
-        if situation_hidden_states is not None:
-            assert comet_hidden_states is None and comet_hidden_states_st is None
-        if comet_hidden_states is not None and comet_hidden_states_st is not None:
-            assert situation_hidden_states is None
         if self.is_fuse:
             if situation_hidden_states is not None:
                 hidden_cat = torch.cat((hidden_states, situation_hidden_states), dim = 1)
@@ -332,7 +328,7 @@ class BartEncoderLayer(nn.Module):
                 if torch.isinf(situation_hidden_states).any():
                     clamp_value = torch.finfo(situation_hidden_states.dtype).max - 1000
                     situation_hidden_states = torch.clamp(situation_hidden_states, min=-clamp_value, max=clamp_value)
-            elif comet_hidden_states is not None and comet_hidden_states_st is not None:
+            elif comet_hidden_states is not None and comet_hidden_states_st is not None and not self.config.wo_comet:
                 hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
                 len_1 = hidden_states.size(1)
                 len_2 = comet_hidden_states.size(1)
@@ -904,6 +900,8 @@ class BartEncoder(BartPretrainedModel):
         self.wo_stra = config.wo_stra
         self.rl_emb_ratio = config.rl_emb_ratio
         self.vad_emb_ratio = config.vad_emb_ratio
+        if self.vad_emb_ratio == -1 and self.rl_emb_ratio == -1:
+            self.fc_embed = nn.Linear(2 * config.d_model, config.d_model)
         #10-13
         if config.intensity_vae:
             self.intensity_vae = IntensityVAE(config, self.n_emo_in, self.n_strat)
@@ -987,17 +985,24 @@ class BartEncoder(BartPretrainedModel):
 
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
-            if self.use_role_embed and role_ids is not None:
-                assert role_ids is not None
-                role_embeds = self.embed_tokens(role_ids) * self.embed_scale * self.rl_emb_ratio
-                inputs_embeds += role_embeds
-            if self.use_vad_labels and vad_ids is not None:
-                assert vad_ids is not None
-                vad_embeds = self.embed_tokens(vad_ids) * self.embed_scale * self.vad_emb_ratio
-                inputs_embeds += vad_embeds
+            if self.vad_emb_ratio == -1 and self.rl_emb_ratio == -1 and role_ids is not None and vad_ids is not None:
+                role_embeds = self.embed_tokens(role_ids) * self.embed_scale
+                vad_embeds = self.embed_tokens(vad_ids) * self.embed_scale
+                full_embeds = torch.cat((vad_embeds, role_embeds), dim = -1)
+                full_embeds = F.dropout(self.fc_embed(full_embeds), p=self.dropout, training=self.training)
+                inputs_embeds += 0.5 * full_embeds
+            else:
+                if self.use_role_embed and role_ids is not None:
+                    assert role_ids is not None
+                    role_embeds = self.embed_tokens(role_ids) * self.embed_scale * self.rl_emb_ratio
+                    inputs_embeds += role_embeds
+                if self.use_vad_labels and vad_ids is not None:
+                    assert vad_ids is not None
+                    vad_embeds = self.embed_tokens(vad_ids) * self.embed_scale * self.vad_emb_ratio
+                    inputs_embeds += vad_embeds
+                full_embeds = None
 
         embed_pos = self.embed_positions(input_shape)
-
         hidden_states = inputs_embeds + embed_pos
         hidden_states = self.layernorm_embedding(hidden_states)
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
@@ -1882,10 +1887,10 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 inputs_embeds=inputs_embeds,
-                comet_embs=comet_embs,
-                comet_mask=comet_mask,
-                comet_embs_st=comet_embs_st,
-                comet_mask_st=comet_mask_st,
+                comet_embs=None,
+                comet_mask=None,
+                comet_embs_st=None,
+                comet_mask_st=None,
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
                 role_ids=role_ids,

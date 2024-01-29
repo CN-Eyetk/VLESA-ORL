@@ -24,3 +24,5 @@ config: {'do_train': True, 'data_path': 'converted_dataset', 'train_comet_file':
 2024-01-29 04:23:45,829 INFO    MainThread:2221348 [wandb_run.py:_redirect():1771] Redirecting console.
 2024-01-29 04:23:45,830 INFO    MainThread:2221348 [wandb_run.py:_redirect():1827] Redirects installed.
 2024-01-29 04:23:45,830 INFO    MainThread:2221348 [wandb_init.py:init():732] run started, returning control to user process
+2024-01-29 04:29:37,347 INFO    MainThread:2221348 [wandb_run.py:_atexit_cleanup():1862] got exitcode: 255
+2024-01-29 04:29:37,348 INFO    MainThread:2221348 [wandb_run.py:_restore():1834] restore
