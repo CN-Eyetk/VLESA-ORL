@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Un
 import torch
 from torch import nn
 import numpy as np
+from metric.myMetrics import Metric
 import random
 from transformers.trainer_pt_utils import nested_detach
 from torch.cuda.amp import autocast
@@ -10,7 +11,7 @@ from transformers.file_utils import add_start_docstrings
 from transformers.training_args import TrainingArguments
 from transformers import Seq2SeqTrainingArguments
 import argparse
-
+import nltk
 class MyLabelSmoother:
     """
     Adds label-smoothing on a pre-computed output from a Transformers model.
@@ -79,6 +80,8 @@ class ESCONVTrainingArguments(Seq2SeqTrainingArguments):
         default=False, metadata={"help": "Whether to use generate to calculate generative metrics (ROUGE, BLEU)."}
     )
 
+
+
 def clac_metric(decoder_preds, decoder_labels, no_glove=False):
     ref_list = []
     hyp_list = []
@@ -98,6 +101,24 @@ def clac_metric(decoder_preds, decoder_labels, no_glove=False):
     #metric_res.update(metric_2_res)
     return metric_res
 
+def clac_metric_2(decoder_preds, decoder_labels, no_glove=False):
+    ref_list = []
+    hyp_list = []
+    for ref, hyp in zip(decoder_labels, decoder_preds):
+        ref = ' '.join(nltk.word_tokenize(ref.lower()))
+        hyp = ' '.join(nltk.word_tokenize(hyp.lower()))
+        if len(hyp) == 0:
+            hyp = '&'
+        ref_list.append(ref)
+        hyp_list.append(hyp)    
+    
+    metric = Metric(toker = None, hyps = hyp_list, refs = ref_list)
+    metric_res, _ = metric.close()
+    #metric_2 = Metric(hyps = hyp_list, refs = ref_list)
+    #metric_2_res, _ = metric_2.close()
+    #metric_2_res = {f"new_{k}":v for k,v in metric_2_res.items()}
+    #metric_res.update(metric_2_res)
+    return metric_res
 def compute_metrics(eval_preds):
     preds, labels = eval_preds
     if "strategy_logits" in preds.keys():
@@ -129,7 +150,7 @@ def compute_metrics(eval_preds):
         decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
         print("process_preds: ", decoded_preds[x])
         print("process_label: ", decoded_labels[x])
-        my_metric = clac_metric(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
+        my_metric = clac_metric_2(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
         return my_metric
 
 class ESCONVTrainer(Seq2SeqTrainer):
@@ -322,6 +343,7 @@ class ESCONVTrainer(Seq2SeqTrainer):
             labels (each being optional).
         """
         generation_ignore_keys = ["input_ids","labels","decoder_input_ids","emo_in_dist","emo_dist"]
+        lm_ignore_keys = ["output_mutual_attentions"]
         if not self.args.predict_with_generate or prediction_loss_only:
             #print("not generating!")
             return self.prediction_step_non_generate(
@@ -329,9 +351,9 @@ class ESCONVTrainer(Seq2SeqTrainer):
             )
 
         
-        inputs = self._prepare_inputs(inputs)
+        inputs = self._prepare_inputs(inputs, phase="generation")
         has_labels = "labels" in inputs
-        paras = {k:v for k,v in inputs if not k in generation_ignore_keys}
+        paras = {k:v for k,v in inputs.items() if not k in generation_ignore_keys}
 
         gen_kwargs = {
             #"max_length": self._max_length if self._max_length is not None else self.model.config.max_length,
@@ -353,15 +375,18 @@ class ESCONVTrainer(Seq2SeqTrainer):
 
         generated_tokens = self.model.generate(
             inputs["input_ids"],
-            attention_mask=inputs["attention_mask"],
+            #attention_mask=inputs["attention_mask"],
             **paras,
             **gen_kwargs,
         )
+        if type(generated_tokens) == tuple:
+            generated_tokens = generated_tokens[0]
         # in case the batch is shorter than max length, the output should be padded
         if generated_tokens.shape[-1] < gen_kwargs["max_length"]:
             generated_tokens = self._pad_tensors_to_max_len(generated_tokens, gen_kwargs["max_length"])
-
+        
         with torch.no_grad():
+            inputs = {k:v for k,v in inputs.items() if k not in lm_ignore_keys}
             outputs = model(**inputs)
             if has_labels:
                 if self.label_smoother is not None:

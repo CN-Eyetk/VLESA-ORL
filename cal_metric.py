@@ -68,19 +68,19 @@ for dir in dirs:
     ref_path = f"{dir}/ref_strategy.json"
     
     metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path, use_nltk=True)
-    metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
+    #metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)
     #text = read_text(hyp_path)
     #ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
     # print(metric.hyps)
     result, result_list = metric.close()
-    result_2 = metric_2.res
+    #result_2 = metric_2.res
     #result_2 = {k:v for k,v in result_2.items() if not "Bleu" in k}
     #result["gpt_ppl"] = ppl
     #for k,v in result_2:
     #    result[k] = v
     #result["mid_gpt_ppl"] = md_ppl
     print(result)
-    print(result_2)
+    #print(result_2)
     print("="*100)
     # print(result_list)
     all_res[dir.replace("our_generated_data","")] = {k:round(v,3) for k,v in result.items()}

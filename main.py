@@ -157,7 +157,7 @@ logger = logging.getLogger(__name__)
 def load_arg():
     #torch.distributed.init_process_group(backend="nccl")
     #local_rank = torch.distributed.get_rank()
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -339,9 +339,14 @@ def use_trainer(args):
         
     )
     #trainer.predict(args.test_dataset[:10])
-    #trainer.evaluate()
+    trainer.evaluate()
     trainer.train()
-    trainer.save_model()
+    #trainer.save_model()
+    model_to_save = (
+        model.module if hasattr(model, "module") else model
+    )  # Take care of distributed/parallel training
+    model_to_save.save_pretrained(output_dir)
+    model.save_pretrained(args.output_dir)
     
 def explain():
     stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]

@@ -1493,10 +1493,10 @@ class GenerationMixin:
             device = input_ids.device
             #if "position_ids" in model_kwargs:
             #    model_kwargs["position_ids"] = torch.cat([model_kwargs["position_ids"], torch.tensor([[model_kwargs["position_ids"].size()[-1]]]).to(device)],dim=-1)
-            if "turn_ids" in model_kwargs:
-                model_kwargs["turn_ids"] = torch.cat([model_kwargs["turn_ids"],cur_type_id.unsqueeze(-1).unsqueeze(-1).to(device)],dim=-1)
-            if "role_ids" in model_kwargs:
-                model_kwargs["role_ids"] = torch.cat([model_kwargs["role_ids"], torch.tensor([[1]]).to(device)],dim=-1)
+            #if "turn_ids" in model_kwargs:
+            #    model_kwargs["turn_ids"] = torch.cat([model_kwargs["turn_ids"],cur_type_id.unsqueeze(-1).unsqueeze(-1).to(device)],dim=-1)
+            #if "role_ids" in model_kwargs:
+            #    model_kwargs["role_ids"] = torch.cat([model_kwargs["role_ids"], torch.tensor([[1]]).to(device)],dim=-1)
 
 
             #print(model_kwargs["position_ids"],model_kwargs.get("turn_ids",0),model_kwargs.get("strategy_ids",0))

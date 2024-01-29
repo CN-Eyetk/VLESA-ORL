@@ -15,7 +15,7 @@ root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 export CUDA_VISIBLE_DEVICES=0
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag 124_II --emo_out_loss_ratio 0.2 --use_vae --mixed_vae --use_emo_in --emo_use_cat_attn --stg_use_cat_attn"
+comm="python3 main.py --use_trainer --no_fuse --use_bart --use_kl --tag 124_II --emo_out_loss_ratio 0.2 --use_vae --mixed_vae"
 
 for u_r in "${use_role[@]}"; do
     for vad_rat in "${vad_rats[@]}"; do
