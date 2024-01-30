@@ -39,6 +39,8 @@ parser.add_argument("--vad_emb_ratio", type = float, default=0.2)
 parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
 parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
 parser.add_argument("--intensity_vae", action = "store_true")
+parser.add_argument("--use_contrastive_loss", action = "store_true")
+
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -105,6 +107,7 @@ TAG = "all_loss" \
                                             +("-wo_comet" if WO_COMET else "") \
                                                 +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
                                                 +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
+                                                    +("-ct" if args_g.use_contrastive_loss else "")  \
                             +args_g.tag
                             
 
@@ -172,7 +175,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "", "w_situ" if args_g.use_situ_in_decoder or args_g.use_situ_in_encoder else "","w_vad" if args_g.use_vad_labels else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -190,7 +193,7 @@ def load_arg():
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
             "adam_epsilon":1e-8,
-            "warmup_steps":100,
+            "warmup_steps":510,
             "fp16":False,
             "fp16_opt_level":'O1',
             "num_train_epochs":10 if BART else 8,
@@ -239,12 +242,14 @@ def load_arg():
             "intensity_vae":INT_VAE,
             "wo_comet":WO_COMET,
             "use_vad_labels":args_g.use_vad_labels,
-            "freeze_emo_stag_params":args_g.freeze_emo_stag_params
+            "freeze_emo_stag_params":args_g.freeze_emo_stag_params,
+            "use_contrastive_loss":args_g.use_contrastive_loss,
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
     #args["device"] = device
     args = argparse.Namespace(**args)
+    print("data_cache_dir",args.data_cache_dir)
     return args
 
 
@@ -344,7 +349,7 @@ def use_trainer(args):
         save_strategy = "epoch",
        # eval_steps = 300,
         per_device_train_batch_size = 20,
-        per_device_eval_batch_size=1,
+        per_device_eval_batch_size=20,
         learning_rate = args.learning_rate,
         weight_decay = args.weight_decay,
         adam_epsilon = args.adam_epsilon,
@@ -380,11 +385,14 @@ def use_trainer(args):
         
     )
     #trainer.predict(args.test_dataset[:10])
+    #model_to_save = trainer.model.module if hasattr(trainer.model, 'module') else trainer.model # Take care of distributed/parallel training
+    #model_to_save.save_pretrained(args.output_dir)
+    os.makedirs(args.output_dir, exist_ok=True)
     trainer.train()
     #trainer.save_model()
-    model_to_save = (
-        model.module if hasattr(model, "module") else model
-    )  # Take care of distributed/parallel training
+    output_dir = args.output_dir
+    os.makedirs(output_dir, exist_ok=True)
+    model_to_save = trainer.model.module if hasattr(trainer.model, 'module') else trainer.model # Take care of distributed/parallel training
     model_to_save.save_pretrained(output_dir)
     #model.save_pretrained(args.output_dir)
     

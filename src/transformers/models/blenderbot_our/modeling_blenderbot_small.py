@@ -41,8 +41,8 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_blenderbot_small import BlenderbotSmallConfig
-from .modules.modules import EmoTrans, CatAttention, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, EmoTrans_wo_Emo, IntensityVAE
-
+from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, CatAttention, IntensityVAE#, EmoTransVAE_MixStrat
+#from .modules.modules import ContrastiveLoss
 
 
 logger = logging.get_logger(__name__)
@@ -295,7 +295,16 @@ class BlenderbotSmallEncoderLayer(nn.Module):
 
         
 
-    def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, comet_hidden_states :torch.Tensor,  attention_mask_for_muAttn :torch.Tensor, comet_mask :torch.Tensor, comet_hidden_states_st :torch.Tensor,  comet_mask_st :torch.Tensor, output_attentions: bool = False, output_mutual_attentions: bool=False):
+    def forward(self, hidden_states: torch.Tensor, attention_mask: torch.Tensor, 
+                comet_hidden_states :torch.Tensor = None,  
+                attention_mask_for_muAttn :torch.Tensor  = None, 
+                comet_mask :torch.Tensor  = None, 
+                comet_hidden_states_st :torch.Tensor = None,  
+                situation_hidden_states: torch.Tensor = None,
+                situation_attention_mask: torch.Tensor  = None,
+                comet_mask_st :torch.Tensor = None, 
+                output_attentions: bool = False,
+                output_mutual_attentions: bool=False):
 
         """
         Args:
@@ -323,50 +332,59 @@ class BlenderbotSmallEncoderLayer(nn.Module):
         hidden_states = self.final_layer_norm(hidden_states)
         
         if self.is_fuse:
-            if comet_hidden_states is not None and comet_hidden_states_st is not None:
-                hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
+            if self.config.use_situ_in_encoder and situation_hidden_states is not None:
+                hidden_cat = torch.cat((hidden_states, situation_hidden_states), dim = 1)
                 len_1 = hidden_states.size(1)
-                len_2 = comet_hidden_states.size(1)
-                len_3 = comet_hidden_states_st.size(1)
+                len_2 = situation_hidden_states.size(1)
                 hidden_cat, attn_weights, _ = self.muAttn(
                     hidden_cat, 
                     attention_mask = attention_mask_for_muAttn,
                     output_attentions = output_mutual_attentions
                 )
+                situation_hidden_states = hidden_cat[:,len_1:,:]
+                if torch.isinf(situation_hidden_states).any():
+                    clamp_value = torch.finfo(situation_hidden_states.dtype).max - 1000
+                    situation_hidden_states = torch.clamp(situation_hidden_states, min=-clamp_value, max=clamp_value)
+            #elif comet_hidden_states is not None and comet_hidden_states_st is not None and not self.config.wo_comet:
+            #    hidden_cat = torch.cat((hidden_states, comet_hidden_states, comet_hidden_states_st), dim = 1)
+            #    len_1 = hidden_states.size(1)
+            ##    len_2 = comet_hidden_states.size(1)
+            #    len_3 = comet_hidden_states_st.size(1)
+            #    hidden_cat, attn_weights, _ = self.muAttn(
+            #        hidden_cat, 
+            #        attention_mask = attention_mask_for_muAttn,
+            #        output_attentions = output_mutual_attentions
+            #    )
                 #attn_weights shape [b, n_head, seq_len, seq_len]
                 #0->len1  history,    len1->len1+len2   comet,  len1+len2->len1+len2+len3  comet_st
                 #hidden_states = hidden_cat[:,:len_1,:]
-                comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
-                comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
-                #if is_last_layer:
-                #   hidden_states = hidden_cat[:,:len_1,:]
-                if output_mutual_attentions:
-                    mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
-                    mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
-                #if torch.isinf(hidden_states).any() or torch.isnan(hidden_states).any():
-                #    clamp_value = torch.finfo(hidden_states.dtype).max - 1000
-                #    hidden_states = torch.clamp(hidden_states, min=-clamp_value, max=clamp_value)
-                if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
-                    clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
-                    comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
-                if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
-                    clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
-                    comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
-        ######################################
-        # hidden_states = hidden_states_sp + hidden_states_st
-        # hidden_states = self.attn_layer_norm_comet(hidden_states)
+            #    comet_hidden_states = hidden_cat[:,len_1:len_1 + len_2,:]
+            #    comet_hidden_states_st = hidden_cat[:,len_1 + len_2:len_1 + len_2 + len_3,:]
+            #    if output_mutual_attentions:
+            #        mutual_attn_weights = attn_weights[:,:,:len_1,len_1:len_1 + len_2]
+            #        mutual_attn_weights_st = attn_weights[:,:,:len_1,len_1 + len_2:len_1 + len_2 + len_3]
+            #    if torch.isinf(comet_hidden_states).any() or torch.isnan(comet_hidden_states).any():
+            #        clamp_value = torch.finfo(comet_hidden_states.dtype).max - 1000
+            #        comet_hidden_states = torch.clamp(comet_hidden_states, min=-clamp_value, max=clamp_value)
+            #    if torch.isinf(comet_hidden_states_st).any() or torch.isnan(comet_hidden_states_st).any():
+            #        clamp_value = torch.finfo(comet_hidden_states_st.dtype).max - 1000
+            #        comet_hidden_states_st = torch.clamp(comet_hidden_states_st, min=-clamp_value, max=clamp_value)
+
 
         if torch.isinf(hidden_states).any() or torch.isnan(hidden_states).any():
             clamp_value = torch.finfo(hidden_states.dtype).max - 1000
             hidden_states = torch.clamp(hidden_states, min=-clamp_value, max=clamp_value)
 
-        outputs = {'hidden_states': hidden_states, 'comet_hidden_states':comet_hidden_states, 'comet_hidden_states_st':comet_hidden_states_st}
+        outputs = {'hidden_states': hidden_states, 
+                   'comet_hidden_states':comet_hidden_states, 
+                   'comet_hidden_states_st':comet_hidden_states_st,
+                   'situation_hidden_states':situation_hidden_states,
+                   }
         if output_attentions:
             outputs['attn_weights'] = attn_weights
         if output_mutual_attentions:
-            outputs['mutual_attn_weights'] = mutual_attn_weights
-            outputs['mutual_attn_weights_st'] = mutual_attn_weights_st
-
+            outputs['mutual_attn_weights'] = None
+            outputs['mutual_attn_weights_st'] = None
 
         return outputs
 

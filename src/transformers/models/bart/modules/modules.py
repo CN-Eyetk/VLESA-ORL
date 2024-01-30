@@ -668,126 +668,51 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
         kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
         return kl_div
 
-"""
-Author: Yonglong Tian (yonglong@mit.edu)
-Date: May 07, 2020
-"""
 
 
-class SupConLoss(nn.Module):
-    """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
-    It also supports the unsupervised contrastive loss in SimCLR"""
-    def __init__(self, temperature=0.07, contrast_mode='one',
-                 base_temperature=0.07):
-        super(SupConLoss, self).__init__()
-        self.temperature = temperature
-        self.contrast_mode = contrast_mode
-        self.base_temperature = base_temperature
+class ContrastiveLoss(nn.Module):
+    def __init__(self, m=2.0):
+        super(ContrastiveLoss, self).__init__()  # pre 3.3 syntax
+        self.m = m  # margin or radius
 
-    def forward(self, features, labels=None, mask=None):
-        #print("labels",labels)
-        #print("features",features.shape)
-        """Compute loss for model. If both `labels` and `mask` are None,
-        it degenerates to SimCLR unsupervised loss:
-        https://arxiv.org/pdf/2002.05709.pdf
-
-        Args:
-            features: hidden vector of shape [bsz, n_views, ...].
-            labels: ground truth of shape [bsz].
-            mask: contrastive mask of shape [bsz, bsz], mask_{i,j}=1 if sample j
-                has the same class as sample i. Can be asymmetric.
-        Returns:
-            A loss scalar.
-        """
-        if torch.isinf(features).any() or torch.isnan(features).any():
-            print("features has nan")
-            assert 1 == 2
+    def pair_forward(self, y1, y2, d=0):
+        # d = 1 means y1 and y2 are supposed to be same
+        # d = 0 means y1 and y2 are supposed to be different
         
-        device = (torch.device('cuda')
-                  if features.is_cuda
-                  else torch.device('cpu'))
+        euc_dist = nn.functional.pairwise_distance(y1, y2)
 
-        if len(features.shape) < 3:
-            raise ValueError('`features` needs to be [bsz, n_views, ...],'
-                             'at least 3 dimensions are required')
-        if len(features.shape) > 3:
-            features = features.view(features.shape[0], features.shape[1], -1)
-
-        batch_size = features.shape[0]
-        if labels is not None and mask is not None:
-            raise ValueError('Cannot define both `labels` and `mask`')
-        elif labels is None and mask is None:
-            mask = torch.eye(batch_size, dtype=torch.float32).to(device)
-        elif labels is not None:
-            labels = labels.contiguous().view(-1, 1)
-            if labels.shape[0] != batch_size:
-                raise ValueError('Num of labels does not match num of features')
-            mask = torch.eq(labels, labels.T).float().to(device)
-        else:
-            mask = mask.float().to(device)
-
-        contrast_count = features.shape[1]
-        contrast_feature = torch.cat(torch.unbind(features, dim=1), dim=0)
-        if self.contrast_mode == 'one':
-            anchor_feature = features[:, 0]
-            anchor_count = 1
-        elif self.contrast_mode == 'all':
-            anchor_feature = contrast_feature
-            anchor_count = contrast_count
-        else:
-            raise ValueError('Unknown mode: {}'.format(self.contrast_mode))
-
-        # compute logits
-        anchor_dot_contrast = torch.div(
-            torch.matmul(anchor_feature, contrast_feature.T),
-            self.temperature)
-        # for numerical stability
-        logits_max, _ = torch.max(anchor_dot_contrast, dim=1, keepdim=True)
-        logits = anchor_dot_contrast - logits_max.detach()
-
-        # tile mask
-        mask = mask.repeat(anchor_count, contrast_count)
-        # mask-out self-contrast cases
-        logits_mask = torch.scatter(
-            torch.ones_like(mask),
-            1,
-            torch.arange(batch_size * anchor_count).view(-1, 1).to(device),
-            0
-        )
-        mask = mask * logits_mask
-
-        # compute log_prob
-        exp_logits = torch.exp(logits) * logits_mask
-        log_prob = logits - torch.log(exp_logits.sum(1, keepdim=True))
-
-        # compute mean of log-likelihood over positive
-        # modified to handle edge cases when there is no positive pair
-        # for an anchor point. 
-        # Edge case e.g.:- 
-        # features of shape: [4,1,...]
-        # labels:            [0,1,1,2]
-        # loss before mean:  [nan, ..., ..., nan] 
+        if d == 1:
+            return torch.mean(torch.pow(euc_dist, 2))  # distance squared
+        else:  # d == 1
+            delta = self.m - euc_dist  # sort of reverse distance
+            delta = torch.clamp(delta, min=0.0, max=None)
+            return torch.mean(torch.pow(delta, 2))  # mean over all rows
+    def forward(self, ys, labels):
+        b = ys.size(0)
+        contrast_loss = 0
+        n_pair = 0
+        #n_pair = ((b-1) * b)/2
+        for i in range(len(labels)):
+            for j in range(len(labels)):
+                if i > j:
+                    y_1 = ys[i]
+                    y_2 = ys[j]
+                    y_1_label = labels[i]
+                    y_2_label = labels[j]
+                    with torch.no_grad():
+                        d = (y_1_label == y_2_label).float().item()
+                    loss = self.pair_forward(y_1, y_2, d)
+                    contrast_loss += loss
+                    n_pair += 1
         
-        mask_pos_pairs = mask.sum(1)
-        mask_pos_pairs = torch.where(mask_pos_pairs < 1e-6, 1, mask_pos_pairs)
+        return contrast_loss / n_pair
+
+                    
+                    
+                
+                
         
-        mean_log_prob_pos = (mask * log_prob).sum(1) / mask_pos_pairs
-        mean_log_prob_pos[mean_log_prob_pos != mean_log_prob_pos] = 0.0
-        print("mean_log_prob_pos",mean_log_prob_pos)
-        print("mask_pos_pairs",mask_pos_pairs)
-        if torch.isinf(mean_log_prob_pos).any() or torch.isnan(mean_log_prob_pos).any():
-            print("log prob has nan")
-            assert 1 == 2
-            
-        #    mean_log_prob_pos = torch.clamp(mean_log_prob_pos, max = 0.0)
-        # loss
-        
-        loss = - (self.temperature / self.base_temperature) * mean_log_prob_pos
-        loss = loss.view(anchor_count, batch_size).mean()
-        if torch.isinf(loss).any() or torch.isnan(loss).any():
-            print("loss has nan")
-            assert 1 == 2
-        return loss
+
 
 if __name__ == "__main__":
     n_emo_in = 3

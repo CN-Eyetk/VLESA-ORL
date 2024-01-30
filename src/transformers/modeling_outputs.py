@@ -559,6 +559,9 @@ class Seq2SeqLMOutput(ModelOutput):
     emo_loss: Optional[torch.FloatTensor] = None
     intensity_loss: Optional[torch.FloatTensor] = None
     strategy_loss: Optional[torch.FloatTensor] = None
+    contrastive_loss: Optional[torch.FloatTensor] = None
+    kl_loss: Optional[torch.FloatTensor] = None
+    emo_out_loss: Optional[torch.FloatTensor] = None
     lm_logits: torch.FloatTensor = None
     emo_logits: torch.FloatTensor = None
     strategy_logits: torch.FloatTensor = None

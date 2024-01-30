@@ -46,7 +46,7 @@ from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_bart import BartConfig
 from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, CatAttention, IntensityVAE, EmoTransVAE_MixStrat
-from .modules.modules import SupConLoss
+from .modules.modules import ContrastiveLoss
 
 logger = logging.get_logger(__name__)
 
@@ -989,6 +989,8 @@ class BartEncoder(BartPretrainedModel):
             raise ValueError("You have to specify either input_ids or inputs_embeds")
 
         if inputs_embeds is None:
+            #print("inputs", input_ids.shape)
+            #print("self.embed_tokens", self.embed_tokens.num_embeddings)
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
             if self.vad_emb_ratio == -1 and self.rl_emb_ratio == -1 and role_ids is not None and vad_ids is not None:
                 role_embeds = self.embed_tokens(role_ids) * self.embed_scale
@@ -1296,6 +1298,7 @@ class BartEncoder(BartPretrainedModel):
                 strat_src_hidden = hidden_states[torch.arange(hidden_states.size(0))[:,None], strat_positions, :].squeeze(0)
                 strat_attn_mask = strat_positions.ne(-1).float()
             else:
+                assert 1 == 2
                 strat_src_hidden = comet_hidden_states
                 strat_attn_mask = comet_mask.float()
                 #print(strat_attn_mask)
@@ -1790,6 +1793,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if self.wo_comet:
             print("without comet")
         self.emo_loss_ratio = config.emo_loss_ratio
+        self.strategy_loss_ratio = config.strategy_loss_ratio
         self.emo_out_loss_ratio = config.emo_out_loss_ratio
         self.intensity_vae = config.intensity_vae
         self.use_vad_labels = config.use_vad_labels
@@ -1878,6 +1882,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         generate = True if encoder_outputs is not None else False
         strategy_label = decoder_strategy_ids
 
+
         if not generate:
             batch_size = strategy_label.shape[0]
             onehot = torch.zeros(batch_size, 8).to(strategy_label.device)
@@ -1942,7 +1947,6 @@ class BartForConditionalGeneration(BartPretrainedModel):
                     strategy_embs = strategy_embs.repeat(int(decoder_inputs_embeds.size(0)/strategy_embs.size(0)), 1, 1)
                 decoder_inputs_embeds = torch.cat((strategy_embs, decoder_inputs_embeds), dim = 1)
                 decoder_input_ids = None
-
             else:
                 pass
         else:
@@ -1981,11 +1985,14 @@ class BartForConditionalGeneration(BartPretrainedModel):
         )
         
         if self.use_emb_prep and decoder_input_ids is None:
-
             #decoder_out_hidden_start, strat_hidden, decoder_outputs_hidden_non_start = decoder_outputs[0].split([1, strategy_embs.size(1), decoder_outputs[0].size(1) - 1 - strategy_embs.size(1)], dim = 1)
             lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):]) + self.final_logits_bias
+            if self.config.use_contrastive_loss:
+                decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
         else:
             lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
+            if self.config.use_contrastive_loss:
+                decoder_cls_embedding = decoder_outputs[0][:,0]
 
 
         loss = None
@@ -1993,6 +2000,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         emo_loss = None
         intensity_loss = None
         strategy_loss = None
+        contrast_loss = None
+        KLLoss = None
+        emo_out_loss = None
 
         emotion_logits = encoder_outputs.emotion_logits
         strategy_logits = encoder_outputs.strategy_logits
@@ -2005,18 +2015,27 @@ class BartForConditionalGeneration(BartPretrainedModel):
             masked_lm_loss = loss_fct(lm_logits.reshape(-1, self.config.vocab_size),
                                     labels.reshape(-1))
             loss = masked_lm_loss.clone()
-        if self.training:
+        if not generate:
+            # seeker emotion loss
             if emotion is not None:
                 emo_loss_fct = CrossEntropyLoss()
                 # print(emotion_logits.shape, emotion)
                 emo_loss = emo_loss_fct(emotion_logits.view(-1, self.n_emo_in), emotion.view(-1))
-                loss += self.emo_loss_ratio * emo_loss
-
+                if self.training:
+                    loss += self.emo_loss_ratio * emo_loss
+            # strategy loss
             if strategy_label is not None:
                 strategy_loss_fct = CrossEntropyLoss()
                 strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
-                loss += 0.2 * strategy_loss
-
+                if self.training:
+                    loss += self.strategy_loss_ratio * strategy_loss
+            if self.config.use_contrastive_loss:
+                contrast_loss_funct = ContrastiveLoss()
+                #decoder_strategy_ids = decoder_strategy_ids.view(-1, 8)
+                decoder_cls_embedding = decoder_cls_embedding.view(-1, self.config.d_model)
+                contrast_loss = contrast_loss_funct(decoder_cls_embedding, decoder_strategy_ids)
+                if self.training:
+                    loss += 0.1 * contrast_loss
             if self.use_trans_mat and emo_out_prob is not None:
                 if len(emo_out_prob.size()) == 1:
                     emo_out_prob = emo_out_prob.unsqueeze(0)
@@ -2029,24 +2048,29 @@ class BartForConditionalGeneration(BartPretrainedModel):
                         emo_out_loss_fct = NLLLoss()
                         emo_out_label = emo_dist.argmax(-1).squeeze()
                         emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
-                    loss += self.emo_out_loss_ratio * emo_out_loss
-                if self.use_vae:
-                    mu_prior, logvar_prior = encoder_outputs.vae_prior_output
-                    mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
-                    if mu_posterior is not None:
-                        if self.config.mixed_vae:
-                            KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior, logvar_posterior, mu_prior, logvar_prior)
-                        else:
-                            for i in range(mu_posterior.size(-1)):
-                                KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior[:,:,i], logvar_posterior[:,:,i], mu_prior[:,:,i], logvar_prior[:,:,i])
-                                #KLLoss = KLLoss / batch_size
-                            
+                    if self.training:
+                        loss += self.emo_out_loss_ratio * emo_out_loss
+            if self.use_vae:
+                mu_prior, logvar_prior = encoder_outputs.vae_prior_output
+                mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
+                if mu_posterior is not None:
+                    if self.config.mixed_vae:
+                        KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior, logvar_posterior, mu_prior, logvar_prior)
+                        if self.training:
                             loss += self.emo_out_loss_ratio * KLLoss
+                    else:
+                        for i in range(mu_posterior.size(-1)):
+                            KLLoss = self.model.encoder.trans_mat.kl_div(mu_posterior[:,:,i], logvar_posterior[:,:,i], mu_prior[:,:,i], logvar_prior[:,:,i])
+                            if self.training:
+                                loss += self.emo_out_loss_ratio * KLLoss
+                            #KLLoss = KLLoss / batch_size
+
+
             #if not return_dict:
             #    output = (lm_logits,) + outputs[1:]
             #    return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
-
+        #print("KLLoss",KLLoss)
         return Seq2SeqLMOutput(
             loss=loss,
             lm_loss=masked_lm_loss,
@@ -2054,6 +2078,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
             intensity_loss=intensity_loss,
             strategy_loss=strategy_loss,
             lm_logits=lm_logits,
+            kl_loss = KLLoss,
+            emo_out_loss = emo_out_loss,
+            contrastive_loss = contrast_loss,
             emo_logits=emotion_logits,
             strategy_logits=strategy_logits,
             past_key_values=decoder_outputs.past_key_values,

@@ -37,6 +37,7 @@ from pathlib import Path
 import json
 import wandb
 from attach_vad.VADTokenizer import W2VAD
+from cleantext import clean
 
 from src.transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
@@ -139,6 +140,7 @@ def load_config(args, eval = False):
     config.use_situ_in_decoder = args.use_situ_in_decoder
     config.use_situ_in_encoder = args.use_situ_in_encoder
     config.use_vad_labels = args.use_vad_labels
+    config.use_contrastive_loss = args.use_contrastive_loss
     return config
 
 def load_model_for_eval(args):
@@ -431,6 +433,7 @@ def _get_comet_input(args, comet_row, tokenizer, max_num_attr=30, max_len_attr=1
 
 def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False, vad_ids = None):
     # we did't use role label and turn number in modeling as they did't carry significant improvement. However, codes still remain here.
+    #print("strategy_labels",strategy_labels)
     if len(sents) == 0:
         return InputFeatures_train([], [], [], [], [],
                             [], [] , [], [])
@@ -577,6 +580,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     #print("situation:",situation)
     spt_eos_indice = [i for i, e in enumerate(is_strat_targ) if e != 8]
     #hist_strat_labels = [e for i,e in enumerate(is_strat_targ) if e != 8]
+    #print("strategy_ids",strategy_ids)
     feature = InputFeatures_train(id_, input_ids, position_ids, token_type_ids, roles,
                             lm_labels, cls_position , strategy_labels[-1], strategy_ids, situ_ids, is_strat_targ = is_strat_targ, is_emo_targ = is_emo_targ,
                             spt_eos_indice = spt_eos_indice,
@@ -590,6 +594,13 @@ def _norm_text(text):
     #text = text.replace("é","e")
     #text = text.replace("has ime for me","has time for me")
     #text = clean(text, no_emoji=True)
+    emoji_pattern = re.compile("["
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                            "]+", flags=re.UNICODE)
+    text = emoji_pattern.sub(r'', text)
     emo, r, t, *toks = text.strip().split()
     try:
         emo = int(emo)
@@ -643,7 +654,9 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
                 strategy_labels.append(8)
             else:
                 #print(1/0)
+                #print("label",label)
                 strategy_label = tokenizer.convert_tokens_to_ids([label])[0] - args.base_vocab_size
+                #print("strategy_label",strategy_label)
                 strategy_labels.append(strategy_label)
                 #print(f"{label}-- id = {tokenizer.encode([label])[0]} minus --{args.base_vocab_size} res--{strategy_label}")
                 #print(tokenizer.convert_ids_to_tokens([args.base_vocab_size + i for i in range(20)]))
@@ -722,6 +735,7 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     d_inputs, d_roles, d_turns, d_strategy_labels, emotion, emo_dist, _, intensity, d_vad_ids = _get_inputs_from_text(row.split("EOS")[-1], tokenizer, strategy=strategy, get_emo_dist = True, prepend_emotion =  prepend_emotion, args = args, is_decoder = True,
                                                                                                                       vad_tokenizer = vad_tokenizer 
                                                                                                                       )
+    #print("d_strategy_labels",d_strategy_labels)
     situ_ids = tokenizer.encode(situation) 
     if situ_ids[-1] !=  tokenizer.eos_token_id:
         situ_ids.append(tokenizer.eos_token_id)
@@ -736,6 +750,7 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     comet_ids, comet_mask = _get_comet_input(args, comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(args, comet_st_row, tokenizer, max_num_attr=20)
     feature = InputFeatures_blender(feature, d_feature, comet_ids, comet_mask, emotion, comet_st_ids, comet_st_mask, emo_dist = emo_dist, emo_in_dist = emo_in_dist, intensity = intensity)
+    #print("feature",feature.decoder_strategy_ids)
     return feature
 
 
@@ -746,7 +761,7 @@ class ESDDataset(Dataset):
         block_size = block_size - (tokenizer.model_max_length - tokenizer.max_len_single_sentence)
         self.tokenizer = tokenizer
         self.vad_tokenizer = vad_tokenizer
-        self.collate_verbose_step = 0
+        self.collate_verbose_step = 10
         directory = args.data_cache_dir
         self.args = args
         self.role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]
@@ -910,6 +925,7 @@ class ESDDataset(Dataset):
         decoder_strategy_ids = pad_sequence([torch.tensor(f.decoder_strategy_ids, dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=8)
+
         # print([f.comet_ids for f in features])
         # print([f.comet_mask for f in features])
         comet_ids = torch.tensor([f.comet_ids for f in features], dtype=torch.long)
@@ -1437,6 +1453,9 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     logger.info("  Batch size = %d", args.eval_batch_size)
     eval_loss = 0.0
     intensity_loss = 0.0
+    kl_loss = 0.0
+    emo_out_loss = 0.0
+    contrastive_loss = 0.0
     nb_eval_steps = 0
     model.eval()
 
@@ -1483,6 +1502,14 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             eval_loss += lm_loss.sum().item() * (decoder_label_ids.cpu().numpy() != -100).astype(np.int32).sum()
             if outputs.intensity_loss is not None:
                 intensity_loss += (outputs.intensity_loss.detach().cpu().item() - intensity_loss) / (nb_eval_steps + 1)
+            #assert outputs.kl_loss is not None
+            #if outputs.kl_loss is not None:
+            #    kl_loss += (outputs.kl_loss.detach().cpu().item() - kl_loss) / (nb_eval_steps + 1)
+            if outputs.contrastive_loss is not None:
+                contrastive_loss += (outputs.contrastive_loss.detach().cpu().item() - contrastive_loss) / (nb_eval_steps + 1)
+            if outputs.emo_out_loss is not None:
+                emo_out_loss += (outputs.emo_out_loss.detach().cpu().item() - emo_out_loss) / (nb_eval_steps + 1)
+
         nb_eval_steps += 1
 
     eval_loss = eval_loss/ sum(num_samples)
@@ -1492,7 +1519,10 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     # np_cls_labels = np.array(cls_labels_list)
     # result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits)/len(emo_hits), "eval_strategy_predict_accuracy": sum(strategy_hits)/len(strategy_hits), "eval_number_of_evaluated_examples": len(emo_hits)}
     result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits) / len(emo_hits),"eval_strategy_predict_accuracy": sum(strategy_hits) / len(strategy_hits),
-              "eval_number_of_evaluated_examples": len(emo_hits), "intensity_loss":intensity_loss}
+              "eval_number_of_evaluated_examples": len(emo_hits),
+              "contrastive_loss":contrastive_loss,
+              "emo_out_loss":emo_out_loss
+              }
     output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
 
 
