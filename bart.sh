@@ -10,7 +10,7 @@ if_stg_from_eos=("" " --stg_from_eos")
 if_emo_from_eos=("" " --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-use_role=("" " --use_role_embed")
+use_role=(" --use_role_embed")
 rl_rat=(0.6) #)
 vad_rats=(0.3) # 0.3 0.8)
 emo_loss_rat=(0.2)
@@ -47,7 +47,6 @@ for u_r in "${use_role[@]}"; do
                                         #cur_comm+=" --use_vad_labels"
                                         #cur_comm+=" --use_situ_in_decoder "
                                         cur_comm+=" --wo_comet"
-                                        $cur_comm
                                         cur_comm+=" --stg_from_eos "
                                         $cur_comm
                                         cur_comm+=" --emo_from_eos "

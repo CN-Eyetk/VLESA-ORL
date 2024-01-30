@@ -1935,6 +1935,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         if self.use_emb_prep:
             if decoder_input_ids[0][0].item() == self.config.decoder_start_token_id:
                 decoder_attention_mask = decoder_input_ids.ne(self.config.pad_token_id).bool()
+
                 decoder_attention_mask = torch.cat((torch.ones(decoder_attention_mask.size(0), strategy_embs.size(1)).to(self.device), decoder_attention_mask), dim = 1)
                 decoder_inputs_embeds = self.model.decoder.embed_tokens(decoder_input_ids) * self.model.decoder.embed_scale
                 if decoder_inputs_embeds.size(0) >  strategy_embs.size(0):
