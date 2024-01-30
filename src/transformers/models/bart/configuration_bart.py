@@ -199,7 +199,7 @@ class BartConfig(PretrainedConfig):
         self.rl_emb_ratio = kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
         self.vad_emb_ratio = kwargs["vad_emb_ratio"] if "vad_emb_ratio" in kwargs.keys() else 0.2
         self.emo_loss_ratio = kwargs["emo_loss_ratio"] if "emo_loss_ratio" in kwargs.keys() else 1.0
-        self.strategy_loss_ratio = kwargs["strategy_loss_ratio"] if "strategy_loss_ratio" in kwargs.keys() else 0.2
+        self.strategy_loss_ratio = kwargs["strategy_loss_ratio"] if "strategy_loss_ratio" in kwargs.keys() else 0.05
         self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
         self.intensity_vae = kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
         self.use_situ_in_encoder = kwargs["use_situ_in_encoder"] if "use_situ_in_encoder" in kwargs.keys() else False
