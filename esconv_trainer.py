@@ -363,6 +363,8 @@ class ESCONVTrainer(Seq2SeqTrainer):
                     loss = (outputs["lm_loss"] if isinstance(outputs, dict) else outputs[0]).mean().detach()
             else:
                 loss = None
+                
+            lm_loss = outputs.lm_loss.item()
 
         if self.args.prediction_loss_only:
             return (loss, None, None)
@@ -371,4 +373,4 @@ class ESCONVTrainer(Seq2SeqTrainer):
         if labels.shape[-1] < gen_kwargs["max_length"]:
             labels = self._pad_tensors_to_max_len(labels, gen_kwargs["max_length"])
 
-        return (loss, generated_tokens, labels)
+        return (loss, {"generated_tokens":generated_tokens,"lm_loss":lm_loss}, labels)

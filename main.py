@@ -298,7 +298,7 @@ def plot(model, strat_labels, emo_in_labels, emo_out_labels):
 
 def compute_metrics(eval_preds):
     preds, labels = eval_preds
-    if type(preds) is dict:
+    if type(preds) is dict and "strategy_logits" in preds.keys():
         generating = False
     else:
         generating = True
@@ -311,10 +311,9 @@ def compute_metrics(eval_preds):
             "strategy_acc":strategy_acc
         }
     else:
-        if isinstance(preds, tuple):
-            preds = preds[0]
-        print("preds",preds)
-        print("labels",labels)
+        #if isinstance(preds, dict):
+        preds = preds["generated_tokens"]
+        ppl = np.exp(preds["lm_loss"]).mean().item()
         # print("one: before decoder")
         decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
         #if args.ignore_pad_token_for_loss:
@@ -333,6 +332,7 @@ def compute_metrics(eval_preds):
         print("process_preds: ", decoded_preds[x])
         print("process_label: ", decoded_labels[x])
         my_metric = clac_metric_2(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
+        my_metric["ppl"] = ppl
         return my_metric
 
 def use_trainer(args):
@@ -351,7 +351,7 @@ def use_trainer(args):
         #logging_strategy = "epoch",
         #save_steps = 300,
         seed = 42,
-        predict_with_generate = True,
+        #predict_with_generate = True,
         use_situ_in_decoder = args.use_situ_in_decoder,
         use_situ_in_encoder = args.use_situ_in_encoder,
         wo_comet = args.wo_comet,
