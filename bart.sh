@@ -44,6 +44,7 @@ for u_r in "${use_role[@]}"; do
                                         cur_comm+=" --rl_emb_ratio "$rl_r
                                         cur_comm+=" --emo_loss_rat "$el_r
                                         cur_comm+=" --use_trans "
+                                        cur_comm+=" --use_contrastive_loss "
                                         #cur_comm+=" --use_situ_in_encoder "
                                         #cur_comm+=" --use_vad_labels"
                                         #cur_comm+=" --use_situ_in_decoder "
