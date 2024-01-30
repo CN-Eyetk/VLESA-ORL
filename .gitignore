@@ -29,3 +29,6 @@ glove
 __pycache___
 */__pycache__
 wandb
+wandb/*
+bart.sh
+blenderbot.sh

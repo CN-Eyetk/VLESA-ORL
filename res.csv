@@ -1,11 +1,11 @@
-,/-LIGHT-TRANS4/all_loss0.0_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.2_1.0_1.0_kl-nopp-empp-no_fuse-role1016_II,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II copy,/-LIGHT-TRANS4/all_loss0.9_1.0_1.0_kl-nopp-empp-no_fuse-bart-role1016_II,misc_generated_data,transESC_generated_data
-length,18.833,17.434,19.698,19.67,16.706,15.288,16.364
-dist-1,2.441,4.526,2.68,2.71,4.968,4.12,4.281
-dist-2,10.393,21.142,12.035,11.998,20.644,18.64,19.753
-dist-3,19.047,37.72,22.501,22.438,35.292,34.065,36.022
-bleu-1,18.665,19.089,19.894,19.837,18.195,16.189,16.865
-bleu-2,7.171,7.594,8.234,8.184,7.684,6.263,6.686
-bleu-3,3.634,3.889,4.387,4.319,4.19,3.098,3.341
-bleu-4,2.113,2.326,2.588,2.553,2.646,1.794,1.954
-f1,21.776,21.286,22.436,22.455,20.456,19.609,19.261
-rouge-l,17.286,17.41,17.876,17.929,16.621,16.031,15.89
+,/-LIGHT-TRANS4/all_loss0.0_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.2_1.0_1.0_kl-nopp-empp-no_fuse-role1016_II,/-LIGHT-TRANS4/all_loss0.5_0.05_0.05_kl-lr_2e-05-nopp-empp-w_eosemo-w_emocat-w_stgcat-vae-mvae128-ct124_II,/-LIGHT-TRANS4/all_loss0.5_0.05_0.05_kl-lr_2e-05-nopp-empp-w_eosemo-w_emocat-w_stgcat-vae-mvae128124_II,/-LIGHT-TRANS4/all_loss0.5_0.05_0.05_kl-lr_2e-05-nopp-empp-w_eosemo-w_emocat-w_stgcat-vae-mvae64124_II,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Emoin-nopp-empp-ensitu-vae-mvae16-wo_comet124_II copy,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-nopp-empp-ensitu-w_emocat-w_stgcat-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-nopp-empp-ensitu-w_eosemo-w_emocat-w_stgcat-vae-mvae16-wo_comet124_II,/-LIGHT-TRANS4/all_loss0.9_1.0_1.0_kl-nopp-empp-no_fuse-bart-role1016_II,misc_generated_data,transESC_generated_data
+length,19.833,18.434,20.258,20.633,18.736,20.698,20.67,17.234,18.763,17.706,16.288,17.364
+dist-1,2.323,4.289,3.066,3.045,2.933,2.561,2.585,3.019,3.108,4.7,3.897,4.074
+dist-2,9.854,19.987,14.057,13.952,12.887,11.474,11.429,12.436,13.698,19.462,17.497,18.634
+dist-3,18.017,35.702,26.313,26.211,23.931,21.444,21.377,22.865,25.436,33.421,32.109,34.166
+bleu-1,19.926,20.729,21.116,21.584,19.845,21.174,21.13,18.049,19.756,19.849,17.806,18.461
+bleu-2,7.853,8.499,8.864,9.097,8.411,8.962,8.885,7.407,8.326,8.546,7.139,7.56
+bleu-3,4.036,4.443,4.739,4.854,4.576,4.849,4.766,3.9,4.405,4.711,3.617,3.878
+bleu-4,2.376,2.677,2.823,2.929,2.797,2.918,2.871,2.315,2.587,3.008,2.112,2.29
+f1,22.547,22.659,23.779,23.967,23.801,23.382,23.399,22.873,23.585,22.132,21.137,20.962
+rouge-l,18.376,19.063,19.426,19.455,19.486,19.181,19.222,18.688,19.294,18.632,17.844,17.85

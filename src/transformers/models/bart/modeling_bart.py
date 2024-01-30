@@ -1063,7 +1063,13 @@ class BartEncoder(BartPretrainedModel):
                 else:
                     if role_ids is None or vad_ids is None:
                         #not training
-                        layer_outputs = encoder_layer(hidden_states, attention_mask)
+                        layer_outputs = encoder_layer(hidden_states, attention_mask,
+                                                    comet_hidden_states=comet_hidden_states, 
+                                                    comet_mask=comet_mask,
+                                                    comet_hidden_states_st=comet_hidden_states_st, 
+                                                    comet_mask_st=comet_mask_st, 
+                                                    
+                                                    )
                     else:
                         layer_outputs = encoder_layer(hidden_states, attention_mask, 
                                                     comet_hidden_states=comet_hidden_states, 
@@ -1222,7 +1228,7 @@ class BartEncoder(BartPretrainedModel):
             logvar_int_posterior = None
             intensity_out = None
             
-            
+        #print("strategy_logits",strategy_logits)
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
             hidden_states=encoder_states, attentions=all_attentions, all_mutual_attentions=all_mutual_attentions, all_mutual_attentions_st=all_mutual_attentions_st,
@@ -1277,9 +1283,9 @@ class BartEncoder(BartPretrainedModel):
                 last_eos_state = None
                 emo_hidden = hidden_states[:,0,:]
                 emotion_logits = self.emotion_head(emo_hidden)
-        if b > 1:
-            emotion_logits = self.batchNorm_emotion(emotion_logits)
-            emotion_intensity = None
+        
+        emotion_logits = self.batchNorm_emotion(emotion_logits)
+        emotion_intensity = None
         return emotion_logits, emo_hidden
     def predict_strategy(self,
                         hidden_states,
@@ -1288,7 +1294,7 @@ class BartEncoder(BartPretrainedModel):
                         comet_mask = None,
                         last_token_index = None,
                         strategy_logit_ground = None,
-                        generate_with_predicted_strategy = True
+                        generate_with_predicted_strategy = False
                         ):
         b = hidden_states.size(0)
         if self.stg_use_cat_attn:
@@ -1319,8 +1325,8 @@ class BartEncoder(BartPretrainedModel):
             #10-6 Add Cat attn
         batch_size = strategy_logits.shape[0]
         strategy_id = self.strategy_id.to(strategy_logits.device)
-        if b > 1:
-            strategy_logits = self.batchNorm_strategy(strategy_logits)
+        
+        strategy_logits = self.batchNorm_strategy(strategy_logits)
         if strategy_logit_ground is not None:
             strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
         elif generate_with_predicted_strategy:
@@ -1988,11 +1994,21 @@ class BartForConditionalGeneration(BartPretrainedModel):
             #decoder_out_hidden_start, strat_hidden, decoder_outputs_hidden_non_start = decoder_outputs[0].split([1, strategy_embs.size(1), decoder_outputs[0].size(1) - 1 - strategy_embs.size(1)], dim = 1)
             lm_logits = self.lm_head(decoder_outputs[0][:,strategy_embs.size(1):]) + self.final_logits_bias
             if self.config.use_contrastive_loss:
-                decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
+                #decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
+                valid_decoder_attention_mask = decoder_attention_mask[:,strategy_embs.size(1):].unsqueeze(-2)
+                #print("valid_decoder_attention_mask",valid_decoder_attention_mask.shape)
+                lm_hidden = decoder_outputs[0][:,strategy_embs.size(1):]
+                #print("lm_hidden",lm_hidden.shape)
+                decoder_pool_embedding = valid_decoder_attention_mask.matmul(lm_hidden)
+                #print("decoder_pool_embedding",decoder_pool_embedding.shape)
+                decoder_pool_embedding = decoder_pool_embedding.view(-1, self.config.d_model) 
+                decoder_pool_embedding = decoder_pool_embedding / decoder_attention_mask[:,strategy_embs.size(1):].sum(-1).unsqueeze(-1).repeat(1, self.config.d_model)
         else:
             lm_logits = self.lm_head(decoder_outputs[0]) + self.final_logits_bias
             if self.config.use_contrastive_loss:
-                decoder_cls_embedding = decoder_outputs[0][:,0]
+                #decoder_cls_embedding = decoder_outputs[0][:,0]
+                decoder_pool_embedding = decoder_attention_mask.unsqueeze(-2).matmul(decoder_outputs[0]).view(-1, self.config.d_model) 
+                decoder_pool_embedding = decoder_pool_embedding / decoder_attention_mask.sum(-1).unsqueeze(-1).repeat(1, self.config.d_model)
 
 
         loss = None
@@ -2032,10 +2048,11 @@ class BartForConditionalGeneration(BartPretrainedModel):
             if self.config.use_contrastive_loss:
                 contrast_loss_funct = ContrastiveLoss()
                 #decoder_strategy_ids = decoder_strategy_ids.view(-1, 8)
-                decoder_cls_embedding = decoder_cls_embedding.view(-1, self.config.d_model)
-                contrast_loss = contrast_loss_funct(decoder_cls_embedding, decoder_strategy_ids)
+                decoder_pool_embedding = decoder_pool_embedding.view(-1, self.config.d_model)
+                #print(decoder_pool_embedding.shape)
+                contrast_loss = contrast_loss_funct(decoder_pool_embedding, decoder_strategy_ids)
                 if self.training:
-                    loss += 0.1 * contrast_loss
+                    loss += 0.05 * contrast_loss
             if self.use_trans_mat and emo_out_prob is not None:
                 if len(emo_out_prob.size()) == 1:
                     emo_out_prob = emo_out_prob.unsqueeze(0)

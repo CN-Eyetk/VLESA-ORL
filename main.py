@@ -424,9 +424,8 @@ if __name__ == "__main__":
             use_trainer(args)
         else:
             global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
-    else:
-        model = load_model_for_eval(args)
-        model.to(args.device)
+    model = load_model_for_eval(args)
+    model.to(args.device)
     model.eval()
     with torch.no_grad():
         #matrices = model.

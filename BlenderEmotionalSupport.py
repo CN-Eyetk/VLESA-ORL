@@ -1434,7 +1434,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
-        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=eval_dataset.collate, drop_last = False
+        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=args.eval_dataset.collate, drop_last = False
     )
 
     if args.fp16:
@@ -2007,7 +2007,7 @@ def generate_new(args, model = None):
     strategy_hits_topk = [[] for _ in range(8)]
     for idx in tqdm(range(len(args.test_dataset)), desc="Testing"):
         f = args.test_dataset[idx]
-        batch = args.test_dataset.collate([f])
+        batch = args.train_dataset.collate([f])
         input_ids, paras = shared_steps(batch, model, tokenizer, args, phase = "generation")
         
         next_strategy_id = f.decoder_strategy_ids[0]
@@ -2016,22 +2016,22 @@ def generate_new(args, model = None):
         decoder_strategy_ids = decoder_strategy_ids[:, 0]
 
         gts.append(tokenizer.decode(f.decoder_input_ids, skip_special_tokens=True))
-
-        chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
-            input_ids,
-            **paras, max_length=512,
-            min_length=5,
-            num_beams=1,
-            use_cache=True,
-            pad_token_id=tokenizer.pad_token_id,
-            early_stopping=True,
-            eos_token_id=tokenizer.eos_token_id, temperature=0.7,
-            top_p=0.3, 
-            top_k = 30, 
-            do_sample=True, 
-            #no_repeat_ngram_size=3,
-            repetition_penalty=1.03
-            ) #top_p 0.9, topk 30
+        with torch.no_grad():
+            chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
+                input_ids,
+                **paras, max_length=512,
+                min_length=5,
+                num_beams=1,
+                use_cache=True,
+                pad_token_id=tokenizer.pad_token_id,
+                early_stopping=True,
+                eos_token_id=tokenizer.eos_token_id, temperature=0.7,
+                top_p=0.3, 
+                top_k = 30, 
+                do_sample=True, 
+                #no_repeat_ngram_size=3,
+                repetition_penalty=1.03
+                ) #top_p 0.9, topk 30
 
         if mutual_attention is not None:
             chat_history_ids, mutual_attention, mutual_attention_st = chat_history_ids.cpu(), mutual_attention[-1][0].cpu(), mutual_attention_st[-1][0].cpu()
@@ -2048,7 +2048,7 @@ def generate_new(args, model = None):
         strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+args.base_vocab_size])})
         # print({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([chat_history_ids[:, :][0][1]])})
         print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
-               "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
+            "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
         if strategy_logits[0].argmax() == next_strategy_id:
             strategy_hits.append(1)
         else:
