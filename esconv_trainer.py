@@ -119,39 +119,7 @@ def clac_metric_2(decoder_preds, decoder_labels, no_glove=False):
     #metric_2_res = {f"new_{k}":v for k,v in metric_2_res.items()}
     #metric_res.update(metric_2_res)
     return metric_res
-def compute_metrics(eval_preds):
-    preds, labels = eval_preds
-    if "strategy_logits" in preds.keys():
-        generating = False
-    else:
-        generating = True
-    if not generating:
-        predicted_strategy = preds["strategy_logits"].argmax(-1)
-        strategy_acc = np.sum(predicted_strategy == labels) / len(labels)
-        ppl = np.exp(preds["lm_loss"]).mean().item()
-        return {
-            "ppl":ppl,
-            "strategy_acc":strategy_acc
-        }
-    else:
-        if isinstance(preds, tuple):
-            preds = preds[0]
-        # print("one: before decoder")
-        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
-        #if args.ignore_pad_token_for_loss:
-        #    # Replace -100 in the labels as we can't decode them.
-        #    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-        # Some simple post-processing
-        x = random.choice(range(len(decoded_labels)))
-        print("preds: ", decoded_preds[x])
-        print("label: ", decoded_labels[x])
-        decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
-        print("process_preds: ", decoded_preds[x])
-        print("process_label: ", decoded_labels[x])
-        my_metric = clac_metric_2(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
-        return my_metric
 
 class ESCONVTrainer(Seq2SeqTrainer):
     def _prepare_inputs(self, inputs: Dict[str, Union[torch.Tensor, Any]], phase = "train")  -> Dict[str, Union[torch.Tensor, Any]]:

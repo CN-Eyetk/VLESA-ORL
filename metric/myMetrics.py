@@ -34,21 +34,19 @@ def my_lcs(string, sub):
 
 
 class Metric(object):
-    def __init__(self, toker, hyp_path, ref_path, use_nltk = False):
+    def __init__(self, toker, hyps = None, refs = None, hyp_path = None, ref_path = None, use_nltk = True):
         self.refs = []
         self.hyps = []
         self.use_nltk = use_nltk
-        with open(hyp_path, 'r', encoding='utf-8') as f:
-            hyps = json.load(f)
-        with open(ref_path, 'r', encoding='utf-8') as f:
-            refs = json.load(f)
+        if hyps is None and refs is None:
+            with open(hyp_path, 'r', encoding='utf-8') as f:
+                hyps = json.load(f)
+            with open(ref_path, 'r', encoding='utf-8') as f:
+                refs = json.load(f)
         assert len(hyps) == len(refs)
         self.toker = toker
         for i in range(len(hyps)):
             self.forword([refs[i]], hyps[i])
-
-        
-
     def forword(self, refs: str, hyp: str, chinese=False): # TODO: only applicable to English
         # if not chinese:
         #     self.refs.append([nltk.word_tokenize(e.lower()) for e in refs])
@@ -143,4 +141,5 @@ class Metric(object):
         })
         
         return result, result_list
+
 

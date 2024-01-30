@@ -1,6 +1,7 @@
 import argparse
 import wandb
-from esconv_trainer import compute_metrics, ESCONVTrainer, ESCONVTrainingArguments
+import numpy as np
+from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
 #from esconv_trainer import ESCONVTrainer
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
@@ -295,22 +296,62 @@ def plot(model, strat_labels, emo_in_labels, emo_out_labels):
             weights.append(df)
     return weights
 
+def compute_metrics(eval_preds):
+    preds, labels = eval_preds
+    if type(preds) is dict:
+        generating = False
+    else:
+        generating = True
+    if not generating:
+        predicted_strategy = preds["strategy_logits"].argmax(-1)
+        strategy_acc = np.sum(predicted_strategy == labels) / len(labels)
+        ppl = np.exp(preds["lm_loss"]).mean().item()
+        return {
+            "ppl":ppl,
+            "strategy_acc":strategy_acc
+        }
+    else:
+        if isinstance(preds, tuple):
+            preds = preds[0]
+        print("preds",preds)
+        print("labels",labels)
+        # print("one: before decoder")
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+        #if args.ignore_pad_token_for_loss:
+        #    # Replace -100 in the labels as we can't decode them.
+        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+        #for label in labels:
+        #    print(label)
+        #    print(tokenizer.decode(label))
+        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+        # Some simple post-processing
+        x = random.choice(range(len(decoded_labels)))
+        print("preds: ", decoded_preds[x])
+        print("label: ", decoded_labels[x])
+        decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+        print("process_preds: ", decoded_preds[x])
+        print("process_label: ", decoded_labels[x])
+        my_metric = clac_metric_2(decoder_preds=decoded_preds, decoder_labels=decoded_labels)
+        return my_metric
+
 def use_trainer(args):
     from math import ceil
     optimizer = load_optimizer(args, model, ceil(len(train_dataset) / args.per_gpu_train_batch_size))
     training_argument  = ESCONVTrainingArguments(
         output_dir = args.output_dir,
-        evaluation_strategy = "steps",
-        eval_steps = 300,
+        evaluation_strategy = "epoch",
+        save_strategy = "epoch",
+       # eval_steps = 300,
         per_device_train_batch_size = 20,
-        per_device_eval_batch_size=20,
+        per_device_eval_batch_size=1,
         learning_rate = args.learning_rate,
         weight_decay = args.weight_decay,
         adam_epsilon = args.adam_epsilon,
         #logging_strategy = "epoch",
-        save_steps = 300,
+        #save_steps = 300,
         seed = 42,
-        #predict_with_generate = True,
+        predict_with_generate = True,
         use_situ_in_decoder = args.use_situ_in_decoder,
         use_situ_in_encoder = args.use_situ_in_encoder,
         wo_comet = args.wo_comet,
@@ -339,14 +380,13 @@ def use_trainer(args):
         
     )
     #trainer.predict(args.test_dataset[:10])
-    trainer.evaluate()
     trainer.train()
     #trainer.save_model()
     model_to_save = (
         model.module if hasattr(model, "module") else model
     )  # Take care of distributed/parallel training
     model_to_save.save_pretrained(output_dir)
-    model.save_pretrained(args.output_dir)
+    #model.save_pretrained(args.output_dir)
     
 def explain():
     stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
@@ -376,9 +416,9 @@ if __name__ == "__main__":
             use_trainer(args)
         else:
             global_step, tr_loss = train(args, logger, args.train_dataset, model, tokenizer)
-    
-    model = load_model_for_eval(args)
-    model.to(args.device)
+    else:
+        model = load_model_for_eval(args)
+        model.to(args.device)
     model.eval()
     with torch.no_grad():
         #matrices = model.

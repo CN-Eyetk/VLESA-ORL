@@ -4,9 +4,13 @@ use_th_attn=("")
 use_emb_prep=(" --use_emb_prep" )
 use_prepend=("")
 use_cat=( "")
+if_st_use_cat=("" " --stg_use_cat_attn")
+if_emo_use_cat=("" " --stg_use_cat_attn")
+if_stg_from_eos=("" " --stg_from_eos")
+if_emo_from_eos=("" " --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-use_role=(" --use_role_embed")
+use_role=("" " --use_role_embed")
 rl_rat=(0.6) #)
 vad_rats=(0.3) # 0.3 0.8)
 emo_loss_rat=(0.2)
@@ -38,14 +42,15 @@ for u_r in "${use_role[@]}"; do
                                         cur_comm+=$u_st
                                         cur_comm+=" --rl_emb_ratio "$rl_r
                                         cur_comm+=" --emo_loss_rat "$el_r
-                                        cur_comm+=" --stg_from_eos "
-                                        cur_comm+=" --emo_from_eos "
                                         cur_comm+=" --use_trans "
                                         cur_comm+=" --use_situ_in_encoder "
                                         #cur_comm+=" --use_vad_labels"
-
                                         #cur_comm+=" --use_situ_in_decoder "
                                         cur_comm+=" --wo_comet"
+                                        $cur_comm
+                                        cur_comm+=" --stg_from_eos "
+                                        $cur_comm
+                                        cur_comm+=" --emo_from_eos "
                                         $cur_comm
                                     done
                                 done
