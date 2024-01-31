@@ -92,6 +92,7 @@ TAG = "all_loss" \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
                 + ("-ensitu" if args_g.use_situ_in_encoder else "") \
                     + ("-desitu" if args_g.use_situ_in_decoder else "") \
+                        + ("-w_eosstg" if not ST_FROM_EOS else "") \
                     + ("-w_eosemo" if not EMO_FROM_EOS else "") \
                             +("-w_role" if not USE_ROLE else "") \
                         +("-w_emocat" if not EMO_USE_CAT_ATTN else "") \
@@ -439,4 +440,4 @@ if __name__ == "__main__":
         else:
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
-            generate_new(args, model = model)
+            generate_new(args, model = model, prefix="of test set")
