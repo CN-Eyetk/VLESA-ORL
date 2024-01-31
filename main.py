@@ -40,7 +40,7 @@ parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
 parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
 parser.add_argument("--intensity_vae", action = "store_true")
 parser.add_argument("--use_contrastive_loss", action = "store_true")
-
+parser.add_argument("--sample_strategy_embedding", action = "store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -86,11 +86,8 @@ MIX_VAE = args_g.mixed_vae
 
 TAG = "all_loss" \
     + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
-    + ("kl" if KL else "") \
-        +f"-lr_{args_g.lr}" \
+    +("-spst" if args_g.sample_strategy_embedding else "")  \
     + ("-Emoin" if USE_EMO_IN_DIST else "") \
-            + ("-pp" if USE_PREPEND else "-nopp") \
-            + ("-empp" if USE_EMB_PREP else "") \
                 + ("-ensitu" if args_g.use_situ_in_encoder else "") \
                     + ("-desitu" if args_g.use_situ_in_decoder else "") \
                     + ("-w_eosemo" if not EMO_FROM_EOS else "") \
@@ -244,6 +241,7 @@ def load_arg():
             "use_vad_labels":args_g.use_vad_labels,
             "freeze_emo_stag_params":args_g.freeze_emo_stag_params,
             "use_contrastive_loss":args_g.use_contrastive_loss,
+            "sample_strategy_embedding":args_g.sample_strategy_embedding
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

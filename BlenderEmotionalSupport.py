@@ -141,6 +141,7 @@ def load_config(args, eval = False):
     config.use_situ_in_encoder = args.use_situ_in_encoder
     config.use_vad_labels = args.use_vad_labels
     config.use_contrastive_loss = args.use_contrastive_loss
+    config.sample_strategy_embedding = args.sample_strategy_embedding
     return config
 
 def load_model_for_eval(args):

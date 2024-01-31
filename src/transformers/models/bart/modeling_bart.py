@@ -1186,7 +1186,7 @@ class BartEncoder(BartPretrainedModel):
         #get emo out logits
         if self.trans_mat is not None and strategy_logits is not None and emotion_logits is not None:
             if self.use_vae:
-                emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.p_sampling(emo_hidden, strategy_hidden, emotion_logits, strategy_logits)
+                emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.p_sampling(emo_hidden, strategy_hidden, emotion_logits, strategy_logits, strategy_embs)
             else:
                 emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
                 mu_prior = None
@@ -1200,7 +1200,7 @@ class BartEncoder(BartPretrainedModel):
         if self.training:
             if self.use_vae and strategy_logits is not None and emotion_logits is not None:
                 
-                emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.q_sampling(emo_hidden, strategy_hidden, emotion_logits, strategy_logits, emo_out_dist)
+                emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.q_sampling(emo_hidden, strategy_hidden, emotion_logits, strategy_logits, emo_out_dist, strategy_embs)
             else:
                 mu_posterior = None
                 logvar_posterior = None
@@ -1337,17 +1337,21 @@ class BartEncoder(BartPretrainedModel):
             strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
                                         self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
         return strategy_logits, strat_hidden, strategy_embs
-    def p_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits):
+    def p_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits, strategy_embs):
         if isinstance(self.trans_mat, EmoTransVAE_MultiStrat):
             emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.trans_mat(hidden_prior = emo_hidden, 
                                                                                     p_emo_in = emotion_logits, 
                                                                                     p_strat = F.softmax(strategy_logits, dim = -1))
 
         elif isinstance(self.trans_mat, EmoTransVAE_MixStrat):
-            emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.trans_mat(hidden_prior_emo = emo_hidden, 
-                                                                                hidden_prior_strat = strategy_hidden)
+            if self.config.sample_strategy_embedding:
+                emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.trans_mat(hidden_prior_emo = emo_hidden, 
+                                                                                    hidden_prior_strat = strategy_embs.view(-1, self.config.d_model))
+            else:
+                emo_out_embs, mu_prior, logvar_prior, emo_out_prob = self.trans_mat(hidden_prior_emo = emo_hidden, 
+                                                                                    hidden_prior_strat = strategy_hidden)
         return emo_out_embs, mu_prior, logvar_prior, emo_out_prob
-    def q_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits, emo_out_dist):
+    def q_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits, emo_out_dist, strategy_embs):
         assert emo_out_dist is not None
         emotion_id = self.trans_mat.emotion_id.to(self.device) 
         assert len(emo_out_dist.size()) == 2
@@ -1364,7 +1368,11 @@ class BartEncoder(BartPretrainedModel):
         elif isinstance(self.trans_mat, EmoTransVAE_MixStrat):
             #emo_out_dist = emo_out_dist.float()
             hidden_post_emo  = torch.cat((emo_out_emb_post, emo_hidden), dim = -1)
-            hidden_post_strat  = torch.cat((emo_out_emb_post, strategy_hidden), dim = -1)
+            if self.config.sample_strategy_embedding:
+                #strategy_embs = strategy_embs.view(-1, self.config.d_model)
+                hidden_post_strat  = torch.cat((emo_out_emb_post, strategy_embs.view(-1, self.config.d_model)), dim = -1)
+            else:
+                hidden_post_strat  = torch.cat((emo_out_emb_post, strategy_hidden), dim = -1)
             emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob = self.trans_mat.forward_train(
                                                                             hidden_post_emo = hidden_post_emo, 
                                                                             hidden_post_strat = hidden_post_strat,
