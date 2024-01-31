@@ -41,6 +41,7 @@ parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
 parser.add_argument("--intensity_vae", action = "store_true")
 parser.add_argument("--use_contrastive_loss", action = "store_true")
 parser.add_argument("--sample_strategy_embedding", action = "store_true")
+parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -48,6 +49,7 @@ parser.add_argument("--freeze_emo_stag_params", action= "store_true")
 parser.add_argument("--lr", type=float, default=5e-5)
 parser.add_argument("--tag", type=str)
 parser.add_argument("--use_trainer", action= "store_true")
+parser.add_argument("--pretrained_model_path", type = str, default = None)
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -147,11 +149,14 @@ else:
                                         logger,
                                         load_optimizer
                                         )
-    if BART:
-        output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
+    if  args_g.pretrained_model_path is not None:
+        output_dir = args_g.pretrained_model_path
     else:
-        output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
-    generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+        if BART:
+            output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
+        else:
+            output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
+        generation_dir = "our_generated_data/" + GROUP + "/" + TAG
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 
@@ -190,13 +195,13 @@ def load_arg():
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
             "adam_epsilon":1e-8,
-            "warmup_steps":510,
+            "warmup_steps":100,#once 510
             "fp16":False,
             "fp16_opt_level":'O1',
             "num_train_epochs":10 if BART else 8,
             "role":False,
             "turn":False,
-            "logging_steps":300,
+            "logging_steps":510,
             "evaluate_during_training":True,
             "output_dir":output_dir,
             "seed":42,
@@ -241,7 +246,9 @@ def load_arg():
             "use_vad_labels":args_g.use_vad_labels,
             "freeze_emo_stag_params":args_g.freeze_emo_stag_params,
             "use_contrastive_loss":args_g.use_contrastive_loss,
-            "sample_strategy_embedding":args_g.sample_strategy_embedding
+            "sample_strategy_embedding":args_g.sample_strategy_embedding,
+            "contrastive_loss_ratio":args_g.contrastive_loss_ratio,
+            "pretrained_model_path":args_g.pretrained_model_path
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

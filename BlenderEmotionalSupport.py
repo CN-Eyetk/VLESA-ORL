@@ -105,43 +105,46 @@ def load_config(args, eval = False):
             config = BartConfig.from_pretrained(args.output_dir)
         else:
             config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
-    #config = BlenderbotSmallConfig.from_dict(config)
-    config.use_th_attn = args.use_th_attn
-    config.prepend = args.prepend_emotion
-    config.use_trans_mat = args.use_trans_mat
-    config.use_kl = args.use_kl
-    config.add_emo_cross_attn = args.add_emo_cross_attn
-    config.emo_from_eos = args.emo_from_eos
-    config.st_from_eos = args.st_from_eos
-    config.emo_from_situ = args.emo_from_situ
-    config.use_emo_in_dist = args.use_emo_in_dist
-    config.use_emb_prep = args.use_emb_prep
-    config.n_emo_out = len(emo_extracter.id_2_label)
-    config.use_copy = args.use_copy
-    config.use_st_seq = args.use_st_seq
-    config.lstm_st_seq= args.lstm_st_seq
-    config.merge = args.merge
-    config.no_fuse = args.no_fuse
-    config.stg_use_cat_attn = args.stg_use_cat_attn
-    config.emo_use_cat_attn = args.emo_use_cat_attn
-    config.use_role_embed = args.use_role_embed
-    config.use_vae = args.use_vae
-    config.mixed_vae = args.mixed_vae
-    config.latent_dim = args.latent_dim
-    config.sample_strat_emb = args.sample_strat_emb
-    config.wo_stra = args.wo_stra
-    config.wo_emo = args.wo_emo
-    config.wo_comet = args.wo_comet
-    config.rl_emb_ratio = args.rl_emb_ratio
-    config.vad_emb_ratio = args.vad_emb_ratio
-    config.emo_loss_ratio = args.emo_loss_ratio
-    config.emo_out_loss_ratio = args.emo_out_loss_ratio
-    config.intensity_vae = args.intensity_vae
-    config.use_situ_in_decoder = args.use_situ_in_decoder
-    config.use_situ_in_encoder = args.use_situ_in_encoder
-    config.use_vad_labels = args.use_vad_labels
-    config.use_contrastive_loss = args.use_contrastive_loss
-    config.sample_strategy_embedding = args.sample_strategy_embedding
+    print("config = ", config)
+    if args.pretrained_model_path is None:
+        #config = BlenderbotSmallConfig.from_dict(config)
+        config.use_th_attn = args.use_th_attn
+        config.prepend = args.prepend_emotion
+        config.use_trans_mat = args.use_trans_mat
+        config.use_kl = args.use_kl
+        config.add_emo_cross_attn = args.add_emo_cross_attn
+        config.emo_from_eos = args.emo_from_eos
+        config.st_from_eos = args.st_from_eos
+        config.emo_from_situ = args.emo_from_situ
+        config.use_emo_in_dist = args.use_emo_in_dist
+        config.use_emb_prep = args.use_emb_prep
+        config.n_emo_out = len(emo_extracter.id_2_label)
+        config.use_copy = args.use_copy
+        config.use_st_seq = args.use_st_seq
+        config.lstm_st_seq= args.lstm_st_seq
+        config.merge = args.merge
+        config.no_fuse = args.no_fuse
+        config.stg_use_cat_attn = args.stg_use_cat_attn
+        config.emo_use_cat_attn = args.emo_use_cat_attn
+        config.use_role_embed = args.use_role_embed
+        config.use_vae = args.use_vae
+        config.mixed_vae = args.mixed_vae
+        config.latent_dim = args.latent_dim
+        config.sample_strat_emb = args.sample_strat_emb
+        config.wo_stra = args.wo_stra
+        config.wo_emo = args.wo_emo
+        config.wo_comet = args.wo_comet
+        config.rl_emb_ratio = args.rl_emb_ratio
+        config.vad_emb_ratio = args.vad_emb_ratio
+        config.emo_loss_ratio = args.emo_loss_ratio
+        config.emo_out_loss_ratio = args.emo_out_loss_ratio
+        config.intensity_vae = args.intensity_vae
+        config.use_situ_in_decoder = args.use_situ_in_decoder
+        config.use_situ_in_encoder = args.use_situ_in_encoder
+        config.use_vad_labels = args.use_vad_labels
+        config.use_contrastive_loss = args.use_contrastive_loss
+        config.sample_strategy_embedding = args.sample_strategy_embedding
+        config.contrastive_loss_ratio = args.contrastive_loss_ratio
     return config
 
 def load_model_for_eval(args):
@@ -1360,9 +1363,13 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
+                            if epoch > 3:
+                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
+                            if epoch > 3:
+                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
@@ -1874,7 +1881,7 @@ def generate(args):
 
         chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
             input_ids,
-            **paras, max_length=512,
+            **paras, max_length=64,
             min_length=5,
             num_beams=1,
             use_cache=True,
@@ -1883,7 +1890,6 @@ def generate(args):
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
             top_p=0.3, 
             top_k = 30, 
-            do_sample=True, 
             #no_repeat_ngram_size=3,
             repetition_penalty=1.03
             ) #top_p 0.9, topk 30
@@ -1962,7 +1968,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args, model = None):
+def generate_new(args, model = None, verbose = True, prefix = ""):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
@@ -1972,7 +1978,8 @@ def generate_new(args, model = None):
     #                                "[oEffect]", "[oReact]"]
 
     _, tokenizer = load_tokenizer(args)
-    
+    test_output_dir = args.output_dir
+    os.makedirs(test_output_dir, exist_ok=True)
     if model is None:
         model = load_model_for_eval(args=args)
     model.eval()
@@ -2045,11 +2052,13 @@ def generate_new(args, model = None):
 
 
         refs.append(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
-        print(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
+        if verbose:
+            print(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
         strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+args.base_vocab_size])})
         # print({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([chat_history_ids[:, :][0][1]])})
-        print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
-            "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
+        if verbose:
+            print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
+                "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
         if strategy_logits[0].argmax() == next_strategy_id:
             strategy_hits.append(1)
         else:
@@ -2103,6 +2112,16 @@ def generate_new(args, model = None):
 
     print("write result to:", summary_file_path)
     print("Generate finished~")
+    output_test_file = os.path.join(test_output_dir, "test_results.txt")
+    with open(output_test_file, "a+") as writer:
+        # print("***** Eval results {} *****".format(prefix))
+        logger.info("***** Test results {} *****".format(prefix))
+        writer.write("***** Eval results {} *****".format(prefix) + "\n")
+        for key in sorted(result.keys()):
+            logger.info("  %s = %s", key, str(result[key]))
+            # print("  %s = %s" % (key, str(result[key])))
+            writer.write("%s = %s\n" % (key, str(result[key])))
+    return result
 
 
 

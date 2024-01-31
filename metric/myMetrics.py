@@ -8,7 +8,9 @@ from typing import List
 from collections import Counter
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 from nltk import word_tokenize
-
+import re
+split_punct = lambda x:" ".join(y for y in re.findall(r"[\w']+|[.,!?;]", x))
+#split_punct = lambda x:x
 def my_lcs(string, sub):
     """
     Calculates longest common subsequence for a pair of tokenized strings
@@ -53,12 +55,12 @@ class Metric(object):
         #     self.hyps.append(nltk.word_tokenize(hyp.lower()))
         # else:
         if self.use_nltk:
-            self.refs.append([word_tokenize(e.lower()) for e in refs])
-            self.hyps.append(word_tokenize(hyp.lower()))
+            self.refs.append([word_tokenize(split_punct(e).lower()) for e in refs])
+            self.hyps.append(word_tokenize(split_punct(hyp.lower())))
             #print("refs",self.refs[-1])
             #print("hyps",self.hyps[-1])
         else:
-            self.refs.append([self.toker.tokenize(e) for e in refs])
+            self.refs.append([self.toker.tokenize(split_punct(e)) for e in refs])
             self.hyps.append(self.toker.tokenize(hyp))
         # print(self.refs)
         # print(self.hyps)

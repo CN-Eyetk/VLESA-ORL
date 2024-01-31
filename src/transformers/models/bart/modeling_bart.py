@@ -2060,7 +2060,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 #print(decoder_pool_embedding.shape)
                 contrast_loss = contrast_loss_funct(decoder_pool_embedding, decoder_strategy_ids)
                 if self.training:
-                    loss += 0.05 * contrast_loss
+                    loss += self.config.contrastive_loss_ratio * contrast_loss
             if self.use_trans_mat and emo_out_prob is not None:
                 if len(emo_out_prob.size()) == 1:
                     emo_out_prob = emo_out_prob.unsqueeze(0)

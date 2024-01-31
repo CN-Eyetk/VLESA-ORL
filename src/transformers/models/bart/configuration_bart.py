@@ -205,7 +205,8 @@ class BartConfig(PretrainedConfig):
         self.use_situ_in_encoder = kwargs["use_situ_in_encoder"] if "use_situ_in_encoder" in kwargs.keys() else False
         self.use_situ_in_decoder = kwargs["use_situ_in_decoder"] if "use_situ_in_decoder" in kwargs.keys() else False
         self.use_contrastive_loss = kwargs["use_contrastive_loss"] if "use_contrastive_loss" in kwargs.keys() else False
-        self.use_contrastive_loss = kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
+        self.contrastive_loss_ratio = kwargs["contrastive_loss_ratio"] if "contrastive_loss_ratio" in kwargs.keys() else 0.05
+        self.sample_strategy_embedding = kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads
