@@ -71,6 +71,21 @@ MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 # Args to allow for easy convertion of python script to notebook
 
 
+def save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler):
+    os.makedirs(output_dir, exist_ok=True)
+    model_to_save = (
+        model.module if hasattr(model, "module") else model
+    )  # Take care of distributed/parallel training
+    model_to_save.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
+    torch.save(args, os.path.join(output_dir, "training_args.bin"))
+    logger.info("Saving model checkpoint to %s", output_dir)
+
+    _rotate_checkpoints(args, checkpoint_prefix)
+
+    torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
+    torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
+    logger.info("Saving optimizer and scheduler states to %s", output_dir)
 
 def check(example):
     input_ids = example.input_ids
@@ -1269,6 +1284,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     tr_loss, logging_loss, tr_lm_loss, logging_lm_loss, tr_emo_loss, \
     logging_emo_loss, tr_strategy_loss, logging_strategy_loss, tr_intensity_loss, logging_intensity_loss = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     best_ppl = 1e8
+    best_bleu_2 = 0
 
     model.zero_grad()
     #train_iterator = range(epochs_trained, int(args.num_train_epochs))
@@ -1364,7 +1380,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             if epoch > 3:
-                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
+                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
@@ -1387,27 +1403,21 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     logging_emo_loss = tr_emo_loss
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
+                    if epoch > 3:
+                        if test_result["bleu-2"] > best_bleu_2:
+                            best_bleu_2 = test_result["bleu-2"]
+                            checkpoint_prefix = "bleu_checkpoint"
+                            output_dir = os.path.join(args.output_dir, "bleu2")
+                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                            
                     if results['eval_perplexity']< best_ppl :
                         best_ppl = results['eval_perplexity']
 
                         checkpoint_prefix = "checkpoint"
 
                         output_dir = args.output_dir
-                        os.makedirs(output_dir, exist_ok=True)
-                        model_to_save = (
-                            model.module if hasattr(model, "module") else model
-                        )  # Take care of distributed/parallel training
-                        model_to_save.save_pretrained(output_dir)
-                        tokenizer.save_pretrained(output_dir)
-
-                        torch.save(args, os.path.join(output_dir, "training_args.bin"))
-                        logger.info("Saving model checkpoint to %s", output_dir)
-
-                        _rotate_checkpoints(args, checkpoint_prefix)
-
-                        torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
-                        torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
-                        logger.info("Saving optimizer and scheduler states to %s", output_dir)
+                        save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                        
 
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
@@ -1968,7 +1978,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args, model = None, verbose = True, prefix = ""):
+def generate_new(args, model = None, verbose = True, prefix = "",):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
@@ -2000,8 +2010,12 @@ def generate_new(args, model = None, verbose = True, prefix = ""):
         device = torch.device("cpu")
         args.device = device
         args.n_gpu = 0
-    with open(args.data_path+"/"+args.test_file_name,"r") as f:
-        chat_texts = f.read().split("\n")
+    if not "test" in prefix:
+        with open(args.data_path+"/"+args.eval_file_name,"r") as f:
+            chat_texts = f.read().split("\n")
+    else:
+        with open(args.data_path+"/"+args.test_file_name,"r") as f:
+            chat_texts = f.read().split("\n")
     set_seed(args)
     gts = []
     refs = []
@@ -2013,9 +2027,13 @@ def generate_new(args, model = None, verbose = True, prefix = ""):
     strategy_hits = []
     strategy_record = []
     strategy_hits_topk = [[] for _ in range(8)]
-    for idx in tqdm(range(len(args.test_dataset)), desc="Testing"):
-        f = args.test_dataset[idx]
-        batch = args.train_dataset.collate([f])
+    if not "test" in prefix:
+        dataset = args.eval_dataset
+    else:
+        dataset = args.test_dataset
+    for idx in tqdm(range(len(dataset)), desc="Testing"):
+        f = dataset[idx]
+        batch = dataset.collate([f])
         input_ids, paras = shared_steps(batch, model, tokenizer, args, phase = "generation")
         
         next_strategy_id = f.decoder_strategy_ids[0]
