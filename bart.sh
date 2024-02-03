@@ -6,28 +6,30 @@ use_prepend=("")
 use_cat=( "")
 if_st_em_sampling=(" --sample_strategy_embedding")
 if_emo_use_cat=("")
-if_stg_from_eos=(" --stg_from_eos" "")
-if_emo_from_eos=(" --emo_from_eos" "")
+if_stg_from_eos=("")
+if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
+warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
-emo_loss_rat=(0.05)
-latent_dims=(256 128 512) # 256)
-#root_path="/disk/junlin/EmoSp"
-root_path="."
+emo_loss_rat=(0.02)
+latent_dims=(32) # 256)
+root_path="/disk/junlin/EmoSp"
+#root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm131 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag am203 --emo_out_loss_ratio 0.02 --use_vae --use_vad_labels --strategy_loss_ratio 0.05"
 
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
     for vad_rat in "${vad_rats[@]}"; do
         for lr in "${lrs[@]}"; do
             for u_e_p in "${use_emb_prep[@]}"; do
+            for warmup in "${warmups[@]}";do
                 for u_p in "${use_prepend[@]}"; do
                     for lm in "${latent_dims[@]}"; do
                         for u_b in "${use_bart[@]}"; do
@@ -49,6 +51,8 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=" --rl_emb_ratio "$rl_r
                                     cur_comm+=" --emo_loss_rat "$el_r
                                     cur_comm+=" --use_trans "
+                                    
+                                    cur_comm+=" --warmup_steps "$warmup
                                     #cur_comm+=" --use_situ_in_encoder "
                                     #cur_comm+=" --use_vad_labels"
                                     #cur_comm+=" --use_situ_in_decoder "
@@ -56,11 +60,18 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=$eos_stg
                                     cur_comm+=$eos_emo
                                     cur_comm+=$stg_cat
-                                    $cur_comm
-                                    cur_comm+=" --use_contrastive_loss "
-                                    cur_comm+=" --contrastive_loss_ratio 0.01"
+                                    cur_comm+=" --fuse_z "
+                                    #cur_comm+=" --use_centroid_loss"
+                                    #cur_comm+=" --contrastive_loss_ratio 0.01"
                                     echo $cur_comm
                                     $cur_comm
+
+                                    cur_comm+=" --wo_comet "
+                                    $cur_comm
+
+                                    #
+                                    #$cur_comm
+                                    #cur_comm+=" --use_situ_in_encoder"
                                     done
                                     done
                                     done
@@ -69,6 +80,7 @@ for u_r in "${use_role[@]}"; do
                         done
                     done
                 done
+            done
             done
         done
     done

@@ -70,6 +70,37 @@ MODEL_CONFIG_CLASSES = list(MODEL_WITH_LM_HEAD_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
 # Args to allow for easy convertion of python script to notebook
 
+def load_dataset(args, tokenizer):
+    with open(args.data_path+"/"+ args.train_comet_file, "r", encoding="utf-8") as f:
+        comet_trn = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_train_comet_file, "r", encoding="utf-8") as f:
+        st_comet_trn = f.read().split("\n")
+    with open(args.data_path+"/"+ args.train_file_name, "r", encoding="utf-8") as f:
+        df_trn = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_train_file, "r", encoding="utf-8") as f:
+        st_trn = f.read().split("\n")
+
+    with open(args.data_path+"/"+ args.eval_comet_file, "r", encoding="utf-8") as f:
+        comet_val = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_eval_comet_file, "r", encoding="utf-8") as f:
+        st_comet_val = f.read().split("\n")
+    with open(args.data_path+"/" + args.eval_file_name, "r", encoding="utf-8") as f:
+        df_val = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_eval_file, "r", encoding="utf-8") as f:
+        st_val = f.read().split("\n")
+
+    with open(args.data_path+"/"+ args.test_comet_file, "r", encoding="utf-8") as f:
+        comet_test = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_test_comet_file, "r", encoding="utf-8") as f:
+        st_comet_test = f.read().split("\n")
+    with open(args.data_path+"/" + args.test_file_name, "r", encoding="utf-8") as f:
+        df_test = f.read().split("\n")
+    with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
+        st_test = f.read().split("\n")
+    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
+    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
+    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
+    return train_dataset, eval_dataset, test_dataset
 
 def save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler):
     os.makedirs(output_dir, exist_ok=True)
@@ -84,7 +115,8 @@ def save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optim
     _rotate_checkpoints(args, checkpoint_prefix)
 
     torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
-    torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
+    if scheduler is not None:
+        torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
     logger.info("Saving optimizer and scheduler states to %s", output_dir)
 
 def check(example):
@@ -160,10 +192,16 @@ def load_config(args, eval = False):
         config.use_contrastive_loss = args.use_contrastive_loss
         config.sample_strategy_embedding = args.sample_strategy_embedding
         config.contrastive_loss_ratio = args.contrastive_loss_ratio
+        config.fuse_z = args.fuse_z
+        config.use_centroid_loss = args.use_centroid_loss
+        config.strategy_loss_ratio = args.strategy_loss_ratio
     return config
 
 def load_model_for_eval(args):
     config = load_config(args, eval = True)
+    #if args.pretrained_model_path is not None:
+    #    if args.use_bart:
+    #         model = BartForConditionalGeneration.from_pretrained(args.pretrained_model_path
     if args.use_bart:
         model = BartForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
     else:
@@ -620,6 +658,7 @@ def _norm_text(text):
             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                             "]+", flags=re.UNICODE)
     text = emoji_pattern.sub(r'', text)
+    
     emo, r, t, *toks = text.strip().split()
     try:
         emo = int(emo)
@@ -628,6 +667,7 @@ def _norm_text(text):
         toks = ' '.join(toks[:len(toks)])
     except Exception as e:
         raise e
+    toks = re.compile(r"(?<=\w)(?=[^\s\w])").sub(" ", toks)
     return emo, r, t, toks
 
 
@@ -818,10 +858,13 @@ class ESDDataset(Dataset):
                 #print("comet_row", comet_row)
                 #print("situation", situation)
                 conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situations[idx], prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
+                #conv.vad_ids = [vad_id if not vad_id == tokenizer.unk_token_id else tokenizer.vocab["[0v0a0d]"] for vad_id in conv.vad_ids]
+                #print("conv.vad_ids",conv.vad_ids)
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
                     if args.use_vad_labels:
+                        
                         conv.vad_ids = conv.vad_ids[-block_size:] #leave the 0-th id to pad in collate function
                     conv.is_strat_targ = conv.is_strat_targ[-block_size:]
                     conv.is_emo_targ = conv.is_emo_targ[-block_size:]
@@ -872,10 +915,12 @@ class ESDDataset(Dataset):
                                     for f in features],
                                     batch_first=True, padding_value=0)
         if self.args.use_vad_labels:
+            #vad_ids = [vad_id if not vad_id == self.tokenizer.unk_token_id else self.tokenizer.vocab["[0v0a0d]"] for vad_id in f.vad_ids ]
             vad_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [i  if i > -1 else self.tokenizer.pad_token_id for i in f.vad_ids], 
                                                  dtype=torch.long)
                                     for f in features],
                                     batch_first=True, padding_value=self.tokenizer.pad_token_id)
+            vad_ids[vad_ids == self.tokenizer.unk_token_id] = self.tokenizer.convert_tokens_to_ids(["[0v0a0d]"])[0]
             vad_ids = vad_ids[:,:input_ids.size(1)]
         else:
             vad_ids = None
@@ -983,9 +1028,9 @@ class ESDDataset(Dataset):
                     file.write(f"{i}\n{d}\n{l}\n\n")
                     #sp = strat_positions[k]
                     #ep = emo_positions[k]
-                    for m,(tk,rl) in enumerate(zip(input_ids[k], role_ids[k])):
+                    for m,(tk,rl,vad) in enumerate(zip(input_ids[k], role_ids[k], vad_ids[k])):
                         
-                        file.write(f"{tk}\t{rl}")
+                        file.write(f"{tk}\t{rl}\t{vad}")
                         if m in strat_positions[k]:
                             file.write(f"-->st")
                         if m in emo_positions[k]:
@@ -1149,9 +1194,12 @@ def load_optimizer(args, model, len_dataloader):
     ]
     t_total = len_dataloader // args.gradient_accumulation_steps * args.num_train_epochs
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
-    )
+    if args.warmup_steps > 0:
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
+        )
+    else:
+        scheduler = None
     return optimizer, scheduler
 
 
@@ -1194,7 +1242,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
             if any(fm in n for fm in emo_stg_para_formats):
                 frozen_paras_names.append(n)
         optimizer_grouped_parameters = load_optimizer_grouped_params_with_doubled_lr(
-            model, no_decay, frozen_paras_names, args.lr, 1.5
+            model, no_decay, frozen_paras_names, args.lr, 0.05
         )
     else:
         optimizer_grouped_parameters = [
@@ -1211,9 +1259,12 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     p.numel() for p in model.parameters() if p.requires_grad)
     print(f'{total_trainable_params:,} training parameters.')    
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
-    )
+    if args.warmup_steps > 0:
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
+        )
+    else:
+        scheduler = None
 
     # Check if saved optimizer or scheduler states exist
     if False and (
@@ -1369,7 +1420,8 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                 else:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
                 optimizer.step()
-                scheduler.step()  # Update learning rate schedule
+                if scheduler is not None:
+                    scheduler.step()  # Update learning rate schedule
                 model.zero_grad()
                 global_step += 1
                 if args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
@@ -1379,31 +1431,38 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     ):  # Only evaluate when single GPU otherwise metrics may not average well
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
-                            if epoch > 3:
+                            wandb.log(results)
+                            if epoch > 4 :
                                 test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                wandb.log(test_result)
+                            
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
-                            if epoch > 3:
+                            wandb.log(results)
+                            if epoch > 4:
                                 test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
+                                wandb.log(test_result)
+                            
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
                     if hasattr(torch.cuda, 'empty_cache'):
                         torch.cuda.empty_cache()
-                    tb_writer.add_scalar("lr", scheduler.get_last_lr()[0], global_step)
-                    tb_writer.add_scalar("loss", (tr_loss - logging_loss) / args.logging_steps, global_step)
-                    logger.info("lr: %f, step: %d, loss: %f, lm_loss: %f, emo_loss: %f, strategy_loss: %f, intensity_loss: %f", scheduler.get_last_lr()[0],
-                                global_step, (tr_loss - logging_loss) / args.logging_steps, (tr_lm_loss - logging_lm_loss) / args.logging_steps,
-                                (tr_emo_loss - logging_emo_loss) / args.logging_steps, (tr_strategy_loss - logging_strategy_loss) / args.logging_steps,
-                                (tr_intensity_loss - logging_intensity_loss) / args.logging_steps)
+                    if scheduler is not None:
+                        tb_writer.add_scalar("lr", scheduler.get_last_lr()[0], global_step)
+                        tb_writer.add_scalar("loss", (tr_loss - logging_loss) / args.logging_steps, global_step)
+                        logger.info("lr: %f, step: %d, loss: %f, lm_loss: %f, emo_loss: %f, strategy_loss: %f, intensity_loss: %f", scheduler.get_last_lr()[0],
+                                    global_step, (tr_loss - logging_loss) / args.logging_steps, (tr_lm_loss - logging_lm_loss) / args.logging_steps,
+                                    (tr_emo_loss - logging_emo_loss) / args.logging_steps, (tr_strategy_loss - logging_strategy_loss) / args.logging_steps,
+                                    (tr_intensity_loss - logging_intensity_loss) / args.logging_steps)
                     
                     logging_loss = tr_loss
                     logging_lm_loss = tr_lm_loss
                     logging_emo_loss = tr_emo_loss
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
-                    if epoch > 3:
+                    if 4 < epoch < 6:
                         if test_result["bleu-2"] > best_bleu_2:
                             best_bleu_2 = test_result["bleu-2"]
                             checkpoint_prefix = "bleu_checkpoint"
@@ -1434,13 +1493,14 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     return global_step, tr_loss / global_step
 
 # Evaluation of some model
-def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="") -> Dict:
+def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="", eval_output_dir = None) -> Dict:
     print("evaluating")
     import numpy as np
     # Loop to handle MNLI double evaluation (matched, mis-matched)
-    eval_output_dir = args.output_dir
+    if eval_output_dir is None:
+        eval_output_dir = args.output_dir
 
-    #eval_dataset = load_and_cache_examples(args, tokenizer, df_trn, df_val, evaluate=True)
+        #eval_dataset = load_and_cache_examples(args, tokenizer, df_trn, df_val, evaluate=True)
     os.makedirs(eval_output_dir, exist_ok=True)
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
     # Note that DistributedSampler samples randomly
@@ -1452,7 +1512,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
-        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=args.eval_dataset.collate, drop_last = False
+        eval_dataset, sampler=eval_sampler, batch_size=args.eval_batch_size, collate_fn=eval_dataset.collate, drop_last = False
     )
 
     if args.fp16:
@@ -1552,7 +1612,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             logger.info("  %s = %s", key, str(result[key]))
             # print("  %s = %s" % (key, str(result[key])))
             writer.write("%s = %s\n" % (key, str(result[key])))
-    wandb.log(result)
+    
     return result
 
 #collapse
@@ -1892,7 +1952,7 @@ def generate(args):
         chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
             input_ids,
             **paras, max_length=64,
-            min_length=5,
+            #min_length=,
             num_beams=1,
             use_cache=True,
             pad_token_id=tokenizer.pad_token_id,
@@ -1900,8 +1960,8 @@ def generate(args):
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
             top_p=0.3, 
             top_k = 30, 
-            #no_repeat_ngram_size=3,
-            repetition_penalty=1.03
+            no_repeat_ngram_size=3,
+            #repetition_penalty=1.03
             ) #top_p 0.9, topk 30
 
         if mutual_attention is not None:
@@ -1978,7 +2038,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args, model = None, verbose = True, prefix = "",):
+def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir = None):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
@@ -1988,7 +2048,8 @@ def generate_new(args, model = None, verbose = True, prefix = "",):
     #                                "[oEffect]", "[oReact]"]
 
     _, tokenizer = load_tokenizer(args)
-    test_output_dir = args.output_dir
+    if test_output_dir is None:
+        test_output_dir = args.output_dir
     os.makedirs(test_output_dir, exist_ok=True)
     if model is None:
         model = load_model_for_eval(args=args)
@@ -2068,10 +2129,11 @@ def generate_new(args, model = None, verbose = True, prefix = "",):
         else:
             chat_history_ids = chat_history_ids.cpu()
 
-
-        refs.append(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
+        generated_text = tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True)
+        refs.append(generated_text)
         if verbose:
-            print(tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True))
+            print(generated_text)
+        
         strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+args.base_vocab_size])})
         # print({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([chat_history_ids[:, :][0][1]])})
         if verbose:
@@ -2123,7 +2185,6 @@ def generate_new(args, model = None, verbose = True, prefix = "",):
         wandb.log({"refs":gts})
     metric = Metric(toker=tokenizer, hyp_path=generate_file_path, ref_path=reference_file_path, use_nltk = True)
     result, result_list = metric.close()
-    wandb.log(result)
     print(result)
     print("=" * 100)
     summary(test_file_path, generate_file_path, reference_file_path, summary_file_path, all_top_k_blocks, all_top_k_blocks_st, chat_texts, test_situation_file_path)
@@ -2257,7 +2318,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
                         situation_hidden_states = situation_hidden_states,
                         situation_attention_mask = situ_attention_mask
                         )
-    elif phase == "generation":
+    elif phase in ["generation", "reinforce", "reinforce_with_lm_loss"]:
         paras = {}
         paras["attention_mask"] =  input_ids.ne(tokenizer.pad_token_id)
         paras["comet_embs"] = comet_embs
@@ -2276,7 +2337,21 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             paras["role_ids"] = role_ids
         if args.use_vad_labels:
             paras["vad_ids"] = vad_ids
+        if "reinforce" in phase:
+            paras["generate_with_predicted_strategy"] = True
+        else:
+            paras["generate_with_predicted_strategy"] = False
+        if phase == "reinforce_with_lm_loss":
+            paras["labels"] = decoder_label_ids
         return input_ids, paras
+    #elif phase == "reinforce":
+    #    return input_ids, paras
+    #elif phase == "reinforce_with_lm_loss":
+    #    paras["labels"] = decoder_label_ids
+    #    if args.ppo_use_ground_strategy:
+    #        paras["generate_with_predicted_strategy"] = True
+        #outputs = model(input_ids, attention_mask = input_ids.ne(tokenizer.pad_token_id), decoder_input_ids=decoder_input_ids, decoder_turn_ids=decoder_turn_ids, decoder_role_ids=decoder_role_ids, turn_ids=turn_ids, role_ids=role_ids,labels = decoder_label_ids, decoder_strategy_ids=decoder_strategy_ids, comet_embs=comet_embs, comet_mask=comet_mask, comet_embs_st=comet_embs_st, comet_mask_st=comet_mask_st, emotion=emotion, emo_dist = emo_dist, emo_in_dist = emo_in_dist, strat_positions = strat_positions, emo_positions = emo_positions, intensity = intensity)
+    #    return input_ids, paras
     else:
         with torch.no_grad():
             outputs = model(input_ids, 

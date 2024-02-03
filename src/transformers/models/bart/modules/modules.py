@@ -426,6 +426,7 @@ class EmoTransVAE_MultiStrat(nn.Module):
             E_prob = torch.softmax(self.Dense_z_priors[i](z), dim=-1)
             E_probs[:,:,i] = E_prob
         emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
+        z_out = torch.bmm(zs, p_strat.unsqueeze(-1)).view(-1, self.latent_dim)
         #z_out = torch.bmm(zs, p_strat.unsqueeze(-1)).permute(0,2,1).squeeze(-2)
         emotion_id = self.emotion_id.to(hidden_prior.device) 
         #emo_out_emb = self.z_proj(z_out)
@@ -433,7 +434,8 @@ class EmoTransVAE_MultiStrat(nn.Module):
         #emo_out_emb = emo_out_emb.unsqueeze(-2)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
         #print("emo_out_emb",emo_out_emb.shape)
-        return emo_out_emb, mus, logvars, emo_out_prob
+        
+        return emo_out_emb, mus, logvars, emo_out_prob, z_out
     
     def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post, q_0): #p_emo_in 和 p_strat输入的都是logits
         #p_emo_in = self.dropout(p_emo_in)
@@ -452,6 +454,7 @@ class EmoTransVAE_MultiStrat(nn.Module):
             E_prob = torch.softmax(self.Dense_z_priors[i](z), dim=-1)
             E_probs[:,:,i] = E_prob
         emo_out_prob = torch.bmm(E_probs, p_strat.unsqueeze(-1)).permute(0,2,1) #[b, n_e_out, n_s] [b,  n_s,1]  -> [b, n_e_out, 1] ->[b, 1, n_e_out]
+        z_out = torch.bmm(zs, p_strat.unsqueeze(-1)).view(-1, self.latent_dim)
         emotion_id = self.emotion_id.to(hidden_prior.device) 
         emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         #z_out = torch.bmm(zs, p_strat.unsqueeze(-1)).permute(0,2,1).squeeze(-2)
@@ -459,7 +462,7 @@ class EmoTransVAE_MultiStrat(nn.Module):
         #emo_out_emb = emo_out_emb.unsqueeze(-2)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
         #print("emo_out_emb",emo_out_emb.shape)
-        return emo_out_emb, mus, logvars, emo_out_prob
+        return emo_out_emb, mus, logvars, emo_out_prob, z_out
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """
@@ -542,7 +545,7 @@ class EmoTransVAE_MixStrat(nn.Module):
         #print("emo_out_prob",emo_out_prob.shape)
         emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob
+        return emo_out_emb, mus, logvars, emo_out_prob, z
     
     def forward_train(self,  hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
         b = hidden_post_emo.size(0)
@@ -555,7 +558,7 @@ class EmoTransVAE_MixStrat(nn.Module):
         emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  
                                 self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob
+        return emo_out_emb, mus, logvars, emo_out_prob, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """
@@ -639,7 +642,7 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
             emo_out_prob = emo_out_prob.unsqueeze(-2)
         emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mu, logvar, emo_out_prob
+        return emo_out_emb, mu, logvar, emo_out_prob, z
     
     def forward_train(self,  hidden_prior, p_emo_in, p_strat, hidden_post): 
 
@@ -654,7 +657,7 @@ class EmoTransVAE_MultiStrat_Light(nn.Module):
             emo_out_prob = emo_out_prob.unsqueeze(-2)
         emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb,  mu, logvar, emo_out_prob
+        return emo_out_emb,  mu, logvar, emo_out_prob, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """
@@ -679,12 +682,12 @@ class ContrastiveLoss(nn.Module):
         # d = 1 means y1 and y2 are supposed to be same
         # d = 0 means y1 and y2 are supposed to be different
         
-        euc_dist = nn.functional.pairwise_distance(y1, y2)
-
-        if d == 1:
-            return torch.mean(torch.pow(euc_dist, 2))  # distance squared
+        #euc_dist = nn.functional.pairwise_distance(y1, y2)
+        cos = nn.CosineSimilarity(y1, y2)
+        if d == 0:
+            return torch.mean(torch.pow(cos, 2))  # distance squared
         else:  # d == 1
-            delta = self.m - euc_dist  # sort of reverse distance
+            delta = self.m - cos  # sort of reverse distance
             delta = torch.clamp(delta, min=0.0, max=None)
             return torch.mean(torch.pow(delta, 2))  # mean over all rows
     def forward(self, ys, labels):
@@ -709,10 +712,56 @@ class ContrastiveLoss(nn.Module):
 
                     
                     
-                
+class CenterLoss(nn.Module):
+    """Center loss.
+    
+    Reference:
+    Wen et al. A Discriminative Feature Learning Approach for Deep Face Recognition. ECCV 2016.
+    
+    Args:
+        num_classes (int): number of classes.
+        feat_dim (int): feature dimension.
+    """
+    def __init__(self, num_classes=10, feat_dim=2, use_gpu=True):
+        super(CenterLoss, self).__init__()
+        self.num_classes = num_classes
+        self.feat_dim = feat_dim
+        self.use_gpu = use_gpu
+
+        if self.use_gpu:
+            self.centers = nn.Parameter(torch.randn(self.num_classes, self.feat_dim).cuda())
+        else:
+            self.centers = nn.Parameter(torch.randn(self.num_classes, self.feat_dim))
+
+    def forward(self, x, labels):
+        """
+        Args:
+            x: feature matrix with shape (batch_size, feat_dim).
+            labels: ground truth labels with shape (batch_size).
+        """
+        batch_size = x.size(0)
+        distmat = torch.pow(x, 2).sum(dim=1, keepdim=True).expand(batch_size, self.num_classes) + \
+                  torch.pow(self.centers, 2).sum(dim=1, keepdim=True).expand(self.num_classes, batch_size).t()
+        distmat.addmm_(1, -2, x, self.centers.t())
+
+        classes = torch.arange(self.num_classes).long()
+        if self.use_gpu: classes = classes.cuda()
+        labels = labels.unsqueeze(1).expand(batch_size, self.num_classes)
+        mask = labels.eq(classes.expand(batch_size, self.num_classes))
+
+        dist = distmat * mask.float()
+        loss = dist.clamp(min=1e-12, max=1e+12).sum() / batch_size
+
+        return loss
                 
         
-
+def get_last_arg_where_equal(x, value):
+    ts = torch.tensor(x)
+    nzr = (ts == value).nonzero()
+    i_pos = (nzr[:,0].diff() == 1).nonzero().squeeze(-1)
+    i_pos = torch.cat((i_pos, torch.tensor([nzr.size(0) - 1]).to(i_pos.device)))
+    pos = nzr[i_pos,:]
+    return pos
 
 if __name__ == "__main__":
     n_emo_in = 3

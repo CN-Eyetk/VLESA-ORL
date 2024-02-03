@@ -2,6 +2,7 @@ import argparse
 import wandb
 import numpy as np
 from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
+from BlenderEmotionalSupport import load_dataset
 #from esconv_trainer import ESCONVTrainer
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
@@ -40,6 +41,7 @@ parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
 parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
 parser.add_argument("--intensity_vae", action = "store_true")
 parser.add_argument("--use_contrastive_loss", action = "store_true")
+parser.add_argument("--use_centroid_loss", action = "store_true")
 parser.add_argument("--sample_strategy_embedding", action = "store_true")
 parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
@@ -49,7 +51,10 @@ parser.add_argument("--freeze_emo_stag_params", action= "store_true")
 parser.add_argument("--lr", type=float, default=5e-5)
 parser.add_argument("--tag", type=str)
 parser.add_argument("--use_trainer", action= "store_true")
+parser.add_argument("--warmup_steps", type = int, default = 100)
 parser.add_argument("--pretrained_model_path", type = str, default = None)
+parser.add_argument("--fuse_z", action="store_true")
+parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -85,33 +90,37 @@ EM_LS_RAT = args_g.emo_loss_ratio
 EM_OT_LS_RAT = args_g.emo_out_loss_ratio
 INT_VAE = args_g.intensity_vae
 MIX_VAE = args_g.mixed_vae
+if args_g.pretrained_model_path is not None:
+    TAG = args_g.pretrained_model_path.split("/")[-1]
+    GROUP = args_g.pretrained_model_path.split("/")[-2]
+else:
+    TAG = "all_loss" \
+        + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_{args_g.warmup_steps}" \
+        +("-spst" if args_g.sample_strategy_embedding else "")  \
+        + ("-Emoin" if USE_EMO_IN_DIST else "") \
+        + ("-ensitu" if args_g.use_situ_in_encoder else "") \
+        + ("-desitu" if args_g.use_situ_in_decoder else "") \
+        + ("-w_eosstg" if not ST_FROM_EOS else "") \
+        + ("-w_eosemo" if not EMO_FROM_EOS else "") \
+        +("-w_role" if not USE_ROLE else "") \
+        +("-w_emocat" if not EMO_USE_CAT_ATTN else "") \
+        +("-w_stgcat" if not STG_USE_CAT_ATTN else "") \
+        +("-vae" if USE_VAE else "") \
+        +("-ivae" if INT_VAE else "") \
+        +("-mvae" if MIX_VAE else "") \
+        +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
+        +("-smp_str" if SMP_STRAT_EMB else "")\
+        +("-wo_Stra" if WO_STRA else "") \
+        +("-wo_Emo" if WO_EMO else "") \
+        +("-wo_comet" if WO_COMET else "") \
+        +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
+        +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
+        +("-ctd" if args_g.use_centroid_loss else "")  \
+        +("-fz" if args_g.fuse_z else "")  \
+        +args_g.tag
+                                
 
-TAG = "all_loss" \
-    + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_" \
-    +("-spst" if args_g.sample_strategy_embedding else "")  \
-    + ("-Emoin" if USE_EMO_IN_DIST else "") \
-                + ("-ensitu" if args_g.use_situ_in_encoder else "") \
-                    + ("-desitu" if args_g.use_situ_in_decoder else "") \
-                        + ("-w_eosstg" if not ST_FROM_EOS else "") \
-                    + ("-w_eosemo" if not EMO_FROM_EOS else "") \
-                            +("-w_role" if not USE_ROLE else "") \
-                        +("-w_emocat" if not EMO_USE_CAT_ATTN else "") \
-                            +("-w_stgcat" if not STG_USE_CAT_ATTN else "") \
-                            +("-vae" if USE_VAE else "") \
-                                +("-ivae" if INT_VAE else "") \
-                                    +("-mvae" if MIX_VAE else "") \
-                                +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
-                                +("-smp_str" if SMP_STRAT_EMB else "")\
-                                    +("-wo_Stra" if WO_STRA else "") \
-                                        +("-wo_Emo" if WO_EMO else "") \
-                                            +("-wo_comet" if WO_COMET else "") \
-                                                +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
-                                                +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
-                                                    +("-ct" if args_g.use_contrastive_loss else "")  \
-                            +args_g.tag
-                            
-
-GROUP = ("-LIGHT" if not USE_SATTN else "") + ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
+    GROUP = ("-LIGHT" if not USE_SATTN else "") + ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
 
 import torch
 import argparse
@@ -152,6 +161,7 @@ else:
                                         )
     if  args_g.pretrained_model_path is not None:
         output_dir = args_g.pretrained_model_path
+        generation_dir = "our_generated_data/" + GROUP + "/" + TAG
     else:
         if BART:
             output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
@@ -164,7 +174,7 @@ logger = logging.getLogger(__name__)
 def load_arg():
     #torch.distributed.init_process_group(backend="nccl")
     #local_rank = torch.distributed.get_rank()
-    args = {"do_train":False,
+    args = {"do_train":True,
             "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
@@ -196,7 +206,7 @@ def load_arg():
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
             "adam_epsilon":1e-8,
-            "warmup_steps":100,#once 510
+            "warmup_steps":args_g.warmup_steps,#once 510
             "fp16":False,
             "fp16_opt_level":'O1',
             "num_train_epochs":10 if BART else 8,
@@ -249,7 +259,10 @@ def load_arg():
             "use_contrastive_loss":args_g.use_contrastive_loss,
             "sample_strategy_embedding":args_g.sample_strategy_embedding,
             "contrastive_loss_ratio":args_g.contrastive_loss_ratio,
-            "pretrained_model_path":args_g.pretrained_model_path
+            "pretrained_model_path":args_g.pretrained_model_path,
+            "fuse_z":args_g.fuse_z,
+            "use_centroid_loss":args_g.use_centroid_loss,
+            "strategy_loss_ratio":args_g.strategy_loss_ratio
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
@@ -260,37 +273,6 @@ def load_arg():
 
 
 
-def load_dataset(args, tokenizer):
-    with open(args.data_path+"/"+ args.train_comet_file, "r", encoding="utf-8") as f:
-        comet_trn = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_train_comet_file, "r", encoding="utf-8") as f:
-        st_comet_trn = f.read().split("\n")
-    with open(args.data_path+"/"+ args.train_file_name, "r", encoding="utf-8") as f:
-        df_trn = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_train_file, "r", encoding="utf-8") as f:
-        st_trn = f.read().split("\n")
-
-    with open(args.data_path+"/"+ args.eval_comet_file, "r", encoding="utf-8") as f:
-        comet_val = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_eval_comet_file, "r", encoding="utf-8") as f:
-        st_comet_val = f.read().split("\n")
-    with open(args.data_path+"/" + args.eval_file_name, "r", encoding="utf-8") as f:
-        df_val = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_eval_file, "r", encoding="utf-8") as f:
-        st_val = f.read().split("\n")
-
-    with open(args.data_path+"/"+ args.test_comet_file, "r", encoding="utf-8") as f:
-        comet_test = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_test_comet_file, "r", encoding="utf-8") as f:
-        st_comet_test = f.read().split("\n")
-    with open(args.data_path+"/" + args.test_file_name, "r", encoding="utf-8") as f:
-        df_test = f.read().split("\n")
-    with open(args.data_path+"/"+ args.situation_test_file, "r", encoding="utf-8") as f:
-        st_test = f.read().split("\n")
-    train_dataset = load_and_cache_examples(args, tokenizer, df_trn, comet_trn, st_comet_trn, evaluate=False, strategy=args.strategy, situations = st_trn)
-    eval_dataset = load_and_cache_examples(args, tokenizer, df_val, comet_val, st_comet_val, evaluate=True, strategy=args.strategy, test=False, situations = st_val)
-    test_dataset = load_and_cache_examples(args, tokenizer, df_test, comet_test, st_comet_test, evaluate=True, strategy=args.strategy, test=True, situations = st_test)
-    return train_dataset, eval_dataset, test_dataset
 
 def plot(model, strat_labels, emo_in_labels, emo_out_labels):
     import pandas as pd

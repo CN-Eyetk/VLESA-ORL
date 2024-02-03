@@ -66,6 +66,8 @@ class BaseModelOutput(ModelOutput):
     intensity_vae_posterior_output: Optional[Tuple[torch.FloatTensor]] = None
     situation_hidden_states: torch.FloatTensor = None
     situation_attention_mask: torch.FloatTensor = None
+    strategy_hidden: torch.FloatTensor = None
+    z: torch.FloatTensor = None
     
     
 
