@@ -331,6 +331,7 @@ if __name__ == "__main__":
         ppo_args.ppo_config.model_name,
         config = model_config,
     )
+
     if args.ppo_train_emo_strat:
         name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
     else:
@@ -345,6 +346,8 @@ if __name__ == "__main__":
                             num_shared_layers = ppo_args.frozen_layer_num,
                             name_unshared_layers = name_unshared_layers,
                             )
+    for param in ppo_trainer.ref_model.parameters():
+        param.requires_grad = False
     hist_retriver = Retrive_DiagHist(tokenizer)
     feed_backer = load_feedbacker()
     feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
