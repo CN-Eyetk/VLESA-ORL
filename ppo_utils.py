@@ -6,9 +6,22 @@ from copy import deepcopy
 
 
 def freeze_parameters(model, pattern):
+    frozen_layers = []
+    active_layers = []
     for name, parameter in model.named_parameters():
         if re.compile(pattern).search(name):
             parameter.requires_grad = False
+            frozen_layers.append(name)
+        else:
+            active_layers.append(name)
+    print("active_layers,",active_layers)
+
+def load_ref_model(model):
+    ref_model = deepcopy(model)
+    for param in ref_model.parameters():
+        param.requires_grad = False
+    return ref_model.eval()
+
 class Agent:
     def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs) -> None:
         self.args = args
@@ -60,11 +73,14 @@ class Agent:
                 response_vad_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
                 response_text = self.tokenizer.decode(response_tensor, skip_special_tokens = True)
                 _, _,response_vad_labels = self.vad_tokenizer.tokenizer_vad(response_text, is_fast_tokenizer = False, char_to_remove = "Ġ")
+                if self.args.use_bart:
+                    response_vad_labels = [-1] + response_vad_labels
                 active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
+
                 if not torch.any(response_tensor == self.tokenizer.eos_token_id):
-                    response_vad_ids[1:] = active_response_vad_ids 
+                    response_vad_ids[:] = active_response_vad_ids 
                 else:
-                    response_vad_ids[1:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
+                    response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
                 #except:
                 #    print("response_text problem", response_text)
                 #    response_vad_ids[1:len(active_response_vad_ids)+1 ] = active_response_vad_ids 
@@ -196,10 +212,10 @@ class Agent:
         history_with_response = [state["histories"][i] + [{"content":response[i], "speaker":"supporter"}] for i in range(len(response))]
         history_with_ref_response = [state["histories"][i] + [{"content":ref_response[i], "speaker":"supporter"}] for i in range(len(ref_response))]
         
-        feed_backer.model = feed_backer.model.cuda()
+        self.feed_backer.model = self.feed_backer.model.cuda()
         rewards = [self.reward_func(response) for response in history_with_response]
         ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
-        feed_backer.model = feed_backer.model.to(torch.device("cpu"))
+        self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         # Run PPO step
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
 
@@ -250,7 +266,7 @@ class Agent:
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response = self.prepare_experience_pool(batch)
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
-        #check_format(query_tensors, paras, self.tokenizer)
+        check_format(query_tensors, paras, self.tokenizer)
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
                                 rewards, 

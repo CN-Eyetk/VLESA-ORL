@@ -15,13 +15,13 @@ use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
 emo_loss_rat=(0.05)
-latent_dims=(32) # 256)
+latent_dims=(8) # 256)
 root_path="/disk/junlin/EmoSp"
 #root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=1
 comm="python3 main.py --no_fuse --use_bart --use_kl --tag am204 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05"
 
 #--emo_out_loss_ratio higher improves diversity
@@ -65,7 +65,8 @@ for u_r in "${use_role[@]}"; do
                                     #cur_comm+=" --contrastive_loss_ratio 0.01"
                                     #cur_comm+=" --fuse_z "
                                     $cur_comm
-
+                                    cur_comm+=" --fuse_z "
+                                    $cur_comm
                                     #
                                     #$cur_comm
                                     #cur_comm+=" --use_situ_in_encoder"

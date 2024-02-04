@@ -8,7 +8,7 @@ from BlenderEmotionalSupport import (load_tokenizer,
                     )
 from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker
 
-from ppo_utils import freeze_parameters, Agent
+from ppo_utils import freeze_parameters, Agent, load_ref_model
 import torch
 import os
 from peft import LoraConfig
@@ -107,7 +107,8 @@ if __name__ == "__main__":
         ppo_args.ppo_config.model_name,
         config = model_config,
     )
-    
+    freeze_parameters(model, "(decoder|trans_mat|emo|embed)")
+    ref_model = load_ref_model(model)
     if args.ppo_train_emo_strat:
         name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
     else:
@@ -115,12 +116,10 @@ if __name__ == "__main__":
     ppo_trainer = DialogueActPPOTrainer(
                             ppo_args.ppo_config, 
                             model = model, 
-                            ref_model = None, 
+                            ref_model = ref_model, 
                             tokenizer = tokenizer, 
                             dataset = train_dataset, 
                             data_collator = train_dataset.collate,
-                            num_shared_layers = ppo_args.frozen_layer_num,
-                            name_unshared_layers = name_unshared_layers,
                             )
     for param in ppo_trainer.ref_model.parameters():
         param.requires_grad = False
@@ -132,11 +131,10 @@ if __name__ == "__main__":
         "do_sample": True,
         "pad_token_id": tokenizer.pad_token_id,
         "eos_token_id": tokenizer.eos_token_id,
-        "max_length":64,
+        "max_length":128,
         "min_length":5,
         "num_beams":1,
-        "top_p":0.3,
-        "top_k":30,
+        "top_k":1,
         "temperature":0.7,
         "do_sample":True,
         "repetition_penalty":1.03,
@@ -171,15 +169,15 @@ if __name__ == "__main__":
                                     )         
     else:
         agent = Agent(args,
-                      model,
-                      tokenizer,
-                      vad_tokenizer,
-                      feed_backer,
-                      ppo_trainer,
-                      hist_retriver,
-                      reward_func,
-                      ppo_args.mini_batch_size,
-                      generation_kwargs,
+                      model = model,
+                      tokenizer = tokenizer,
+                      vad_tokenizer = vad_tokenizer,
+                      hist_retriver = hist_retriver,
+                      ppo_trainer = ppo_trainer,
+                      feed_backer = feed_backer,
+                      reward_func = reward_func,
+                      mini_batch_size = ppo_args.ppo_config.mini_batch_size,
+                      generation_kwargs = generation_kwargs,
                       )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
