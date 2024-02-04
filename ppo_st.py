@@ -18,7 +18,7 @@ from arguments import load_arg
 from lexical_diversity import lex_div as ld
 from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
 #from metric.text_feats import dependency_distance
-from BlenderEmotionalSupport import evaluate, save_checkpoint
+from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval
 from attach_vad.VADTokenizer import W2VAD
 vad_tokenizer = W2VAD("attach_vad/VAD_space.json")
 print("finished import")
@@ -90,95 +90,101 @@ def build_dataset(args, ppo_args):
 
 
 if __name__ == "__main__":
-    model_config = load_config(args, eval = True)
-    print("config loaded")
-    ppo_args = ScriptArguments()
-    ppo_args.ppo_config.model_name = args.output_dir
-    trl_model_class = AutoModelForDialogueActLMWithValueHead
-    tokenizer, train_dataset, eval_dataset, test_dataset = build_dataset(args, ppo_args)
-    vad_tokenizer.load_tokenizer(tokenizer)
-    args.train_dataset = train_dataset
-    args.eval_dataset = eval_dataset
-    args.test_dataset = test_dataset
-    set_seed(ppo_args.ppo_config.seed)
-    device_map = None
-    peft_config = None
-    model = trl_model_class.from_pretrained(
-        ppo_args.ppo_config.model_name,
-        config = model_config,
-    )
-    freeze_parameters(model, "(decoder|trans_mat|emo|embed)")
-    ref_model = load_ref_model(model)
-    if args.ppo_train_emo_strat:
-        name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
-    else:
-        name_unshared_layers = None
-    ppo_trainer = DialogueActPPOTrainer(
-                            ppo_args.ppo_config, 
-                            model = model, 
-                            ref_model = ref_model, 
-                            tokenizer = tokenizer, 
-                            dataset = train_dataset, 
-                            data_collator = train_dataset.collate,
-                            )
-    for param in ppo_trainer.ref_model.parameters():
-        param.requires_grad = False
-    hist_retriver = Retrive_DiagHist(tokenizer)
-    feed_backer = load_feedbacker()
-    feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
-    reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
-    generation_kwargs = {
-        "do_sample": True,
-        "pad_token_id": tokenizer.pad_token_id,
-        "eos_token_id": tokenizer.eos_token_id,
-        "max_length":128,
-        "min_length":5,
-        "num_beams":1,
-        "top_k":1,
-        "temperature":0.7,
-        "do_sample":True,
-        "repetition_penalty":1.03,
-        #"no_repeat_ngram_size":3,
-        #"max_new_tokens": 32,
-    }
-    #generation_kwargs = {
-    #    "top_k": 0.0,
-    #    "top_p": 1.0,
-    #    "do_sample": True,
-    #    "pad_token_id": tokenizer.pad_token_id,
-    #    "eos_token_id": tokenizer.eos_token_id,
-    #    "max_length":512,
-    #    "min_length":5,
-    #    "num_beams":1,
-    #    "top_p":0.3,
-    #    "top_k":30,
-    #    "repetition_penalty":1.03,
-    #    "min_length":5,
-    #    #"max_new_tokens": 32,
-    best_ppl = 10000
-    early_stop_steps = 0
     if args.ppo_eval:
+        _, tokenizer = load_tokenizer(args = args)
+        _, _, test_dataset = load_dataset(args, tokenizer)
+        args.test_dataset = test_dataset
         print("****************\ppo generation save dir:", args.generation_dir,"\****************")
+        model = load_model_for_eval(args)
+        model = model.eval()
         with torch.no_grad():
-            model = model.eval()
+
             test_result = generate_new(args, 
-                                    model = ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model,
+                                    model = model,
                                     verbose = True, 
                                     prefix = "{}-{}-".format("checkpoint", f"test_{today}"),
                                     test_output_dir =  args.generation_dir
                                     )         
     else:
+        model_config = load_config(args, eval = True)
+        print("config loaded")
+        ppo_args = ScriptArguments()
+        ppo_args.ppo_config.model_name = args.output_dir
+        trl_model_class = AutoModelForDialogueActLMWithValueHead
+        tokenizer, train_dataset, eval_dataset, test_dataset = build_dataset(args, ppo_args)
+        vad_tokenizer.load_tokenizer(tokenizer)
+        args.train_dataset = train_dataset
+        args.eval_dataset = eval_dataset
+        args.test_dataset = test_dataset
+        set_seed(ppo_args.ppo_config.seed)
+        device_map = None
+        peft_config = None
+        model = trl_model_class.from_pretrained(
+            ppo_args.ppo_config.model_name,
+            config = model_config,
+        )
+        freeze_parameters(model, "(decoder|trans_mat|emo|embed)")
+        ref_model = load_ref_model(model)
+        if args.ppo_train_emo_strat:
+            name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
+        else:
+            name_unshared_layers = None
+        ppo_trainer = DialogueActPPOTrainer(
+                                ppo_args.ppo_config, 
+                                model = model, 
+                                ref_model = ref_model, 
+                                tokenizer = tokenizer, 
+                                dataset = train_dataset, 
+                                data_collator = train_dataset.collate,
+                                )
+        for param in ppo_trainer.ref_model.parameters():
+            param.requires_grad = False
+        hist_retriver = Retrive_DiagHist(tokenizer)
+        feed_backer = load_feedbacker()
+        feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
+        reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
+        generation_kwargs = {
+            "do_sample": True,
+            "pad_token_id": tokenizer.pad_token_id,
+            "eos_token_id": tokenizer.eos_token_id,
+            "max_length":128,
+            "min_length":5,
+            "num_beams":1,
+            "top_p":0.3,
+            "top_k":30,
+            "temperature":0.7,
+            "do_sample":True,
+            "repetition_penalty":1.03,
+            #"no_repeat_ngram_size":3,
+            #"max_new_tokens": 32,
+        }
+        #generation_kwargs = {
+        #    "top_k": 0.0,
+        #    "top_p": 1.0,
+        #    "do_sample": True,
+        #    "pad_token_id": tokenizer.pad_token_id,
+        #    "eos_token_id": tokenizer.eos_token_id,
+        #    "max_length":512,
+        #    "min_length":5,
+        #    "num_beams":1,
+        #    "top_p":0.3,
+        #    "top_k":30,
+        #    "repetition_penalty":1.03,
+        #    "min_length":5,
+        #    #"max_new_tokens": 32,
+        best_ppl = 10000
+        early_stop_steps = 0
         agent = Agent(args,
-                      model = model,
-                      tokenizer = tokenizer,
-                      vad_tokenizer = vad_tokenizer,
-                      hist_retriver = hist_retriver,
-                      ppo_trainer = ppo_trainer,
-                      feed_backer = feed_backer,
-                      reward_func = reward_func,
-                      mini_batch_size = ppo_args.ppo_config.mini_batch_size,
-                      generation_kwargs = generation_kwargs,
-                      )
+                        model = model,
+                        tokenizer = tokenizer,
+                        vad_tokenizer = vad_tokenizer,
+                        hist_retriver = hist_retriver,
+                        ppo_trainer = ppo_trainer,
+                        feed_backer = feed_backer,
+                        reward_func = reward_func,
+                        mini_batch_size = ppo_args.ppo_config.mini_batch_size,
+                        generation_kwargs = generation_kwargs,
+                        )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
                 ppo_batch = {

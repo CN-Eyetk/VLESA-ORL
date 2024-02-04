@@ -161,7 +161,8 @@ else:
                                         )
     if  args_g.pretrained_model_path is not None:
         output_dir = args_g.pretrained_model_path
-        generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+        #generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+        generation_dir = output_dir.replace(args_g.root_path, "our_generated_data")
     else:
         if BART:
             output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
@@ -174,7 +175,7 @@ logger = logging.getLogger(__name__)
 def load_arg():
     #torch.distributed.init_process_group(backend="nccl")
     #local_rank = torch.distributed.get_rank()
-    args = {"do_train":True,
+    args = {"do_train":False,
             "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",

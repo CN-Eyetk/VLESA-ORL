@@ -796,7 +796,7 @@ class DialogueActPPOTrainer(PPOTrainer):
                             #    print(f"v={v}")
                             lm_loss = self.calculate_lm_loss(self.model, 
                                         mini_batch_dict["queries"], #only first step calculate lm loss
-                                        {k:v[:,0] if k in ["input_ids","role_ids","attention_mask"] else v for k,v in model_inputs.items() if k in lm_loss_args}
+                                        {k:v[:,0] if k in ["input_ids","role_ids","attention_mask","vad_ids"] else v for k,v in model_inputs.items() if k in lm_loss_args}
                                         )
                             train_stats = self.train_minibatch_with_lm_loss(
                                 mini_batch_dict["logprobs"],
@@ -1139,3 +1139,70 @@ class DialogueActPPOTrainer(PPOTrainer):
         #print(train_stats.keys())
         train_stats["loss/lm"] = lm_loss.detach()
         return train_stats
+
+class JointPPOTrainer(DialogueActPPOTrainer):
+    @PPODecorators.empty_device_cache()
+    def batched_forward_pass(
+        self,
+        model: PreTrainedModelWrapper,
+        queries: torch.Tensor,
+        responses: torch.Tensor,
+        model_inputs: dict,
+        return_logits: bool = False,
+        response_masks: Optional[torch.Tensor] = None
+    ):
+        bs = len(queries)
+        fbs = self.config.mini_batch_size
+        all_a_logprobs = []
+        all_a_logits = []
+        all_a_masks = []
+        all_a_values = []
+        all_lm_logprobs = []
+        all_lm_logits = []
+        all_lm_masks = []
+        all_lm_values = []
+        for i in range(math.ceil(bs / fbs)):
+            input_kwargs = {key: value[i * fbs : (i + 1) * fbs] for key, value in model_inputs.items()}
+            query_batch = queries[i * fbs : (i + 1) * fbs]
+            response_batch = responses[i * fbs : (i + 1) * fbs]
+            if response_masks is not None:
+                response_masks_batch = response_masks[i * fbs : (i + 1) * fbs]
+            a_logits, _, a_values, lm_logits, lm_value = model(**input_kwargs)
+            #prepare dialogue act log probs
+            action_ids = input_kwargs["action_ids"].unsqueeze(-1)
+            a_logprobs = logprobs_from_logits(a_logits[:,:1,:], action_ids)
+            a_masks = torch.zeros_like(action_ids)
+            a_masks[:,0] = 1
+            
+            #prepare lm log probs:
+            if self.is_encoder_decoder:
+                input_ids = input_kwargs["decoder_input_ids"]
+                attention_mask = input_ids.ne(self.tokenizer.pad_token_id).long()#input_kwargs["decoder_attention_mask"]
+            else:
+                input_ids = input_kwargs["input_ids"]
+                attention_mask = input_ids.ne(self.tokenizer.pad_token_id).long()
+            lm_logprobs = logprobs_from_logits(lm_logits[:, :-1, :], input_ids[:, 1:])
+            lm_masks = torch.zeros_like(attention_mask)
+            lm_masks[:, :-1] = attention_mask[:, 1:]
+            for j in range(len(query_batch)):
+                if self.is_encoder_decoder:
+                    # Decoder sentence starts always in the index 1 after padding in the Enc-Dec Models
+                    start = 1
+                    end = attention_mask[j, :].sum() - 1
+                else:
+                    start = len(query_batch[j]) - 1  # logprobs starts from the second query token
+                    if attention_mask[j, 0] == 0:  # offset left padding
+                        start += attention_mask[j, :].nonzero()[0]
+                    end = start + len(response_batch[j])
+                    if response_masks is not None:
+                        response_masks_batch[j] = torch.cat(
+                            (torch.zeros_like(query_batch[j]), response_masks_batch[j])
+                        )[1:]
+
+                lm_masks[j, :start] = 0
+                lm_masks[j, end:] = 0
+                if response_masks is not None:
+                    lm_masks[j, start:end] = lm_masks[j, start:end] * response_masks_batch[j][start:end]
+            
+            
+            

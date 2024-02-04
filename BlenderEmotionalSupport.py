@@ -202,6 +202,7 @@ def load_model_for_eval(args):
     #if args.pretrained_model_path is not None:
     #    if args.use_bart:
     #         model = BartForConditionalGeneration.from_pretrained(args.pretrained_model_path
+    print(f"****loading {args.output_dir} for evaluation ***")
     if args.use_bart:
         model = BartForConditionalGeneration.from_pretrained(args.output_dir, from_tf=False, config = config)
     else:
@@ -2338,7 +2339,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         if args.use_vad_labels:
             paras["vad_ids"] = vad_ids
         if "reinforce" in phase:
-            paras["generate_with_predicted_strategy"] = True
+            paras["generate_with_predicted_strategy"] = False
         else:
             paras["generate_with_predicted_strategy"] = False
         if phase == "reinforce_with_lm_loss":

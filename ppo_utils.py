@@ -79,8 +79,11 @@ class Agent:
 
                 if not torch.any(response_tensor == self.tokenizer.eos_token_id):
                     response_vad_ids[:] = active_response_vad_ids 
-                else:
+                elif len(active_response_vad_ids) == response_pad_start:
                     response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
+                else:
+                    print(f"The size of response_vad_ids is {len(active_response_vad_ids)}, but the response_pad_start if {response_pad_start}")
+                    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids 
                 #except:
                 #    print("response_text problem", response_text)
                 #    response_vad_ids[1:len(active_response_vad_ids)+1 ] = active_response_vad_ids 
@@ -172,7 +175,7 @@ class Agent:
             "histories":all_histories,
             "role_ids":all_query_role_ids,
             "actions":all_response_acts,
-            "attention_masks":attention_masks,
+            "attention_masks":all_attention_masks,
             "vad_ids":all_query_vad_ids,
             "response_tensor":all_response_tensors,
             "ref_response_tensor":all_ref_response_tensors

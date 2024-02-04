@@ -997,6 +997,7 @@ class BartEncoder(BartPretrainedModel):
             inputs_embeds = self.embed_tokens(input_ids) * self.embed_scale
             if self.vad_emb_ratio == -1 and self.rl_emb_ratio == -1 and role_ids is not None and vad_ids is not None:
                 role_embeds = self.embed_tokens(role_ids) * self.embed_scale
+                
                 vad_embeds = self.embed_tokens(vad_ids) * self.embed_scale
                 full_embeds = torch.cat((vad_embeds, role_embeds), dim = -1)
                 full_embeds = F.dropout(self.fc_embed(full_embeds), p=self.dropout, training=self.training)
@@ -1254,7 +1255,7 @@ class BartEncoder(BartPretrainedModel):
             mu_int_posterior = None
             logvar_int_posterior = None
             intensity_out = None
-            
+        
         #print("strategy_logits",strategy_logits)
         return BaseModelOutput(
             last_hidden_state=hidden_states, last_comet_hidden_state = comet_hidden_states, last_comet_hidden_state_st=comet_hidden_states_st,
@@ -1273,7 +1274,7 @@ class BartEncoder(BartPretrainedModel):
             situation_hidden_states = situation_hidden_states,
             situation_attention_mask = situation_attention_mask,
             strategy_hidden = strategy_hidden,
-            z = z
+            z = z if self.config.fuse_z else None
 
         )
     def predict_emotion(self,
@@ -2183,6 +2184,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
             strategy_logits=strategy_logits,
             past_key_values=decoder_outputs.past_key_values,
             decoder_hidden_states=decoder_outputs.hidden_states,
+            decoder_last_hidden_states=lm_hidden,
             decoder_attentions=decoder_outputs.attentions,
             cross_attentions=decoder_outputs.cross_attentions,
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,

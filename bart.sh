@@ -15,7 +15,7 @@ use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
 emo_loss_rat=(0.05)
-latent_dims=(8) # 256)
+latent_dims=(16) # 256)
 root_path="/disk/junlin/EmoSp"
 #root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
@@ -65,8 +65,8 @@ for u_r in "${use_role[@]}"; do
                                     #cur_comm+=" --contrastive_loss_ratio 0.01"
                                     #cur_comm+=" --fuse_z "
                                     $cur_comm
-                                    cur_comm+=" --fuse_z "
-                                    $cur_comm
+                                    #cur_comm+=" --fuse_z "
+                                    #$cur_comm
                                     #
                                     #$cur_comm
                                     #cur_comm+=" --use_situ_in_encoder"
