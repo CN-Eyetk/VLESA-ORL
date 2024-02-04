@@ -920,7 +920,7 @@ class ESDDataset(Dataset):
                                                  dtype=torch.long)
                                     for f in features],
                                     batch_first=True, padding_value=self.tokenizer.pad_token_id)
-            vad_ids[vad_ids == self.tokenizer.unk_token_id] = self.tokenizer.convert_tokens_to_ids(["[0v0a0d]"])[0]
+            #vad_ids[vad_ids == self.tokenizer.unk_token_id] = self.tokenizer.convert_tokens_to_ids(["[0v0a0d]"])[0]
             vad_ids = vad_ids[:,:input_ids.size(1)]
         else:
             vad_ids = None
@@ -1432,7 +1432,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if epoch > 4 :
+                            if epoch > 3 :
                                 test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
                                 wandb.log(test_result)
                             
@@ -1440,7 +1440,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if epoch > 4:
+                            if epoch > 3:
                                 test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
                                 wandb.log(test_result)
                             
@@ -1462,7 +1462,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     logging_emo_loss = tr_emo_loss
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
-                    if 4 < epoch < 6:
+                    if epoch > 3:
                         if test_result["bleu-2"] > best_bleu_2:
                             best_bleu_2 = test_result["bleu-2"]
                             checkpoint_prefix = "bleu_checkpoint"

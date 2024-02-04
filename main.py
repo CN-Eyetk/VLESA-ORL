@@ -422,4 +422,5 @@ if __name__ == "__main__":
         else:
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
+            generate_new(args, model = model, prefix="of eval set")
             generate_new(args, model = model, prefix="of test set")

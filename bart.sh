@@ -6,14 +6,15 @@ use_prepend=("")
 use_cat=( "")
 if_st_em_sampling=(" --sample_strategy_embedding")
 if_emo_use_cat=("")
-if_stg_from_eos=("" " --stg_from_eos")
-if_emo_from_eos=(" --emo_from_eos" "")
+if_stg_from_eos=("")
+if_emo_from_eos=(" --emo_from_eos")
+use_bart=(" ")
 lrs=(2e-5)
 warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
-emo_loss_rat=(0.02)
+emo_loss_rat=(0.05)
 latent_dims=(32) # 256)
 root_path="/disk/junlin/EmoSp"
 #root_path="."
@@ -21,7 +22,7 @@ root_path="/disk/junlin/EmoSp"
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag am203 --emo_out_loss_ratio 0.02 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag am204 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05"
 
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
@@ -62,9 +63,7 @@ for u_r in "${use_role[@]}"; do
                                     #
                                     #cur_comm+=" --use_centroid_loss"
                                     #cur_comm+=" --contrastive_loss_ratio 0.01"
-                                    echo $cur_comm
-                                    $cur_comm
-                                    cur_comm+=" --wo_comet "
+                                    #cur_comm+=" --fuse_z "
                                     $cur_comm
 
                                     #

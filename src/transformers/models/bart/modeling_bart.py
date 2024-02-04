@@ -1202,11 +1202,11 @@ class BartEncoder(BartPretrainedModel):
                 #elif strategy_logit_ground is not None:
                 #    sampling_strategy_logits = strategy_logit_ground
                 #else:
-                sampling_strategy_logits = strategy_logits
+                #sampling_strategy_logits = strategy_logits
                 emo_out_embs, mu_prior, logvar_prior, emo_out_prob, z = self.p_sampling(emo_hidden, 
                                                                                         strategy_hidden, 
                                                                                         emotion_logits, 
-                                                                                        strategy_logits = sampling_strategy_logits, 
+                                                                                        strategy_logits = strategy_logits, 
                                                                                         strategy_embs = strategy_embs)
             else:
                 emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
@@ -1223,7 +1223,8 @@ class BartEncoder(BartPretrainedModel):
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob, z = self.q_sampling(emo_hidden, 
                                                                                                 strategy_hidden, 
                                                                                                 emotion_logits, 
-                                                                                                strategy_logits = sampling_strategy_logits, 
+                                                                                                strategy_logits = strategy_logits,
+                                                                                                #strategy_logits = sampling_strategy_logits, 
                                                                                                 emo_out_dist = emo_out_dist, 
                                                                                                 strategy_embs = strategy_embs)
             else:
