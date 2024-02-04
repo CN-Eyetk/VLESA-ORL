@@ -512,10 +512,10 @@ class DialogueActPPOTrainer(PPOTrainer):
             #print("batch_generation_kwargs",batch_generation_kwargs)
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
-            try:
-                generations, _, _, strategy_logits = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
-            except:
-                print("bug")
+            #try:
+            generations, _, _, strategy_logits = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
+            #except:
+            #    print("bug")
                 #print(f"padded_inputs={padded_inputs}", file=open("bug_generation.text","a+"))
                 #print(f"batch_generation_kwargs={batch_generation_kwargs}", file=open("bug_generation.text","a+"))
             #print("generations = ", generations)
@@ -1167,13 +1167,13 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             response_batch = responses[i * fbs : (i + 1) * fbs]
             if response_masks is not None:
                 response_masks_batch = response_masks[i * fbs : (i + 1) * fbs]
-            a_logits, _, a_values, lm_logits, lm_value = model(**input_kwargs)
+            a_logits, _, a_values, lm_logits, lm_values = model(**input_kwargs)
             #prepare dialogue act log probs
             action_ids = input_kwargs["action_ids"].unsqueeze(-1)
             a_logprobs = logprobs_from_logits(a_logits[:,:1,:], action_ids)
             a_masks = torch.zeros_like(action_ids)
             a_masks[:,0] = 1
-            
+
             #prepare lm log probs:
             if self.is_encoder_decoder:
                 input_ids = input_kwargs["decoder_input_ids"]
@@ -1203,6 +1203,369 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 lm_masks[j, end:] = 0
                 if response_masks is not None:
                     lm_masks[j, start:end] = lm_masks[j, start:end] * response_masks_batch[j][start:end]
-            
-            
-            
+            if return_logits:
+                all_a_logits.append(a_logits)
+                all_lm_logits.append(lm_logits)
+            else:
+                del a_logits
+                del lm_logits
+            all_a_values.append(a_values)
+            all_a_logprobs.append(a_logprobs)
+            all_a_masks.append(a_masks)
+            all_lm_values.append(lm_values)
+            all_lm_logprobs.append(lm_logprobs)
+            all_lm_masks.append(lm_masks)
+
+        return (
+            torch.cat(all_a_logprobs),
+            torch.cat(all_a_logits) if return_logits else None,
+            torch.cat(all_a_values),
+            torch.cat(all_a_masks),
+            torch.cat(all_lm_logprobs),
+            torch.cat(all_lm_logits)[:, :-1] if return_logits else None,
+            torch.cat(all_lm_values)[:, :-1],
+            torch.cat(all_lm_masks)[:, :-1],
+        )
+    def compute_lm_advantages(
+        self,
+        values: torch.FloatTensor,
+        rewards: torch.FloatTensor,
+        mask: torch.FloatTensor,
+    ):
+        lastgaelam = 0
+        advantages_reversed = []
+        gen_len = rewards.shape[-1]
+
+        values = values * mask
+        rewards = rewards * mask
+
+        if self.config.whiten_rewards:
+            rewards = masked_whiten(rewards, mask, shift_mean=False)
+
+        for t in reversed(range(gen_len)):
+            nextvalues = values[:, t + 1] if t < gen_len - 1 else 0.0
+            delta = rewards[:, t] + self.config.gamma * nextvalues - values[:, t]
+            lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
+            advantages_reversed.append(lastgaelam)
+        advantages = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
+
+        returns = advantages + values
+        advantages = masked_whiten(advantages, mask)
+        advantages = advantages.detach()
+        return values, advantages, returns
+    @PPODecorators.empty_device_cache()
+    def step(
+        self,
+        queries: List[torch.LongTensor],
+        responses: List[torch.LongTensor],
+        scores: List[torch.FloatTensor],
+        response_masks: Optional[List[torch.LongTensor]] = None,
+        **kwargs: dict
+    ):
+        """
+        Run a PPO optimisation step given a list of queries, model responses, and rewards.
+
+        Args:
+            queries (List[`torch.LongTensor`]):
+                List of tensors containing the encoded queries of shape (`query_length`)
+            responses (List[`torch.LongTensor`]):
+                List of tensors containing the encoded responses of shape (`response_length`)
+            scores (List[`torch.FloatTensor`]):
+                List of tensors containing the scores.
+            response_masks (List[`torch.FloatTensor`], *optional*)):
+                List of tensors containing masks of the response tokens.
+
+        Returns:
+            `dict[str, Any]`: A summary of the training statistics
+        """
+        bs = self.config.batch_size
+        with_lm_loss = self.config.add_lm_loss
+        queries, responses, scores, response_masks = self._step_safety_checker(
+            bs, queries, responses, scores, response_masks
+        )
+        #print("queries shape",queries[0].shape)
+        #print("responses shape",responses[0].shape)
+        #print("scores shape",scores.shape)
+        scores = torch.tensor(scores, device=self.current_device)
+        if self.config.use_score_scaling:
+            # Score scaling
+            scores_mean, scores_std = self.running.update(scores)
+            tensor_to_kwargs = dict(dtype=scores.dtype, device=scores.device)
+            score_scaling_factor = self.running.std.to(**tensor_to_kwargs) + torch.finfo(scores.dtype).eps
+            if self.config.use_score_norm:
+                scores = (scores - self.running.mean.to(**tensor_to_kwargs)) / score_scaling_factor
+            else:
+                scores /= score_scaling_factor
+
+        if self.config.score_clip is not None:
+            # Score clipping
+            scores_dtype = scores.dtype
+            scores = torch.clip(scores.float(), -self.config.score_clip, self.config.score_clip).to(dtype=scores_dtype)
+
+        # if we want to push best model to the hub
+        if hasattr(self, "highest_reward"):
+            if self.compare_step % self.config.compare_steps == 0:
+                curr_mean_reward = scores.mean()
+                # if the best reward ever seen
+                if curr_mean_reward > self.highest_reward:
+                    self.highest_reward = curr_mean_reward
+                    # push model to hub
+                    self.push_to_hub(**self.push_to_hub_kwargs)
+            self.compare_step += 1
+
+        timing = dict()
+        t0 = time.time()
+
+        t = time.time()
+        queries = torch.stack(queries, dim = 0)
+        responses = torch.stack(responses, dim = 0)
+        #model_inputs = self.prepare_model_inputs(queries, responses)
+        model_inputs = self.custom_prepare_model_inputs(queries, responses, **kwargs)
+
+        if self.is_distributed:
+            pad_first = self.tokenizer.padding_side == "left"
+
+            model_inputs["input_ids"] = self.accelerator.pad_across_processes(
+                model_inputs["input_ids"],
+                dim=1,
+                pad_index=self.tokenizer.pad_token_id,
+                pad_first=pad_first,
+            )
+            model_inputs["attention_mask"] = self.accelerator.pad_across_processes(
+                model_inputs["attention_mask"], dim=1, pad_index=0, pad_first=pad_first
+            )
+            if with_lm_loss:
+                model_inputs["labels"] = self.accelerator.pad_across_processes(
+                    model_inputs["labels"],
+                    dim=1,
+                    pad_index=self.tokenizer.pad_token_id,
+                    pad_first=pad_first,
+                )
+            #if self.is_encoder_decoder:
+            #    model_inputs["decoder_input_ids"] = self.accelerator.pad_across_processes(
+            #        model_inputs["decoder_input_ids"],
+            #        dim=1,
+            #        pad_index=self.tokenizer.pad_token_id,
+            #        pad_first=pad_first,
+            #    )
+            #    model_inputs["decoder_attention_mask"] = self.accelerator.pad_across_processes(
+            #        model_inputs["decoder_attention_mask"],
+            #        dim=1,
+            #        pad_index=0,
+            #        pad_first=pad_first,
+            #    )
+        
+        model_inputs_names = list(model_inputs.keys())
+        #print(model_inputs_names)
+
+        full_kl_penalty = self.config.kl_penalty == "full"
+
+        with torch.no_grad():
+            all_a_logprobs, a_logits_or_none, a_values, a_masks, \
+                all_lm_logprobs, lm_logits_or_none, lm_values, lm_masks = self.batched_forward_pass(
+                self.model,
+                queries,
+                responses,
+                model_inputs,
+                response_masks=response_masks,
+                return_logits=full_kl_penalty,
+            )
+            #assert 1 == 2
+            with self.optional_peft_ctx():
+                ref_a_logprobs, ref_a_logits_or_none, _, _, \
+                ref_lm_logprobs, ref_lm_logits_or_none, _, _  = self.batched_forward_pass(
+                    self.model if self.is_peft_model else self.ref_model,
+                    queries,
+                    responses,
+                    model_inputs,
+                    return_logits=full_kl_penalty,
+                )
+
+        timing["time/ppo/forward_pass"] = time.time() - t
+
+        with torch.no_grad():
+            t = time.time()
+            if full_kl_penalty:
+                active_full_a_logprobs = logprobs_from_logits(a_logits_or_none, None, gather=False)
+                active_full_lm_logprobs = logprobs_from_logits(lm_logits_or_none, None, gather=False)
+                ref_full_a_logprobs = logprobs_from_logits(ref_a_logits_or_none, None, gather=False)
+                ref_full_lm_logprobs = logprobs_from_logits(ref_lm_logits_or_none, None, gather=False)
+                a_rewards, a_non_score_reward = self.compute_rewards(
+                    scores, active_full_a_logprobs, ref_full_a_logprobs, a_masks
+                )
+                lm_rewards, lm_non_score_reward = self.compute_rewards(
+                    scores, active_full_lm_logprobs, ref_full_lm_logprobs, lm_masks
+                )
+            else:
+                a_rewards, a_non_score_reward = self.compute_rewards(scores, all_a_logprobs, ref_a_logprobs, a_masks)
+                lm_rewards, lm_non_score_reward= self.compute_rewards(scores, all_lm_logprobs, ref_lm_logprobs, lm_masks)
+            timing["time/ppo/compute_rewards"] = time.time() - t
+
+            t = time.time()
+            a_values, a_advantages, a_returns = self.compute_advantages(a_values, a_rewards, a_masks)
+            lm_values, lm_advantages, lm_returns = self.compute_lm_advantages(lm_values, lm_rewards, lm_masks)
+            timing["time/ppo/compute_advantages"] = time.time() - t
+
+        all_logprobs = torch.cat((all_a_logprobs, all_lm_logprobs), dim = 1)
+        values = torch.cat((a_values, lm_values), dim = 1)
+        masks = torch.cat((a_masks, lm_masks), dim = 1)
+        advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
+        returns = torch.cat((a_returns, lm_returns), dim = 1)
+        # upcast to float32 to avoid dataset issues
+        batch_dict = {
+            "queries": queries,
+            "responses": responses,
+            "logprobs": all_logprobs.to(torch.float32),#[b,1,1]
+            "values": values.to(torch.float32),#[b,1,1]
+            "masks": masks,#[b,2,1]
+            "advantages": advantages,#[b,1,1]
+            "returns": returns,#[b,1,1]
+        }
+        
+        batch_dict.update(model_inputs)
+        #for k,v in batch_dict.items():
+        #    if type(v) is not bool:
+        #        print(f"{k} = {v.shape}")
+
+        t = time.time()
+        all_stats = []
+        early_stop = False
+        for _ in range(self.config.ppo_epochs):
+            if early_stop:
+                break
+            b_inds = np.random.permutation(bs)
+            for backward_batch_start in range(0, bs, self.config.backward_batch_size):
+                backward_batch_end = backward_batch_start + self.config.backward_batch_size
+                backward_batch_inds = b_inds[backward_batch_start:backward_batch_end]
+
+                for mini_batch_start in range(0, self.config.backward_batch_size, self.config.mini_batch_size):
+                    mini_batch_end = mini_batch_start + self.config.mini_batch_size
+                    mini_batch_inds = backward_batch_inds[mini_batch_start:mini_batch_end]
+                    mini_batch_dict = {
+                        "logprobs": batch_dict["logprobs"][mini_batch_inds], #[b,1,1]
+                        "values": batch_dict["values"][mini_batch_inds], #[b,1,1]
+                        "masks": batch_dict["masks"][mini_batch_inds], #[b,1,2]
+                        # hacks: the queries and responses are ragged.
+                        "queries": [batch_dict["queries"][i] for i in mini_batch_inds], #[b,2,l]
+                        "responses": [batch_dict["responses"][i] for i in mini_batch_inds], #[b,2,l]
+                        "advantages": batch_dict["advantages"][mini_batch_inds], #[b,1,1]
+                        "returns": batch_dict["returns"][mini_batch_inds], #[b,1,1]
+                    }
+                    for k in model_inputs_names:
+                        mini_batch_dict[k] = batch_dict[k][mini_batch_inds]
+                    with self.accelerator.accumulate(self.model):
+                        model_inputs = {k: mini_batch_dict[k] for k in model_inputs_names}
+
+                        a_logprobs, a_logits, a_vpreds, _, \
+                        lm_logprobs, lm_logits, lm_vpreds, _ = self.batched_forward_pass(
+                            self.model,
+                            mini_batch_dict["queries"], #[b,2,l]
+                            mini_batch_dict["responses"],  #[b,2,l]
+                            model_inputs,
+                            return_logits=True,
+                        )
+                        logprobs = torch.cat((a_logprobs, lm_logprobs), dim = 1)
+                        vpreds = torch.cat((a_vpreds, lm_vpreds), dim = 1)
+                        logits = torch.cat((a_logits, lm_logits), dim = 1)
+                        if with_lm_loss:
+                            if self.is_distributed:
+                                self.model.module.pretrained_model.train()
+                            else:
+                                self.model.pretrained_model.train()
+                            #for k,v in mini_batch_dict.items():
+                            #    print(f"K={k}")
+                            #    print(f"v={v}")
+                            lm_loss = self.calculate_lm_loss(self.model, 
+                                        mini_batch_dict["queries"], #only first step calculate lm loss
+                                        {k:v[:,0] if k in ["input_ids","role_ids","attention_mask","vad_ids"] else v for k,v in model_inputs.items() if k in lm_loss_args}
+                                        )
+                            train_stats = self.train_minibatch_with_lm_loss(
+                                mini_batch_dict["logprobs"],
+                                mini_batch_dict["values"],
+                                logprobs,
+                                logits,
+                                vpreds,
+                                mini_batch_dict["masks"],
+                                mini_batch_dict["advantages"],
+                                mini_batch_dict["returns"],
+                                lm_loss
+                            )
+                        else:
+                            train_stats = self.train_minibatch(
+                                mini_batch_dict["logprobs"],
+                                mini_batch_dict["values"],
+                                logprobs,
+                                logits,
+                                vpreds,
+                                mini_batch_dict["masks"],
+                                mini_batch_dict["advantages"],
+                                mini_batch_dict["returns"],
+                            )
+                        all_stats.append(train_stats)
+
+            # typically, early stopping is done at the epoch level
+            if self.config.early_stopping:
+                policykl = train_stats["policy/policykl"]
+                early_stop = self._early_stop(policykl)
+                if early_stop:
+                    break
+
+        timing["time/ppo/optimize_step"] = time.time() - t
+
+        t = time.time()
+        train_stats = stack_dicts(all_stats)
+
+        # reshape advantages/ratios such that they are not averaged.
+        train_stats["policy/advantages"] = torch.flatten(train_stats["policy/advantages"]).unsqueeze(0)
+        train_stats["policy/advantages"] = torch.nan_to_num(train_stats["policy/advantages"], WANDB_PADDING)
+        train_stats["policy/ratio"] = torch.flatten(train_stats["policy/ratio"]).unsqueeze(0)
+
+        stats = self.record_step_stats(
+            scores=scores,
+            logprobs=all_logprobs,
+            ref_logprobs=ref_lm_logprobs,
+            non_score_reward=lm_non_score_reward,
+            train_stats=train_stats,
+            kl_coef=self.kl_ctl.value,
+            masks=masks,
+            queries=queries,
+            responses=responses,
+        )
+        # Gather/Reduce stats from all processes
+        if self.is_distributed:
+            stats = self.gather_stats(stats)
+        stats = stats_to_np(stats)
+        timing["time/ppo/calc_stats"] = time.time() - t
+        stats["ppo/learning_rate"] = self.optimizer.param_groups[0]["lr"]
+
+        # Update the KL control - multiply the batch_size by the number of processes
+        self.kl_ctl.update(
+            stats["objective/kl"],
+            self.config.batch_size * self.accelerator.num_processes,
+        )
+
+        # Log the total ppo time
+        timing["time/ppo/total"] = time.time() - t0
+        stats.update(timing)
+
+        # post-process stats for tensorboard and other loggers
+        if self.config.log_with != "wandb":
+            stats = convert_to_scalar(stats)
+
+        if self.lr_scheduler is not None:
+            self.lr_scheduler.step()
+
+        return stats
+    def custom_prepare_model_inputs(self, queries: torch.Tensor, responses: torch.Tensor, **kwargs):
+        if self.is_encoder_decoder:
+            input_data = {
+                "input_ids":queries,
+                "decoder_input_ids":responses,
+                #"decoder_attention_mask": torch.ones_like(responses)
+                }
+            for k,v in kwargs.items():
+                if torch.is_tensor(v):
+                    input_data[k] = v
+        else:
+            pass
+        return input_data

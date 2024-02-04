@@ -270,9 +270,10 @@ class Agent:
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
         check_format(query_tensors, paras, self.tokenizer)
+        diff_reward = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
-                                rewards, 
+                                scores = diff_reward, #base_line_rewards
                                 response_masks = None, 
                                 **paras)
 

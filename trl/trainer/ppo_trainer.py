@@ -21,7 +21,7 @@ from contextlib import nullcontext
 from typing import Callable, List, Optional, Union
 from accelerate import DistributedDataParallelKwargs
 
-from src.transformers import (
+from transformers import (
     get_linear_schedule_with_warmup,
 )
 import datasets
@@ -309,10 +309,10 @@ class PPOTrainer(BaseTrainer):
                     else torch.optim.lr_scheduler.LRScheduler
                 )
 
-            if not isinstance(self.lr_scheduler, lr_scheduler_class):
-                raise ValueError(
-                    "lr_scheduler must be a torch.optim.lr_scheduler._LRScheduler or torch.optim.lr_scheduler.LRScheduler (for torch >= 2.0)"
-                )
+            #if not isinstance(self.lr_scheduler, lr_scheduler_class):
+            #    raise ValueError(
+            #        "lr_scheduler must be a torch.optim.lr_scheduler._LRScheduler or torch.optim.lr_scheduler.LRScheduler (for torch >= 2.0)"
+            #    )
 
         if self.config.adap_kl_ctrl:
             self.kl_ctl = AdaptiveKLController(self.config.init_kl_coef, self.config.target, self.config.horizon)

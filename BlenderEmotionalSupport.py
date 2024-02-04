@@ -2011,8 +2011,8 @@ def generate(args):
     all_top_k_blocks_st = None
     if not os.path.exists(args.generation_dir):
         os.makedirs(args.generation_dir)
-    test_file_path = "dataset/testWithStrategy_short.tsv"
-    test_situation_file_path = "dataset/testSituation.txt"
+    test_file_path = "converted_dataset/testWithStrategy_short.tsv"
+    test_situation_file_path = "converted_dataset/testSituation.txt"
     strategy_record_file_path = os.path.join(args.generation_dir, "strategy_record.json")
     generate_file_path = os.path.join(args.generation_dir, "hyp_strategy.json")
     reference_file_path = os.path.join(args.generation_dir, "ref_strategy.json")
@@ -2165,8 +2165,8 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
     all_top_k_blocks_st = None
     if not os.path.exists(args.generation_dir):
         os.makedirs(args.generation_dir)
-    test_file_path = "dataset/testWithStrategy_short.tsv"
-    test_situation_file_path = "dataset/testSituation.txt"
+    test_file_path = "converted_dataset/testWithStrategy_short.tsv"
+    test_situation_file_path = "converted_dataset/testSituation.txt"
     strategy_record_file_path = os.path.join(args.generation_dir, "strategy_record.json")
     generate_file_path = os.path.join(args.generation_dir, "hyp_strategy.json")
     reference_file_path = os.path.join(args.generation_dir, "ref_strategy.json")

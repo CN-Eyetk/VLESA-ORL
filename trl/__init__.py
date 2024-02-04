@@ -16,6 +16,7 @@ from .models import (
     AutoModelForCausalLMWithValueHead,
     AutoModelForSeq2SeqLMWithValueHead,
     AutoModelForDialogueActLMWithValueHead,
+    AutoModelForMultiLevelWithValueHead,
     PreTrainedModelWrapper,
     create_reference_model,
 )
@@ -24,6 +25,7 @@ from .trainer import (
     DPOTrainer,
     IterativeSFTTrainer,
     DialogueActPPOTrainer,
+    JointPPOTrainer,
     PPOConfig,
     PPOTrainer,
     CustomPPOTrainer,

@@ -417,7 +417,9 @@ def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
 def main(path, prefix):
     #path = f"our_generated_data/-LIGHT-TRANS4/all_loss0.2_1.0_1.0_kl-nopp-empp-no_fuse-role1016_II{prefix}"
     summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n\n")
+    print(len(summaries))
     responses = json.load(open(f"{path}/hyp_strategy.json","r+"))
+    print(len(responses))
     #print(summaries[:10])
     #histories = [summary_to_history(summary) for summary in summaries]
     histories = [summary_to_history(summary, repo) for summary, repo in zip(summaries,responses)]
@@ -427,17 +429,19 @@ def main(path, prefix):
     results = []
     bar = tqdm(histories, total = len(histories))
     running_rwd = 0
+    rwds = []
     for i, history in enumerate(bar):
         s_cur, s_prev, rwd = feedbacker.rewarder(history)
         results.append(f"{s_cur}\t{s_prev}\t{rwd}")
-        running_rwd += (rwd - running_rwd) / (i + 1)
-        bar.set_description(f"rwd {running_rwd}")
+        rwds.append(rwd)
+        #running_rwd += (rwd - running_rwd) / (i + 1)
+        bar.set_description(f"rwd {np.median(rwds)}")
     with open(f"statistics/empathy_feedbacks_{prefix}.csv","w+") as file:
         for res in results:
             file.write(res)
             file.write("\n")
 
 if __name__ == "__main__":
-    path = "our_generated_data/-LIGHT-TRANS4-ppo/_lr_2e-07-bs_20-sl_2-gs_1-kl_0.2-wr_1-sr_1.0-lm_0.5"
-    prefix = "2e-07-bs_20-sl_2-gs_1-kl_0.2-wr_1-sr_1.0-lm_0.5"
+    path = "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0pm131/bleu2/epoch0_step49_2024-02-04/lr_1e-07-bs_30-sl_0-gs_2-kl_0.1-wr_0-sr_0.5-lm_0.1_stem_1"
+    prefix = "ppo_best"
     main(path, prefix)

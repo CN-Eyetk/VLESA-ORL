@@ -118,6 +118,7 @@ def load_arg():
     ppo_parser.add_argument("--ppo_use_word_level_reward", action="store_true")
     ppo_parser.add_argument("--ppo_sent_reward_ratio", type = float, default = 0.5)
     ppo_parser.add_argument("--ppo_train_emo_strat", action="store_true")
+    ppo_parser.add_argument("--ppo_use_lm_reward", action="store_true")
     ppo_parser.add_argument("--ppo_eval", action="store_true")
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
