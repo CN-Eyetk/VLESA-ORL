@@ -1117,10 +1117,10 @@ def set_seed(args):
         torch.use_deterministic_algorithms(True, warn_only=True)
         torch.backends.cudnn.benchmark = False
         torch.backends.cudnn.enabled = False
-    
+
         os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
-    if args.n_gpu > 0:
-        torch.cuda.manual_seed_all(args.seed)
+    #if args.n_gpu > 0:
+    #    torch.cuda.manual_seed_all(args.seed)
 
 def _sorted_checkpoints(args, checkpoint_prefix="checkpoint", use_mtime=False) -> List[str]:
     ordering_and_checkpoint_path = []

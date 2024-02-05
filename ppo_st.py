@@ -7,13 +7,13 @@ from BlenderEmotionalSupport import (load_tokenizer,
                     generate_new
                     )
 from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker
-
+from BlenderEmotionalSupport import set_seed
 from ppo_utils import freeze_parameters, Agent, load_ref_model
 import torch
 import os
 from peft import LoraConfig
 from tqdm import tqdm
-from trl import AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, PPOConfig, CustomPPOTrainer, set_seed, DialogueActPPOTrainer
+from trl import AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, PPOConfig, CustomPPOTrainer, DialogueActPPOTrainer
 from trl import JointPPOTrainer, AutoModelForMultiLevelWithValueHead
 from arguments import load_arg
 from lexical_diversity import lex_div as ld
@@ -62,6 +62,7 @@ class ScriptArguments:
             warmup_steps=args.ppo_warmup_steps,
             use_word_level_reward = args.ppo_use_word_level_reward,
             n_action = 8,
+            use_full_loss = args.ppo_use_full_loss
             
             
         )
@@ -121,7 +122,7 @@ if __name__ == "__main__":
         args.train_dataset = train_dataset
         args.eval_dataset = eval_dataset
         args.test_dataset = test_dataset
-        set_seed(ppo_args.ppo_config.seed)
+        set_seed(args)
         device_map = None
         peft_config = None
         model = trl_model_class.from_pretrained(

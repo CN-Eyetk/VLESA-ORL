@@ -2050,19 +2050,20 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 z = z.repeat(1,lm_hidden.size(1),1)
                 lm_hidden = 0.8 * lm_hidden + 0.2 * self.fc_z(torch.cat((z, lm_hidden), dim = -1))
             lm_logits = self.lm_head(lm_hidden) + self.final_logits_bias
-            if self.config.use_contrastive_loss or self.config.use_centroid_loss:
-                #decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
-                with torch.no_grad():
-                    decoder_final_position = decoder_attention_mask.sum(-1).long() - 2
-                    if self.use_emb_prep:
-                        decoder_final_position = decoder_final_position - strategy_embs.size(1)
-                
-                #print("decoder_final_eos_position",decoder_final_position)
-                #print("lm_hidden",lm_hidden.shape)
-                
+            if not generate:
+                if self.config.use_contrastive_loss or self.config.use_centroid_loss:
+                    #decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
+                    with torch.no_grad():
+                        decoder_final_position = decoder_attention_mask.sum(-1).long() - 2
+                        if self.use_emb_prep:
+                            decoder_final_position = decoder_final_position - strategy_embs.size(1)
+                    
+                    #print("decoder_final_eos_position",decoder_final_position)
+                    #print("lm_hidden",lm_hidden.shape)
+                    
                 #print("decoder_final_position", decoder_final_position)
-                decoder_final_position = decoder_final_position.unsqueeze(-1).unsqueeze(-1).repeat(1,1,self.config.d_model)
-                decoder_eos_hidden = lm_hidden.gather(dim = 1, index = decoder_final_position) #lm_hidden[:,decoder_final_position,:]
+                    decoder_final_position = decoder_final_position.unsqueeze(-1).unsqueeze(-1).repeat(1,1,self.config.d_model)
+                    decoder_eos_hidden = lm_hidden.gather(dim = 1, index = decoder_final_position) #lm_hidden[:,decoder_final_position,:]
 
                 #valid_decoder_attention_mask = decoder_attention_mask[:,strategy_embs.size(1):].unsqueeze(-2)
                 #print("valid_decoder_attention_mask",valid_decoder_attention_mask.shape)
@@ -2080,11 +2081,12 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 lm_hidden = 0.8 * lm_hidden + 0.2 * self.fc_z(torch.cat((z, lm_hidden), dim = -1))
                 
             lm_logits = self.lm_head(lm_hidden) + self.final_logits_bias
-            if self.config.use_contrastive_loss or self.config.use_centroid_loss:
-                decoder_final_eos_position = get_last_arg_where_equal(lm_logits.argmax(-1), self.config.eos_token_id)
-                decoder_eos_hidden = lm_hidden[decoder_final_eos_position[:,0],decoder_final_eos_position[:,1],:]
-                #decoder_pool_embedding = decoder_attention_mask.unsqueeze(-2).matmul(decoder_outputs[0]).view(-1, self.config.d_model) 
-                #decoder_pool_embedding = decoder_pool_embedding / decoder_attention_mask.sum(-1).unsqueeze(-1).repeat(1, self.config.d_model)
+            if not generate:
+                if self.config.use_contrastive_loss or self.config.use_centroid_loss:
+                    decoder_final_eos_position = get_last_arg_where_equal(lm_logits.argmax(-1), self.config.eos_token_id)
+                    decoder_eos_hidden = lm_hidden[decoder_final_eos_position[:,0],decoder_final_eos_position[:,1],:]
+                    #decoder_pool_embedding = decoder_attention_mask.unsqueeze(-2).matmul(decoder_outputs[0]).view(-1, self.config.d_model) 
+                    #decoder_pool_embedding = decoder_pool_embedding / decoder_attention_mask.sum(-1).unsqueeze(-1).repeat(1, self.config.d_model)
 
 
         loss = None
@@ -2125,9 +2127,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
             if self.config.use_contrastive_loss:
                 contrast_loss_funct = ContrastiveLoss()
                 #decoder_strategy_ids = decoder_strategy_ids.view(-1, 8)
-                decoder_pool_embedding = decoder_pool_embedding.view(-1, self.config.d_model)
+                decoder_eos_hidden = decoder_eos_hidden.view(-1, self.config.d_model)
                 #print(decoder_pool_embedding.shape)
-                contrast_loss = contrast_loss_funct(decoder_pool_embedding, decoder_strategy_ids)
+                contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
                 if self.training:
                     loss += self.config.contrastive_loss_ratio * contrast_loss
             elif self.config.use_centroid_loss:

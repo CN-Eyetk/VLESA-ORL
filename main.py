@@ -44,6 +44,7 @@ parser.add_argument("--use_contrastive_loss", action = "store_true")
 parser.add_argument("--use_centroid_loss", action = "store_true")
 parser.add_argument("--sample_strategy_embedding", action = "store_true")
 parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
+parser.add_argument("--do_train",action="store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -115,7 +116,7 @@ else:
         +("-wo_comet" if WO_COMET else "") \
         +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
         +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
-        +("-ctd" if args_g.use_centroid_loss else "")  \
+        +("-ct" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
         +args_g.tag
                                 
@@ -175,7 +176,7 @@ logger = logging.getLogger(__name__)
 def load_arg():
     #torch.distributed.init_process_group(backend="nccl")
     #local_rank = torch.distributed.get_rank()
-    args = {"do_train":False,
+    args = {"do_train":args_g.do_train,
             "data_path":"converted_dataset",
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",

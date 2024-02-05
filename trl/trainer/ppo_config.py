@@ -139,6 +139,7 @@ class PPOConfig:
 
     #add lm loss
     add_lm_loss: bool = False
+    use_full_loss: bool = False
     lm_loss_ratio: Optional[float] = 0.5
     
     ##scheduler

@@ -683,7 +683,10 @@ class ContrastiveLoss(nn.Module):
         # d = 0 means y1 and y2 are supposed to be different
         
         #euc_dist = nn.functional.pairwise_distance(y1, y2)
-        cos = nn.CosineSimilarity(y1, y2)
+        cos = nn.CosineSimilarity(dim=-1, eps=1e-6)(y1, y2)
+        #cos = torch.tensor(cos).to(y1.device)
+        #print(cos)
+        #print(cos.shape)
         if d == 0:
             return torch.mean(torch.pow(cos, 2))  # distance squared
         else:  # d == 1

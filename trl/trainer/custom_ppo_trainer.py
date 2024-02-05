@@ -115,7 +115,10 @@ class CustomPPOTrainer(PPOTrainer):
                 outputs = model.module.pretrained_model(**input_kwargs)
             else:
                 outputs = model.pretrained_model(**input_kwargs)
-            loss = outputs.loss
+            if self.config.use_full_loss:
+                loss = outputs.loss
+            else:
+                loss = outputs.lm_loss
             all_loss.append(loss)
         batch_loss = torch.mean(torch.tensor(all_loss))
         #print("batch_loss=",batch_loss)

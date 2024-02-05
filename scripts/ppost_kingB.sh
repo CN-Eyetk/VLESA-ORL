@@ -8,17 +8,16 @@ pretrained_args="--no_fuse --use_bart --use_kl --tag pm131/bleu2 --emo_out_loss_
 cur_comm="python3 ppo_st.py "$pretrained_args
 cur_comm+=" --ppo 
             --ppo_save_step 20 --ppo_eval_step 20
-            --ppo_batch_size 100
-            --ppo_mini_batch_size 10
+            --ppo_batch_size 200
+            --ppo_mini_batch_size 40
             --ppo_train_emo_strat
-            --ppo_add_lm_loss
-            --ppo_gradient_accumulation_steps 10"
+            --ppo_gradient_accumulation_steps 5"
 
 cur_comm+=" --root_path "$root_path
 cur_comm+=" --ppo_frozen_layer_num 0"
 cur_comm+=" --ppo_init_kl_coef 0.01"
 cur_comm+=" --ppo_lm_loss 0.05"
-cur_comm+=" --ppo_lr 5e-7"
+cur_comm+=" --ppo_lr 1e-6"
 echo $cur_comm
 $cur_comm
 
