@@ -1,13 +1,13 @@
 #import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, BertTokenizer, BlenderbotSmallTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, BertTokenizer, BlenderbotSmallTokenizer, AutoModelForCausalLM
 import torch
 from torch.nn.utils.rnn import pad_sequence
 import re
 import json
 import numpy as np
 from tqdm import tqdm
-from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments
+from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments
 #from nltk import tokenize
 #nltk.download('vader_lexicon')
 class NLTK_Senti:
@@ -98,6 +98,58 @@ class Collater:
         batch["attention_mask"] = attention_mask
         return batch
 
+class SeekerCollater:
+    def __init__(self, tokenizer, doing_response_generation = False) -> None:
+        self.tokenizer = tokenizer
+        self.doing_response_generation = doing_response_generation
+    def collate(self, features):
+        fields = features[0].keys()
+        
+        #print("fields,", fields)
+        #print(features[0])
+        batch = {}        
+        #hist_input_ids, (len_turn, len_utt, len_utt_each_turn) = merge_3d([x["hist_input_ids"]   for x in features], self.tokenizer.pad_token_id)
+        #hist_attention_mask, _ = merge_3d([x["hist_attention_mask"] for x in features], 0)
+        #conv_mask = hist_attention_mask.sum(-1).ne(0).long()
+        #targ_index = torch.tensor([x - 1 for x in len_turn]).long()
+        #targ_mask = torch.zeros(conv_mask.size())
+        #targ_mask[torch.LongTensor([x for x in range(targ_mask.size(0))]),targ_index] = 1
+        
+
+        if "labels" in fields:
+            if type(features[0]["labels"]) == list:
+                self.doing_response_generation = True
+            else:
+                labels = torch.LongTensor([x["labels"] for x in features])
+                batch["labels"] = labels.float()
+        else:
+            batch["labels"] = None
+        
+        #batch["input_ids"] = input_ids
+        #batch["attention_mask"] = attention_mask
+        batch["input_ids"] = pad_sequence([torch.tensor([y for x in feature["input_ids"] for y in x ] + [self.tokenizer.eos_token_id]) for feature in features],
+                                          batch_first=True,
+                                          padding_value=0
+                                          )
+        batch["attention_mask"] = pad_sequence([torch.tensor([y for x in feature["attention_mask"] for y in x ]  + [1]) for feature in features],
+                                          batch_first=True,
+                                          padding_value=0
+                                          )
+        #if generate feedback
+        if "labels" in fields and self.doing_response_generation:
+            batch["labels"] = pad_sequence([torch.tensor([y for x in feature["labels"] for y in x ]  + [self.tokenizer.eos_token_id]) for feature in features],
+                                          batch_first=True,
+                                          padding_value=self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else 0
+                                          )
+        #batch["targ_mask"] = targ_mask
+        #batch["conv_mask"] = conv_mask
+        #batch["token_type_ids"] =  token_type_ids
+        #with open("verbose_collate.txt","a+") as file:
+        #    input_text = self.tokenizer.batch_decode(batch["input_ids"])
+        #    file.write(f"{input_text}")
+        #    file.write("\n")
+        #    file.write("-=======")
+        return batch
 def encode_turn(turn, tokenizer):
     res = {}
     speaker = turn["speaker"]
@@ -124,6 +176,46 @@ def encode_history(turn, tokenizer):
         res["hist_attention_mask"].append(encoded_turn["attention_mask"])
         res["hist_token_type_ids"].append(encoded_turn["token_type_ids"])
     return res
+
+class SeekerAgent:
+    def __init__(self, args):
+        self.tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
+        self.model = AutoModelForCausalLM.from_pretrained(args.model_dir)
+        self.device = args.device
+        self.collator = SeekerCollater(self.tokenizer)
+        self.model = self.model.to(self.device)
+    def response(self, contents):
+        cur_data = {
+                "hist":contents
+            }
+        inputs = encode_history(cur_data, self.tokenizer)
+        batch = [
+            {"input_ids": inputs["hist_input_ids"],
+             "token_type_ids": inputs["hist_token_type_ids"],
+             "attention_mask": inputs["hist_attention_mask"]
+             }
+        ]
+        
+        batch = self.collator.collate(batch)
+        batch["input_ids"][:,-1] = self.tokenizer.convert_tokens_to_ids(["[unused2]"])[0]
+        input_size = batch["input_ids"].size(-1)
+        prediction = self.model.generate(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()},#remove end of text
+                                         max_length = input_size + 50,
+                                         do_sample = True,
+                                         eos_token_id = self.tokenizer.eos_token_id,
+                                         pad_token_id = self.tokenizer.eos_token_id,
+                                         #temperature = 0.7,
+                                         top_k = 1,
+                                         repetition_penalty = 1.03,
+                                         )
+        
+        response = self.tokenizer.batch_decode([prediction[0][input_size:]])[0]
+        
+        response = response.split("[unused ")[0]
+        response = response.replace("<|endoftext|>","")
+        response = response.replace("’"," '")
+        response = response.strip()
+        return response
 
 class EmFeedBacker:
     def __init__(self, args, sent_rwd_ratio = 0):
@@ -237,6 +329,10 @@ def load_empathy_detector_rewarder():
 def load_feedbacker():
     feedbacker = EmFeedBacker(EmpathyFeedbackerArguments)
     return feedbacker
+
+def load_seeker():
+    seeker = SeekerAgent(SeekerArguments)
+    return seeker
 
 def summary_to_history(summary, response = None):
     # "convert summary txt to histories"
@@ -442,6 +538,6 @@ def main(path, prefix):
             file.write("\n")
 
 if __name__ == "__main__":
-    path = "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ctam205/bleu2/"
-    prefix = "sfl_contrast"
+    path = "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-06/lr_1e-09-bs_20-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1"
+    prefix = "new_ppo_best"
     main(path, prefix)

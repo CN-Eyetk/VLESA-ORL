@@ -126,6 +126,7 @@ def load_arg():
     ppo_parser.add_argument("--ppo_train_emo_strat", action="store_true")
     ppo_parser.add_argument("--ppo_use_lm_reward", action="store_true")
     ppo_parser.add_argument("--ppo_eval", action="store_true")
+    ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
     
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
@@ -267,5 +268,10 @@ class EmpathyDetectorArguments:
 
 class EmpathyFeedbackerArguments:
     model_dir = "/disk/junlin/models/EmoSupport/bert/output/esconv"
+    #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
+    device = torch.device("cpu")
+    
+class SeekerArguments:
+    model_dir = "/disk/junlin/models/EmoSupport/gpt/output/esconv/checkpoint-5000"
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")

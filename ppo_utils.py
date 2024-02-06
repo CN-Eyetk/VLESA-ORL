@@ -23,7 +23,7 @@ def load_ref_model(model):
     return ref_model.eval()
 
 class Agent:
-    def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs) -> None:
+    def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs, seeker = None, seeker_func = None) -> None:
         self.args = args
         self.model = model
         self.tokenizer = tokenizer
@@ -36,6 +36,8 @@ class Agent:
         self.mini_batch_size = mini_batch_size
         self.use_vad_labels = self.model.pretrained_model.config.use_vad_labels
         self.generation_kwargs = generation_kwargs
+        self.seeker = seeker
+        self.seeker_func = seeker_func
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
@@ -207,6 +209,41 @@ class Agent:
         vad_ids = pad_sequence(vad_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         return query_tensors, role_ids, vad_ids, attention_mask
+    def get_seeker_response(self, history):
+        self.seeker.model = self.seeker.model.cuda()
+        seeker_reponses = [self.seeker_func(response) for response in history]
+        self.seeker.model = self.seeker.model.to(torch.device("cpu"))
+        return seeker_reponses
+    def update_next_state_with_seeker_response(self, next_state, seeker_reponses, max_len = 512):
+        input_ids = next_state["input_ids"]
+        role_ids = next_state["role_ids"]
+        attention_masks = next_state["attention_masks"]
+        if self.model.config.use_vad_labels:
+            vad_ids = next_state["vad_ids"]
+        batch_size = len(input_ids)
+        for i in range(batch_size):
+            seeker_response = seeker_reponses[i]
+            new_input_ids = torch.LongTensor(self.tokenizer.encode(seeker_response)).to(input_ids[i].device)
+            new_role_ids = torch.zeros(len(new_input_ids)) + self.hist_retriver.role_to_id["seeker"]
+            new_role_ids = new_role_ids.to(input_ids[i].device)
+            new_attention_masks = (torch.zeros(len(new_input_ids)) + 1).bool()
+            new_attention_masks = new_attention_masks.to(input_ids[i].device)
+            if self.model.config.use_vad_labels:
+                new_vad_ids = torch.zeros(len(new_input_ids)) + self.tokenizer.pad_token_id
+                _, _,new_vad_labels = self.vad_tokenizer.tokenizer_vad(seeker_response, is_fast_tokenizer = False, char_to_remove = "Ġ")
+                new_vad_labels = [-1] + new_vad_labels
+                new_vad_ids[:len(new_vad_labels)] = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(new_vad_labels))
+                new_vad_ids = new_vad_ids.to(input_ids[i].device)
+            input_ids[i] = torch.cat((input_ids[i], new_input_ids), dim = -1)
+            role_ids[i] = torch.cat((role_ids[i], new_role_ids), dim = -1)
+            attention_masks[i] = torch.cat((attention_masks[i], new_attention_masks), dim = -1)
+            vad_ids[i] = torch.cat((vad_ids[i], new_vad_ids), dim = -1)
+            assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
+            if input_ids[i].size(-1) > max_len:
+                input_ids[i] = torch.concat((input_ids[i][:1], input_ids[i][-max_len+1:]))
+                role_ids[i] = torch.concat((role_ids[i][:1], role_ids[i][-max_len+1:]))
+                attention_masks[i] = torch.concat((attention_masks[i][:1], attention_masks[i][-max_len+1:]))
+                vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
     def prepare_experience_pool(self, batch):
         state, next_state, all_paras, bool_paras = self.step(batch)
         
@@ -219,6 +256,13 @@ class Agent:
         rewards = [self.reward_func(response) for response in history_with_response]
         ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
         self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
+        
+        if self.seeker is not None:
+            seeker_reponses = self.get_seeker_response(history_with_response)
+            self.update_next_state_with_seeker_response(next_state = next_state, seeker_reponses = seeker_reponses)
+        else:
+            seeker_reponses = None
+        
         # Run PPO step
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
 
@@ -265,12 +309,14 @@ class Agent:
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
         assert len(paras["comet_embs"]) == len(query_tensors)
-        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response
+        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_reponses
 
     def batched_ppo_step(self, batch, ppo_batch):
-        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response = self.prepare_experience_pool(batch)
+        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_reponses = self.prepare_experience_pool(batch)
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
+        if seeker_reponses is not None:
+            ppo_batch["seeker_reponses"] = seeker_reponses
         check_format(query_tensors, paras, self.tokenizer)
         diff_reward = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
         stats = self.ppo_trainer.step(query_tensors, 

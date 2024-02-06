@@ -6,7 +6,7 @@ from BlenderEmotionalSupport import (load_tokenizer,
                     load_dataset,
                     generate_new
                     )
-from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker
+from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker, load_seeker
 from BlenderEmotionalSupport import set_seed
 from ppo_utils import freeze_parameters, Agent, load_ref_model
 import torch
@@ -68,6 +68,7 @@ class ScriptArguments:
         )
     )
     ppo_train_emo_strat: bool = args.ppo_train_emo_strat
+    use_seeker: bool = args.ppo_train_use_seeker
     use_lm_reward: bool = args.ppo_use_lm_reward
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
     frozen_layer_num: int = args.ppo_frozen_layer_num
@@ -149,7 +150,14 @@ if __name__ == "__main__":
         hist_retriver = Retrive_DiagHist(tokenizer)
         feed_backer = load_feedbacker()
         feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
+
         reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
+        if ppo_args.use_seeker:
+            seeker = load_seeker()
+            seeker_func = lambda x:seeker.response(x)
+        else:
+            seeker = None
+            seeker_func = None
         generation_kwargs = {
             "do_sample": True,
             "pad_token_id": tokenizer.pad_token_id,
@@ -190,6 +198,8 @@ if __name__ == "__main__":
                         reward_func = reward_func,
                         mini_batch_size = ppo_args.ppo_config.mini_batch_size,
                         generation_kwargs = generation_kwargs,
+                        seeker = seeker,
+                        seeker_func = seeker_func
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
