@@ -29,7 +29,18 @@ lm_loss_args = ["input_ids",
                 "role_ids",
                 "vad_ids",
                 "emo_dist",
+                "decoder_strategy_ids",#Feb5 Editted
                 "labels"]
+batch_forward_pass_args = [
+   "input_ids",
+    "attention_mask",
+    "comet_embs",
+    "comet_mask",
+    "comet_embs_st",
+    "comet_mask_st",
+    "role_ids",
+    "vad_ids",
+]
 class CustomPPOTrainer(PPOTrainer):
     def custom_prepare_model_inputs(self, queries: torch.Tensor, responses: torch.Tensor, **kwargs):
         if self.is_encoder_decoder:
@@ -116,6 +127,7 @@ class CustomPPOTrainer(PPOTrainer):
             else:
                 outputs = model.pretrained_model(**input_kwargs)
             if self.config.use_full_loss:
+                #assert 1 == 2 
                 loss = outputs.loss
             else:
                 loss = outputs.lm_loss
@@ -704,7 +716,7 @@ class DialogueActPPOTrainer(PPOTrainer):
                 self.model,
                 queries,
                 responses,
-                model_inputs,
+                {k:v for k,v in model_inputs.items() if not k == "labels" and not k == "decoder_strategy_ids"},
                 response_masks=response_masks,
                 return_logits=full_kl_penalty,
             )
@@ -714,7 +726,7 @@ class DialogueActPPOTrainer(PPOTrainer):
                     self.model if self.is_peft_model else self.ref_model,
                     queries,
                     responses,
-                    model_inputs,
+                    {k:v for k,v in model_inputs.items() if not k == "labels" and not k == "decoder_strategy_ids"},
                     return_logits=full_kl_penalty,
                 )
 
@@ -786,7 +798,7 @@ class DialogueActPPOTrainer(PPOTrainer):
                             self.model,
                             mini_batch_dict["queries"], #[b,2,l]
                             mini_batch_dict["responses"],  #[b,2,l]
-                            model_inputs,
+                            {k:v for k,v in model_inputs.items() if not k == "labels" and not k == "decoder_strategy_ids"},
                             return_logits=True,
                         )
                         if with_lm_loss:

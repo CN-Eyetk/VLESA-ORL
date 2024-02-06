@@ -687,9 +687,9 @@ class ContrastiveLoss(nn.Module):
         #cos = torch.tensor(cos).to(y1.device)
         #print(cos)
         #print(cos.shape)
-        if d == 0:
+        if d == 0:#not same 
             return torch.mean(torch.pow(cos, 2))  # distance squared
-        else:  # d == 1
+        else:  # d == 1 #same 
             delta = self.m - cos  # sort of reverse distance
             delta = torch.clamp(delta, min=0.0, max=None)
             return torch.mean(torch.pow(delta, 2))  # mean over all rows

@@ -10,6 +10,7 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
+ct_loss_ratios=(0.2 0.1 0.05)
 warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
@@ -22,8 +23,8 @@ root_path="/disk/junlin/EmoSp"
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05"
-comm+=" --do_train"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05"
+
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
     for vad_rat in "${vad_rats[@]}"; do
@@ -38,6 +39,7 @@ for u_r in "${use_role[@]}"; do
                                     for eos_stg in "${if_stg_from_eos[@]}"; do
                                     for eos_emo in "${if_emo_from_eos[@]}"; do
                                     for stg_cat in "${if_st_em_sampling[@]}"; do
+                                    for cl_loss_ratio in "${ct_loss_ratios[@]}";do
                                     cur_comm=$comm
                                     cur_comm+=" --root_path "$root_path
                                     cur_comm+=" --lr "$lr
@@ -62,7 +64,7 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=$stg_cat
                                     #
                                     cur_comm+=" --use_contrastive_loss"
-                                    cur_comm+=" --contrastive_loss_ratio 0.1"
+                                    cur_comm+=" --contrastive_loss_ratio "$cl_loss_ratio
                                     #cur_comm+=" --fuse_z "
                                     $cur_comm
 
@@ -71,6 +73,7 @@ for u_r in "${use_role[@]}"; do
                                     #
                                     #$cur_comm
                                     #cur_comm+=" --use_situ_in_encoder"
+                                    done
                                     done
                                     done
                                     done

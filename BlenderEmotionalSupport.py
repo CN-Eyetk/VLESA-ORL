@@ -2344,6 +2344,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             paras["generate_with_predicted_strategy"] = False
         if phase == "reinforce_with_lm_loss":
             paras["labels"] = decoder_label_ids
+            if args.use_contrastive_loss:
+                paras["decoder_strategy_ids"] = decoder_strategy_ids
         return input_ids, paras
     #elif phase == "reinforce":
     #    return input_ids, paras

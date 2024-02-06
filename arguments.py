@@ -44,7 +44,8 @@ def load_tag(args):
     +("-wo_comet" if args.wo_comet else "") \
     +(f"-vad-{args.vad_emb_ratio}" if args.use_vad_labels else "") \
     +("-frz_stem" if args.freeze_emo_stag_params else "")  \
-    +("-ctd" if args.use_centroid_loss else "")  \
+    +("-ct" if args.use_contrastive_loss else "")  \
+    + (f"{args.contrastive_loss_ratio}" if args.use_contrastive_loss else "")  \
     +("-fz" if args.fuse_z else "")  \
     +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")

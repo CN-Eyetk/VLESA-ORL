@@ -442,6 +442,6 @@ def main(path, prefix):
             file.write("\n")
 
 if __name__ == "__main__":
-    path = "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0pm131/bleu2/epoch0_step99_2024-02-05/lr_5e-07-bs_100-sl_0-gs_10-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1"
-    prefix = "ppo_best_1"
+    path = "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ctam205/bleu2/"
+    prefix = "sfl_contrast"
     main(path, prefix)

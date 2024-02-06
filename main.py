@@ -117,6 +117,7 @@ else:
         +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
         +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
         +("-ct" if args_g.use_contrastive_loss else "")  \
+        + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
         +args_g.tag
                                 

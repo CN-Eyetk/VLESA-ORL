@@ -2054,7 +2054,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 if self.config.use_contrastive_loss or self.config.use_centroid_loss:
                     #decoder_cls_embedding = decoder_outputs[0][:,strategy_embs.size(1)]
                     with torch.no_grad():
-                        decoder_final_position = decoder_attention_mask.sum(-1).long() - 2
+                        decoder_final_position = decoder_attention_mask.sum(-1).long() - 2 #[1,1,1,1,0,0]
                         if self.use_emb_prep:
                             decoder_final_position = decoder_final_position - strategy_embs.size(1)
                     

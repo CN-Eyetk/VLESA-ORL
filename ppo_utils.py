@@ -251,9 +251,11 @@ class Agent:
             "labels":-100,
             "attention_mask":False
         }
+        #print("paras decoder strategy ids",all_paras["decoder_strategy_ids"])
         paras = {k:pad_sequence(v, batch_first = True, padding_value = (self.tokenizer.pad_token_id if not k in pad_val.keys() 
                                                                         else pad_val[k])) 
-                for k,v in all_paras.items()}
+                if not k =="decoder_strategy_ids"  else torch.stack(v)
+                for k,v in all_paras.items() }
         
         for k, v in bool_paras.items():
             paras[k] = v
