@@ -2339,7 +2339,7 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
         if args.use_vad_labels:
             paras["vad_ids"] = vad_ids
         if "reinforce" in phase:
-            paras["generate_with_predicted_strategy"] = True
+            paras["generate_with_predicted_strategy"] = False
         else:
             paras["generate_with_predicted_strategy"] = False
         if phase == "reinforce_with_lm_loss":

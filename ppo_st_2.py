@@ -177,9 +177,12 @@ if __name__ == "__main__":
             "repetition_penalty":1.03,
             "max_length":256,
             "min_length":5,
-            "top_p":0.5,
-            "top_k":50,
+            "top_p":0.3,
+            "temperature":1.1,
+            "top_k":30,
             "num_beams":1,}
+        
+        print("generation_kwargs",generation_kwargs)
         #    "top_p":0.3,
         #    "top_k":30,
         #    "repetition_penalty":1.03,

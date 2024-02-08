@@ -538,9 +538,11 @@ def main(path, prefix):
             file.write("\n")
 
 if __name__ == "__main__":
-    paths = ["/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2",
-    "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-07/lr_1e-08-bs_32-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1/"
+    paths = [
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-08/lr_1e-09-bs_32-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2",
     ]
-    for path in paths:
-        prefix = "ppobest"
+    prefixes = ["ppobest","base"]
+    for path, prefix in zip(paths,prefixes):
+        print("path=",{path})
         main(path, prefix)

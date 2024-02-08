@@ -13,15 +13,13 @@ cur_comm+=" --ppo
             --ppo_batch_size 32
             --ppo_mini_batch_size 16
             --ppo_train_emo_strat
-            --ppo_add_lm_loss
-            --ppo_use_full_loss
             --ppo_train_use_seeker
             --ppo_stop_use_diff_reward
             --ppo_gradient_accumulation_steps 2"
 
 cur_comm+=" --root_path "$root_path
 cur_comm+=" --ppo_frozen_layer_num 0"
-cur_comm+=" --ppo_init_kl_coef 0.01"
+cur_comm+=" --ppo_init_kl_coef 0.0"
 cur_comm+=" --ppo_lm_loss 0.05"
 cur_comm+=" --ppo_lr "$lr
 echo $cur_comm
