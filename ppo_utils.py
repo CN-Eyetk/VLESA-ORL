@@ -23,7 +23,7 @@ def load_ref_model(model):
     return ref_model.eval()
 
 class Agent:
-    def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs, seeker = None, seeker_func = None) -> None:
+    def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs, seeker = None, seeker_func = None, use_diff_reward = True) -> None:
         self.args = args
         self.model = model
         self.tokenizer = tokenizer
@@ -38,6 +38,7 @@ class Agent:
         self.generation_kwargs = generation_kwargs
         self.seeker = seeker
         self.seeker_func = seeker_func
+        self.use_diff_reward = use_diff_reward
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
@@ -318,10 +319,13 @@ class Agent:
         if seeker_reponses is not None:
             ppo_batch["seeker_reponses"] = seeker_reponses
         check_format(query_tensors, paras, self.tokenizer)
-        diff_reward = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
+        if self.use_diff_reward:
+            scores = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
+        else:
+            scores = rewards
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
-                                scores = diff_reward, #base_line_rewards
+                                scores = scores, #base_line_rewards
                                 response_masks = None, 
                                 **paras)
 

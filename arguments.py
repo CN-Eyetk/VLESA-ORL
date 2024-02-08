@@ -12,10 +12,13 @@ def load_ppo_prefix(args_g):
         sr = args_g.ppo_sent_reward_ratio
         lm = args_g.ppo_lm_loss
         stem = args_g.ppo_train_emo_strat
+        nondf = args_g.ppo_stop_use_diff_reward
         full_loss = args_g.ppo_use_full_loss
         prefix = f"lr_{lr}-bs_{bs}-sl_{sl}-gs_{gs}-kl_{kl}-wr_{wr}-sr_{sr}-lm_{lm}_stem_{int(stem)}"
         if not full_loss:
             prefix += "wo_full"
+        if nondf:
+            prefix += "wo_diff"
             
     else:
         prefix = args_g.prefix
@@ -127,7 +130,7 @@ def load_arg():
     ppo_parser.add_argument("--ppo_use_lm_reward", action="store_true")
     ppo_parser.add_argument("--ppo_eval", action="store_true")
     ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
-    
+    ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
     #GROUP += f"{TAG}_ppo"

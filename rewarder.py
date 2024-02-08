@@ -538,6 +538,9 @@ def main(path, prefix):
             file.write("\n")
 
 if __name__ == "__main__":
-    path = "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-06/lr_1e-09-bs_20-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1"
-    prefix = "new_ppo_best"
-    main(path, prefix)
+    paths = ["/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2",
+    "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-07/lr_1e-08-bs_32-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1/"
+    ]
+    for path in paths:
+        prefix = "ppobest"
+        main(path, prefix)

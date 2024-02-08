@@ -68,6 +68,7 @@ class ScriptArguments:
         )
     )
     ppo_train_emo_strat: bool = args.ppo_train_emo_strat
+    ppo_stop_use_diff_reward: bool = args.ppo_stop_use_diff_reward
     use_seeker: bool = args.ppo_train_use_seeker
     use_lm_reward: bool = args.ppo_use_lm_reward
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
@@ -130,7 +131,7 @@ if __name__ == "__main__":
             ppo_args.ppo_config.model_name,
             config = model_config,
         )
-        freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layer)")
+        freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layer|shared|multi_state_LayerNorm)")
         ref_model = load_ref_model(model)
         if args.ppo_train_emo_strat:
             name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
@@ -158,29 +159,27 @@ if __name__ == "__main__":
         else:
             seeker = None
             seeker_func = None
+        #generation_kwargs = {
+        #    "do_sample": True,
+        #    "pad_token_id": tokenizer.pad_token_id,
+        #    "eos_token_id": tokenizer.eos_token_id,
+        #    "max_length":128,
+        #    "num_beams":1,
+            #"do_sample":True,
+        #    "repetition_penalty":1.03,
+            #"no_repeat_ngram_size":3,
+            #"max_new_tokens": 32,
+        #}
         generation_kwargs = {
             "do_sample": True,
             "pad_token_id": tokenizer.pad_token_id,
             "eos_token_id": tokenizer.eos_token_id,
-            "max_length":128,
-            "num_beams":1,
-            "top_p":0.3,
-            "top_k":30,
-            "temperature":0.7,
-            #"do_sample":True,
             "repetition_penalty":1.03,
-            #"no_repeat_ngram_size":3,
-            #"max_new_tokens": 32,
-        }
-        #generation_kwargs = {
-        #    "top_k": 0.0,
-        #    "top_p": 1.0,
-        #    "do_sample": True,
-        #    "pad_token_id": tokenizer.pad_token_id,
-        #    "eos_token_id": tokenizer.eos_token_id,
-        #    "max_length":512,
-        #    "min_length":5,
-        #    "num_beams":1,
+            "max_length":256,
+            "min_length":5,
+            "top_p":0.5,
+            "top_k":50,
+            "num_beams":1,}
         #    "top_p":0.3,
         #    "top_k":30,
         #    "repetition_penalty":1.03,
@@ -199,7 +198,8 @@ if __name__ == "__main__":
                         mini_batch_size = ppo_args.ppo_config.mini_batch_size,
                         generation_kwargs = generation_kwargs,
                         seeker = seeker,
-                        seeker_func = seeker_func
+                        seeker_func = seeker_func,
+                        use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
