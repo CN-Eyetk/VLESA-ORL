@@ -184,6 +184,7 @@ class SeekerAgent:
         self.device = args.device
         self.collator = SeekerCollater(self.tokenizer)
         self.model = self.model.to(self.device)
+        self.model.eval()
     def response(self, contents):
         cur_data = {
                 "hist":contents
@@ -199,15 +200,17 @@ class SeekerAgent:
         batch = self.collator.collate(batch)
         batch["input_ids"][:,-1] = self.tokenizer.convert_tokens_to_ids(["[unused2]"])[0]
         input_size = batch["input_ids"].size(-1)
-        prediction = self.model.generate(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()},#remove end of text
-                                         max_length = input_size + 50,
-                                         do_sample = True,
-                                         eos_token_id = self.tokenizer.eos_token_id,
-                                         pad_token_id = self.tokenizer.eos_token_id,
-                                         #temperature = 0.7,
-                                         top_k = 1,
-                                         repetition_penalty = 1.03,
-                                         )
+        with torch.no_grad():
+            prediction = self.model.generate(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()},#remove end of text
+                                            max_length = input_size + 50,
+                                            do_sample = True,
+                                            eos_token_id = self.tokenizer.eos_token_id,
+                                            pad_token_id = self.tokenizer.eos_token_id,
+                                            temperature = 0.7,
+                                            top_k = 30,
+                                            top_p = 0.3,
+                                            repetition_penalty = 1.03,
+                                            )
         
         response = self.tokenizer.batch_decode([prediction[0][input_size:]])[0]
         
@@ -223,7 +226,7 @@ class EmFeedBacker:
         self.model = AutoModelForSequenceClassification.from_pretrained(args.model_dir)
         self.device = args.device
         self.collator = Collater(self.tokenizer)
-        self.model = self.model.to(self.device)
+        self.model = self.model.to(self.device).eval()
         self.spt_token_id = self.tokenizer.convert_tokens_to_ids("[unused1]")
         self.sent_rwd_ratio = sent_rwd_ratio
     def score(self, contents, output_attentions = False):
@@ -244,7 +247,8 @@ class EmFeedBacker:
             }
         ]
         batch = self.collator.collate(batch)
-        prediction = self.model(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()}, output_attentions = output_attentions)
+        with torch.no_grad():
+            prediction = self.model(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()}, output_attentions = output_attentions)
         score = prediction.logits.detach().cpu().item()
         if output_attentions:
             attn = prediction.attentions[-1].sum(1)[0][0]
@@ -510,6 +514,8 @@ def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
                     step += m
     return res
 
+
+
 def main(path, prefix):
     #path = f"our_generated_data/-LIGHT-TRANS4/all_loss0.2_1.0_1.0_kl-nopp-empp-no_fuse-role1016_II{prefix}"
     summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n\n")
@@ -536,13 +542,29 @@ def main(path, prefix):
         for res in results:
             file.write(res)
             file.write("\n")
+    return rwds
 
 if __name__ == "__main__":
     paths = [
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step99_2024-02-08/lr_1e-09-bs_32-sl_0-gs_2-kl_0.01-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step29_2024-02-09/lr_1e-06-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff1.0",
     "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2",
     ]
+    import pandas as pd
+    rwds = []
     prefixes = ["ppobest","base"]
     for path, prefix in zip(paths,prefixes):
         print("path=",{path})
-        main(path, prefix)
+        rwd = main(path, prefix)
+        rwds.append(rwd)
+    win_a = 0
+    win_b = 0
+    for a,b in list(zip(rwds[0],rwds[1])):
+        if a > b:
+            win_a += 1
+        elif b > a:
+            win_b += 1
+    print(f"win a {win_a}==win b {win_b}")
+    df = pd.DataFrame({"a":rwds[0],"b":rwds[1]})
+    print(df.describe())
+    from scipy.stats import ttest_rel
+    print(ttest_rel(rwds[0], rwds[1]))

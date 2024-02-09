@@ -574,6 +574,7 @@ class PPOTrainer(BaseTrainer):
             batch_generation_kwargs = {k:(v[i:end_index].to(self.current_device) if torch.is_tensor(v) else v) for k,v in generation_kwargs.items()}
             #print("batch_generation_kwargs",batch_generation_kwargs)
             #try:
+            
             generations, _, _, strategy_logits = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
             #except:
             #    print("bug")

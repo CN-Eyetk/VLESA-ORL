@@ -178,7 +178,7 @@ if __name__ == "__main__":
             "max_length":256,
             "min_length":5,
             "top_p":0.3,
-            "temperature":1.1,
+            "temperature":0.7,
             "top_k":30,
             "num_beams":1,}
         
@@ -231,17 +231,25 @@ if __name__ == "__main__":
                 #ppo_batch["ref_rewards"] = ref_rewards
                 #ppo_batch["rewards"] = rewards
                 #ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards"])
-                if i % args.ppo_eval_step == args.ppo_eval_step - 1:
+                if i % args.ppo_eval_step == args.ppo_eval_step - 1 or i == len(ppo_trainer.dataloader) - 1:
                     with torch.no_grad():
-                        ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix)
-                        print("****************\ppo model save dir:",ppo_output_dir,"\****************")
-                        results = evaluate(args, 
-                                        ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 
-                                        tokenizer, 
-                                        eval_dataset, 
-                                        "{}-{}".format("checkpoint", f"ppo_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}"),
-                                        eval_output_dir = ppo_output_dir
-                                        )
+                        ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix + str(generation_kwargs["temperature"]))
+                        #print("****************\ppo model save dir:",ppo_output_dir,"\****************")
+                        #results = evaluate(args, 
+                        #                ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 
+                        #                tokenizer, 
+                        #                eval_dataset, 
+                        #                "{}-{}".format("checkpoint", f"ppo_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}"),
+                        #                eval_output_dir = ppo_output_dir
+                        #                )
+                        #ref_results = evaluate(args, 
+                        #                ppo_trainer.ref_model.pretrained_model, 
+                        #                tokenizer, 
+                        #                eval_dataset, 
+                        #                "{}-{}".format("checkpoint", f"ref_ppo_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}"),
+                        #                eval_output_dir = ppo_output_dir
+                        #                )
+                        #print("ref_results",ref_results)
                         #test_result = generate_new(args, 
                         #                           model = ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model,
                         #                           verbose = False, 
@@ -257,10 +265,3 @@ if __name__ == "__main__":
                                 scheduler = ppo_trainer.lr_scheduler
                                 )
                         print("success saved")
-                        ppl = results["eval_perplexity"]
-                        if ppl > best_ppl:
-                            early_stop_steps += 1
-                        if early_stop_steps > 2:
-                            print("finished")
-                            break
-                    del results

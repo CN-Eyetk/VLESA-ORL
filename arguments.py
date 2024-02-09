@@ -19,6 +19,10 @@ def load_ppo_prefix(args_g):
             prefix += "wo_full"
         if nondf:
             prefix += "wo_diff"
+        if not args_g.ppo_train_use_seeker:
+            prefix += "wo_seeker"
+        if args_g.ppo_warmup:
+            prefix += "_wm"
             
     else:
         prefix = args_g.prefix
@@ -119,7 +123,7 @@ def load_arg():
     ppo_parser.add_argument("--ppo_mini_batch_size", type = int, default = 20)
     ppo_parser.add_argument("--ppo_gradient_accumulation_steps", type = int, default = 1)
     ppo_parser.add_argument("--ppo_init_kl_coef", type = float, default = 0.5)
-    ppo_parser.add_argument("--ppo_warmup_steps", type = int, default = 50)
+    ppo_parser.add_argument("--ppo_warmup_steps", type = int, default = 10)
     ppo_parser.add_argument("--ppo_warmup", action="store_true")
     ppo_parser.add_argument("--ppo_add_lm_loss", action="store_true")
     ppo_parser.add_argument("--ppo_lm_loss", type = float, default=1.0)

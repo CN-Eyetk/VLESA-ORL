@@ -230,7 +230,7 @@ if __name__ == "__main__":
                 #ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards"])
                 if i % args.ppo_eval_step == args.ppo_eval_step - 1:
                     with torch.no_grad():
-                        ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix)
+                        ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix + ("temp" if generation_kwargs["temperature"] > 0.7 else ""))
                         print("****************\ppo model save dir:",ppo_output_dir,"\****************")
                         results = evaluate(args, 
                                         ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 

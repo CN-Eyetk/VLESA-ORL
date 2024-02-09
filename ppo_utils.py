@@ -224,7 +224,9 @@ class Agent:
         batch_size = len(input_ids)
         for i in range(batch_size):
             seeker_response = seeker_reponses[i]
-            new_input_ids = torch.LongTensor(self.tokenizer.encode(seeker_response)).to(input_ids[i].device)
+            #print("seeker_response",seeker_response)
+            new_input_ids = torch.LongTensor([self.tokenizer.bos_token_id] + self.tokenizer.encode(seeker_response)[1:]).to(input_ids[i].device)
+            #print("new_input_ids",new_input_ids)
             new_role_ids = torch.zeros(len(new_input_ids)) + self.hist_retriver.role_to_id["seeker"]
             new_role_ids = new_role_ids.to(input_ids[i].device)
             new_attention_masks = (torch.zeros(len(new_input_ids)) + 1).bool()
@@ -235,10 +237,15 @@ class Agent:
                 new_vad_labels = [-1] + new_vad_labels
                 new_vad_ids[:len(new_vad_labels)] = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(new_vad_labels))
                 new_vad_ids = new_vad_ids.to(input_ids[i].device)
-            input_ids[i] = torch.cat((input_ids[i], new_input_ids), dim = -1)
-            role_ids[i] = torch.cat((role_ids[i], new_role_ids), dim = -1)
-            attention_masks[i] = torch.cat((attention_masks[i], new_attention_masks), dim = -1)
-            vad_ids[i] = torch.cat((vad_ids[i], new_vad_ids), dim = -1)
+            #print("input_ids[i]",input_ids[i])
+            #print("role_ids[i]",role_ids[i])
+            #print("attention_masks[i]",attention_masks[i])
+            #print("vad_ids[i]",vad_ids[i])
+            non_path_length = attention_masks[i].sum()
+            input_ids[i] = torch.cat((input_ids[i][:non_path_length], new_input_ids), dim = -1) #Feb9 修正，concat的时候要剔除前面的pad
+            role_ids[i] = torch.cat((role_ids[i][:non_path_length], new_role_ids), dim = -1)
+            attention_masks[i] = torch.cat((attention_masks[i][:non_path_length], new_attention_masks), dim = -1)
+            vad_ids[i] = torch.cat((vad_ids[i][:non_path_length], new_vad_ids), dim = -1)
             assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
             if input_ids[i].size(-1) > max_len:
                 input_ids[i] = torch.concat((input_ids[i][:1], input_ids[i][-max_len+1:]))
@@ -339,8 +346,10 @@ def check_format(query_tensors, paras, tokenizer):
             step_1_query = tokenizer.decode(query_tensors[i][0])
             step_2_query = tokenizer.decode(query_tensors[i][1])
             length = len(query_tensors[i][0])
-            file.write(step_1_query)
-            file.write(step_2_query)
+            file.write(step_1_query.replace("</s><s>","</s>\n<s>"))
+            file.write("========\n")
+            file.write(step_2_query.replace("</s><s>","</s>\n<s>"))
+            file.write("========\n")
             for j in range(length):
                 id_1 = query_tensors[i][0][j]
                 id_2 = query_tensors[i][1][j]
