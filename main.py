@@ -1,6 +1,8 @@
 import argparse
 import wandb
+import re
 import numpy as np
+from cal_reward import calculate_reward
 from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
 from BlenderEmotionalSupport import load_dataset
 #from esconv_trainer import ESCONVTrainer
@@ -427,3 +429,9 @@ if __name__ == "__main__":
             #args.device = "cpu"
             #generate_new(args, model = model, prefix="of eval set")
             generate_new(args, model = model, prefix="of test set")
+            prefix = args.generation_dir.split("/")[-2] if re.compile(r"^.*?/$").search(args.generation_dir) else generation_dir.split("/")[-1]
+            print("calculating reward, prefix =", prefix)
+            calculate_reward(path=args.generation_dir, prefix=prefix)
+
+#lr_1e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7
+#lr_1e-06-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7
