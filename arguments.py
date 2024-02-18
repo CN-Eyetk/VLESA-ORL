@@ -23,7 +23,8 @@ def load_ppo_prefix(args_g):
             prefix += "wo_seeker"
         if args_g.ppo_warmup:
             prefix += "_wm"
-            
+        if args_g.generate_with_predicted_strategy:
+            prefix += "_nonmix"
     else:
         prefix = args_g.prefix
     return prefix
@@ -109,6 +110,7 @@ def load_arg():
     parser.add_argument("--pretrained_model_path", type = str, default = None)
     parser.add_argument("--fuse_z", action = "store_true")
     parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
+    parser.add_argument("--generate_with_predicted_strategy",action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -251,7 +253,8 @@ def load_arg():
             "pretrained_model_path":args_g.pretrained_model_path,
             "fuse_z":args_g.fuse_z,
             "use_centroid_loss":args_g.use_centroid_loss,
-            "strategy_loss_ratio":args_g.strategy_loss_ratio
+            "strategy_loss_ratio":args_g.strategy_loss_ratio,
+            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy
             
             }
     #add ppo related args

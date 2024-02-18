@@ -5,8 +5,10 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 import re
 import json
+import os
 import numpy as np
 from tqdm import tqdm
+from scipy.stats import ttest_rel, ttest_ind
 from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments
 #from nltk import tokenize
 #nltk.download('vader_lexicon')
@@ -340,22 +342,35 @@ def load_seeker():
 
 def summary_to_history(summary, response = None):
     # "convert summary txt to histories"
-    pattern = re.compile("^(\d+\s\d\s\d+)\s(\[[\w-]+\])?\s{0,1}(.*?)$")
+    pattern = re.compile("^(\d+\s\d\s\d+)\s(\[[\s\w-]+\])?\s{0,1}(.*?)$")
     lines = summary.split("\n")
     #print(lines)
     ctx = lines[0].split("\t")[1]
     history = ctx.split("EOS")
     history = [x.strip() for x in history]
     history = [pattern.findall(x)[0] for x in history]
-    history = [{"content":x[-1].strip(),"speaker":"supporter" if x[0].split(" ")[1] == "1" else "seeker"} for x in history]
+    history = [{"content":x[-1].strip().lower(),"speaker":"supporter" if x[0].split(" ")[1] == "1" else "seeker"} for x in history]
     hypo_response = lines[2].split("\t")[1]
     if response is None:
         response = hypo_response
-    history.append({"content":response, "speaker":"supporter"})
+    history.append({"content":response.lower(), "speaker":"supporter"})
     return history
 
-
-
+def summary_to_history_for_multiesc(summary):
+    history = []
+    utts = re.compile(r"(?<!\]\s)\t").split(summary)
+    diag_start = False
+    for utt in utts:
+        if utt.startswith(" @"):
+            diag_start = True
+        if diag_start:
+            if "@" in utt:
+                speaker = "supporter"
+            else:
+                speaker = "seeker"
+            content = re.compile(r"\s@\[[\w\-s]+\]").sub("", utt).strip()
+            history.append({"content":content, "speaker":speaker})
+    return history
 def distribute_word_score_to_tokens(tokenizer, tokens_with_scores): #calculate the score of each subtoken of target tokenizer
     #token_ids = []
     scores = []
@@ -518,13 +533,25 @@ def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
 
 def main(path, prefix):
     #path = f"our_generated_data/-LIGHT-TRANS4/all_loss0.2_1.0_1.0_kl-nopp-empp-no_fuse-role1016_II{prefix}"
-    summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n\n")
-    print(len(summaries))
+    if "multiesc" in path:
+        summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n")
+    else:
+        summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n\n")
+    #print(len(summaries))
     responses = json.load(open(f"{path}/hyp_strategy.json","r+"))
-    print(len(responses))
+    #print(len(responses))
     #print(summaries[:10])
     #histories = [summary_to_history(summary) for summary in summaries]
-    histories = [summary_to_history(summary, repo) for summary, repo in zip(summaries,responses)]
+    if "multiesc" in path:
+        histories =[summary_to_history_for_multiesc(summary) for summary in summaries]
+        histories = [h for h in histories if len(h) > 1]
+    else:
+        histories = [summary_to_history(summary, repo) for summary, repo in zip(summaries,responses)]
+    #print(histories[:10])
+    n_turns = [len(x) for x in histories]
+    #print("min n_turn:",min(n_turns))
+    #print("max n_turn:",max(n_turns))
+    n_turns = [max(min(len(x),50), 2) for x in histories]
     histories = [history[-4:] if len(history) > 4 else history for history in histories]
     feedbacker = load_feedbacker()
     feedbacker.model = feedbacker.model.cuda()
@@ -532,39 +559,76 @@ def main(path, prefix):
     bar = tqdm(histories, total = len(histories))
     running_rwd = 0
     rwds = []
+    turns = []
     for i, history in enumerate(bar):
         s_cur, s_prev, rwd = feedbacker.rewarder(history)
+        turns.append(n_turns[i])
         results.append(f"{s_cur}\t{s_prev}\t{rwd}")
-        rwds.append(rwd)
+        rwds.append(s_cur)
         #running_rwd += (rwd - running_rwd) / (i + 1)
         bar.set_description(f"rwd {np.mean(rwds)}")
+
     with open(f"statistics/empathy_feedbacks_{prefix}.csv","w+") as file:
         for res in results:
             file.write(res)
             file.write("\n")
-    return rwds
+
+    return rwds, turns
+
 
 if __name__ == "__main__":
     paths = [
+        "/home/lijunlin/lijunlin/ESCONV/multiesc_generated_data_new",
+        "/home/lijunlin/lijunlin/ESCONV/misc_generated_data",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix",
+    "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix/",
+    "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix/",
     "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.1am205/bleu2",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2",
+    "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.1am205/bleu2/epoch0_step19_2024-02-11/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff_wm1.0",
     ]
+    #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-09/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full0.7"
+    #]
+    #base_line = "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix"#"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.1am205/bleu2"
+    #rwd_baseline, _ = main(base_line, "sfl")
+    #for step in [9,19,29,39,49,59,69,78]:
+    #    path = f"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step{step}_2024-02-14"
+    #    experiments = [os.path.join(path, sub_path) for sub_path in os.listdir(path)]
+    #    for exp in experiments:
+    #        print("exp",exp)
+    #        rwd_exp, turns = main(exp + "/non_mix", "exp")
+    #        print("mean reward", np.mean(rwd_exp))
+    #        print(ttest_rel(rwd_exp, rwd_baseline))
+    #if 1 == 2:
     import pandas as pd
     rwds = []
-    prefixes = ["ppobest","base"]
+    datas = {"reward":[],
+            "turn":[],
+            "group":[]
+            }
+    prefixes = ["a","b","c","d","e"]
     for path, prefix in zip(paths,prefixes):
         print("path=",{path})
-        rwd = main(path, prefix)
-        rwds.append(rwd)
-    win_a = 0
-    win_b = 0
-    for a,b in list(zip(rwds[0],rwds[1])):
-        if a > b:
-            win_a += 1
-        elif b > a:
-            win_b += 1
-    print(f"win a {win_a}==win b {win_b}")
-    df = pd.DataFrame({"a":rwds[0],"b":rwds[1]})
-    print(df.describe())
-    from scipy.stats import ttest_rel
-    print(ttest_rel(rwds[0], rwds[1]))
+        rwd, turns = main(path, prefix)
+        datas["reward"] += rwd
+        datas["turn"] += turns
+        datas["group"] += [prefix] * len(rwd)
+        #rwds.append(rwd)
+
+    #df = pd.DataFrame({"a":rwds[0],"b":rwds[1],"turns":turns})
+    #df.to_csv("compare.csv")
+    df = pd.DataFrame(datas)
+    print(df.groupby("group")["reward"].describe())
+    df.to_csv("feedback.csv")
+    turn_change = df.groupby(["turn","group"]).min().unstack(level = 1)
+    turn_change.to_csv("turn_change.csv")
+    print(turn_change)
+    plot = turn_change.plot()
+    fig = plot.get_figure()
+    fig.savefig("output.png")
+    #print(df.groupby("turns").apply(lambda df: ttest_rel(df['a'], df['b'])))
+    
+    #print(ttest_rel(rwds[0], rwds[1]))
+        
+        #df = pd.read_csv("feedback.csv", sep=",",)
+        #del df["Unnamed: 0"]
+        #df.groupby(["turn","group"]).boxplot()

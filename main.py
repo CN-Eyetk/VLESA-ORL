@@ -58,6 +58,7 @@ parser.add_argument("--warmup_steps", type = int, default = 100)
 parser.add_argument("--pretrained_model_path", type = str, default = None)
 parser.add_argument("--fuse_z", action="store_true")
 parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
+parser.add_argument("--generate_with_predicted_strategy",action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -173,6 +174,8 @@ else:
         else:
             output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
         generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+    if args_g.generate_with_predicted_strategy:
+        generation_dir = os.path.join(generation_dir, "non_mix")
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 
@@ -267,7 +270,8 @@ def load_arg():
             "pretrained_model_path":args_g.pretrained_model_path,
             "fuse_z":args_g.fuse_z,
             "use_centroid_loss":args_g.use_centroid_loss,
-            "strategy_loss_ratio":args_g.strategy_loss_ratio
+            "strategy_loss_ratio":args_g.strategy_loss_ratio,
+            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
@@ -428,10 +432,15 @@ if __name__ == "__main__":
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
             #generate_new(args, model = model, prefix="of eval set")
-            generate_new(args, model = model, prefix="of test set")
+            result = generate_new(args, model = model, prefix="of test set")
             prefix = args.generation_dir.split("/")[-2] if re.compile(r"^.*?/$").search(args.generation_dir) else generation_dir.split("/")[-1]
             print("calculating reward, prefix =", prefix)
-            calculate_reward(path=args.generation_dir, prefix=prefix)
+            rwds = calculate_reward(path=args.generation_dir, prefix=prefix)
+            mean_rwds = np.mean(rwds)
+            std_rwds = np.std(rwds)
+            generation_test_result = {"mean_reward":mean_rwds, "std_reward":std_rwds}
+            generation_test_result.update(result)
+            wandb.log(generation_test_result)
 
 #lr_1e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7
 #lr_1e-06-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7

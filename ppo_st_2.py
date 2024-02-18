@@ -234,6 +234,7 @@ if __name__ == "__main__":
                 if i % args.ppo_eval_step == args.ppo_eval_step - 1 or i == len(ppo_trainer.dataloader) - 1:
                     with torch.no_grad():
                         ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix + str(generation_kwargs["temperature"]))
+                        print("****************\ppo model save dir:",ppo_output_dir,"\****************")
                         #print("****************\ppo model save dir:",ppo_output_dir,"\****************")
                         #results = evaluate(args, 
                         #                ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 
