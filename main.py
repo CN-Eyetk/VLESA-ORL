@@ -58,7 +58,9 @@ parser.add_argument("--warmup_steps", type = int, default = 100)
 parser.add_argument("--pretrained_model_path", type = str, default = None)
 parser.add_argument("--fuse_z", action="store_true")
 parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
+
 parser.add_argument("--generate_with_predicted_strategy",action="store_true")
+parser.add_argument("--add_situation_to_input_ids",action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -220,7 +222,7 @@ def load_arg():
             "num_train_epochs":10 if BART else 8,
             "role":False,
             "turn":False,
-            "logging_steps":510,
+            "logging_steps":300,#1 March from 510 to 300
             "evaluate_during_training":True,
             "output_dir":output_dir,
             "seed":42,
@@ -271,7 +273,8 @@ def load_arg():
             "fuse_z":args_g.fuse_z,
             "use_centroid_loss":args_g.use_centroid_loss,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
-            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy
+            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
+            "add_situation_to_input_ids":args_g.add_situation_to_input_ids
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

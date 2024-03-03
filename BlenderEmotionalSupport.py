@@ -1029,14 +1029,14 @@ class ESDDataset(Dataset):
                     file.write(f"{i}\n{d}\n{l}\n\n")
                     #sp = strat_positions[k]
                     #ep = emo_positions[k]
-                    for m,(tk,rl,vad) in enumerate(zip(input_ids[k], role_ids[k], vad_ids[k])):
+                    #for m,(tk,rl,vad) in enumerate(zip(input_ids[k], role_ids[k], vad_ids[k])):
                         
-                        file.write(f"{tk}\t{rl}\t{vad}")
-                        if m in strat_positions[k]:
-                            file.write(f"-->st")
-                        if m in emo_positions[k]:
-                            file.write(f"--emo")
-                        file.write("\n")
+                        #file.write(f"{tk}\t{rl}\t{vad}")
+                        #if m in strat_positions[k]:
+                        #    file.write(f"-->st")
+                        #if m in emo_positions[k]:
+                        #    file.write(f"--emo")
+                        #file.write("\n")
                         #if m in sp:
                         #    file.write(f"{m}\t+\t-\t{t}\n")
                         #elif m in ep:
@@ -2234,6 +2234,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
     else:
         situation_hidden_states = None
         situ_attention_mask = None
+
+
     if not args.wo_comet:
         comet_ids = comet_ids.to(args.device)
         batch_size, n_attr, len_attr = comet_ids.shape

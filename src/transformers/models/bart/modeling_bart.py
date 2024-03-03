@@ -1918,6 +1918,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         emo_positions=None,
         intensity=None,
         return_dict=None,
+        #situation_ids=None,
         situation_hidden_states=None,
         situation_attention_mask=None
     ):
@@ -1981,6 +1982,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 intensity=intensity,
                 strat_positions=strat_positions,
                 emo_positions=emo_positions,
+                #situation_ids=situation_ids if self.config.add_situation_to_input_ids else None,
                 situation_hidden_states=situation_hidden_states if self.config.use_situ_in_encoder else None,
                 situation_attention_mask=situation_attention_mask if self.config.use_situ_in_encoder else None,
                 
