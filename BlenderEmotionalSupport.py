@@ -215,6 +215,7 @@ def load_model(args, tokenizer):
     if args.use_bart:
         model = BartForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config)
     else:
+        print("loading blenderbot")
         model = BlenderbotSmallForConditionalGeneration.from_pretrained(args.model_name_or_path, config = config, cache_dir=args.model_cache_dir)
     print(model.config)
     #model = BlenderbotSmallForConditionalGeneration(config)
@@ -668,7 +669,7 @@ def _norm_text(text):
         toks = ' '.join(toks[:len(toks)])
     except Exception as e:
         raise e
-    toks = re.compile(r"(?<=\w)(?=[^\s\w])").sub(" ", toks)
+    #toks = re.compile(r"(?<=\w)(?=[^\s\w])").sub(" ", toks) #3 March, When did I add this 
     return emo, r, t, toks
 
 
@@ -706,10 +707,12 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         else:
             pass
 
-
+        
         if src_role==1: #src_role = 1 -> supporter
             try:
                 label = "["+src.split("[")[1].split("]")[0]+"]"
+                #print("label", label)
+                
             except Exception as e:
                 strategy_labels.append(8)
             else:
@@ -718,6 +721,7 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
                 strategy_label = tokenizer.convert_tokens_to_ids([label])[0] - args.base_vocab_size
                 #print("strategy_label",strategy_label)
                 strategy_labels.append(strategy_label)
+                #print("strategy_label",strategy_label)
                 #print(f"{label}-- id = {tokenizer.encode([label])[0]} minus --{args.base_vocab_size} res--{strategy_label}")
                 #print(tokenizer.convert_ids_to_tokens([args.base_vocab_size + i for i in range(20)]))
                 #print(tokenizer.convert_ids_to_tokens(tokenizer.encode([label])[0]))
@@ -858,6 +862,17 @@ class ESDDataset(Dataset):
                 #print("row", row)
                 #print("comet_row", comet_row)
                 #print("situation", situation)
+                
+                if "EOS" not in row:
+                    if args.prefix_dialogue_begin_by_supporter:
+                        emo = row.split("\s")[0]
+                        role = 0
+                        turn = 0
+                        prefix = f"{emo} {role} {turn} Let's start talking. EOS"
+                        row = f"{prefix} {row}"
+                        #continue #filter data without previous utterance
+                    else:
+                        continue
                 conv = construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, cls=False, strategy=strategy ,evaluate=evaluate, situation = situations[idx], prepend_emotion = args.prepend_emotion, use_emo_in_dist = args.use_emo_in_dist, vad_tokenizer = vad_tokenizer)
                 #conv.vad_ids = [vad_id if not vad_id == tokenizer.unk_token_id else tokenizer.vocab["[0v0a0d]"] for vad_id in conv.vad_ids]
                 #print("conv.vad_ids",conv.vad_ids)
@@ -1024,6 +1039,8 @@ class ESDDataset(Dataset):
             new_labels = copy.deepcopy(decoder_labels)
             new_labels[new_labels == -100] = 0
             label_text = self.tokenizer.batch_decode(new_labels)
+            #strategies = self.tokenizer.batch_decode(decoder_strategy_ids + self.args.base_vocab_size)
+            #print(decoder_strategy_ids)
             with open("verbose.txt","a+") as file:
                 for k,(i,d,l) in enumerate(zip(inputs, decoder_inputs, label_text)):
                     file.write(f"{i}\n{d}\n{l}\n\n")
@@ -1228,11 +1245,12 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
 
     model = model.module if hasattr(model, "module") else model  # Take care of distributed/parallel training
     model.resize_token_embeddings(len(tokenizer))
-    
-    #emo_vecs = load_emo_emb(model.model.encoder, tokenizer, emo_extracter= emo_extracter)
-    #strat_vesc = load_stra_emb(model.model.encoder, tokenizer, strat_labels = ["Question","Reflection of feelings","Information","Restatement or Paraphrasing","Others","Self-disclosure","Affirmation and Reassurance","Providing Suggestions"])
-    #model.init_emotion_embedding(emo_vecs)
-    #model.init_strategy_embedding(strat_vesc)
+    if args.init_embeddings_with_lm:
+        print("initiating with embeddings")
+        emo_vecs = load_emo_emb(model.model.encoder, tokenizer, emo_extracter= emo_extracter)
+        strat_vesc = load_stra_emb(model.model.encoder, tokenizer, strat_labels = ["Question","Reflection of feelings","Information","Restatement or Paraphrasing","Others","Self-disclosure","Affirmation and Reassurance","Providing Suggestions"])
+        model.init_emotion_embedding(emo_vecs)
+        model.init_strategy_embedding(strat_vesc)
     # Prepare optimizer and schedule (linear warmup and decay)
     no_decay = ["bias", "LayerNorm.weight"]
     if 1 == 2:
@@ -1434,16 +1452,18 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
                             if epoch > 3 :
-                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
-                                wandb.log(test_result)
+                                pass
+                                #test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                #wandb.log(test_result)
                             
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
                             if epoch > 3:
-                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
-                                wandb.log(test_result)
+                                pass
+                                #test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
+                                #wandb.log(test_result)
                             
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
@@ -1464,11 +1484,12 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
                     if epoch > 3:
-                        if test_result["bleu-2"] > best_bleu_2:
-                            best_bleu_2 = test_result["bleu-2"]
-                            checkpoint_prefix = "bleu_checkpoint"
-                            output_dir = os.path.join(args.output_dir, "bleu2")
-                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                        #if test_result["bleu-2"] > best_bleu_2:
+                        #    best_bleu_2 = test_result["bleu-2"]
+                        #    checkpoint_prefix = "bleu_checkpoint"
+                        #    output_dir = os.path.join(args.output_dir, "bleu2")
+                        #    save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                        pass
                             
                     if results['eval_perplexity']< best_ppl :
                         best_ppl = results['eval_perplexity']
@@ -1494,7 +1515,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     return global_step, tr_loss / global_step
 
 # Evaluation of some model
-def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="", eval_output_dir = None) -> Dict:
+def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="", eval_output_dir = None, show_emotion = False) -> Dict:
     print("evaluating")
     import numpy as np
     # Loop to handle MNLI double evaluation (matched, mis-matched)
@@ -1544,10 +1565,18 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     emo_hits = []
     # strategy_hits_topk = [[] for _ in range(7)]
     strategy_hits = []
+    if show_emotion:
+        turn_ids = []
+        emotions = []
+        
     with torch.no_grad():
         for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True, total = len(eval_dataloader)):
             outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids) = shared_steps(batch, model, tokenizer, args, phase = "eval")
-
+            if show_emotion:
+                cur_turn_ids = [max(x) for x in batch["decoder_token_type_ids"].detach().cpu().tolist()]
+                turn_ids += cur_turn_ids
+                cur_emotions = outputs.emo_logits.detach().cpu().tolist()
+                emotions += cur_emotions
         
             loss = outputs.loss
             ppl = outputs.lm_loss
@@ -1590,6 +1619,9 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
                 emo_out_loss += (outputs.emo_out_loss.detach().cpu().item() - emo_out_loss) / (nb_eval_steps + 1)
 
         nb_eval_steps += 1
+        
+    if show_emotion:
+        return turn_ids, emotions
 
     eval_loss = eval_loss/ sum(num_samples)
     
@@ -1667,7 +1699,7 @@ def main(args):
 
     # Set seed
     set_seed(args)
-    if args.data_path == "converted_dataset":
+    if args.data_path == "converted_dataset" or args.data_path == "neo_converted_dataset":
         additional_special_tokens = ["[Question]","[Reflection of feelings]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions or Information]","[Greeting]"]
     else:
         additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
@@ -1952,7 +1984,7 @@ def generate(args):
 
         chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
             input_ids,
-            **paras, max_length=64,
+            **paras, max_length=512,
             #min_length=,
             num_beams=1,
             use_cache=True,
@@ -1961,8 +1993,8 @@ def generate(args):
             eos_token_id=tokenizer.eos_token_id, temperature=0.7,
             top_p=0.3, 
             top_k = 30, 
-            no_repeat_ngram_size=3,
-            #repetition_penalty=1.03
+            #no_repeat_ngram_size=3,
+            repetition_penalty=1.03
             ) #top_p 0.9, topk 30
 
         if mutual_attention is not None:

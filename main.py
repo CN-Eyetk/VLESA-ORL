@@ -5,9 +5,12 @@ import numpy as np
 from cal_reward import calculate_reward
 from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
 from BlenderEmotionalSupport import load_dataset
+import os
+
 #from esconv_trainer import ESCONVTrainer
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
+parser.add_argument("--data_path", type = str, default="converted_dataset")
 parser.add_argument("--explain", action= "store_true")
 parser.add_argument("--use_trans", action= "store_true")
 parser.add_argument("--use_prepend", action= "store_true")
@@ -47,6 +50,8 @@ parser.add_argument("--use_centroid_loss", action = "store_true")
 parser.add_argument("--sample_strategy_embedding", action = "store_true")
 parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
 parser.add_argument("--do_train",action="store_true")
+parser.add_argument("--do_show_emotion",action="store_true")
+parser.add_argument("--log_on_wandb",action="store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
@@ -58,9 +63,11 @@ parser.add_argument("--warmup_steps", type = int, default = 100)
 parser.add_argument("--pretrained_model_path", type = str, default = None)
 parser.add_argument("--fuse_z", action="store_true")
 parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
-
+parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true")
 parser.add_argument("--generate_with_predicted_strategy",action="store_true")
 parser.add_argument("--add_situation_to_input_ids",action="store_true")
+parser.add_argument("--init_embeddings_with_lm",action="store_true")
+
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -96,6 +103,8 @@ EM_LS_RAT = args_g.emo_loss_ratio
 EM_OT_LS_RAT = args_g.emo_out_loss_ratio
 INT_VAE = args_g.intensity_vae
 MIX_VAE = args_g.mixed_vae
+
+os.environ["WANDB_DISABLED"] = "true" if not args_g.log_on_wandb else "false"
 if args_g.pretrained_model_path is not None:
     TAG = args_g.pretrained_model_path.split("/")[-1]
     GROUP = args_g.pretrained_model_path.split("/")[-2]
@@ -124,6 +133,7 @@ else:
         +("-ct" if args_g.use_contrastive_loss else "")  \
         + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
+        +("-initlm" if args_g.init_embeddings_with_lm else "")  \
         +args_g.tag
                                 
 
@@ -185,7 +195,8 @@ def load_arg():
     #torch.distributed.init_process_group(backend="nccl")
     #local_rank = torch.distributed.get_rank()
     args = {"do_train":args_g.do_train,
-            "data_path":"converted_dataset",
+            "do_show_emotion":args_g.do_show_emotion,
+           "data_path":args_g.data_path, 
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
             "situation_train_comet_file":"trainComet_st.txt",
@@ -198,7 +209,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -274,7 +285,9 @@ def load_arg():
             "use_centroid_loss":args_g.use_centroid_loss,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
             "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
-            "add_situation_to_input_ids":args_g.add_situation_to_input_ids
+            "add_situation_to_input_ids":args_g.add_situation_to_input_ids,
+            "init_embeddings_with_lm":args_g.init_embeddings_with_lm,
+            "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
@@ -396,12 +409,34 @@ def use_trainer(args):
     model_to_save.save_pretrained(output_dir)
     #model.save_pretrained(args.output_dir)
     
-def explain():
-    stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+
+def explain(args):
+    if args.data_path == "converted_dataset":
+        stra_labels = ["[Question]","[Reflection of feelings]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions or Information]","[Greeting]"]
+    else:
+        stra_labels = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
     emo_in_labels = open("dataset/labels/esconv_emo_labels.txt","r+").read().split("\n")
     emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
     emo_out_labels = [v for k,v in emo_out_lables.items()]
     plot(model, strat_labels=stra_labels, emo_in_labels=emo_in_labels, emo_out_labels=emo_out_labels)
+
+def show_emotion(args):
+    import pandas as pd
+    turns, emotions = evaluate(args, model, tokenizer, args.test_dataset, "of test set", show_emotion = True)
+    print("-----turns-------")
+    print(turns[:5])
+    print("-----emotions-------")
+    print(emotions[:5])
+    emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
+    res = {}
+    res["turn"] = turns
+    for i,emo in enumerate(emo_out_lables):
+        res[emo] = [emotion[i] for emotion in emotions]
+    df = pd.DataFrame(res)
+    df.to_csv("emotion_output.csv",sep = "\t")
+        
+    
+    
 if __name__ == "__main__":
     args = load_arg()
     wandb.init(config=args)
@@ -430,7 +465,9 @@ if __name__ == "__main__":
     with torch.no_grad():
         #matrices = model.
         if args_g.explain:
-            explain()
+            explain(args)
+        elif args_g.do_show_emotion:
+            show_emotion(args)
         else:
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"

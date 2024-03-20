@@ -75,10 +75,21 @@ import os
 dirs = [    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix/",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm301/",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am303",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am318",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm318",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am319",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_comet-ct0.2am319abla",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Emo-ct0.2am319abla",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Stra-ct0.2am319abla",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcatam319abla",
+    
+    
         ]
-#dirs.append("misc_generated_data")
-#dirs.append("transESC_generated_data")
-dirs.append("multiesc_generated_data_new")
+dirs.append("misc_generated_data")
+dirs.append("transESC_generated_data")
+#dirs.append("multiesc_generated_data_new")
 all_res = {}
 #gpt_ppl = GPT_PPL('openai-gpt')
 
@@ -114,18 +125,18 @@ for dir in dirs:
     #for k,v in result_2:
     #    result[k] = v
     #result["mid_gpt_ppl"] = md_ppl
-    bert_results = bertscore.compute(predictions = [split_punct(x) for x in hyps], references = [split_punct(x) for x in refs], lang = "en", device = torch.device("cuda"))
-    bert_results = {"bert_"+k:np.mean(v) for k,v in bert_results.items() if k in ["precision","recall","f1"]}
+    #bert_results = bertscore.compute(predictions = [split_punct(x) for x in hyps], references = [split_punct(x) for x in refs], lang = "en", device = torch.device("cuda"))
+    #bert_results = {"bert_"+k:np.mean(v) for k,v in bert_results.items() if k in ["precision","recall","f1"]}
     #if prevs is not None:
-    coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
-                                    response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
-    print("coherence:",coh_score)
+    #coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
+    #                                response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
+    #print("coherence:",coh_score)
     print(result)
     print(result_2)
-    print(bert_results)
+    #print(bert_results)
     
     print("="*100)
-    result.update(bert_results)
+    #result.update(bert_results)
     result.update(result_2)
     # print(result_list)
     all_res[dir.replace("our_generated_data","")] = {k:round(v,3) for k,v in result.items()}

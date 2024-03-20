@@ -10,8 +10,8 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-ct_loss_ratios=(0.2 0.1 0.05 0.00)
-warmups=(120 510)
+ct_loss_ratios=(0.2)
+warmups=(120)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
@@ -24,7 +24,7 @@ root_path="/disk/junlin/EmoSp"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm301 --emo_out_loss_ratio 0.05 --strategy_loss_ratio 0.05"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm301 --emo_out_loss_ratio 0.05 --strategy_loss_ratio 0.05 --explain" 
 
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
@@ -69,8 +69,8 @@ for u_r in "${use_role[@]}"; do
                                     #cur_comm+=" --fuse_z "
                                     $cur_comm
 
-                                    cur_comm+=" --use_emo_in  "
-                                    $cur_comm
+                                    #cur_comm+=" --use_emo_in  "
+                                    #$cur_comm
                                     #
                                     #$cur_comm
                                     #cur_comm+=" --use_situ_in_encoder"

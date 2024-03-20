@@ -176,14 +176,30 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.lstm_st_seq = kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
         self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
         self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
-        self.use_cat_attn = kwargs["use_cat_attn"] if "use_cat_attn" in kwargs.keys() else False
-        self.attend_eos = kwargs["attend_eos"] if "attend_eos" in kwargs.keys() else False
+        self.stg_use_cat_attn = kwargs["stg_use_cat_attn"] if "stg_use_cat_attn" in kwargs.keys() else False
+        self.emo_use_cat_attn = kwargs["emo_use_cat_attn"] if "emo_use_cat_attn" in kwargs.keys() else False
         self.use_role_embed = kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
+        self.use_vad_labels = kwargs["use_vad_labels"] if "use_vad_labels" in kwargs.keys() else False
         self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
+        self.mixed_vae = kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
         self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
         self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
+        self.wo_comet = kwargs["wo_comet"] if "wo_comet" in kwargs.keys() else False
         self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False
         self.wo_emo = kwargs["wo_emo"] if "wo_emo" in kwargs.keys() else False
+        self.rl_emb_ratio = kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
+        self.vad_emb_ratio = kwargs["vad_emb_ratio"] if "vad_emb_ratio" in kwargs.keys() else 0.2
+        self.emo_loss_ratio = kwargs["emo_loss_ratio"] if "emo_loss_ratio" in kwargs.keys() else 1.0
+        self.strategy_loss_ratio = kwargs["strategy_loss_ratio"] if "strategy_loss_ratio" in kwargs.keys() else 0.05
+        self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
+        self.intensity_vae = kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
+        self.use_situ_in_encoder = kwargs["use_situ_in_encoder"] if "use_situ_in_encoder" in kwargs.keys() else False
+        self.use_situ_in_decoder = kwargs["use_situ_in_decoder"] if "use_situ_in_decoder" in kwargs.keys() else False
+        self.use_contrastive_loss = kwargs["use_contrastive_loss"] if "use_contrastive_loss" in kwargs.keys() else False
+        self.contrastive_loss_ratio = kwargs["contrastive_loss_ratio"] if "contrastive_loss_ratio" in kwargs.keys() else 0.05
+        self.sample_strategy_embedding = kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
+        self.fuse_z = kwargs["fuse_z"] if "fuse_z" in kwargs.keys() else False
+        self.use_centroid_loss = kwargs["use_centroid_loss"] if "use_centroid_loss" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

@@ -61,6 +61,7 @@ def load_tag(args):
 def load_arg():
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--root_path", type = str, default=".")
+    parser.add_argument("--data_path", type = str, default="converted_dataset")
     parser.add_argument("--explain", action= "store_true")
     parser.add_argument("--use_trans", action= "store_true")
     parser.add_argument("--use_prepend", action= "store_true")
@@ -166,7 +167,7 @@ def load_arg():
         print(f"generation_dir************{generation_dir}************")
 
     args = {"do_train":True,
-            "data_path":"converted_dataset",
+            "data_path":args_g.data_path,
             "train_comet_file":"trainComet.txt",
             "situation_train_file":"trainSituation.txt",
             "situation_train_comet_file":"trainComet_st.txt",
