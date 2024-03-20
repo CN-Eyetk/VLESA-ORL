@@ -566,9 +566,10 @@ class Seq2SeqLMOutput(ModelOutput):
     emo_out_loss: Optional[torch.FloatTensor] = None
     lm_logits: torch.FloatTensor = None
     emo_logits: torch.FloatTensor = None
+    
     strategy_logits: torch.FloatTensor = None
     KLLoss_intensity: torch.FloatTensor = None
-
+    emo_out_prob: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
     past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
     decoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
     decoder_last_hidden_states: Optional[Tuple[torch.FloatTensor]] = None

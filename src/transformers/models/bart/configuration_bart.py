@@ -209,6 +209,7 @@ class BartConfig(PretrainedConfig):
         self.sample_strategy_embedding = kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
         self.fuse_z = kwargs["fuse_z"] if "fuse_z" in kwargs.keys() else False
         self.use_centroid_loss = kwargs["use_centroid_loss"] if "use_centroid_loss" in kwargs.keys() else False
+        self.use_uncertainty_loss = kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

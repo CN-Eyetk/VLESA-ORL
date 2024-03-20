@@ -67,7 +67,8 @@ parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true"
 parser.add_argument("--generate_with_predicted_strategy",action="store_true")
 parser.add_argument("--add_situation_to_input_ids",action="store_true")
 parser.add_argument("--init_embeddings_with_lm",action="store_true")
-
+parser.add_argument("--use_uncertainty_loss",action="store_true")
+parser.add_argument("--stop_norm_weight",action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -134,6 +135,7 @@ else:
         + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
         +("-initlm" if args_g.init_embeddings_with_lm else "")  \
+            +("-uct" if args_g.use_uncertainty_loss else "")  \
         +args_g.tag
                                 
 
@@ -287,7 +289,9 @@ def load_arg():
             "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
             "add_situation_to_input_ids":args_g.add_situation_to_input_ids,
             "init_embeddings_with_lm":args_g.init_embeddings_with_lm,
-            "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter
+            "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter,
+            "use_uncertainty_loss":args_g.use_uncertainty_loss,
+            "stop_norm_weight":args_g.stop_norm_weight,
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

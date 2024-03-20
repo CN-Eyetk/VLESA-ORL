@@ -21,17 +21,20 @@ class EmoTrans(nn.Module):
         for weight in self.matrices:
             torch.nn.init.ones_(
                 weight)
-    def forward(self, emo_logits, strat_logits):
+    def forward(self, emo_logits, strat_logits, stop_norm_weight = False):
         b = emo_logits.size(0)
         emo_out_logits_each_strat = torch.zeros(b, self.n_strat, self.n_emo_out).to(emo_logits.device) #[b, stra, emo]
         emo_logits = self.dropout(emo_logits)
         strat_logits = self.dropout(strat_logits)
         emo_prob = F.softmax(emo_logits, dim = -1)
         for i,matrix in enumerate(self.matrices):
-            with torch.no_grad():
-                weight_norm = matrix/matrix.sum(dim=1, keepdim=True)
-                matrix.copy_(weight_norm)
-            emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
+            if stop_norm_weight:
+                emo_out_logits_cur_strat = F.softmax(F.linear(emo_prob, matrix.t()))
+            else:
+                with torch.no_grad():
+                    weight_norm = matrix/matrix.sum(dim=1, keepdim=True)
+                    matrix.copy_(weight_norm)
+                emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
             emo_out_logits_each_strat[:, i, :] = emo_out_logits_cur_strat
         #for i in range(len(self.matrices)):
         #    with torch.no_grad():

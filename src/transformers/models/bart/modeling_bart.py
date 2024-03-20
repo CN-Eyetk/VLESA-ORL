@@ -2144,13 +2144,20 @@ class BartForConditionalGeneration(BartPretrainedModel):
                     emo_out_prob = emo_out_prob.unsqueeze(0)
                 assert emo_out_prob.size(1) > 1
                 if emo_dist is not None:
+                    #20 March, add entropy loss
+                    if self.config.use_uncertainty_loss:
+                    
+                        emo_entropy = torch.sum(-emo_out_prob.exp()*emo_out_prob) / batch_size
+                    else:
+                        emo_entropy = 0
+                        
                     if self.use_kl:
                         emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
-                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist)
+                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist) + emo_entropy
                     else:
                         emo_out_loss_fct = NLLLoss()
                         emo_out_label = emo_dist.argmax(-1).squeeze()
-                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label)
+                        emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label) + emo_entropy
                     if self.training:
                         loss += self.emo_out_loss_ratio * emo_out_loss
             if self.use_vae:

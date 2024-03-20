@@ -195,6 +195,8 @@ def load_config(args, eval = False):
         config.fuse_z = args.fuse_z
         config.use_centroid_loss = args.use_centroid_loss
         config.strategy_loss_ratio = args.strategy_loss_ratio
+        config.use_uncertainty_loss = args.use_uncertainty_loss
+        config.stop_norm_weight = args.stop_norm_weight
     return config
 
 def load_model_for_eval(args):
@@ -1575,7 +1577,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             if show_emotion:
                 cur_turn_ids = [max(x) for x in batch["decoder_token_type_ids"].detach().cpu().tolist()]
                 turn_ids += cur_turn_ids
-                cur_emotions = outputs.emo_logits.detach().cpu().tolist()
+                cur_emotions = outputs.emo_out_prob.detach().exp().cpu().tolist()
                 emotions += cur_emotions
         
             loss = outputs.loss
