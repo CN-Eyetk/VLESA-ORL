@@ -1210,7 +1210,7 @@ class BartEncoder(BartPretrainedModel):
                                                                                         strategy_logits = strategy_logits, 
                                                                                         strategy_embs = strategy_embs)
             else:
-                emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits)
+                emo_out_embs, emo_out_prob = self.trans_mat(emotion_logits, strategy_logits, stop_norm_weight = self.config.stop_norm_weight)
                 mu_prior = None
                 logvar_prior = None
         else:

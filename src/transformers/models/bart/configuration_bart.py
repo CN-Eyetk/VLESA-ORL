@@ -210,6 +210,8 @@ class BartConfig(PretrainedConfig):
         self.fuse_z = kwargs["fuse_z"] if "fuse_z" in kwargs.keys() else False
         self.use_centroid_loss = kwargs["use_centroid_loss"] if "use_centroid_loss" in kwargs.keys() else False
         self.use_uncertainty_loss = kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
+        self.stop_norm_weight = kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
+        self.wo_Sresp = kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

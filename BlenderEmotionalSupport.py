@@ -197,6 +197,7 @@ def load_config(args, eval = False):
         config.strategy_loss_ratio = args.strategy_loss_ratio
         config.use_uncertainty_loss = args.use_uncertainty_loss
         config.stop_norm_weight = args.stop_norm_weight
+        config.wo_Sresp = args.wo_Sresp
     return config
 
 def load_model_for_eval(args):
@@ -1123,7 +1124,7 @@ def load_and_cache_examples(args, tokenizer, df, comet, comet_st, evaluate=False
     #vad_tokenizer.load_transformer_tokenizer(args.model_name_or_path, args = args)
     #args.zero_vad_token = "[0v0a0d]"
     #args.zero_vad_token_id = tokenizer.convert_tokens_to_ids(args.zero_vad_token)
-    return ESDDataset(tokenizer, args, df, comet, comet_st, evaluate=evaluate, strategy=strategy, test=test, situations = situations, vad_tokenizer = vad_tokenizer)
+    return ESDDataset(tokenizer, args, df, comet, comet_st, block_size=args.block_size, evaluate=evaluate, strategy=strategy, test=test, situations = situations, vad_tokenizer = vad_tokenizer)
 
 def set_seed(args):
     random.seed(args.seed)
@@ -2045,8 +2046,8 @@ def generate(args):
     all_top_k_blocks_st = None
     if not os.path.exists(args.generation_dir):
         os.makedirs(args.generation_dir)
-    test_file_path = "converted_dataset/testWithStrategy_short.tsv"
-    test_situation_file_path = "converted_dataset/testSituation.txt"
+    test_file_path = f"{args.data_path}/testWithStrategy_short.tsv"
+    test_situation_file_path = f"{args.data_path}/testSituation.txt"
     strategy_record_file_path = os.path.join(args.generation_dir, "strategy_record.json")
     generate_file_path = os.path.join(args.generation_dir, "hyp_strategy.json")
     reference_file_path = os.path.join(args.generation_dir, "ref_strategy.json")
@@ -2199,8 +2200,8 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
     all_top_k_blocks_st = None
     if not os.path.exists(args.generation_dir):
         os.makedirs(args.generation_dir)
-    test_file_path = "converted_dataset/testWithStrategy_short.tsv"
-    test_situation_file_path = "converted_dataset/testSituation.txt"
+    test_file_path = f"{args.data_path}/testWithStrategy_short.tsv"
+    test_situation_file_path = f"{args.data_path}/testSituation.txt"
     strategy_record_file_path = os.path.join(args.generation_dir, "strategy_record.json")
     generate_file_path = os.path.join(args.generation_dir, "hyp_strategy.json")
     reference_file_path = os.path.join(args.generation_dir, "ref_strategy.json")

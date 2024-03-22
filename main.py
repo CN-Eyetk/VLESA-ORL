@@ -69,6 +69,8 @@ parser.add_argument("--add_situation_to_input_ids",action="store_true")
 parser.add_argument("--init_embeddings_with_lm",action="store_true")
 parser.add_argument("--use_uncertainty_loss",action="store_true")
 parser.add_argument("--stop_norm_weight",action="store_true")
+parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
+parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -129,13 +131,15 @@ else:
         +("-wo_Stra" if WO_STRA else "") \
         +("-wo_Emo" if WO_EMO else "") \
         +("-wo_comet" if WO_COMET else "") \
+        +("-wo_Sresp" if args_g.wo_Sresp else "") \
         +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
         +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
         +("-ct" if args_g.use_contrastive_loss else "")  \
         + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
         +("-initlm" if args_g.init_embeddings_with_lm else "")  \
-            +("-uct" if args_g.use_uncertainty_loss else "")  \
+        +("-uct" if args_g.use_uncertainty_loss else "")  \
+            +("-swn" if args_g.stop_norm_weight else "")  \
         +args_g.tag
                                 
 
@@ -211,7 +215,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else ""),
+            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -251,7 +255,7 @@ def load_arg():
             "emo_from_situ":EMO_FROM_SITU,
             "use_kl":KL,
             "no_cuda":False,
-            "block_size":512,
+            "block_size":args_g.block_size,
             "generation_dir":generation_dir,
             "use_situ_in_encoder":args_g.use_situ_in_encoder,
             "use_situ_in_decoder":args_g.use_situ_in_decoder,
@@ -292,6 +296,7 @@ def load_arg():
             "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter,
             "use_uncertainty_loss":args_g.use_uncertainty_loss,
             "stop_norm_weight":args_g.stop_norm_weight,
+            "wo_Sresp":args_g.wo_Sresp,
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

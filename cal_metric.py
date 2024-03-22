@@ -75,15 +75,22 @@ import os
 dirs = [    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix/",
-    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm301/",
+    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm301/",
+    "/home/lijunlin/lijunlin/ESCONV/kemi_generated_data",
+    "/home/lijunlin/lijunlin/ESCONV/kemi_generated_data_2",
     "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am303",
-    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am318",
-    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm318",
-    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am319",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_comet-ct0.2am319abla",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Emo-ct0.2am319abla",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Stra-ct0.2am319abla",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcatam319abla",
+    "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-Emoin-w_eosstg-w_emocat-w_stgcat-ct0.05am303",
+    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am318",
+    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm318",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Sresp-ct0.2pm319",
+    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am319",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_comet-ct0.2pm319abla",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Emo-ct0.2pm319abla",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Stra-ct0.2pm319abla",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcatpm319abla",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHTNoTrans/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm319abla",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2-uctam320",
+    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2-uctpm320",
     
     
         ]
@@ -97,21 +104,22 @@ for dir in dirs:
     print(dir)
     hyp_path = f"{dir}/hyp_strategy.json"
     ref_path = f"{dir}/ref_strategy.json"
-    if "multiesc" in dir:
-        summary_path = f"{dir}/prev.txt"
-    else:
-        summary_path = f"{dir}/summary.txt"
-    with open(hyp_path, 'r', encoding='utf-8') as f:
-        hyps = json.load(f)
-    with open(ref_path, 'r', encoding='utf-8') as f:
-        refs = json.load(f)
-    with open(summary_path, 'r', encoding='utf-8') as f:
-        if "multiesc" in summary_path:
-            prevs = f.read().strip().split("\n")
-        elif not "transESC" in summary_path:
-            prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-1]) for x in f.read().strip().split("\n\n")]
+    if 1 == 2:
+        if "multiesc" in dir:
+            summary_path = f"{dir}/prev.txt"
         else:
-            prevs = [x.split("\t")[-2] for x in f.read().strip().split("\n")]
+            summary_path = f"{dir}/summary.txt"
+        with open(hyp_path, 'r', encoding='utf-8') as f:
+            hyps = json.load(f)
+        with open(ref_path, 'r', encoding='utf-8') as f:
+            refs = json.load(f)
+        with open(summary_path, 'r', encoding='utf-8') as f:
+            if "multiesc" in summary_path:
+                prevs = f.read().strip().split("\n")
+            elif not "transESC" in summary_path:
+                prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-1]) for x in f.read().strip().split("\n\n")]
+            else:
+                prevs = [x.split("\t")[-2] for x in f.read().strip().split("\n")]
     #print(prevs[:5])
     metric = Metric(toker=tokenizer, hyp_path=hyp_path, ref_path=ref_path, use_nltk=True)
     metric_2 = NLTK_Metric( hyp_path=hyp_path, ref_path=ref_path)

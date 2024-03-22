@@ -2024,8 +2024,12 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
             )
 
         if encoder_outputs.emo_out_embs is not None and encoder_outputs.strategy_embs is not None:
-            strategy_embs = torch.cat((encoder_outputs.emo_out_embs, encoder_outputs.strategy_embs), dim = 1)
-            emo_out_embs = None
+            if self.config.wo_Sresp:
+                strategy_embs = encoder_outputs.emo_out_embs
+                emo_out_embs = None
+            else:
+                strategy_embs = torch.cat((encoder_outputs.emo_out_embs, encoder_outputs.strategy_embs), dim = 1)
+                emo_out_embs = None
         else:
             strategy_embs = encoder_outputs.strategy_embs
             emo_out_embs = None
