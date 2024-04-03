@@ -65,12 +65,14 @@ parser.add_argument("--fuse_z", action="store_true")
 parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
 parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true")
 parser.add_argument("--generate_with_predicted_strategy",action="store_true")
-parser.add_argument("--add_situation_to_input_ids",action="store_true")
+parser.add_argument("--generate_with_fixed_strategy", type=int,default=False)
+parser.add_argument("--add_situation_to_input_ids", action="store_true")
 parser.add_argument("--init_embeddings_with_lm",action="store_true")
 parser.add_argument("--use_uncertainty_loss",action="store_true")
 parser.add_argument("--stop_norm_weight",action="store_true")
 parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
 parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
+parser.add_argument("--layer_control", action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -140,6 +142,7 @@ else:
         +("-initlm" if args_g.init_embeddings_with_lm else "")  \
         +("-uct" if args_g.use_uncertainty_loss else "")  \
             +("-swn" if args_g.stop_norm_weight else "")  \
+                +("-lc" if args_g.layer_control else "") \
         +args_g.tag
                                 
 
@@ -194,6 +197,8 @@ else:
         generation_dir = "our_generated_data/" + GROUP + "/" + TAG
     if args_g.generate_with_predicted_strategy:
         generation_dir = os.path.join(generation_dir, "non_mix")
+    if args_g.generate_with_fixed_strategy:
+        generation_dir = os.path.join(generation_dir, f"stg{args_g.generate_with_fixed_strategy}")
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 
@@ -239,7 +244,7 @@ def load_arg():
             "num_train_epochs":10 if BART else 8,
             "role":False,
             "turn":False,
-            "logging_steps":300,#1 March from 510 to 300
+            "logging_steps":510 if args_g.data_path == "converted_dataset" else 614,#1 March from 510 to 300
             "evaluate_during_training":True,
             "output_dir":output_dir,
             "seed":42,
@@ -291,12 +296,14 @@ def load_arg():
             "use_centroid_loss":args_g.use_centroid_loss,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
             "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
+            "generate_with_fixed_strategy":args_g.generate_with_fixed_strategy,
             "add_situation_to_input_ids":args_g.add_situation_to_input_ids,
             "init_embeddings_with_lm":args_g.init_embeddings_with_lm,
             "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter,
             "use_uncertainty_loss":args_g.use_uncertainty_loss,
             "stop_norm_weight":args_g.stop_norm_weight,
             "wo_Sresp":args_g.wo_Sresp,
+            "layer_control":args_g.layer_control
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

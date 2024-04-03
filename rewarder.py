@@ -580,7 +580,7 @@ if __name__ == "__main__":
     paths = [
         "/home/lijunlin/lijunlin/ESCONV/multiesc_generated_data_new",
         "/home/lijunlin/lijunlin/ESCONV/misc_generated_data",
-    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix",
+    "/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix/",
     "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix/",
     "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix/",
     "/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.1am205/bleu2",
@@ -625,6 +625,12 @@ if __name__ == "__main__":
     plot = turn_change.plot()
     fig = plot.get_figure()
     fig.savefig("output.png")
+    
+    for start_turn in range(3,50):
+        sfl = df[(df["turn"] > start_turn) & (df["group"] == "c")]["reward"]
+        rl = df[(df["turn"] > start_turn) & (df["group"] == "e")]["reward"]
+        print("start turn:",start_turn)
+        print(ttest_rel(sfl, rl))
     #print(df.groupby("turns").apply(lambda df: ttest_rel(df['a'], df['b'])))
     
     #print(ttest_rel(rwds[0], rwds[1]))

@@ -1,7 +1,7 @@
 
 use_trans=(" --use_trans")
 use_th_attn=("")
-use_emb_prep=(" --use_emb_prep" )
+use_emb_prep=(" --use_emb_prep")
 use_prepend=("")
 use_cat=( "")
 if_st_em_sampling=(" --sample_strategy_embedding")
@@ -10,8 +10,8 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-ct_loss_ratios=(0.2)
-warmups=(120)
+ct_loss_ratios=(0.5 0.2 0.1 0.05)
+warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
@@ -24,7 +24,11 @@ root_path="/disk/junlin/EmoSp"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=1
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm301 --emo_out_loss_ratio 0.05 --strategy_loss_ratio 0.05" 
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm328/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --data_path origin_data --log_on_wandb"
+
+# "
+
+#all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.2am205
 
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
@@ -66,11 +70,15 @@ for u_r in "${use_role[@]}"; do
                                     #
                                     cur_comm+=" --use_contrastive_loss"
                                     cur_comm+=" --contrastive_loss_ratio "$cl_loss_ratio
+                                    cur_comm+=" --layer_control"
                                     #cur_comm+=" --fuse_z "
-                                    $cur_comm
-
-                                    #cur_comm+=" --use_emo_in  "
                                     #$cur_comm
+                                    cur_comm+=" --generate_with_predicted_strategy"
+                                    $cur_comm
+                                    cur_comm+=" --use_emo_in  "
+                                    
+                                    #cur_comm+=" --generate_with_fixed_strategy 4"
+                                    $cur_comm
                                     #
                                     #$cur_comm
                                     #cur_comm+=" --use_situ_in_encoder"

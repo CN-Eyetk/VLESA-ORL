@@ -212,6 +212,7 @@ class BartConfig(PretrainedConfig):
         self.use_uncertainty_loss = kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
         self.stop_norm_weight = kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
         self.wo_Sresp = kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
+        self.layer_control = kwargs["layer_control"] if "layer_control" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

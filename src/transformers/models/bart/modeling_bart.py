@@ -940,7 +940,8 @@ class BartEncoder(BartPretrainedModel):
         intensity=None,
         situation_hidden_states=None,
         situation_attention_mask=None,
-        generate_with_predicted_strategy=False
+        generate_with_predicted_strategy=False,
+        generate_with_fixed_strategy=False,
     ):
         r"""
         Args:
@@ -1116,7 +1117,8 @@ class BartEncoder(BartPretrainedModel):
                 comet_mask=None,
                 last_token_index=last_token_index,
                 strategy_logit_ground=strategy_logit_ground,
-                generate_with_predicted_strategy=generate_with_predicted_strategy
+                generate_with_predicted_strategy=generate_with_predicted_strategy,
+                generate_with_fixed_strategy=generate_with_fixed_strategy
             )
             emotion_intensity = None
             #if self.stg_use_cat_attn:
@@ -1324,7 +1326,8 @@ class BartEncoder(BartPretrainedModel):
                         comet_mask = None,
                         last_token_index = None,
                         strategy_logit_ground = None,
-                        generate_with_predicted_strategy = False
+                        generate_with_predicted_strategy = False,
+                        generate_with_fixed_strategy = False
                         ):
         b = hidden_states.size(0)
         if self.stg_use_cat_attn:
@@ -1359,12 +1362,14 @@ class BartEncoder(BartPretrainedModel):
         strategy_logits = self.batchNorm_strategy(strategy_logits)
         if strategy_logit_ground is not None:
             strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+        if type(generate_with_fixed_strategy) == int:
+            strategy_embs = self.strategy_embedding(torch.LongTensor([generate_with_fixed_strategy]*strategy_logits.size(0)).to(self.device)).unsqueeze(-2) 
         elif generate_with_predicted_strategy:
             #if self.verbose_generate_with_predicted_strategy > 0:
             #    print("generate_with_predicted_strategy")
             #strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
             #                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
-            strategy_embs = self.strategy_embedding(strategy_logits.argmax(-1)).unsqueeze(-2)
+            strategy_embs = self.strategy_embedding(strategy_logits.argmax(-1)).unsqueeze(-2) 
         else:
             strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
                                         self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
@@ -1569,14 +1574,12 @@ class BartDecoder(BartPretrainedModel):
             situation_attention_mask = _expand_mask(situation_attention_mask, inputs_embeds.dtype, tgt_len=input_shape[-1])
         # embed positions
         #token_inputs_embeds = inputs_embeds[:,2:,:]
-        positions = self.embed_positions(input_shape, past_key_values_length)
-        #zero_positions = positions[0,:].unsqueeze(0).repeat(2,1)
-        #positions = torch.cat((zero_positions, positions), dim = -2)
-        #print("positions", positions.shape)
-        #print("zero_positions",zero_positions.shape)
-        #positions = torch.cat((zero_positions, positions), dim = -2)
-
-        hidden_states = inputs_embeds + positions
+        if self.config.layer_control:
+            positions = self.embed_positions((input_shape[0], input_shape[1] - 2), past_key_values_length)
+            hidden_states = torch.cat((inputs_embeds[:,:2], inputs_embeds[:,2:] + positions), axis = 1)
+        else:
+            positions = self.embed_positions(input_shape, past_key_values_length)
+            hidden_states = inputs_embeds + positions
         hidden_states = self.layernorm_embedding(hidden_states)
         hidden_states = F.dropout(hidden_states, p=self.dropout, training=self.training)
 
@@ -1636,7 +1639,12 @@ class BartDecoder(BartPretrainedModel):
                     output_attentions=output_attentions,
                     use_cache=use_cache,
                 )
-            hidden_states = layer_outputs[0]
+            
+            if self.config.layer_control:
+                assert len(layer_outputs[0].size()) == 3
+                hidden_states = torch.cat((inputs_embeds[:,:2],layer_outputs[0][:,2:]), dim = 1)
+            else:
+                hidden_states = layer_outputs[0]
 
             if use_cache:
                 next_decoder_cache += (layer_outputs[3 if output_attentions else 1],)
@@ -2132,6 +2140,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 decoder_eos_hidden = decoder_eos_hidden.view(-1, self.config.d_model)
                 #print(decoder_pool_embedding.shape)
                 contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
+                #print("contrast_loss",contrast_loss)
+                #contrast_loss += contrast_loss_funct(encoder_outputs.z, decoder_strategy_ids)
                 if self.training:
                     loss += self.config.contrastive_loss_ratio * contrast_loss
             elif self.config.use_centroid_loss:

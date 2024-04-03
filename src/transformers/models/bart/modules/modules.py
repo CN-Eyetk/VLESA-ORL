@@ -714,7 +714,9 @@ class ContrastiveLoss(nn.Module):
                     loss = self.pair_forward(y_1, y_2, d)
                     contrast_loss += loss
                     n_pair += 1
-        
+        if n_pair == 0:
+            #only one sample in this batch
+            return torch.tensor(contrast_loss).to(ys.device)
         return contrast_loss / n_pair
 
                     

@@ -198,6 +198,7 @@ def load_config(args, eval = False):
         config.use_uncertainty_loss = args.use_uncertainty_loss
         config.stop_norm_weight = args.stop_norm_weight
         config.wo_Sresp = args.wo_Sresp
+        config.layer_control = args.layer_control
     return config
 
 def load_model_for_eval(args):
@@ -493,7 +494,7 @@ def _get_comet_input(args, comet_row, tokenizer, max_num_attr=30, max_len_attr=1
     return comet_ids, comet_mask
 
 
-def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False, vad_ids = None):
+def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block_size=512, strategy_labels=None, situ_ids = None, evaluate=False, str_embd=False, generation=False, vad_ids = None, decoder = False):
     # we did't use role label and turn number in modeling as they did't carry significant improvement. However, codes still remain here.
     #print("strategy_labels",strategy_labels)
     if len(sents) == 0:
@@ -501,8 +502,10 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
                             [], [] , [], [])
     input_ids = [i for s in sents for i in s+[eos]] #添加eos
     if args.use_vad_labels:
+
         vad_ids = [i for s in vad_ids for i in s+[-1]]
-        assert len(input_ids) == len(vad_ids)
+        if not decoder:
+            assert len(input_ids) == len(vad_ids)
 
 
     input_ids = input_ids
@@ -565,7 +568,8 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     input_ids = input_ids[:i+1]
     if args.use_vad_labels:
         vad_ids = vad_ids[:i+1]
-        assert len(input_ids) == len(vad_ids)
+        if not decoder:
+            assert len(input_ids) == len(vad_ids)
     
     #vad_ids = vad_ids[:i+1]
     lm_labels = lm_labels[:i+1]
@@ -812,7 +816,7 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     # make feature for input text
     feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation, vad_ids = vad_ids)
     # make feature for output (decoder input) text
-    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation, vad_ids = d_vad_ids)
+    d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation, vad_ids = d_vad_ids, decoder = True)
     
     comet_ids, comet_mask = _get_comet_input(args, comet_row, tokenizer)
     comet_st_ids, comet_st_mask = _get_comet_input(args, comet_st_row, tokenizer, max_num_attr=20)
@@ -1141,7 +1145,17 @@ def set_seed(args):
         os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
     #if args.n_gpu > 0:
     #    torch.cuda.manual_seed_all(args.seed)
-
+def stop_reproducability():
+    torch.backends.cudnn.deterministic = False
+    torch.use_deterministic_algorithms(False)
+    torch.backends.cudnn.benchmark = True
+    torch.backends.cudnn.enabled = True
+def activate_reproducability():
+    torch.backends.cudnn.deterministic = True
+    torch.use_deterministic_algorithms(True, warn_only=True)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.enabled = False
+    
 def _sorted_checkpoints(args, checkpoint_prefix="checkpoint", use_mtime=False) -> List[str]:
     ordering_and_checkpoint_path = []
 
@@ -1454,19 +1468,23 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if epoch > 3 :
-                                pass
-                                #test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
-                                #wandb.log(test_result)
+                            if 1 < epoch < 8 :
+                                #pass
+                                stop_reproducability()
+                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                activate_reproducability()
+                                wandb.log(test_result)
                             
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if epoch > 3:
-                                pass
-                                #test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
-                                #wandb.log(test_result)
+                            if 1 < epoch < 8 :
+                                #pass
+                                stop_reproducability()
+                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
+                                activate_reproducability()
+                                wandb.log(test_result)
                             
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
@@ -1486,13 +1504,13 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     logging_emo_loss = tr_emo_loss
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
-                    if epoch > 3:
+                    if epoch == 5:
                         #if test_result["bleu-2"] > best_bleu_2:
                         #    best_bleu_2 = test_result["bleu-2"]
-                        #    checkpoint_prefix = "bleu_checkpoint"
-                        #    output_dir = os.path.join(args.output_dir, "bleu2")
-                        #    save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
-                        pass
+                            checkpoint_prefix = "bleu_checkpoint"
+                            output_dir = os.path.join(args.output_dir, "bleu2")
+                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                        #pass
                             
                     if results['eval_perplexity']< best_ppl :
                         best_ppl = results['eval_perplexity']
@@ -2148,11 +2166,11 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
                 use_cache=True,
                 pad_token_id=tokenizer.pad_token_id,
                 early_stopping=True,
-                eos_token_id=tokenizer.eos_token_id, temperature=0.7,
+                eos_token_id=tokenizer.eos_token_id, #temperature=0.7,
                 top_p=0.3, 
                 top_k = 30, 
                 do_sample=True, 
-                #no_repeat_ngram_size=3,
+                no_repeat_ngram_size=3,
                 repetition_penalty=1.03
                 ) #top_p 0.9, topk 30
 
@@ -2379,6 +2397,9 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
         else:
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
+        if type(args.generate_with_fixed_strategy) == int:
+            #print("generating with fixed strategy:",args.generate_with_fixed_strategy)
+            paras["generate_with_fixed_strategy"] = args.generate_with_fixed_strategy
         if phase == "reinforce_with_lm_loss":
             paras["labels"] = decoder_label_ids
             if args.use_contrastive_loss:
