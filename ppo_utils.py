@@ -3,6 +3,8 @@ import torch
 from BlenderEmotionalSupport import shared_steps
 from torch.nn.utils.rnn import pad_sequence
 from copy import deepcopy
+from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
+
 
 
 def freeze_parameters(model, pattern):
@@ -22,8 +24,33 @@ def load_ref_model(model):
         param.requires_grad = False
     return ref_model.eval()
 
+def compute_w_reward(rewarder, responses, response_tensors):
+    sent_rewards = []
+    rewards = []
+    for i in range(len(responses)):
+        s_r, w_r = rewarder.word_rewarder(responses[i])[-1]
+        sent_rewards.append(s_r)
+        reward = distribute_word_score_to_tokens_new(tokenizer = tokenizer,
+                                            tokens_with_scores = w_r,
+                                            response_tensor = response_tensors[i])
+        rewards.append(torch.tensor(reward).float())
+    return sent_rewards, rewards
+
 class Agent:
-    def __init__(self, args, model, tokenizer, vad_tokenizer, hist_retriver, feed_backer, reward_func, ppo_trainer, mini_batch_size, generation_kwargs, seeker = None, seeker_func = None, use_diff_reward = True) -> None:
+    def __init__(self, args, model, 
+                 tokenizer, 
+                 vad_tokenizer, 
+                 hist_retriver, 
+                 feed_backer, 
+                 reward_func, 
+                 ppo_trainer, 
+                 mini_batch_size, 
+                 generation_kwargs, 
+                 seeker = None, 
+                 seeker_func = None, 
+                 use_diff_reward = False,
+                 use_word_level_reward = False
+                 ) -> None:
         self.args = args
         self.model = model
         self.tokenizer = tokenizer
@@ -39,6 +66,7 @@ class Agent:
         self.seeker = seeker
         self.seeker_func = seeker_func
         self.use_diff_reward = use_diff_reward
+        self.use_word_level_reward = use_word_level_reward
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
@@ -81,7 +109,10 @@ class Agent:
                 active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
 
                 if not torch.any(response_tensor == self.tokenizer.eos_token_id):
-                    response_vad_ids[:] = active_response_vad_ids 
+                    try:
+                        response_vad_ids[:] = active_response_vad_ids 
+                    except:
+                        response_vad_ids[:] = active_response_vad_ids[:len(response_vad_ids)]
                 elif len(active_response_vad_ids) == response_pad_start:
                     response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
                 else:
@@ -131,13 +162,14 @@ class Agent:
                                                 self.model.pretrained_model, 
                                                 self.tokenizer, 
                                                 self.args, 
+                                                add_strategy_noise = self.args.ppo_add_strategy_noise,
                                                 phase = "reinforce_with_lm_loss")
                 #if use history
                 history = self.hist_retriver.retrieve(paras["role_ids"], input_ids)
                 all_histories += history
                 query_tensors = [input_ids[i] for i in range(input_ids.size(0))]
             
-                (response_tensors, response_act), (ref_response_tensors, _) = self.ppo_trainer.generate(
+                (response_tensors, response_act), (ref_response_tensors, ref_response_act) = self.ppo_trainer.generate(
                                                                                                 query_tensors, 
                                                                                                 batch_size = 4,
                                                                                                 return_prompt=False, 
@@ -146,6 +178,7 @@ class Agent:
                                                                                                 **{k:v for k,v in paras.items() if not k == "labels"}, 
                                                                                                 **self.generation_kwargs
                                                                                                     )
+                paras["add_strategy_noise"] = False #收集经验后，停止strategy noise扰动
                 all_query_tensors += query_tensors
                 # 拼接response_tensors和input_ids，放入all_next_query_tensors，注意padding要抹掉
                 query_role_ids = paras["role_ids"]
@@ -164,6 +197,7 @@ class Agent:
                 all_attention_masks += attention_masks
                 all_next_query_attention_masks += next_query_attention_masks
                 all_response_acts += response_act
+                #all_ref_response_acts += ref_all_ref_response_acts
                 if self.use_vad_labels:
                     all_next_query_vad_ids += next_query_vad_ids
                 for k,v in paras.items():
@@ -261,8 +295,16 @@ class Agent:
         history_with_ref_response = [state["histories"][i] + [{"content":ref_response[i], "speaker":"supporter"}] for i in range(len(ref_response))]
         
         self.feed_backer.model = self.feed_backer.model.cuda()
-        rewards = [self.reward_func(response) for response in history_with_response]
-        ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
+        if self.use_word_level_reward:
+            sent_rewards, rewards = compute_w_reward(self.feed_backer, history_with_response, state["response_tensor"])
+            sent_ref_rewards, ref_rewards = compute_w_reward(self.feed_backer, history_with_ref_response, state["ref_response_tensor"])
+            #rewards = [torch.cat((rewards[i],torch.zeros(1).float()), dim = 0) for i in range(len(rewards))] #dont' extend! because the SEP's output is not kl-calucated.
+            rewards = pad_sequence(rewards, batch_first = True, padding_value = 0)
+            rewards = [rewards[i] for i in range(len(rewards))] #reformulate into a list of tensors
+            ref_rewards = [ref_rewards[i] for i in range(len(ref_rewards))]
+        else:
+            rewards = [self.reward_func(response) for response in history_with_response]
+            ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
         self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         
         if self.seeker is not None:
@@ -294,8 +336,8 @@ class Agent:
         #attention_mask = pad_sequence([attention_mask.T, next_query_attention_mask.T], batch_first = False, padding_value = False).T
         states = [state, next_state]
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(states)
-        response_acts = torch.stack(state["actions"], dim = 0).float()
-        action_ids = response_acts.argmax(-1)
+        action_logits = torch.stack(state["actions"], dim = 0).float()
+        action_ids = action_logits.argmax(-1)
 
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
@@ -314,6 +356,7 @@ class Agent:
         paras["role_ids"] = role_ids
         paras["attention_mask"] = attention_mask
         paras["action_ids"]  = action_ids
+        paras["strategy_logit_ground"] = action_logits
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
         assert len(paras["comet_embs"]) == len(query_tensors)
@@ -338,7 +381,7 @@ class Agent:
 
         ppo_batch["ref_rewards"] = ref_rewards
         ppo_batch["rewards"] = rewards
-        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards"])
+        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
 
 def check_format(query_tensors, paras, tokenizer):
     with open("verbose_ppos.txt","w+") as file:

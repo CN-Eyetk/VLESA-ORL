@@ -34,7 +34,8 @@ def calculate_reward(path, prefix):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i","--input_path",type = str)
+    parser.add_argument("-i","--input_path",type = str, default="/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2")
+    #/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2
     args = parser.parse_args()
     path = args.input_path
     print("path=",path)

@@ -815,11 +815,14 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
             act_logits_each_turn[:,i,:] = act_logits
             value_each_turn[:,i] = self.v_head(act_hidden_state).squeeze(-1)
             if i == 0:
-                base_model_output = self.pretrained_model(encoder_output = base_model_encoder_output,
+                #這裡要用有擾動的那個strategy embedding
+                
+                base_model_output = self.pretrained_model(encoder_outputs = base_model_encoder_output,
+                                                          attention_mask = attention_mask[:,i,:],
                                                           decoder_input_ids = kwargs["decoder_input_ids"],
-                                                          decoder_attention_mask = kwargs["decoder_attention_mask"]
+                                                          
                                                           )
-                last_hidden_state = base_model_output.decoder_last_hidden_state
+                last_hidden_state = base_model_output.decoder_last_hidden_states
                 value = self.v_head_lm(last_hidden_state).squeeze(-1) #Use lm value here!
                 lm_logits = base_model_output.lm_logits
                 #loss = base_model_output.loss

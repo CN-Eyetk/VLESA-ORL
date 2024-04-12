@@ -2258,7 +2258,7 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
 
 
 
-def shared_steps(batch, model, tokenizer, args, phase = "train"):
+def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phase = "train"):
     if phase == "train":
         model.train()
     else:
@@ -2397,6 +2397,8 @@ def shared_steps(batch, model, tokenizer, args, phase = "train"):
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
         else:
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
+        #if "reinforce_with_strategy_noise" in phase:
+        paras["add_strategy_noise"] = add_strategy_noise
         if type(args.generate_with_fixed_strategy) == int:
             #print("generating with fixed strategy:",args.generate_with_fixed_strategy)
             paras["generate_with_fixed_strategy"] = args.generate_with_fixed_strategy

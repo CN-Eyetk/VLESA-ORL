@@ -18,6 +18,7 @@
 import math
 import random
 import warnings
+from torch.distributions.dirichlet import Dirichlet
 from typing import Optional, Tuple, Any, Dict, Optional, Tuple
 
 import torch
@@ -942,6 +943,7 @@ class BartEncoder(BartPretrainedModel):
         situation_attention_mask=None,
         generate_with_predicted_strategy=False,
         generate_with_fixed_strategy=False,
+        add_strategy_noise=False
     ):
         r"""
         Args:
@@ -1118,7 +1120,8 @@ class BartEncoder(BartPretrainedModel):
                 last_token_index=last_token_index,
                 strategy_logit_ground=strategy_logit_ground,
                 generate_with_predicted_strategy=generate_with_predicted_strategy,
-                generate_with_fixed_strategy=generate_with_fixed_strategy
+                generate_with_fixed_strategy=generate_with_fixed_strategy,
+                add_strategy_noise = add_strategy_noise if random.randint(1,3) == 1 else False,
             )
             emotion_intensity = None
             #if self.stg_use_cat_attn:
@@ -1221,7 +1224,7 @@ class BartEncoder(BartPretrainedModel):
             mu_prior = None
             logvar_prior = None
 
-        if self.training:
+        if self.training and emo_out_dist is not None:
             if self.use_vae and strategy_logits is not None and emotion_logits is not None:
                 emo_out_embs, mu_posterior, logvar_posterior, emo_out_prob, z = self.q_sampling(emo_hidden, 
                                                                                                 strategy_hidden, 
@@ -1285,6 +1288,7 @@ class BartEncoder(BartPretrainedModel):
                         comet_hidden_states = None,
                         comet_mask = None,
                         last_token_index = None,
+                        
                         ):
         b = hidden_states.size(0)
         if self.emo_use_cat_attn:
@@ -1327,8 +1331,12 @@ class BartEncoder(BartPretrainedModel):
                         last_token_index = None,
                         strategy_logit_ground = None,
                         generate_with_predicted_strategy = False,
-                        generate_with_fixed_strategy = False
+                        generate_with_fixed_strategy = False,
+                        add_strategy_noise = False,
                         ):
+        #經驗回放的時候，strategy_logits要無噪音的，strategy_embedding要有噪音的
+        #if add_strategy_noise:
+        #    print("random strategy")
         b = hidden_states.size(0)
         if self.stg_use_cat_attn:
             #10-6 Add Cat attn
@@ -1358,7 +1366,10 @@ class BartEncoder(BartPretrainedModel):
             #10-6 Add Cat attn
         batch_size = strategy_logits.shape[0]
         strategy_id = self.strategy_id.to(strategy_logits.device)
-        
+        if add_strategy_noise:
+            #noise = torch.zeros((batch_size, 8))
+            #from torch.distributions.dirichlet import Dirichlet
+            strategy_noise = Dirichlet(torch.tensor([[1.0 / 8] * 8] * batch_size)).sample().to(strategy_logits.device)
         strategy_logits = self.batchNorm_strategy(strategy_logits)
         if strategy_logit_ground is not None:
             strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
@@ -1369,10 +1380,17 @@ class BartEncoder(BartPretrainedModel):
             #    print("generate_with_predicted_strategy")
             #strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
             #                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
-            strategy_embs = self.strategy_embedding(strategy_logits.argmax(-1)).unsqueeze(-2) 
+            if add_strategy_noise:
+                strategy_embs = self.strategy_embedding(strategy_noise.argmax(-1)).unsqueeze(-2) 
+            else:
+                strategy_embs = self.strategy_embedding(strategy_logits.argmax(-1)).unsqueeze(-2) 
         else:
-            strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
-                                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+            if add_strategy_noise:
+                strategy_embs = torch.bmm(strategy_noise.unsqueeze(1),
+                                            self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
+            else:
+                strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
+                                            self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
         return strategy_logits, strat_hidden, strategy_embs
     def p_sampling(self, emo_hidden, strategy_hidden, emotion_logits, strategy_logits, strategy_embs):
         batch_size = emo_hidden.size(0)
@@ -1928,7 +1946,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
         return_dict=None,
         #situation_ids=None,
         situation_hidden_states=None,
-        situation_attention_mask=None
+        situation_attention_mask=None,
+        strategy_logit_ground=None
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
@@ -1942,8 +1961,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
         generate = True if encoder_outputs is not None else False
         strategy_label = decoder_strategy_ids
 
-
-        if not generate:
+        if strategy_logit_ground is not None:
+            pass #強化學習傳入一個strategy logit
+        elif not generate:
             if strategy_label is not None:
                 #train, eval
                 batch_size = strategy_label.shape[0]
@@ -1965,8 +1985,9 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 labels, self.config.pad_token_id, self.config.decoder_start_token_id
             )
             #print(decoder_input_ids)
-        attention_mask = attention_mask.long()
+        
         if encoder_outputs is None:
+            attention_mask = attention_mask.long()
             if self.use_role_embed:
                 assert role_ids is not None
             if self.use_vae:
@@ -2019,8 +2040,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 pass
         else:
             decoder_inputs_embeds = None
-        with torch.no_grad():
-            last_eos_index = attention_mask.sum(-1) - 1
+        #with torch.no_grad():
+        #    last_eos_index = attention_mask.sum(-1) - 1
         if self.config.use_situ_in_decoder:
             if encoder_outputs.situation_hidden_states is not None:
                 encoder_hidden_states = torch.cat([encoder_outputs.last_hidden_state, encoder_outputs.situation_hidden_states], dim = 1)

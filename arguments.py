@@ -55,7 +55,11 @@ def load_tag(args):
     +("-ct" if args.use_contrastive_loss else "")  \
     + (f"{args.contrastive_loss_ratio}" if args.use_contrastive_loss else "")  \
     +("-fz" if args.fuse_z else "")  \
-    +args.tag
+        +("-initlm" if args.init_embeddings_with_lm else "")  \
+        +("-uct" if args.use_uncertainty_loss else "")  \
+            +("-swn" if args.stop_norm_weight else "")  \
+                +("-lc" if args.layer_control else "") \
+        +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
 def load_arg():
@@ -108,10 +112,19 @@ def load_arg():
     parser.add_argument("--tag", type=str)
     parser.add_argument("--use_trainer", action= "store_true")
     parser.add_argument("--warmup_steps", type = int, default = 100)
+    parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true")
     parser.add_argument("--pretrained_model_path", type = str, default = None)
     parser.add_argument("--fuse_z", action = "store_true")
     parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
     parser.add_argument("--generate_with_predicted_strategy",action="store_true")
+    parser.add_argument("--generate_with_fixed_strategy", type=int,default=False)
+    parser.add_argument("--add_situation_to_input_ids", action="store_true")
+    parser.add_argument("--init_embeddings_with_lm",action="store_true")
+    parser.add_argument("--use_uncertainty_loss",action="store_true")
+    parser.add_argument("--stop_norm_weight",action="store_true")
+    parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
+    parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
+    parser.add_argument("--layer_control", action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -138,6 +151,7 @@ def load_arg():
     ppo_parser.add_argument("--ppo_eval", action="store_true")
     ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
     ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
+    ppo_parser.add_argument("--ppo_add_strategy_noise", action="store_true")
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
     #GROUP += f"{TAG}_ppo"
@@ -255,8 +269,15 @@ def load_arg():
             "fuse_z":args_g.fuse_z,
             "use_centroid_loss":args_g.use_centroid_loss,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
-            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy
-            
+            "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
+            "generate_with_fixed_strategy":args_g.generate_with_fixed_strategy,
+            "add_situation_to_input_ids":args_g.add_situation_to_input_ids,
+            "init_embeddings_with_lm":args_g.init_embeddings_with_lm,
+            "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter,
+            "use_uncertainty_loss":args_g.use_uncertainty_loss,
+            "stop_norm_weight":args_g.stop_norm_weight,
+            "wo_Sresp":args_g.wo_Sresp,
+            "layer_control":args_g.layer_control
             }
     #add ppo related args
     ppo_args = {k:v for k,v in vars(args_g).items() if k.startswith("ppo")}

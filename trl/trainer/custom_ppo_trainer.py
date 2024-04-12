@@ -4,6 +4,7 @@ import time
 import torch
 from ..models import SUPPORTED_ARCHITECTURES, PreTrainedModelWrapper, create_reference_model
 import math
+import warnings
 from ..core import (
     WANDB_PADDING,
     PPODecorators,
@@ -1020,7 +1021,7 @@ class DialogueActPPOTrainer(PPOTrainer):
             non_score_rewards.append(non_score_reward) #[b,1]
             reward = non_score_reward.clone() #[b,1]
             last_non_masked_index = mask.nonzero()[-1]
-            assert last_non_masked_index.item() == 0
+            #assert last_non_masked_index.item() == 0 只对”strategy”用
             #assert reward.shape == score.shape
             reward[last_non_masked_index] += score
             rewards.append(reward)
@@ -1030,6 +1031,7 @@ class DialogueActPPOTrainer(PPOTrainer):
         values: torch.FloatTensor,
         rewards: torch.FloatTensor,
         mask: torch.FloatTensor,
+        is_lm_advantage: bool = False
     ):
         lastgaelam = 0
         advantages_reversed = []
@@ -1047,8 +1049,8 @@ class DialogueActPPOTrainer(PPOTrainer):
             lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
             advantages_reversed.append(lastgaelam)
         advantages = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
-
-        values = values[:,:-1]#v_t+1 has finished its task
+        if not is_lm_advantage:
+            values = values[:,:-1]#v_t+1 has finished its task
         returns = advantages
         advantages = masked_whiten(advantages, mask)
         advantages = advantages.detach()
@@ -1274,6 +1276,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         queries: List[torch.LongTensor],
         responses: List[torch.LongTensor],
         scores: List[torch.FloatTensor],
+        wscores: List[torch.FloatTensor] = None,
         response_masks: Optional[List[torch.LongTensor]] = None,
         **kwargs: dict
     ):
@@ -1302,6 +1305,9 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         #print("responses shape",responses[0].shape)
         #print("scores shape",scores.shape)
         scores = torch.tensor(scores, device=self.current_device)
+        if wscores is not None:
+            wscores = torch.tensor(wscores, device=self.current_device)
+        #scores_mask = scores.ne(0)
         if self.config.use_score_scaling:
             # Score scaling
             scores_mean, scores_std = self.running.update(scores)
@@ -1311,6 +1317,18 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 scores = (scores - self.running.mean.to(**tensor_to_kwargs)) / score_scaling_factor
             else:
                 scores /= score_scaling_factor
+            
+            if wscores is not None:
+                #wscores_mean, wscores_std = self.running.update(wscores)
+                tensor_to_kwargs = dict(dtype=wscores.dtype, device=wscores.device)
+                wscore_scaling_factor = self.running.std.to(**tensor_to_kwargs) + torch.finfo(wscores.dtype).eps
+                if self.config.use_score_norm:
+                    wscores = (wscores - self.running.mean.to(**tensor_to_kwargs)) / wscore_scaling_factor
+                else:
+                    wscores /= wscore_scaling_factor
+            
+                
+    
 
         if self.config.score_clip is not None:
             # Score clipping
@@ -1376,6 +1394,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         full_kl_penalty = self.config.kl_penalty == "full"
 
         with torch.no_grad():
+            #print("model_inputs keys",model_inputs.keys())
             all_a_logprobs, a_logits_or_none, a_values, a_masks, \
                 all_lm_logprobs, lm_logits_or_none, lm_values, lm_masks = self.batched_forward_pass(
                 self.model,
@@ -1409,20 +1428,29 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                     scores, active_full_a_logprobs, ref_full_a_logprobs, a_masks
                 )
                 lm_rewards, lm_non_score_reward = self.compute_rewards(
-                    scores, active_full_lm_logprobs, ref_full_lm_logprobs, lm_masks
+                    scores if wscores is None else wscores, 
+                    active_full_lm_logprobs, ref_full_lm_logprobs, lm_masks
                 )
             else:
                 a_rewards, a_non_score_reward = self.compute_rewards(scores, all_a_logprobs, ref_a_logprobs, a_masks)
-                lm_rewards, lm_non_score_reward= self.compute_rewards(scores, all_lm_logprobs, ref_lm_logprobs, lm_masks)
+                lm_rewards, lm_non_score_reward= self.compute_rewards(scores if wscores is None else wscores, 
+                                                                      all_lm_logprobs, ref_lm_logprobs, lm_masks)
+            non_score_reward = torch.cat((a_non_score_reward, lm_non_score_reward), dim = 1)
             timing["time/ppo/compute_rewards"] = time.time() - t
 
             t = time.time()
+            #print("a_values", a_values.shape)
             a_values, a_advantages, a_returns = self.compute_advantages(a_values, a_rewards, a_masks)
+            #print("a_values", a_values.shape)
+            #print("lm_values", lm_values.shape)
             lm_values, lm_advantages, lm_returns = self.compute_lm_advantages(lm_values, lm_rewards, lm_masks)
+            #print("lm_values", lm_values.shape)
             timing["time/ppo/compute_advantages"] = time.time() - t
 
         all_logprobs = torch.cat((all_a_logprobs, all_lm_logprobs), dim = 1)
+        all_ref_logprobs = torch.cat((ref_a_logprobs, ref_lm_logprobs), dim = 1)
         values = torch.cat((a_values, lm_values), dim = 1)
+        #print("values",values.shape)
         masks = torch.cat((a_masks, lm_masks), dim = 1)
         advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
         returns = torch.cat((a_returns, lm_returns), dim = 1)
@@ -1470,7 +1498,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                         mini_batch_dict[k] = batch_dict[k][mini_batch_inds]
                     with self.accelerator.accumulate(self.model):
                         model_inputs = {k: mini_batch_dict[k] for k in model_inputs_names}
-
+                        #print("model_inputs keys",model_inputs.keys())
                         a_logprobs, a_logits, a_vpreds, _, \
                         lm_logprobs, lm_logits, lm_vpreds, _ = self.batched_forward_pass(
                             self.model,
@@ -1479,9 +1507,12 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                             model_inputs,
                             return_logits=True,
                         )
+                        #print("a_vpreds",a_vpreds.shape)
+                        #print("lm_vpreds",lm_vpreds.shape)
                         logprobs = torch.cat((a_logprobs, lm_logprobs), dim = 1)
-                        vpreds = torch.cat((a_vpreds, lm_vpreds), dim = 1)
-                        logits = torch.cat((a_logits, lm_logits), dim = 1)
+                        vpreds = torch.cat((a_vpreds[:,:-1], lm_vpreds), dim = 1)
+                        logits = (a_logits, lm_logits)
+                        #logits = torch.cat((a_logits, lm_logits), dim = 1)
                         if with_lm_loss:
                             if self.is_distributed:
                                 self.model.module.pretrained_model.train()
@@ -1538,8 +1569,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         stats = self.record_step_stats(
             scores=scores,
             logprobs=all_logprobs,
-            ref_logprobs=ref_lm_logprobs,
-            non_score_reward=lm_non_score_reward,
+            ref_logprobs=all_ref_logprobs,
+            non_score_reward=non_score_reward,
             train_stats=train_stats,
             kl_coef=self.kl_ctl.value,
             masks=masks,
@@ -1571,11 +1602,148 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             self.lr_scheduler.step()
 
         return stats
+    def train_minibatch_with_lm_loss(
+            self,
+            old_logprobs: torch.FloatTensor,
+            values: torch.FloatTensor,
+            logprobs: torch.FloatTensor,
+            logits: torch.FloatTensor,
+            vpreds: torch.FloatTensor,
+            mask: torch.LongTensor,
+            advantages: torch.FloatTensor,
+            returns: torch.FloatTensor,
+            lm_loss: torch.FloatTensor,
+        ):
+            """
+            Train one PPO minibatch
+
+            Args:
+                logprobs (`torch.FloatTensor`):
+                    Log probabilities of the model, shape [mini_batch_size, response_length]
+                values (`torch.FloatTensor`):
+                    Values of the value head, shape [mini_batch_size, response_length]
+                query (`torch.LongTensor`):
+                    Encoded queries, shape [mini_batch_size, query_length]
+                response (`torch.LongTensor`):
+                    Encoded responses, shape [mini_batch_size, response_length]
+                model_input (`torch.LongTensor`):
+                    Concatenated queries and responses, shape [mini_batch_size, query_length+response_length]
+
+            Returns:
+                train_stats (dict[str, `torch.Tensor`]):
+                    Dictionary of training statistics
+            """
+            self.model.train()
+            loss_p, loss_v, train_stats = self.loss(
+                old_logprobs, values, logits, vpreds, logprobs, mask, advantages, returns
+            )
+            #print("self.config.lm_loss_ratio = ",self.config.lm_loss_ratio)
+            loss = loss_p + loss_v + self.config.lm_loss_ratio * lm_loss
+            self.accelerator.backward(loss)
+            if self.config.max_grad_norm is not None:
+                if self.accelerator.sync_gradients:
+                    self.accelerator.clip_grad_norm_(self.model_params, self.config.max_grad_norm)
+            self.optimizer.step()
+            # we call optimizer.zero_grad() every time and let `accelerator` handle accumulation
+            # see https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation#the-finished-code
+            self.optimizer.zero_grad()
+            #print(train_stats.keys())
+            train_stats["loss/lm"] = lm_loss.detach()
+            return train_stats
+    def loss(
+        self,
+        old_logprobs: torch.FloatTensor,
+        values: torch.FloatTensor,
+        logits: torch.FloatTensor,
+        vpreds: torch.FloatTensor,
+        logprobs: torch.FloatTensor,
+        mask: torch.LongTensor,
+        advantages: torch.FloatTensor,
+        returns: torch.FloatTensor,
+    ):
+        """
+        Calculate policy and value losses.
+
+        Args:
+            old_logprobs (`torch.FloatTensor`):
+                Log probabilities of the model, shape (`batch_size`, `response_length`)
+            values (`torch.FloatTensor`):
+                Values of the value head, shape (`batch_size`, `response_length`)
+            rewards (`torch.FloatTensor`):
+                Rewards from the reward model, shape (`batch_size`, `response_length`)
+            logits (`torch.FloatTensor`):
+                Logits of the model, shape (`batch_size`, `response_length`, `vocab_size`)
+            v_pred (`torch.FloatTensor`):
+                Values of the value head, shape (`batch_size`, `response_length`)
+            logprobs (`torch.FloatTensor`):
+                Log probabilities of the model, shape (`batch_size`, `response_length`)
+        """
+
+        vpredclipped = clip_by_value(
+            vpreds,
+            values - self.config.cliprange_value,
+            values + self.config.cliprange_value,
+        )
+
+        vf_losses1 = (vpreds - returns) ** 2
+        vf_losses2 = (vpredclipped - returns) ** 2
+        vf_loss = 0.5 * masked_mean(torch.max(vf_losses1, vf_losses2), mask)
+        vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).float(), mask)
+
+        ratio = torch.exp(logprobs - old_logprobs)
+
+        pg_losses = -advantages * ratio
+        pg_losses2 = -advantages * torch.clamp(ratio, 1.0 - self.config.cliprange, 1.0 + self.config.cliprange)
+
+        pg_loss = masked_mean(torch.max(pg_losses, pg_losses2), mask)
+        pg_clipfrac = masked_mean(torch.gt(pg_losses2, pg_losses).float(), mask)
+
+        loss = pg_loss + self.config.vf_coef * vf_loss
+
+        avg_ratio = masked_mean(ratio, mask).item()
+        if avg_ratio > self.config.ratio_threshold:
+            warnings.warn(
+                f"The average ratio of batch ({avg_ratio:.2f}) exceeds threshold {self.config.ratio_threshold:.2f}. Skipping batch."
+            )
+            pg_loss = pg_loss * 0.0
+            vf_loss = vf_loss * 0.0
+            loss = loss * 0.0
+
+        entropy = masked_mean(entropy_from_logits(logits[0]), mask[:,:1])
+
+        approxkl = 0.5 * masked_mean((logprobs - old_logprobs) ** 2, mask)
+        policykl = masked_mean(old_logprobs - logprobs, mask)
+
+        return_mean, return_var = masked_mean(returns, mask), masked_var(returns, mask)
+        value_mean, value_var = masked_mean(values, mask), masked_var(values, mask)
+
+        stats = dict(
+            loss=dict(policy=pg_loss.detach(), value=vf_loss.detach(), total=loss.detach()),
+            policy=dict(
+                entropy=entropy.detach(),
+                approxkl=approxkl.detach(),
+                policykl=policykl.detach(),
+                clipfrac=pg_clipfrac.detach(),
+                advantages=advantages.detach(),
+                advantages_mean=masked_mean(advantages, mask).detach(),
+                ratio=ratio.detach(),
+            ),
+            returns=dict(mean=return_mean.detach(), var=return_var.detach()),
+            val=dict(
+                vpred=masked_mean(vpreds, mask).detach(),
+                error=masked_mean((vpreds - returns) ** 2, mask).detach(),
+                clipfrac=vf_clipfrac.detach(),
+                mean=value_mean.detach(),
+                var=value_var.detach(),
+            ),
+        )
+        return pg_loss, self.config.vf_coef * vf_loss, flatten_dict(stats)
     def custom_prepare_model_inputs(self, queries: torch.Tensor, responses: torch.Tensor, **kwargs):
         if self.is_encoder_decoder:
             input_data = {
                 "input_ids":queries,
                 "decoder_input_ids":responses,
+                #"strategy_logit_ground":kwargs["action_logits"]
                 #"decoder_attention_mask": torch.ones_like(responses)
                 }
             for k,v in kwargs.items():

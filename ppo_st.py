@@ -68,6 +68,7 @@ class ScriptArguments:
         )
     )
     ppo_train_emo_strat: bool = args.ppo_train_emo_strat
+    ppo_stop_use_diff_reward: bool = args.ppo_stop_use_diff_reward
     use_seeker: bool = args.ppo_train_use_seeker
     use_lm_reward: bool = args.ppo_use_lm_reward
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
@@ -130,7 +131,10 @@ if __name__ == "__main__":
             ppo_args.ppo_config.model_name,
             config = model_config,
         )
-        freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layer)")
+        if not ppo_args.use_lm_reward:
+            freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layers\.[01234])")
+        else:
+            freeze_parameters(model, "(trans_mat|emo|embed|encoder\.layers\.[01234])")
         ref_model = load_ref_model(model)
         if args.ppo_train_emo_strat:
             name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
@@ -164,9 +168,9 @@ if __name__ == "__main__":
             "eos_token_id": tokenizer.eos_token_id,
             "max_length":128,
             "num_beams":1,
-            "top_p":0.3,
-            "top_k":30,
-            "temperature":0.7,
+            #"top_p":0.3,
+            #"top_k":30,
+            "temperature":1.0,
             #"do_sample":True,
             "repetition_penalty":1.03,
             #"no_repeat_ngram_size":3,
@@ -199,7 +203,8 @@ if __name__ == "__main__":
                         mini_batch_size = ppo_args.ppo_config.mini_batch_size,
                         generation_kwargs = generation_kwargs,
                         seeker = seeker,
-                        seeker_func = seeker_func
+                        seeker_func = seeker_func,
+                        use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
