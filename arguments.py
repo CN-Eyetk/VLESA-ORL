@@ -1,6 +1,7 @@
 import argparse
 import os
 import torch
+import sys
 def load_ppo_prefix(args_g):
     if args_g.ppo_prefix is None:
         lr = args_g.ppo_lr
@@ -62,7 +63,7 @@ def load_tag(args):
         +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
-def load_arg():
+def load_arg(return_tag = False, ):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--root_path", type = str, default=".")
     parser.add_argument("--data_path", type = str, default="converted_dataset")
@@ -152,12 +153,16 @@ def load_arg():
     ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
     ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
     ppo_parser.add_argument("--ppo_add_strategy_noise", action="store_true")
+    #ppo_parser.add_argument("--ppo_temperature",default=1.0, type=float)
+    
+    ppo_parser.add_argument("--ppo_return_arg", action="store_true")
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
     #GROUP += f"{TAG}_ppo"
     if args_g.ppo_prefix is None:
         ppo_prefix = load_ppo_prefix(args_g)
-        print("prefix = ",ppo_prefix)
+        if not return_tag:
+            print("prefix = ",ppo_prefix)
         args_g.ppo_prefix = ppo_prefix
     #TAG = prefix
     MISC = False 
@@ -173,12 +178,14 @@ def load_arg():
             output_dir = os.path.join(args_g.root_path, 'bart-our', GROUP, TAG)
         else:
             output_dir = os.path.join(args_g.root_path, 'blender-our', GROUP, TAG)
-        print(f"output_dir************{output_dir}************")
+        if not return_tag:
+            print(f"output_dir************{output_dir}************")
         if args_g.ppo:
             generation_dir = output_dir.replace(args_g.root_path, "our_generated_data") #"our_generated_data/" + GROUP +"-ppo" + "/" + TAG + "_" + args_g.ppo_prefix
         else:
             generation_dir = output_dir.replace(args_g.root_path, "our_generated_data") #"our_generated_data/" + GROUP + "/" + TAG
-        print(f"generation_dir************{generation_dir}************")
+        if not return_tag:
+            print(f"generation_dir************{generation_dir}************")
 
     args = {"do_train":True,
             "data_path":args_g.data_path,
@@ -286,7 +293,13 @@ def load_arg():
     for k,v in ppo_args.items():
         args[k] = v
     args = argparse.Namespace(**args)
-    return args
+    if return_tag:
+        if args_g.ppo_return_arg:
+            return ppo_prefix
+        else:
+            return TAG
+    else:
+        return args
 
 class EmpathyDetectorArguments:
     output_dir = "/disk/junlin/models/empdetect_best/"
@@ -307,3 +320,8 @@ class SeekerArguments:
     model_dir = "/disk/junlin/models/EmoSupport/gpt/output/esconv/checkpoint-5000"
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
+
+if __name__ == "__main__":
+    arg = load_arg(return_tag=True)
+    print(arg)
+    

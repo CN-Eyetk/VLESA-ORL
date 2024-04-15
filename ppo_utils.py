@@ -286,9 +286,8 @@ class Agent:
                 role_ids[i] = torch.concat((role_ids[i][:1], role_ids[i][-max_len+1:]))
                 attention_masks[i] = torch.concat((attention_masks[i][:1], attention_masks[i][-max_len+1:]))
                 vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
-    def prepare_experience_pool(self, batch):
-        state, next_state, all_paras, bool_paras = self.step(batch)
-        
+
+    def get_reward_and_response(self, state, next_state = None):
         response = self.tokenizer.batch_decode(state["response_tensor"], skip_special_tokens = True)
         ref_response = self.tokenizer.batch_decode(state["ref_response_tensor"], skip_special_tokens = True)
         history_with_response = [state["histories"][i] + [{"content":response[i], "speaker":"supporter"}] for i in range(len(response))]
@@ -308,39 +307,69 @@ class Agent:
         self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         
         if self.seeker is not None:
-            seeker_reponses = self.get_seeker_response(history_with_response)
-            self.update_next_state_with_seeker_response(next_state = next_state, seeker_reponses = seeker_reponses)
+            seeker_responses = self.get_seeker_response(history_with_response)
+            self.update_next_state_with_seeker_response(next_state = next_state, seeker_reponses = seeker_responses)
         else:
-            seeker_reponses = None
-        
-        # Run PPO step
+            seeker_responses = None
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
+        response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
+        action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?
+        action_ids = action_logits.argmax(-1)
+        return rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids
+
+    def prepare_experience_pool_recursive(self, batch, n_step = 2):
+        all_states = []
+        all_rewards = []
+        all_action_logits = []
+        all_action_ids = []
+        for i, step in enumerate(n_step):
+            state, next_state, all_paras, bool_paras = self.step(batch)
+            rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
+            next_batch = {
+                "input_ids":next_state["input_ids"],
+                "role_ids":next_state["role_ids"],
+                "vad_ids":next_state["vad_ids"]
+            }
+            for k,v in batch.items():
+                if k not in next_batch.keys():
+                    next_batch[k] = v
+            all_states.append(state)
+            all_rewards.append(rewards)
+            all_action_logits.append(action_logits)
+            all_action_ids.append(action_ids)
+            batch = next_batch
+        all_states.append(next_state)
+        query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states)
+        pad_val = {
+            "labels":-100,
+            "attention_mask":False
+        }
+        paras = {k:pad_sequence(v, batch_first = True, padding_value = (self.tokenizer.pad_token_id if not k in pad_val.keys() 
+                                                                        else pad_val[k])) 
+                if not k =="decoder_strategy_ids"  else torch.stack(v)
+                for k,v in all_paras.items() }
+        for k, v in bool_paras.items():
+            paras[k] = v
+        paras["role_ids"] = role_ids
+        paras["attention_mask"] = attention_mask
+        paras["action_ids"]  = torch.stack(all_action_ids, dim = 1)
+        paras["strategy_logit_ground"] = torch.stack(all_action_logits, dim = 1)
+        if self.use_vad_labels:
+            paras["vad_ids"] = vad_ids
+        assert len(paras["comet_embs"]) == len(query_tensors)
+        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
+    
+    def prepare_experience_pool(self, batch):
+        state, next_state, all_paras, bool_paras = self.step(batch)
+        rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
 
         
-        #query_tensors = pad_sequence(state["input_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #next_query_tensors = pad_sequence(next_state["input_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #query_tensors = pad_sequence([query_tensors.T, next_query_tensors.T], batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-
-        #role_ids = pad_sequence(state["role_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #next_role_ids = pad_sequence(next_state["role_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #role_ids = pad_sequence([role_ids.T, next_role_ids.T], batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-
-
-        #if self.use_vad_labels:
-        #    vad_ids = pad_sequence(state["vad_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #    next_vad_ids = pad_sequence(next_state["vad_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
-        #    vad_ids = pad_sequence([vad_ids.T, next_vad_ids.T], batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-
-        #attention_mask = pad_sequence(state["attention_masks"], batch_first = True, padding_value = False)
-        #next_query_attention_mask = pad_sequence(next_state["attention_masks"], batch_first = True, padding_value = False)
-        #attention_mask = pad_sequence([attention_mask.T, next_query_attention_mask.T], batch_first = False, padding_value = False).T
         states = [state, next_state]
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(states)
-        action_logits = torch.stack(state["actions"], dim = 0).float()
-        action_ids = action_logits.argmax(-1)
 
-        response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
-        query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
+
+        
+        #query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
         pad_val = {
             "labels":-100,
             "attention_mask":False
@@ -360,7 +389,7 @@ class Agent:
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
         assert len(paras["comet_embs"]) == len(query_tensors)
-        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_reponses
+        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
 
     def batched_ppo_step(self, batch, ppo_batch):
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_reponses = self.prepare_experience_pool(batch)

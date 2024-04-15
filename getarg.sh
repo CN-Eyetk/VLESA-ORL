@@ -1,0 +1,2 @@
+pretrained_args="--no_fuse --use_bart --use_kl --tag pm328/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 32 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.5 --use_emo_in --data_path origin_data --layer_control"
+summation=$(python3 arguments.py $pretrained_args)

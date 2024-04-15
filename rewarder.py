@@ -533,9 +533,9 @@ def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
 
 def load(path):
     if "multiesc" in path:
-        summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n")
+        summaries = open(os.path.join(path, "summary.txt"),"r+").read().strip().split("\n")
     else:
-        summaries = open(f"{path}/summary.txt","r+").read().strip().split("\n\n")
+        summaries = open(os.path.join(path, "summary.txt"),"r+").read().strip().split("\n\n")
     #print(len(summaries))
     responses = json.load(open(f"{path}/hyp_strategy.json","r+"))
     return summaries, responses
@@ -592,8 +592,12 @@ if __name__ == "__main__":
     #]
     #
     paths = [
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2/epoch0_step39_2024-04-05/lr_1e-07-bs_64-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff_nonmixtemp/",
-        "/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2",
+        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2/epoch0_step39_2024-04-05/lr_1e-07-bs_64-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff_nonmixtemp/",
+        #"/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcpm328/bleu2",
+        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step149_2024-04-14/lr_2e-06-bs_64-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step29_2024-04-14/lr_2e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/non_mix/",
+        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step139_2024-04-14/lr_1e-06-bs_64-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmixtemp/non_mix",
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/non_mix/",
         
     ]
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-09/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full0.7"
@@ -643,13 +647,15 @@ if __name__ == "__main__":
     #fig.savefig("output.png")
     
     #for start_turn in range(3,50):
-    sfl = df[df["response_b"] != df["response_a"]]["reward_b"]
-    rl = df[df["response_b"] != df["response_a"]]["reward_a"] #df[(df["turn"] > start_turn) & (df["group"] == "b")]["reward"].to_list()
+    for i in range(0,30):
+        sfl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["reward_b"]
+        rl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["reward_a"] #df[(df["turn"] > start_turn) & (df["group"] == "b")]["reward"].to_list()
 
     #print("start turn:",start_turn)
-    print(ttest_rel(sfl, rl))
-    print(sfl[df["response_b"] < df["response_a"]].count())
-    print(sfl[df["response_b"] > df["response_a"]].count())
+    
+        print(ttest_rel(sfl, rl))
+        print(sfl[df["response_b"] < df["response_a"]].count())
+        print(sfl[df["response_b"] > df["response_a"]].count())
     #print(df.groupby("turns").apply(lambda df: ttest_rel(df['a'], df['b'])))
     
     #print(ttest_rel(rwds[0], rwds[1]))

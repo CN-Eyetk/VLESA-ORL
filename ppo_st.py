@@ -30,7 +30,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = str(date.today())
+today = "2024-04-14"
 #print("Today's date:", today)
 args = load_arg()
 @dataclass
@@ -49,6 +49,7 @@ class ScriptArguments:
             use_score_norm = True,
             mini_batch_size = args.ppo_mini_batch_size,
             batch_size=args.ppo_batch_size,
+
             gradient_accumulation_steps=args.ppo_gradient_accumulation_steps,
             early_stopping=False,
             target_kl=6.0,
