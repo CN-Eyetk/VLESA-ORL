@@ -112,7 +112,10 @@ class Agent:
                     try:
                         response_vad_ids[:] = active_response_vad_ids 
                     except:
-                        response_vad_ids[:] = active_response_vad_ids[:len(response_vad_ids)]
+                        try:
+                            response_vad_ids[:] = active_response_vad_ids[:len(response_vad_ids)]
+                        except:
+                            response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids
                 elif len(active_response_vad_ids) == response_pad_start:
                     response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
                 else:
@@ -133,7 +136,7 @@ class Agent:
             mini_batch_next_role_ids.append(next_role_ids)
             mini_batch_next_attention_masks.append(next_attention_mask)
         return mini_batch_next_query_tensors, mini_batch_next_role_ids, mini_batch_next_attention_masks, mini_batch_next_vad_ids
-    def step(self, batch):
+    def step(self, batch, recursive = False):
         all_query_tensors = []
         all_query_role_ids = []
         all_attention_masks = []
@@ -163,7 +166,9 @@ class Agent:
                                                 self.tokenizer, 
                                                 self.args, 
                                                 add_strategy_noise = self.args.ppo_add_strategy_noise,
-                                                phase = "reinforce_with_lm_loss")
+                                                phase = "reinforce_with_lm_loss",
+                                                recursive = recursive
+                                                )
                 #if use history
                 history = self.hist_retriver.retrieve(paras["role_ids"], input_ids)
                 all_histories += history
@@ -320,26 +325,51 @@ class Agent:
     def prepare_experience_pool_recursive(self, batch, n_step = 2):
         all_states = []
         all_rewards = []
+        all_ref_rewards = []
         all_action_logits = []
         all_action_ids = []
-        for i, step in enumerate(n_step):
-            state, next_state, all_paras, bool_paras = self.step(batch)
+        all_responses = []
+        all_ref_responses = []
+        all_seeker_responses = []
+        for i, step in enumerate(range(n_step)):
+            if i > 0:
+                recursive = True
+            else:
+                recursive = False
+            #for k,v in batch.items():
+            #    try:
+            #        print("cur batch ",k ,batch[k].shape)
+            #    except:
+            #        print("cur batch", k)
+            state, next_state, all_paras, bool_paras = self.step(batch, recursive = recursive)
             rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
             next_batch = {
                 "input_ids":next_state["input_ids"],
                 "role_ids":next_state["role_ids"],
                 "vad_ids":next_state["vad_ids"]
             }
+            for k,v in next_batch.items():
+                next_batch[k] = pad_sequence(state[k], batch_first = True, padding_value = self.tokenizer.pad_token_id)
+                #print("next batch ",k ,next_batch[k].shape)
             for k,v in batch.items():
+                #try:
+                #    print(k,f"----{v.shape}")
+                #except:
+                #    print(k)
                 if k not in next_batch.keys():
                     next_batch[k] = v
             all_states.append(state)
             all_rewards.append(rewards)
+            all_ref_rewards.append(ref_rewards)
             all_action_logits.append(action_logits)
             all_action_ids.append(action_ids)
+            all_responses.append(response)
+            all_ref_responses.append(ref_response)
+            all_seeker_responses.append(seeker_responses)
             batch = next_batch
         all_states.append(next_state)
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states)
+        query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
         pad_val = {
             "labels":-100,
             "attention_mask":False
@@ -352,24 +382,43 @@ class Agent:
             paras[k] = v
         paras["role_ids"] = role_ids
         paras["attention_mask"] = attention_mask
-        paras["action_ids"]  = torch.stack(all_action_ids, dim = 1)
+        paras["action_ids"]  = torch.stack(all_action_ids, dim = 1).squeeze(-1)
         paras["strategy_logit_ground"] = torch.stack(all_action_logits, dim = 1)
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
+        #for k,v in paras.items():
+        #    print(k)
+        #    try:
+        #        print(paras[k].shape)
+        #    except:
+        #        print("--")
+        
+
         assert len(paras["comet_embs"]) == len(query_tensors)
+        rewards = [[a.item(),b.item()] for a,b in zip(all_rewards[0], all_rewards[1])]
+        rewards = torch.tensor(rewards)
+        rewards = [rewards[i] for i in range(rewards.size(0))]
+        #print("rewards",rewards)
+        ref_rewards =  [[a.item(),b.item()] for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
+        ref_rewards = torch.tensor(ref_rewards)
+        ref_rewards =  [ref_rewards[i] for i in range(ref_rewards.size(0))]
+        response = [f"{a}|{b}" for a,b in zip(all_responses[0], all_responses[1])]
+        ref_response =  [f"{a}|{b}" for a,b in zip(all_ref_responses[0], all_ref_responses[1])]
+        seeker_responses = [f"{a}|{b}" for a,b in zip(all_seeker_responses[0], all_seeker_responses[1])]
+         
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     
     def prepare_experience_pool(self, batch):
         state, next_state, all_paras, bool_paras = self.step(batch)
         rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
-
+        
         
         states = [state, next_state]
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(states)
 
 
         
-        #query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
+        query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
         pad_val = {
             "labels":-100,
             "attention_mask":False
@@ -390,13 +439,29 @@ class Agent:
             paras["vad_ids"] = vad_ids
         assert len(paras["comet_embs"]) == len(query_tensors)
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
-
-    def batched_ppo_step(self, batch, ppo_batch):
-        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_reponses = self.prepare_experience_pool(batch)
+    def recursive_ppo_step(self, batch, ppo_batch):
+        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
+        rewards = [rewards[i].sum() for i in range(len(rewards))]
+        ref_rewards = [ref_rewards[i].sum() for i in range(len(ref_rewards))]
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
-        if seeker_reponses is not None:
-            ppo_batch["seeker_reponses"] = seeker_reponses
+        if seeker_responses is not None:
+            ppo_batch["seeker_reponses"] = seeker_responses
+        scores = rewards
+        stats = self.ppo_trainer.step(query_tensors, 
+                                response_tensors, 
+                                scores = scores, #base_line_rewards
+                                response_masks = None, 
+                                **paras)
+        ppo_batch["ref_rewards"] = ref_rewards
+        ppo_batch["rewards"] = rewards
+        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
+    def batched_ppo_step(self, batch, ppo_batch):
+        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool(batch)
+        ppo_batch["response"] = response
+        ppo_batch["ref_response"] = ref_response
+        if seeker_responses is not None:
+            ppo_batch["seeker_reponses"] = seeker_responses
         check_format(query_tensors, paras, self.tokenizer)
         if self.use_diff_reward:
             scores = [r - rfr for r, rfr in zip(rewards, ref_rewards)]

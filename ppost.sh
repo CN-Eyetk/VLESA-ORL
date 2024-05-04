@@ -1,17 +1,17 @@
 
 ppo_sent_reward_ratios=(2.0 3.0)
 ppo_init_kl_coef_ratios=(1.0)
-lrs=("2e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
-export CUDA_VISIBLE_DEVICES=0
+lrs=("1e-07" "2e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+export CUDA_VISIBLE_DEVICES=1
 root_path="/disk/junlin/EmoSp"
-batch_size=128
-mini_batch_size=8
+batch_size=64
+mini_batch_size=16
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
-train=0
-eval=0
-origin=1
+train=1
+eval=1
+origin=0
 
 
 #pretrained_args="--no_fuse --use_bart --use_kl --tag pm131/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 32 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --emo_from_eos --sample_strategy_embedding"
@@ -33,17 +33,20 @@ eval_comm_a="python3 main.py --generate_with_predicted_strategy --log_on_wandb -
 $eval_comm_a
 fi
 
-pretrained_args+=" --generate_with_predicted_strategy"
+
 for lr in "${lrs[@]}";do
 
 cur_comm="python3 ppo_st.py "$pretrained_args
 ppo_args=" --ppo 
-            --ppo_save_step 10 --ppo_eval_step 10
+            --ppo_save_step 20 --ppo_eval_step 20
             --ppo_batch_size $batch_size
             --ppo_mini_batch_size $mini_batch_size
             --ppo_train_emo_strat
             --ppo_gradient_accumulation_steps $gradient_accumulation_steps
-            --ppo_add_strategy_noise"
+            --ppo_add_strategy_noise
+            --generate_with_predicted_strategy
+            --ppo_recursive
+            "
            # --ppo_use_lm_reward
            # --ppo_use_word_level_reward
 
@@ -64,12 +67,9 @@ $comm_a
 fi
 
 if [ $eval == 1 ]; then
-steps=(39 29 19 9)
+steps=(19 39 59 79 99 119 139)
 for step in "${steps[@]}";do
-pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-04-14/${ppo_prefix}temp"
-echo $pretrained_model
-pretrained_args="${pretrained_args/--generate_with_predicted_strategy/""}"
-echo $pretrained_args
+pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-04-15/${ppo_prefix}temp"
 eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
 $eval_comm_a

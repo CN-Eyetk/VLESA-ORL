@@ -638,7 +638,12 @@ class DialogueActPPOTrainer(PPOTrainer):
         #print("queries shape",queries[0].shape)
         #print("responses shape",responses[0].shape)
         #print("scores shape",scores.shape)
-        scores = torch.tensor(scores, device=self.current_device)
+    
+        
+        try:
+            scores = torch.tensor(scores, device=self.current_device)
+        except:
+            scores = torch.stack(scores, dim = 0).to(self.current_device)
         if self.config.use_score_scaling:
             # Score scaling
             scores_mean, scores_std = self.running.update(scores)
@@ -721,6 +726,7 @@ class DialogueActPPOTrainer(PPOTrainer):
                 response_masks=response_masks,
                 return_logits=full_kl_penalty,
             )
+            #print("729 values",values.shape)
             #assert 1 == 2
             with self.optional_peft_ctx():
                 ref_logprobs, ref_logits_or_none, _, _ = self.batched_forward_pass(
@@ -749,6 +755,7 @@ class DialogueActPPOTrainer(PPOTrainer):
             t = time.time()
             values, advantages, returns = self.compute_advantages(values, rewards, masks)
             timing["time/ppo/compute_advantages"] = time.time() - t
+            #print("758 values",values.shape)
 
         # upcast to float32 to avoid dataset issues
         batch_dict = {
@@ -765,6 +772,7 @@ class DialogueActPPOTrainer(PPOTrainer):
         #for k,v in batch_dict.items():
         #    if type(v) is not bool:
         #        print(f"{k} = {v.shape}")
+        #print("scores = ", scores.shape)
 
         t = time.time()
         all_stats = []
@@ -802,6 +810,8 @@ class DialogueActPPOTrainer(PPOTrainer):
                             {k:v for k,v in model_inputs.items() if not k == "labels" and not k == "decoder_strategy_ids"},
                             return_logits=True,
                         )
+                        vpreds = vpreds[:,:-1]
+                        logits = logits[:,:-1]
                         if with_lm_loss:
                             if self.is_distributed:
                                 self.model.module.pretrained_model.train()
@@ -950,12 +960,17 @@ class DialogueActPPOTrainer(PPOTrainer):
             
             #print(f"input_ids：{input_ids}")
             #print(f"attention_mask: {attention_mask}")
-            action_ids = input_kwargs["action_ids"].unsqueeze(-1)
-            #print("action_ids",action_ids.shape)               
-            logprobs = logprobs_from_logits(logits[:,:1,:], action_ids) #([b,1,8],[b,1,1]) -> [b,1,1]
+            action_ids = input_kwargs["action_ids"]
+            if len(action_ids.shape) == 1:
+                action_ids = action_ids.unsqueeze(-1)
+            #print("action_ids",action_ids.shape)      
+              
+            timestep = logits.size(1)   
+            #print("logits",logits[:,:timestep-1,:].shape)    
+            logprobs = logprobs_from_logits(logits[:,:timestep-1,:], action_ids) #([b,1,8],[b,1,1]) -> [b,1,1]
             #print("logprobs",logprobs.shape)
             masks = torch.zeros_like(action_ids)
-            masks[:,0] = 1
+            masks[:,:timestep-1] = 1
             #print("masks",masks.shape)
             #masks = torch.zeros_like(attention_mask)
             #masks[:, :-1] = attention_mask[:, 1:]
@@ -1023,7 +1038,7 @@ class DialogueActPPOTrainer(PPOTrainer):
             last_non_masked_index = mask.nonzero()[-1]
             #assert last_non_masked_index.item() == 0 只对”strategy”用
             #assert reward.shape == score.shape
-            reward[last_non_masked_index] += score
+            reward[:last_non_masked_index+1] += score
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
     def compute_advantages(

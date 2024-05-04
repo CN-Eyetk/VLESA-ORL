@@ -1224,13 +1224,11 @@ class PPOTrainer(BaseTrainer):
             logprobs (`torch.FloatTensor`):
                 Log probabilities of the model, shape (`batch_size`, `response_length`)
         """
-
         vpredclipped = clip_by_value(
             vpreds,
             values - self.config.cliprange_value,
             values + self.config.cliprange_value,
         )
-
         vf_losses1 = (vpreds - returns) ** 2
         vf_losses2 = (vpredclipped - returns) ** 2
         vf_loss = 0.5 * masked_mean(torch.max(vf_losses1, vf_losses2), mask)
@@ -1370,7 +1368,10 @@ class PPOTrainer(BaseTrainer):
 
         # all gather stats
         if not isinstance(rewards, torch.Tensor):
-            rewards = torch.tensor(rewards).to(self.current_device)
+            try:
+                rewards = torch.tensor(rewards).to(self.current_device)
+            except:
+                rewards = torch.stack(rewards, dim = 0).to(self.current_device)
         rewards = self.accelerator.gather(rewards).flatten()
 
         if self.config.log_with == "wandb":

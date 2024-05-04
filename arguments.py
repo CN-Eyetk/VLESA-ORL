@@ -26,6 +26,8 @@ def load_ppo_prefix(args_g):
             prefix += "_wm"
         if args_g.generate_with_predicted_strategy:
             prefix += "_nonmix"
+        if args_g.ppo_recursive:
+            prefix += "_rec"
     else:
         prefix = args_g.prefix
     return prefix
@@ -153,7 +155,7 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
     ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
     ppo_parser.add_argument("--ppo_add_strategy_noise", action="store_true")
-    #ppo_parser.add_argument("--ppo_temperature",default=1.0, type=float)
+    ppo_parser.add_argument("--ppo_recursive", action="store_true")
     
     ppo_parser.add_argument("--ppo_return_arg", action="store_true")
     args_g = ppo_parser.parse_args()

@@ -2258,14 +2258,32 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
 
 
 
-def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phase = "train"):
+def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phase = "train", recursive = False):
     if phase == "train":
         model.train()
     else:
         model.eval()
+    input_ids = batch["input_ids"]
+    role_ids = batch["role_ids"]
+    decoder_input_ids = batch["decoder_input_ids"]
+    decoder_labels = batch["decoder_labels"]
+    decoder_cls_labels = batch["decoder_cls_labels"]
+    decoder_strategy_ids = batch["decoder_strategy_ids"]
+    comet_ids = batch["comet_ids"]
+    comet_mask = batch["comet_mask"]
+    emotion = batch["emotion"]
+    comet_ids_st = batch["comet_st_ids"]
+    comet_mask_st = batch["comet_st_mask"]
+    emo_dist = batch["emo_dist"]
+    emo_in_dist = batch["emo_in_dist"]
+    situ_ids = batch["situations"]
+    strat_positions = batch["strat_positions"]
+    emo_positions = batch["emo_positions"]
+    intensity = batch["intensity"]
+    vad_ids = batch["vad_ids"]
+    #input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
+    #        decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = batch.values()
     
-    input_ids, position_ids, turn_ids, role_ids, labels, cls_positions, cls_labels, strategy_ids, decoder_input_ids, decoder_position_ids, decoder_turn_ids, \
-            decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = batch.values()
     decoder_strategy_ids = decoder_strategy_ids[:, 0]
     decoder_strategy_ids = decoder_strategy_ids.to(args.device)
     assert input_ids.shape[1] <= 512 
@@ -2290,6 +2308,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
 
 
     if not args.wo_comet:
+        #print("comet_ids shape", comet_ids.shape)
         comet_ids = comet_ids.to(args.device)
         batch_size, n_attr, len_attr = comet_ids.shape
         comet_ids = comet_ids.view(-1, len_attr)
@@ -2299,6 +2318,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
             else:
                 comet_embs = model.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
         comet_embs = comet_embs.view(batch_size, n_attr, -1)
+        comet_ids = comet_ids.view(batch_size, n_attr, len_attr)
         comet_ids_st = comet_ids_st.to(args.device)
         batch_size, n_attr, len_attr = comet_ids_st.shape
         comet_ids_st = comet_ids_st.view(-1, len_attr)
@@ -2308,6 +2328,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
             else:
                 comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
         comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
+        comet_ids_st = comet_ids_st.view(batch_size, n_attr, len_attr)
         comet_mask = comet_mask.to(args.device)
         comet_mask_st = comet_mask_st.to(args.device)
         del comet_ids

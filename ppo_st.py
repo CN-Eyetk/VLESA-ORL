@@ -30,7 +30,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-04-14"
+today = "2024-04-15"
 #print("Today's date:", today)
 args = load_arg()
 @dataclass
@@ -212,7 +212,11 @@ if __name__ == "__main__":
                 ppo_batch = {
                     "query":tokenizer.batch_decode(batch["input_ids"], skip_special_tokens = True)
                 }
-                agent.batched_ppo_step(batch, ppo_batch)
+                #agent.batched_ppo_step(batch, ppo_batch)
+                if args.ppo_recursive:
+                    agent.recursive_ppo_step(batch, ppo_batch)
+                else:
+                    agent.batched_ppo_step(batch, ppo_batch)
                 #query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response =prepare_experience_pool(ppo_trainer, 
                 #                        tokenizer, 
                 #                        batch, 

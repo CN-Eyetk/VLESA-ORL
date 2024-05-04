@@ -9,7 +9,7 @@ from evaluate import load
 from coherence.coherence import Coherence
 import os
 from scipy import stats
-from scipy.stats import f_oneway
+from scipy.stats import f_oneway, ttest_rel
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
 os.environ["HF_HUB_CACHE"] = "/disk/public_data/huggingface/hub"
 def read_text(path):
@@ -82,7 +82,10 @@ import os
 #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
-        "/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2",
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step29_2024-04-14/lr_2e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/",
+        
+        #"/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2",
         #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix",
@@ -175,32 +178,19 @@ def evaluate(dirs, masks = None):
 
 #
 
-print("Compare sfl and rl")
-hyps_sfl = json.load(open(dirs[0] + "/hyp_strategy.json","r+"))
-hyps_rl = json.load(open(dirs[2] + "/hyp_strategy.json","r+"))
-masks = [i for i,(a,b) in enumerate(zip(hyps_sfl, hyps_rl)) if a == b]
-print(masks)
-all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[2]], masks = masks)
-our = dirs[2]
-baselines = [dirs[i] for i in [0,-1]]
 
 
-for k,v in all_res_by_sent_2[our].items():
-    print(k)
-    print(type(v))
-    for baseline in baselines:
-        if "our" in baseline:
-            print(stats.ttest_rel(all_res_by_sent_2[our][k], all_res_by_sent_2[baseline][k]))
-            print("*****")
-    print("========")
 
 all_res, all_res_by_sent = evaluate(dirs)
+
+our = dirs[1]
+baselines = [dirs[i] for i in [0,-1]]
 for k,v in all_res_by_sent[our].items():
     print(k)
     print(type(v))
     for baseline in baselines:
         if "our" in baseline:
-            print(f_oneway(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
+            print(ttest_rel(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
             print("*****")
         else:
             print(f_oneway(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
@@ -211,3 +201,20 @@ df.to_csv("res.csv")
 
 with open("full_results.json", "w+") as file:
     json.dump(all_res_by_sent, file)
+
+hyps_sfl = json.load(open(dirs[0] + "/hyp_strategy.json","r+"))
+hyps_rl = json.load(open(dirs[1] + "/hyp_strategy.json","r+"))
+masks = [i for i,(a,b) in enumerate(zip(hyps_sfl, hyps_rl)) if a == b]
+print(masks)
+all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[2]], masks = masks)
+
+
+
+for k,v in all_res_by_sent_2[our].items():
+    print(k)
+    print(type(v))
+    for baseline in baselines:
+        if "our" in baseline:
+            print(stats.ttest_rel(all_res_by_sent_2[our][k], all_res_by_sent_2[baseline][k]))
+            print("*****")
+    print("========")
