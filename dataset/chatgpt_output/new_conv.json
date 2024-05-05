@@ -1,0 +1,191 @@
+[
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "Hello\n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Question"
+    },
+    "content": "Hello, what would you like to talk about?",
+    "reply": "{\n  \"score\": 50,\n  \"label\": \"Good\",\n  \"rationale\": \"Responsive, offering suggestions, demonstrating understanding.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "I am having a lot of anxiety about quitting my current job. It is too stressful but pays well\n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Question"
+    },
+    "content": "What makes your job stressful for you?",
+    "reply": "{\n  \"score\": 50,\n  \"label\": \"Good\",\n  \"rationale\": \"Provides information, mildly dismissive tone, minor room for improvement.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "5"
+    },
+    "content": "I have to deal with many people in hard financial situations and it is upsetting \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Question"
+    },
+    "content": "Do you help your clients to make it to a better financial situation?",
+    "reply": "{\n    \"score\": 50,\n    \"label\": \"Good\",\n    \"rationale\": \"Mentioning benefits and providing solution, although slightly vague\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "I do, but often they are not going to get back to what they want. Many people are going to lose their home when safeguards are lifted \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Affirmation and Reassurance"
+    },
+    "content": "But you offer them a better future than what they have currently. It may not be what they wanted, but it helps them in the long run.",
+    "reply": "{\n  \"score\": 45,\n  \"label\": \"Average\",\n  \"rationale\": \"Provided general advice, but lacked personalized assistance.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "5"
+    },
+    "content": "That is true but sometimes I feel like I should put my feelings and health first \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Affirmation and Reassurance"
+    },
+    "content": "I can understand that. ",
+    "reply": "{\n    \"score\": 45,\n    \"label\": \"Average\",\n    \"rationale\": \"Provided information but lacked empathy and problem-solving suggestions.\"\n}"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Question"
+    },
+    "content": "Is there another job that would pay you close to what you currently make?",
+    "reply": "```json\n{\n  \"score\": 50,\n  \"label\": \"Good\",\n  \"rationale\": \"Provided relevant info and showed willingness to help.\"\n}\n```"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "5"
+    },
+    "content": "Probably not. I was with the same company for a long time and I consistently get a bonus every year "
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Others"
+    },
+    "content": "Is it possible to reframe how you look at your clients' dire financial situations?",
+    "reply": "{\n  \"score\": 50,\n  \"label\": \"Good\",\n  \"rationale\": \"Provided some helpful information and offered assistance.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "I could try. It mostly gets to me at the end of the day \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Information"
+    },
+    "content": "Some people can't do what you do because they don't have the heart to give someone else bad news. The reality is though, someone needs to fill that role and you do help people",
+    "reply": "{\n\t\"score\": 45,\n\t\"label\": \"Average\",\n\t\"rationale\": \"Offered assistance but could provide further information or support\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "4"
+    },
+    "content": "That is also true. Sometimes I wonder if it really is for me though  \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Self-disclosure"
+    },
+    "content": "I've had to deal with collections before when I was in  bad financial condition. The person on the other line was really helpful though. She was understanding,",
+    "reply": "{\n  \"score\": 45,\n  \"label\": \"Average\",\n  \"rationale\": \"Provide solution but lacks empathy or enthusiasm.\"\n}"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Providing Suggestions"
+    },
+    "content": "It may not be for you. I think you should think about the pros and cons of keeping your position. It might make things clearer for you. ",
+    "reply": "{\n  \"score\":"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "5"
+    },
+    "content": "That is true. Maybe I just need to sit down and really think about it \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Restatement or Paraphrasing"
+    },
+    "content": "I wouldn't stay if it really impacts your mental health in a negative way. Still, you may need to zoom out and see the bigger picture: that you provide a needed service and you do it compassionately",
+    "reply": "{\n    \"score\": 50,\n    \"label\": \"Good\",\n    \"rationale\": \"Provided accurate information, somewhat rushed but helpful overall.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "It really is a big decision \n"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "Thank you for the different perspective \n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Affirmation and Reassurance"
+    },
+    "content": "No doubt, but you know in your heart what is right for you. ",
+    "reply": "{\n  \"score\": 55,\n  \"label\": \"Good\",\n  \"rationale\": \"Providing some useful suggestions and maintaining a positive tone.\"\n}"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {
+      "feedback": "4"
+    },
+    "content": "That is true. Thanks again \n"
+  },
+  {
+    "speaker": "seeker",
+    "annotation": {},
+    "content": "Bye\n"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Affirmation and Reassurance"
+    },
+    "content": "It's no problem. I hope you can make a decision about this situation and then be at peace with it",
+    "reply": "{\n  \"score\": 45,\n  \"label\": \"Average\",\n  \"rationale\": \"Sufficient assistance, room for improvement in communication skills.\"\n}"
+  },
+  {
+    "speaker": "supporter",
+    "annotation": {
+      "strategy": "Others"
+    },
+    "content": "Ok, take care",
+    "reply": "{\n    \"score\": 55,\n    \"label\": \"Very Good\",\n    \"rationale\": \"Provided clear instructions and reassurance, showing caring attitude.\"\n}"
+  }
+]

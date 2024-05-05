@@ -292,23 +292,45 @@ class EmFeedBacker:
 class ChatGPTScore:
     def __init__(self, base_prompt) -> None:
         self.base_prompt = {
-            "role":"system",
+            "role":"user",
             "content":base_prompt,
         }
         api_key = "sk-k02ZcanLhfretILe639f19E1535d4477A56c85C765F11dA7"
         api_base = "https://one.aiskt.com/v1"
         client = OpenAI(api_key=api_key, base_url=api_base)
         self.client = client
-        self.history = []
+        self.additional_info_before_answer = {"role":"user", "content":"""Based on the conversation segment provided, please assess the helpfulness of the "Jack"
+                                            You should answer with (1) a score between 0 and 60 (2) the options I have provided (Toxic; Very Bad; Bad; Average; Good; Very Good; Perfect) and (3) your rationale in no more than 10 words
+                                            Please organize your response in a json file, such as {"score":40, "label":"Good", "rationale":"Mostly Acceptable but not caring enough"}
+                                            """}
+        self.assistant = {"role":"assistant",
+                          "content":"""        Here's a breakdown
+        0: Toxic - Harmful, even Toxic
+        10: Very Bad - Cold and unhelpful, even harmful
+        20: Bad - Indifferent, uncaring, slightly cold
+        30: Average - Nothing harmful, but nothing helpful either
+        40: Good - effective and helpful, but can be imporved
+        50: Very Good - outstanding and goes above and beyond expectations.
+        60: Perfect - Very Understanding, and Empathetic""",
+                          
+                          }
+        self.messages = []
+        self.messages.append(self.base_prompt)
+        
     def get_score(self, conv):
-        prompt = {"role": "user", "content": f"{conv}"}
-        self.history.append(prompt)
-        chat = self.base_prompt + self.history  #+ [{"user":"Please give me your answer. "}]
+
+        question = {"role": "user", "content": f"{conv}"}
+        question = [question, self.additional_info_before_answer, self.assistant]
+        #self.history.append(prompt)
+        self.messages += question
+
         reply = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=chat
+            messages=self.messages
         )
         reply = reply.choices[0].message.content
+        
+        #self.messages.append({"role":"system","content":f"{reply}"})
         return reply
 
 class Retrive_DiagHist:
@@ -351,7 +373,11 @@ class Retrive_DiagHist:
             batch_histories.append(history)
         return batch_histories
     def json_2_conv(self, history):
-        return f"\n".join(f"{turn["speaker"].upper()} : {turn["content"]}" for turn in history)
+        spk_map = {
+            "SEEKER":"Bob",
+            "SUPPORTER":"Jack"
+        }
+        return "\n".join(spk_map[turn["speaker"].upper()] + " : " + turn["content"].strip() for turn in history)
     #def get_chatgpt_score(self, conv):
         
 
