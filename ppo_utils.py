@@ -120,6 +120,7 @@ class Agent:
                     response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
                 else:
                     print(f"The size of response_vad_ids is {len(active_response_vad_ids)}, but the response_pad_start if {response_pad_start}")
+                    print(f"response text = {response_text}, response vad labels = {response_vad_labels}", )
                     response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids 
                 #except:
                 #    print("response_text problem", response_text)
