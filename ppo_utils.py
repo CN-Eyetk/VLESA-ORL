@@ -4,7 +4,7 @@ from BlenderEmotionalSupport import shared_steps
 from torch.nn.utils.rnn import pad_sequence
 from copy import deepcopy
 from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
-
+from transformers import PreTrainedTokenizer
 
 
 def freeze_parameters(model, pattern):
@@ -24,21 +24,11 @@ def load_ref_model(model):
         param.requires_grad = False
     return ref_model.eval()
 
-def compute_w_reward(rewarder, responses, response_tensors):
-    sent_rewards = []
-    rewards = []
-    for i in range(len(responses)):
-        s_r, w_r = rewarder.word_rewarder(responses[i])[-1]
-        sent_rewards.append(s_r)
-        reward = distribute_word_score_to_tokens_new(tokenizer = tokenizer,
-                                            tokens_with_scores = w_r,
-                                            response_tensor = response_tensors[i])
-        rewards.append(torch.tensor(reward).float())
-    return sent_rewards, rewards
+
 
 class Agent:
     def __init__(self, args, model, 
-                 tokenizer, 
+                 tokenizer: PreTrainedTokenizer, 
                  vad_tokenizer, 
                  hist_retriver, 
                  feed_backer, 
@@ -231,6 +221,14 @@ class Agent:
         }
         
         return state, next_state, all_paras, bool_paras
+    def aggregate_responses(self, responses):
+        response_tensors = []
+        for resp in responses:
+            #resp [batch_size, length_of_cur_batch]
+            cur_resp = pad_sequence(resp, batch_first = True, padding_value = self.tokenizer.pad_token_id).T
+            response_tensors.append(cur_resp)
+        response_tensors = pad_sequence(response_tensors, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
+        return response_tensors
     def aggregate_states(self, states):
         query_tensors = []
         role_ids = []
@@ -241,6 +239,7 @@ class Agent:
             cur_role_ids = pad_sequence(state["role_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
             cur_vad_ids = pad_sequence(state["vad_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
             cur_attention_mask = pad_sequence(state["attention_masks"], batch_first = True, padding_value = False).T #attention mask pad False!
+            
             query_tensors.append(cur_query_tensors)
             role_ids.append(cur_role_ids)
             vad_ids.append(cur_vad_ids)
@@ -300,6 +299,19 @@ class Agent:
         history_with_ref_response = [state["histories"][i] + [{"content":ref_response[i], "speaker":"supporter"}] for i in range(len(ref_response))]
         
         self.feed_backer.model = self.feed_backer.model.cuda()
+        
+        def compute_w_reward(rewarder, responses, response_tensors):
+            sent_rewards = []
+            rewards = []
+            for i in range(len(responses)):
+                s_r, w_r = rewarder.word_rewarder(responses[i])[-1]
+                sent_rewards.append(s_r)
+                reward = distribute_word_score_to_tokens_new(tokenizer = self.tokenizer,
+                                                    tokens_with_scores = w_r,
+                                                    response_tensor = response_tensors[i])
+                rewards.append(torch.tensor(reward).float())
+            return sent_rewards, rewards
+        
         if self.use_word_level_reward:
             sent_rewards, rewards = compute_w_reward(self.feed_backer, history_with_response, state["response_tensor"])
             sent_ref_rewards, ref_rewards = compute_w_reward(self.feed_backer, history_with_ref_response, state["ref_response_tensor"])
@@ -330,6 +342,7 @@ class Agent:
         all_action_logits = []
         all_action_ids = []
         all_responses = []
+        all_response_tensors = []
         all_ref_responses = []
         all_seeker_responses = []
         for i, step in enumerate(range(n_step)):
@@ -365,12 +378,16 @@ class Agent:
             all_action_logits.append(action_logits)
             all_action_ids.append(action_ids)
             all_responses.append(response)
+            all_response_tensors.append(response_tensors)
             all_ref_responses.append(ref_response)
             all_seeker_responses.append(seeker_responses)
             batch = next_batch
         all_states.append(next_state)
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states)
+        response_tensors = self.aggregate_responses(all_response_tensors)
+        
         query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
+        response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         pad_val = {
             "labels":-100,
             "attention_mask":False
@@ -406,7 +423,7 @@ class Agent:
         response = [f"{a}|{b}" for a,b in zip(all_responses[0], all_responses[1])]
         ref_response =  [f"{a}|{b}" for a,b in zip(all_ref_responses[0], all_ref_responses[1])]
         seeker_responses = [f"{a}|{b}" for a,b in zip(all_seeker_responses[0], all_seeker_responses[1])]
-         
+
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     
     def prepare_experience_pool(self, batch):
@@ -442,18 +459,20 @@ class Agent:
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     def recursive_ppo_step(self, batch, ppo_batch):
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
-        rewards = [rewards[i].sum() for i in range(len(rewards))]
-        ref_rewards = [ref_rewards[i].sum() for i in range(len(ref_rewards))]
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
         if seeker_responses is not None:
             ppo_batch["seeker_reponses"] = seeker_responses
         scores = rewards
+        print("response_tensors",response_tensors.shape)
+        print("scores",scores)
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
                                 scores = scores, #base_line_rewards
                                 response_masks = None, 
                                 **paras)
+        rewards = [rewards[i].sum() for i in range(len(rewards))]
+        ref_rewards = [ref_rewards[i].sum() for i in range(len(ref_rewards))]
         ppo_batch["ref_rewards"] = ref_rewards
         ppo_batch["rewards"] = rewards
         self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
@@ -474,8 +493,10 @@ class Agent:
                                 response_masks = None, 
                                 **paras)
 
-        ppo_batch["ref_rewards"] = ref_rewards
-        ppo_batch["rewards"] = rewards
+        print("rewards",rewards)
+        print("refrewards",ref_rewards)
+        ppo_batch["ref_rewards"] = [x.sum() for x in ref_rewards]
+        ppo_batch["rewards"] = [x.sum() for x in rewards]
         self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
 
 def check_format(query_tensors, paras, tokenizer):

@@ -205,7 +205,8 @@ if __name__ == "__main__":
                         generation_kwargs = generation_kwargs,
                         seeker = seeker,
                         seeker_func = seeker_func,
-                        use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True
+                        use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True,
+                        use_word_level_reward = ppo_args.ppo_config.use_word_level_reward
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):

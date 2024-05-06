@@ -1,76 +1,105 @@
-from rewarder import ChatGPTScore, Retrive_DiagHist
 from transformers import BartTokenizer
-import json
-from tqdm import tqdm
-prompt = """You are presented with an incomplete segment of a conversation between two individuals, one of which (Speaker A) is seeking emotional support and another (Speaker B) is providing support. 
-        The "Bob" has opened up to the other about his/her feelings, struggles, and challenges.
-        Based on the :last" turn of the Jack, please assess the helpfulness of the "Jack".
-        You have 7 options: Toxic; Very Bad; Bad; Average; Good; Very Good; Perfect
-        
-        
-        Here's a breakdown
-        0: Toxic - Harmful, even Toxic (Especailly when criticizing the )
-        10: Very Bad - Cold and unhelpful, even harmful
-        20: Bad - Indifferent, uncaring, slightly cold
-        30: Average - Nothing harmful, but nothing helpful either
-        40: Good - effective and helpful, but can be imporved
-        50: Very Good - outstanding and goes above and beyond expectations.
-        60: Perfect - Very Understanding, and Empathetic
-
-        Here is an Example
-        Jack : Hello how are you?
-        Bob : hello im looking for someone to talk to
-        Bob : im fine how are you
-        Jack : I'm doing ok I'm glad you are good. Is it snowing by you?
-        Jack : Merry Christmas!
-        Bob : thats great and no its not snowing its very cold thow
-        Bob : merry christmas to you also
-        Jack : How can I help you today?
-        Bob : im having some issues with friends not actually being friends
-        Jack : I hear you are having trouble figuring out which friends are really your friends and which ones aren't. Is that about right?
-        You may answer by: 50, Very Good, purposefully exploring Bob's experience
-
-        Jack : Hello, what is life like for you at the moment?
-        Bob : Infinitely complicated.
-        Bob : Too many decisions. I don't know what to do.
-        Jack : I am sorry to hear that but I am happy to listen and help you if I can
-        Jack : what sort of things are you trying to decide?
-        Bob : I don't even know where to start.
-        Bob : I'm trying to decide if I can build trust with him again.
-        Bob : He lied about everything.
-        Jack : Well, let's try to take it one problem at a time so's not to get overwhelmed. What is your biggest problem at the moment?
-        Jack : Ah, am I to take it that a relationship has recently ended?
-        You may answer by: 30, Average, Exploring Bob's experience but not empathetic enough
-
-        Bob : Hey there
-        Bob : How are you?
-        Jack : I AM FINE
-        Jack : HOW IS YOUR SIDE ?
-        Bob : I am ok, I'm having a hard time dealing with the pandemic though.
-        Jack : Please how may i be of help
-        Bob : I am having a hard time being motivated to do anything.
-        Jack : I am sorry to hear that, bye.
-        You may answer by: 10, Very Bad, Not meeting the Bob"s expectation of support
-        """
-scorer = ChatGPTScore(base_prompt="prompt")
 tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
-retriever = Retrive_DiagHist(tokenizer)
-convs = json.load(open("dataset/ESConv.json", "r+"))
-convs = [conv["dialog"] for conv in convs][:10]
-read_utterances = []
-step = 0
+response_tokens = ['</s>', 'Well', ',', 'Ġyou', 'Ġknow', 'Ġwhats', 'Ġgoing', 'Ġon', 'Ġand', 'Ġpeople', 'Ġwill', 'Ġtake', 'Ġit', 'Ġpersonally', ',', 'Ġthough', '.', 'ĠI', 'Ġcan', 'Ġdefin', 'ete', 'ly', 'Ġunderstand', 'Ġthat', '.', 'ĠWhen', 'Ġi', 'Ġwas', 'Ġin', 'Ġlow', 'Ġstress', 'ĠI', 'Ġhad', 'Ġa', 'Ġlot', 'Ġof', 'Ġissues', 'Ġwith', 'Ġgetting', 'Ġout', 'Ġof', 'Ġbed', '.', 'ĠHave', 'Ġyou', 'Ġtried', 'Ġreaching', 'Ġout', 'Ġto', 'Ġpeople', 'Ġyour', 'Ġinterest', 'Ġin', 'Ġor', 'Ġperhaps', 'Ġhave', 'Ġan', 'Ġidea', 'Ġto', 'Ġtry', 'Ġfor', 'Ġa', 'Ġjob', 'Ġthat', 'Ġis', 'Ġjust', 'Ġtemporary', ',', 'Ġmaybe', 'Ġyou', 'Ġcan', 'Ġtry', 'Ġjust', 'Ġchatting', 'Ġas', 'Ġmuch', 'Ġas', 'Ġpossible', 'Ġand', 'Ġmaybe', 'Ġstart', 'Ġdoing', 'Ġsome', 'Ġother', 'Ġactivities', 'Ġyou', 'Ġenjoy', '?', '</s>']
+graded_tokens = ['well', 'Ġ,', 'Ġyou', 'Ġknow', 'Ġwhats', 'Ġgoing', 'Ġon', 'Ġand', 'Ġpeople', 'Ġwill', 'Ġtake', 'Ġit', 'Ġpersonally', 'Ġ,', 'Ġthough', 'Ġ.', 'Ġi', 'Ġcan', 'Ġdefin', 'ete', 'ly', 'Ġunderstand', 'Ġthat', 'Ġ.', 'Ġwhen', 'Ġi', 'Ġwas', 'Ġin', 'Ġlow', 'Ġstress', 'Ġi', 'Ġhad', 'Ġa', 'Ġlot', 'Ġof', 'Ġissues', 'Ġwith', 'Ġgetting', 'Ġout', 'Ġof', 'Ġbed', 'Ġ.', 'Ġhave', 'Ġyou', 'Ġtried', 'Ġreaching', 'Ġout', 'Ġto', 'Ġpeople', 'Ġyour', 'Ġinterest', 'Ġin', 'Ġor', 'Ġperhaps', 'Ġhave', 'Ġan', 'Ġidea', 'Ġto', 'Ġtry', 'Ġfor', 'Ġa', 'Ġjob', 'Ġthat', 'Ġis', 'Ġjust', 'Ġtemporary', 'Ġ,', 'Ġmaybe', 'Ġyou', 'Ġcan', 'Ġtry', 'Ġjust', 'Ġchatting', 'Ġas', 'Ġmuch', 'Ġas', 'Ġpossible', 'Ġand', 'Ġmaybe', 'Ġstart', 'Ġdoing', 'Ġsome', 'Ġother', 'Ġactivities', 'Ġyou', 'Ġenjoy', 'Ġ?', 'Ġ', '</s>']
+scores = [i+1 for i in range(len(graded_tokens))]
 
-bar = tqdm(enumerate(convs))
-for n,conv in bar:
-    inner_bar = tqdm(range(len(conv)))
-    for i in inner_bar:
-        cur_conv = retriever.json_2_conv(conv[step:i+1])
-        if conv[i]["speaker"] == "supporter":
-            if len(read_utterances) == 0:
-                reply = scorer.get_score(cur_conv)
+def align_score_from_seq_2_seq_pro(tokenizer, response_tokens, graded_tokens, scores):
+    norm = lambda x:x.replace("Ġ","").lower()
+    assert len(graded_tokens) == len(scores)
+    valid_graded_tokens = [(k,v) for k,v in zip(graded_tokens, scores) if k != "@"]     
+    graded_tokens = [x[0] for x in valid_graded_tokens]   
+    scores = [x[1] for x in valid_graded_tokens]
+    invalids = [tokenizer.unk_token, tokenizer.bos_token, tokenizer.eos_token]
+    print("invalids", invalids)
+    res = [0 for i in range(len(response_tokens))]
+    visited = [False for i in range(len(response_tokens))]
+    step = 0
+    for i, a in enumerate(response_tokens):
+        if not visited[i]:
+            if a in invalids:
+                weight = 0
+                res[i] = weight
+                visited[i] = True
             else:
-                reply = scorer.get_score( "Here comes a new turn, you may update your judgement\n"+ cur_conv)
-            step = i+1
-            conv[i]["reply"] = reply
-    with open(f"dataset/chatgpt_output/new_conv_{n}.json", "w+") as file:
-        json.dump(conv, file, indent=2)
+                if norm(a) == norm(graded_tokens[step]):
+                    weight = scores[step]
+                    res[i] = weight
+                    visited[i] = True
+                    step += 1
+                else:
+                    def look_forward():
+                        for m in range(1,len(graded_tokens) - step):
+                            for n in range(1,len(response_tokens) - i):
+                                source = [w for w in graded_tokens[step:step + m] if not w in invalids]
+                                source = "".join(w for w in source)
+                                source = source.replace("@@", "")
+                                target= [w for w in response_tokens[i:i + n] if not w in invalids]
+                                target = "".join(w for w in target)
+                                target = target.replace("@@", "")
+                                if source == target:
+                                    return m,n
+                        for m in range(1,len(graded_tokens) - step):
+                            for n in range(1,len(response_tokens) - i):
+                                if graded_tokens[step + m] == response_tokens[i + n]:
+                                    return m,n
+                        return None, None
+                    m,n = look_forward()
+                    weight = sum(scores[step:step + m]) / n
+                    for k in range(n):
+                        if response_tokens[i + k] not in invalids:
+                            res[i + k] = weight
+                        visited[i + k] = True
+                    step += m
+    return res
+
+def align_score_from_seq_2_seq(tokenizer, response_tokens, graded_tokens, scores):
+    norm = lambda x:x.replace("Ġ","").lower()
+    invalids = [tokenizer.unk_token, tokenizer.bos_token, "</s>"]
+    print("invalids", invalids)
+    res = [0 for i in range(len(response_tokens))]
+    step = 0
+    unmatched_tokens = []
+    unmatched_idx = []
+    print("response_tokens",response_tokens)
+    print("graded_tokens",graded_tokens)
+    for i, a in enumerate(response_tokens):
+        buffer = []
+        if a in invalids:
+            buffer.append(0)
+            res[i] = buffer[0]
+            buffer = []
+        else:
+            print(f"{norm(a)}---{norm(graded_tokens[step])}")
+            if norm(a) == norm(graded_tokens[step]):
+                
+                buffer.append(scores[step])
+                res[i] = buffer[0]
+                buffer = []
+                step += 1
+            else:
+                unmatched_tokens.append(a)
+                unmatched_idx.append(i)
+                if len(unmatched_tokens) > 0:
+                    
+                    merged_token = "".join(x for x in unmatched_tokens)
+                    merged_token = merged_token.replace("@@","")
+                    if merged_token == graded_tokens[step]:
+                        for p,k in zip(unmatched_idx, unmatched_tokens):
+                            #buffer.append(scores[step]/len(unmatched_tokens))
+                            res[p] = scores[step]/len(unmatched_idx)
+                        #res += buffer
+                        buffer = []
+                        unmatched_tokens = []
+                        unmatched_idx = []
+                        step += 1
+                    else:
+                        continue
+                else:
+                    continue
+    return res, unmatched_tokens
+
+
+w_scores = align_score_from_seq_2_seq(tokenizer, response_tokens, graded_tokens, scores)
+print(len(w_scores[0]))
+print(len(response_tokens))

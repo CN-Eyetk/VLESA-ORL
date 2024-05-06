@@ -1145,10 +1145,7 @@ class PPOTrainer(BaseTrainer):
             #print("score shape = ", score.shape) #printing
             #print("last_non_masked_index = ",last_non_masked_index) #printing
             # reward is preference model score + KL penalty
-            if self.config.use_word_level_reward:
-                reward += score
-            else:
-                reward[last_non_masked_index] += score
+            reward += score
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
 

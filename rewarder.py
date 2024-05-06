@@ -1,6 +1,7 @@
 #import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, BertTokenizer, BlenderbotSmallTokenizer, AutoModelForCausalLM
+from src.transformers import (BartForConditionalGeneration, BartTokenizer, BartConfig)
 import torch
 from torch.nn.utils.rnn import pad_sequence
 import re
@@ -11,6 +12,7 @@ from tqdm import tqdm
 from scipy.stats import ttest_rel, ttest_ind
 from openai import OpenAI
 from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments
+
 #from nltk import tokenize
 #nltk.download('vader_lexicon')
 class NLTK_Senti:
@@ -465,25 +467,39 @@ def distribute_word_score_to_tokens_check(tokenizer, tokens_with_scores, respons
     #return scores
 
 def distribute_word_score_to_tokens_new(tokenizer, tokens_with_scores, response_tensor): #calculate the score of each subtoken of target tokenizer
+
+    
     scores = []
-    response_tokens = [tokenizer.convert_ids_to_tokens([x])[0] for x in response_tensor if not x == 0]
-    for w, s in tokens_with_scores:
+    tokens_for_each_score = []
+    response_tokens = [tokenizer.convert_ids_to_tokens([x])[0] for x in response_tensor if not x == tokenizer.pad_token_id]
+
+    
+    for i, (w, s) in enumerate(tokens_with_scores):
+        
         if not w == "[SEP]": #to do: for non-Bert tokenizer
-            sub_tokens = tokenizer.tokenize(w)
+            if type(tokenizer) == BartTokenizer and i > 0:
+                sub_tokens = tokenizer.tokenize(" " + w)
+            else:
+                sub_tokens = tokenizer.tokenize(w)
         else:
-            sub_tokens = ["<\s>"]
+            if type(tokenizer) == BartTokenizer and i > 0:
+                sub_tokens = ['Ġ', tokenizer.eos_token]
+            else:
+                sub_tokens = [tokenizer.eos_token]
         s_of_cur_w = [s.item()] * len(sub_tokens)
         scores += s_of_cur_w
-    graded_tokens = tokenizer.tokenize(" ".join(x[0] if not x[0] == "[SEP]" else "__end__" for x in tokens_with_scores))
+        tokens_for_each_score += sub_tokens
+    graded_tokens = tokenizer.tokenize(" ".join(x[0] if not x[0] == "[SEP]" else tokenizer.eos_token for x in tokens_with_scores))
     #print(origin_sent_tokens)
     #w_scores, unmatched = align_score_from_seq_2_seq(response_tokens, graded_tokens, scores)
     #w_scores = w_scores[1:] #remove "__start__"
+
     try:
-        w_scores = align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores)
+        w_scores = align_score_from_seq_2_seq_pro(tokenizer, response_tokens, graded_tokens, scores)
         unmatched = []
     except:
         print("align pro wrong")
-        w_scores, unmatched = align_score_from_seq_2_seq(response_tokens, graded_tokens, scores)
+        w_scores, unmatched = align_score_from_seq_2_seq(tokenizer,response_tokens, graded_tokens, scores)
     w_scores = w_scores[1:]
     try:
         assert len(scores) == len(graded_tokens)
@@ -493,11 +509,12 @@ def distribute_word_score_to_tokens_new(tokenizer, tokens_with_scores, response_
         print("scores = ", scores)
         print("graded_tokens = ", graded_tokens)
         print("response_tokens = ", response_tokens)
+        print("unmatched=", unmatched)
     return w_scores
 
-def align_score_from_seq_2_seq(response_tokens, graded_tokens, scores):
-    assert len(graded_tokens) == len(scores)
-    invalids = ['__unk__', '__start__']
+def align_score_from_seq_2_seq(tokenizer, response_tokens, graded_tokens, scores):
+    norm = lambda x:x.replace("Ġ","").lower()
+    invalids = [tokenizer.unk_token, tokenizer.bos_token, "</s>"]
     res = [0 for i in range(len(response_tokens))]
     step = 0
     unmatched_tokens = []
@@ -509,7 +526,7 @@ def align_score_from_seq_2_seq(response_tokens, graded_tokens, scores):
             res[i] = buffer[0]
             buffer = []
         else:
-            if a == graded_tokens[step]:
+            if norm(a) == norm(graded_tokens[step]):
                 buffer.append(scores[step])
                 res[i] = buffer[0]
                 buffer = []
@@ -535,12 +552,13 @@ def align_score_from_seq_2_seq(response_tokens, graded_tokens, scores):
                     continue
     return res, unmatched_tokens
 
-def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
+def align_score_from_seq_2_seq_pro(tokenizer, response_tokens, graded_tokens, scores):
+    norm = lambda x:x.replace("Ġ","").lower() #Bart有時候會產生 Ġ， 導致所有的都對不上
     assert len(graded_tokens) == len(scores)
     valid_graded_tokens = [(k,v) for k,v in zip(graded_tokens, scores) if k != "@"]     
     graded_tokens = [x[0] for x in valid_graded_tokens]   
     scores = [x[1] for x in valid_graded_tokens]
-    invalids = ['__unk__', '__start__']
+    invalids = [tokenizer.unk_token, tokenizer.bos_token, tokenizer.eos_token]
     res = [0 for i in range(len(response_tokens))]
     visited = [False for i in range(len(response_tokens))]
     step = 0
@@ -551,7 +569,7 @@ def align_score_from_seq_2_seq_pro(response_tokens, graded_tokens, scores):
                 res[i] = weight
                 visited[i] = True
             else:
-                if a == graded_tokens[step]:
+                if norm(a) == norm(graded_tokens[step]):
                     weight = scores[step]
                     res[i] = weight
                     visited[i] = True

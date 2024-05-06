@@ -2,15 +2,15 @@
 ppo_sent_reward_ratios=(2.0 3.0)
 ppo_init_kl_coef_ratios=(1.0)
 lrs=("1e-07" "2e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0,1
 root_path="/disk/junlin/EmoSp"
-batch_size=64
-mini_batch_size=16
+batch_size=4
+mini_batch_size=4
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
 train=1
-eval=1
+eval=0
 origin=0
 
 
@@ -45,10 +45,8 @@ ppo_args=" --ppo
             --ppo_gradient_accumulation_steps $gradient_accumulation_steps
             --ppo_add_strategy_noise
             --generate_with_predicted_strategy
-            --ppo_recursive
-            "
-           # --ppo_use_lm_reward
-           # --ppo_use_word_level_reward
+            --ppo_use_lm_reward
+            --ppo_use_word_level_reward"
 
 ppo_args+=" --root_path "$root_path
 ppo_args+=" --ppo_frozen_layer_num 0"
