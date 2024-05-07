@@ -1,5 +1,8 @@
-from dataclasses import dataclass, field
 
+from dataclasses import dataclass, field
+import os 
+#local_rank = os.getenv("LOCAL_RANK")
+#device_string = "cuda:" + str(local_rank)
 from typing import Optional
 from BlenderEmotionalSupport import (load_tokenizer,
                     load_config,
@@ -21,6 +24,7 @@ from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_t
 #from metric.text_feats import dependency_distance
 from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval
 from attach_vad.VADTokenizer import W2VAD
+from accelerate import Accelerator
 vad_tokenizer = W2VAD("attach_vad/VAD_space.json")
 print("finished import")
 #from datetime import datetime
@@ -30,9 +34,10 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-04-15"
+today = "2024-05-07"
 #print("Today's date:", today)
 args = load_arg()
+#args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")
 @dataclass
 class ScriptArguments:
      #
@@ -126,11 +131,12 @@ if __name__ == "__main__":
         args.eval_dataset = eval_dataset
         args.test_dataset = test_dataset
         set_seed(args)
-        device_map = None
+        device_map = {"": Accelerator().local_process_index}
         peft_config = None
         model = trl_model_class.from_pretrained(
             ppo_args.ppo_config.model_name,
             config = model_config,
+            device_map=device_map
         )
         if not ppo_args.use_lm_reward:
             freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layers\.[01234])")
@@ -142,6 +148,8 @@ if __name__ == "__main__":
         else:
             name_unshared_layers = None
         
+        
+        
         ppo_trainer = trainer_class(
                                 ppo_args.ppo_config, 
                                 model = model, 
@@ -150,12 +158,18 @@ if __name__ == "__main__":
                                 dataset = train_dataset, 
                                 data_collator = train_dataset.collate,
                                 )
+
+        #Set a default Device
+        device = ppo_trainer.accelerator.device
+        if ppo_trainer.accelerator.num_processes == 1:
+            device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
         for param in ppo_trainer.ref_model.parameters():
             param.requires_grad = False
+            
+        #Prepare Dialouge HIstory and Reward FUnc
         hist_retriver = Retrive_DiagHist(tokenizer)
         feed_backer = load_feedbacker()
         feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
-
         reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
         if ppo_args.use_seeker:
             seeker = load_seeker()
@@ -163,34 +177,24 @@ if __name__ == "__main__":
         else:
             seeker = None
             seeker_func = None
+
+        #Generation Kwargs
         generation_kwargs = {
             "do_sample": True,
             "pad_token_id": tokenizer.pad_token_id,
             "eos_token_id": tokenizer.eos_token_id,
             "max_length":128,
+            "min_length": -1,
             "num_beams":1,
-            #"top_p":0.3,
-            #"top_k":30,
+            "top_k": 0.0,#"top_k":30,
+            "top_p": 1.0,#"top_p":0.3,
             "temperature":1.0,
-            #"do_sample":True,
+            "do_sample":True,
             "repetition_penalty":1.03,
             #"no_repeat_ngram_size":3,
             #"max_new_tokens": 32,
         }
-        #generation_kwargs = {
-        #    "top_k": 0.0,
-        #    "top_p": 1.0,
-        #    "do_sample": True,
-        #    "pad_token_id": tokenizer.pad_token_id,
-        #    "eos_token_id": tokenizer.eos_token_id,
-        #    "max_length":512,
-        #    "min_length":5,
-        #    "num_beams":1,
-        #    "top_p":0.3,
-        #    "top_k":30,
-        #    "repetition_penalty":1.03,
-        #    "min_length":5,
-        #    #"max_new_tokens": 32,
+
         best_ppl = 10000
         early_stop_steps = 0
         agent = Agent(args,
@@ -201,6 +205,7 @@ if __name__ == "__main__":
                         ppo_trainer = ppo_trainer,
                         feed_backer = feed_backer,
                         reward_func = reward_func,
+                        device = device,
                         mini_batch_size = ppo_args.ppo_config.mini_batch_size,
                         generation_kwargs = generation_kwargs,
                         seeker = seeker,
@@ -239,7 +244,7 @@ if __name__ == "__main__":
                 #ppo_batch["ref_rewards"] = ref_rewards
                 #ppo_batch["rewards"] = rewards
                 #ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards"])
-                if i % args.ppo_eval_step == args.ppo_eval_step - 1:
+                if i % args.ppo_eval_step == args.ppo_eval_step - 1 or i == len(ppo_trainer.dataloader) -1:
                     with torch.no_grad():
                         ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix + ("temp" if generation_kwargs["temperature"] > 0.7 else ""))
                         print("****************\ppo model save dir:",ppo_output_dir,"\****************")

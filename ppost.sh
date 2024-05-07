@@ -1,16 +1,16 @@
 
 ppo_sent_reward_ratios=(2.0 3.0)
 ppo_init_kl_coef_ratios=(1.0)
-lrs=("1e-07" "2e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
-export CUDA_VISIBLE_DEVICES=0,1
+lrs=("2e-06" "5e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
-batch_size=4
-mini_batch_size=4
+export CUDA_VISIBLE_DEVICES=1
+batch_size=64
+mini_batch_size=8
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
-train=1
-eval=0
+train=0
+eval=1
 origin=0
 
 
@@ -36,58 +36,46 @@ fi
 
 for lr in "${lrs[@]}";do
 
-cur_comm="python3 ppo_st.py "$pretrained_args
-ppo_args=" --ppo 
-            --ppo_save_step 20 --ppo_eval_step 20
-            --ppo_batch_size $batch_size
-            --ppo_mini_batch_size $mini_batch_size
-            --ppo_train_emo_strat
-            --ppo_gradient_accumulation_steps $gradient_accumulation_steps
-            --ppo_add_strategy_noise
-            --generate_with_predicted_strategy
-            --ppo_use_lm_reward
-            --ppo_use_word_level_reward"
+    cur_comm="ppo_st.py "$pretrained_args
+    ppo_args=" --ppo 
+                --ppo_save_step 20 --ppo_eval_step 20
+                --ppo_batch_size $batch_size
+                --ppo_mini_batch_size $mini_batch_size
+                --ppo_train_emo_strat
+                --ppo_gradient_accumulation_steps $gradient_accumulation_steps
+                --ppo_add_strategy_noise
+                --generate_with_predicted_strategy
+                --ppo_use_lm_reward
+                --ppo_use_word_level_reward"
 
-ppo_args+=" --root_path "$root_path
-ppo_args+=" --ppo_frozen_layer_num 0"
-ppo_args+=" --ppo_init_kl_coef "$ppo_init_kl_coef
-ppo_args+=" --ppo_lm_loss "$lm_loss
-ppo_args+=" --ppo_lr "$lr
-ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
-cur_comm+="$ppo_args"
-echo $cur_comm
-#ppo_prefix_comm="python3 arguments.py $pretrained_args $ppo_args --ppo_return_arg"
-ppo_prefix=$(python3 arguments.py $pretrained_args $ppo_args --ppo_return_arg)
-echo "ppo_prefix:----->"$ppo_prefix
-comm_a=$cur_comm
-if [ $train == 1 ]; then
-$comm_a
-fi
+    ppo_args+=" --root_path "$root_path
+    ppo_args+=" --ppo_frozen_layer_num 0"
+    ppo_args+=" --ppo_init_kl_coef "$ppo_init_kl_coef
+    ppo_args+=" --ppo_lm_loss "$lm_loss
+    ppo_args+=" --ppo_lr "$lr
+    ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
+    cur_comm+="$ppo_args"
+    echo $cur_comm
+    #ppo_prefix_comm="python3 arguments.py $pretrained_args $ppo_args --ppo_return_arg"
+    ppo_prefix=$(python3 arguments.py $pretrained_args $ppo_args --ppo_return_arg)
+    echo "ppo_prefix:----->"$ppo_prefix
+    comm_a=$cur_comm
+    
+    if [ $train == 1 ]; then
+    python3 $comm_a
+    fi
 
-if [ $eval == 1 ]; then
-steps=(19 39 59 79 99 119 139)
-for step in "${steps[@]}";do
-pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-04-15/${ppo_prefix}temp"
-eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
+    if [ $eval == 1 ]; then
+    steps=(39 19)
+    for step in "${steps[@]}";do
+    pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-05-07/${ppo_prefix}temp"
+    eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
-$eval_comm_a
-eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$pretrained_model" "$pretrained_args" "
-$eval_comm_b
-done
-fi
-
-
-
-#comm_c=$cur_comm" --ppo_train_use_seeker --ppo_stop_use_diff_reward --ppo_warmup"
-#$comm_c
-#steps=(9 19 29 39 49 59 69 78)
-#for step in "${steps[@]}";do
-#pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step${step}_2024-02-14/lr_${lr}-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff_wm_nonmix0.7"
-#eval_comm_c="python3 main.py --pretrained_model "$pretrained_model" "$pretrained_args" "
-#$eval_comm_c
-#done
-
-#sleep 0.5h
+    $eval_comm_a
+    eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$pretrained_model" "$pretrained_args" "
+    $eval_comm_b
+    done
+    fi
 
 done
 

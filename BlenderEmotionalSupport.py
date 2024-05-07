@@ -2285,22 +2285,22 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
     #        decoder_role_ids, decoder_labels, decoder_cls_positions, decoder_cls_labels, decoder_strategy_ids, comet_ids, comet_mask, emotion, comet_ids_st, comet_mask_st, emo_dist, emo_in_dist, situ_ids, strat_positions, emo_positions, intensity, vad_ids = batch.values()
     
     decoder_strategy_ids = decoder_strategy_ids[:, 0]
-    decoder_strategy_ids = decoder_strategy_ids.to(args.device)
+    decoder_strategy_ids = decoder_strategy_ids.to(model.device)
     assert input_ids.shape[1] <= 512 
     if not args.use_emo_in_dist:
-        emotion = emotion.to(args.device)
+        emotion = emotion.to(model.device)
     else:
-        emotion = emo_in_dist.argmax(-1).to(args.device)        
+        emotion = emo_in_dist.argmax(-1).to(model.device)        
     if args.use_situ_in_decoder or args.use_situ_in_encoder:
-        situ_ids = situ_ids.to(args.device)
+        situ_ids = situ_ids.to(model.device)
         with torch.no_grad():
             if isinstance(model,torch.nn.DataParallel):
                 situation_hidden_states = model.module.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
             else:
                 situation_hidden_states = model.model.encoder(situ_ids, attention_mask=situ_ids.ne(tokenizer.pad_token_id))[0]
             situ_attention_mask = situ_ids.ne(tokenizer.pad_token_id)
-        situation_hidden_states = situation_hidden_states.to(args.device)
-        situ_attention_mask = situ_attention_mask.to(args.device)
+        situation_hidden_states = situation_hidden_states.to(model.device)
+        situ_attention_mask = situ_attention_mask.to(model.device)
         del situ_ids
     else:
         situation_hidden_states = None
@@ -2309,7 +2309,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
 
     if not args.wo_comet:
         #print("comet_ids shape", comet_ids.shape)
-        comet_ids = comet_ids.to(args.device)
+        comet_ids = comet_ids.to(model.device)
         batch_size, n_attr, len_attr = comet_ids.shape
         comet_ids = comet_ids.view(-1, len_attr)
         with torch.no_grad():
@@ -2319,7 +2319,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
                 comet_embs = model.model.encoder(comet_ids, attention_mask = comet_ids.ne(tokenizer.pad_token_id))[0][:,0,:]
         comet_embs = comet_embs.view(batch_size, n_attr, -1)
         comet_ids = comet_ids.view(batch_size, n_attr, len_attr)
-        comet_ids_st = comet_ids_st.to(args.device)
+        comet_ids_st = comet_ids_st.to(model.device)
         batch_size, n_attr, len_attr = comet_ids_st.shape
         comet_ids_st = comet_ids_st.view(-1, len_attr)
         with torch.no_grad():
@@ -2329,8 +2329,8 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
                 comet_embs_st = model.model.encoder(comet_ids_st, attention_mask=comet_ids_st.ne(tokenizer.pad_token_id))[0][:, 0, :]
         comet_embs_st = comet_embs_st.view(batch_size, n_attr, -1)
         comet_ids_st = comet_ids_st.view(batch_size, n_attr, len_attr)
-        comet_mask = comet_mask.to(args.device)
-        comet_mask_st = comet_mask_st.to(args.device)
+        comet_mask = comet_mask.to(model.device)
+        comet_mask_st = comet_mask_st.to(model.device)
         del comet_ids
         del comet_ids_st
     else:
@@ -2338,38 +2338,38 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         comet_mask = None
         comet_embs_st = None
         comet_mask_st = None
-    input_ids = input_ids.to(args.device)
+    input_ids = input_ids.to(model.device)
     if args.intensity_vae:
-        intensity = intensity.to(args.device)
+        intensity = intensity.to(model.device)
     else:
         intensity = None
     #print("intensity",intensity)
     
-    decoder_input_ids = decoder_input_ids.to(args.device)
-    #decoder_turn_ids = decoder_turn_ids.to(args.device)
-    decoder_label_ids = decoder_labels.to(args.device)
-    #decoder_role_ids = decoder_role_ids.to(args.device)
+    decoder_input_ids = decoder_input_ids.to(model.device)
+    #decoder_turn_ids = decoder_turn_ids.to(model.device)
+    decoder_label_ids = decoder_labels.to(model.device)
+    #decoder_role_ids = decoder_role_ids.to(model.device)
     if phase == "eval":
-        decoder_cls_labels = decoder_cls_labels.to(args.device) 
-    emo_dist = emo_dist.to(args.device) if emo_dist is not None else None
-    emo_in_dist = emo_in_dist.to(args.device) if emo_in_dist is not None else None
+        decoder_cls_labels = decoder_cls_labels.to(model.device) 
+    emo_dist = emo_dist.to(model.device) if emo_dist is not None else None
+    emo_in_dist = emo_in_dist.to(model.device) if emo_in_dist is not None else None
     if args.stg_use_cat_attn:
-        strat_positions = strat_positions.to(args.device)
+        strat_positions = strat_positions.to(model.device)
     else:
         strat_positions = None
     if args.emo_use_cat_attn:
-        emo_positions = emo_positions.to(args.device)
+        emo_positions = emo_positions.to(model.device)
     else:
         emo_positions = None
-    #decoder_cls_labels = decoder_cls_labels.to(args.device)
+    #decoder_cls_labels = decoder_cls_labels.to(model.device)
     # model.train()
     # we did't use role label and turn number in modeling as they did't carry significant improvement. Codes still remain.
     if args.use_role_embed:
-        role_ids = role_ids.to(args.device)
+        role_ids = role_ids.to(model.device)
     else:
         role_ids = None
     if args.use_vad_labels:
-        vad_ids = vad_ids.to(args.device)
+        vad_ids = vad_ids.to(model.device)
     else:
         vad_ids = None
     if phase == "train":

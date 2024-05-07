@@ -35,11 +35,13 @@ class Agent:
                  reward_func, 
                  ppo_trainer, 
                  mini_batch_size, 
+                 device,
                  generation_kwargs, 
                  seeker = None, 
                  seeker_func = None, 
                  use_diff_reward = False,
                  use_word_level_reward = False
+                 
                  ) -> None:
         self.args = args
         self.model = model
@@ -71,16 +73,16 @@ class Agent:
             cur_attention_mask = attention_masks[i]
             pad_mask = cur_query_tensors == self.tokenizer.eos_token_id
             pad_start = torch.nonzero(pad_mask, as_tuple=False)[-1, 0].item()
-            #print("response_tensors[i][1:]",response_tensors[i])
-            response_tensor = response_tensors[i][1:]
+
+            response_tensor = response_tensors[i][1:] #[<\s>, <s>, I, think, so, <\s>, <pad>, <pad>] -> [ <s>, I, think, so, <\s>, <pad>, <pad>]
             next_query = torch.cat((query_tensors[i][ : pad_start + 1], response_tensor), dim = -1)
-            response_length = len(response_tensors[i]) -1
+            response_length = len(response_tensor)
             if not torch.any(response_tensor == self.tokenizer.eos_token_id):
-                response_pad_start = len(response_tensor) - 1
+                response_pad_start = len(response_tensor)
             else:
-                response_pad_start = torch.nonzero(response_tensor == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item()
+                response_pad_start = torch.nonzero(response_tensor == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item() + 1
             response_role_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
-            response_role_ids[:response_pad_start + 1] = self.hist_retriver.role_to_id["supporter"]
+            response_role_ids[:response_pad_start] = self.hist_retriver.role_to_id["supporter"]
             #print("next_query_role_ids", next_query_role_ids)
             response_role_ids = response_role_ids.to(self.model.pretrained_model.device)            
             next_role_ids = torch.cat((cur_query_role_ids[ : pad_start + 1], response_role_ids), dim = -1)
@@ -93,25 +95,21 @@ class Agent:
                 cur_query_vad_ids = query_vad_ids[i]
                 response_vad_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
                 response_text = self.tokenizer.decode(response_tensor, skip_special_tokens = True)
-                _, _,response_vad_labels = self.vad_tokenizer.tokenizer_vad(response_text, is_fast_tokenizer = False, char_to_remove = "Ġ")
+                _, _, response_vad_labels = self.vad_tokenizer.tokenizer_vad_with_prepared_ids(sent = response_text, input_ids = response_tensor, char_to_remove = "Ġ")
                 if self.args.use_bart:
-                    response_vad_labels = [-1] + response_vad_labels
+                    response_vad_labels = [-1] + response_vad_labels[1:]
                 active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
+                response_vad_ids[:response_pad_start] = active_response_vad_ids[:response_pad_start] 
+                #if not torch.any(response_tensor == self.tokenizer.eos_token_id):
 
-                if not torch.any(response_tensor == self.tokenizer.eos_token_id):
-                    try:
-                        response_vad_ids[:] = active_response_vad_ids 
-                    except:
-                        try:
-                            response_vad_ids[:] = active_response_vad_ids[:len(response_vad_ids)]
-                        except:
-                            response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids
-                elif len(active_response_vad_ids) == response_pad_start:
-                    response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
-                else:
-                    print(f"The size of response_vad_ids is {len(active_response_vad_ids)}, but the response_pad_start if {response_pad_start}")
-                    print(f"response text = {response_text}, response vad labels = {response_vad_labels}", )
-                    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids 
+                    
+                    #except:
+                    #    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids
+                #elif len(active_response_vad_ids) == response_pad_start:
+                #    response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
+                #else:
+                #    print(f"The size of response_vad_ids is {len(active_response_vad_ids)}, but the response_pad_start if {response_pad_start}")
+                #    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids 
                 #except:
                 #    print("response_text problem", response_text)
                 #    response_vad_ids[1:len(active_response_vad_ids)+1 ] = active_response_vad_ids 
@@ -480,6 +478,8 @@ class Agent:
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool(batch)
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
+        
+
         if seeker_responses is not None:
             ppo_batch["seeker_reponses"] = seeker_responses
         check_format(query_tensors, paras, self.tokenizer)
@@ -492,11 +492,8 @@ class Agent:
                                 scores = scores, #base_line_rewards
                                 response_masks = None, 
                                 **paras)
-
-        print("rewards",rewards)
-        print("refrewards",ref_rewards)
-        ppo_batch["ref_rewards"] = [x.sum() for x in ref_rewards]
-        ppo_batch["rewards"] = [x.sum() for x in rewards]
+        ppo_batch["ref_rewards"] =  [x.sum() for x in ref_rewards]
+        rewards = [x.sum() for x in rewards]
         self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
 
 def check_format(query_tensors, paras, tokenizer):

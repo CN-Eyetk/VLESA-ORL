@@ -2,6 +2,7 @@ import argparse
 import os
 import torch
 import sys
+
 def load_ppo_prefix(args_g):
     if args_g.ppo_prefix is None:
         lr = args_g.ppo_lr
@@ -69,6 +70,7 @@ def load_arg(return_tag = False, ):
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--root_path", type = str, default=".")
     parser.add_argument("--data_path", type = str, default="converted_dataset")
+    parser.add_argument("--local-rank",default=-1)
     parser.add_argument("--explain", action= "store_true")
     parser.add_argument("--use_trans", action= "store_true")
     parser.add_argument("--use_prepend", action= "store_true")
@@ -210,7 +212,7 @@ def load_arg(return_tag = False, ):
             "base_vocab_size":54944 if not args_g.use_bart else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
-            "local_rank":-1,#local_rank,
+            "local-rank":-1,#local_rank,
             "per_gpu_train_batch_size":20,
             "per_gpu_eval_batch_size":20,
             "save_total_limit":1,

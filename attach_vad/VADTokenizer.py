@@ -1,4 +1,4 @@
-vad_path = "VAD_space.json"
+vad_path = "attach_vad/VAD_space.json"
 import spacy
 import numpy as np
 import json
@@ -87,9 +87,31 @@ class W2VAD:
         offsets = [(token.idx, token.idx + len(token.text)) for i,token in enumerate(doc)]
         vads = [self.vad_mapper[stem] if stem in self.vad_mapper.keys() else "[0v0a0d]" for stem in stems]
         return list(zip(words, stems, offsets, vads))
+    def tokenizer_vad_with_prepared_ids(self, sent, input_ids, char_to_remove = "@"):
+        valid_input_ids = [(i,x) for i,x in enumerate(input_ids) if x not in [self.tokenizer.bos_token_id, self.tokenizer.pad_token_id, self.tokenizer.eos_token_id]]
+        valid_positions = [x[0] for x in valid_input_ids]
+        valid_input_ids = [x[1] for x in valid_input_ids]
+        nlp_vad = self.nlp_vad(sent)
+        tokens = self.tokenizer.convert_ids_to_tokens(input_ids)
+        valid_tokens = self.tokenizer.convert_ids_to_tokens(valid_input_ids)
+        #input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+        words = [spc_token[0] for spc_token in nlp_vad]
+        memory, offsets = get_offset(valid_tokens, words, process_on_source = lambda x:clean(x.replace(char_to_remove,""), no_emoji=True))
+        vad_tokens = []
+        step = 0
+        for i in range(len(input_ids)):
+            if i in valid_positions:
+                if step < len(nlp_vad):
+                    vad_token = nlp_vad[step][-1]
+                else:
+                    vad_token = "[0v0a0d]"
+                vad_tokens.append(vad_token)
+                step += 1
+            else:
+                vad_tokens.append("[0v0a0d]")        
+        return input_ids, tokens, vad_tokens
     def tokenizer_vad(self, sent, is_fast_tokenizer, char_to_remove = "@"):
         nlp_vad = self.nlp_vad(sent)
-        #print("nlp_vad",nlp_vad)
         if is_fast_tokenizer:
             ids = self.tokenizer(sent, return_offsets_mapping = True)
             offsets = ids["offset_mapping"]
@@ -129,20 +151,10 @@ class W2VAD:
             vad_tokens = [token[2] for token in res]
             vad_tokens = vad_tokens[1:-1]
         else:
-            #blenderbot encode does not include bos and eos
             tokens = self.tokenizer.tokenize(sent)
-            #print("tokens",tokens)
             input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
             words = [spc_token[0] for spc_token in nlp_vad]
-            #print("words",words)
-            #print("tokens=",tokens)
-            #print("words=",words)
             memory, offsets = get_offset(tokens, words, process_on_source = lambda x:clean(x.replace(char_to_remove,""), no_emoji=True))
-            #print("memory",memory)
-            #print("offsets",offsets)
-            #print("memory",memory)
-            #print("offsets",offsets)
-            #print("offsets",offsets)
             vad_tokens = []
             for k in offsets:
                 if k < len(nlp_vad):
@@ -159,8 +171,9 @@ if __name__ == "__main__":
     args = argparse.Namespace(**args)
     w2vad = W2VAD(vad_path = vad_path)
     w2vad.load_pretrained_tokenizer( model_name_or_path = "facebook/bart-base")#"facebook/blenderbot_small-90M")
-    es = ["get some books 📚.",]
+    es = ["I feel so sad",]
     for e in es:
-        out = w2vad.tokenizer_vad(e, is_fast_tokenizer = False, char_to_remove = "Ġ")
+        input_ids = w2vad.tokenizer(e, padding=True, max_length=30)["input_ids"] +[w2vad.tokenizer.pad_token_id] * 10
+        out = w2vad.tokenizer_vad_with_prepared_ids(e, input_ids=input_ids, char_to_remove = "Ġ")
         print(list(zip(*out)))
         
