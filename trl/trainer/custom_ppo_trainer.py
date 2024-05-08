@@ -403,8 +403,10 @@ class CustomPPOTrainer(PPOTrainer):
             responses=responses,
         )
         # Gather/Reduce stats from all processes
+
         if self.is_distributed:
             stats = self.gather_stats(stats)
+
         stats = stats_to_np(stats)
         timing["time/ppo/calc_stats"] = time.time() - t
         stats["ppo/learning_rate"] = self.optimizer.param_groups[0]["lr"]
@@ -1328,8 +1330,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             bs, queries, responses, scores, response_masks
         )
 
-        scores = torch.stack(scores, dim = 0)
-        score_mask = scores.ne(0)
+        scores = torch.stack(scores, dim = 0).to(self.current_device)
+        score_mask = scores.ne(0).to(self.current_device)
 
         if self.config.use_score_scaling:
             # Score scaling
@@ -1380,6 +1382,11 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             model_inputs["attention_mask"] = self.accelerator.pad_across_processes(
                 model_inputs["attention_mask"], dim=1, pad_index=0, pad_first=pad_first
             )
+            wscores = self.accelerator.pad_across_processes(
+                wscores,
+                dim = 1,
+                pad_index = 0.0,
+                pad_first = pad_first)
             if with_lm_loss:
                 model_inputs["labels"] = self.accelerator.pad_across_processes(
                     model_inputs["labels"],
@@ -1387,19 +1394,15 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                     pad_index=self.tokenizer.pad_token_id,
                     pad_first=pad_first,
                 )
-            #if self.is_encoder_decoder:
-            #    model_inputs["decoder_input_ids"] = self.accelerator.pad_across_processes(
-            #        model_inputs["decoder_input_ids"],
-            #        dim=1,
-            #        pad_index=self.tokenizer.pad_token_id,
-            #        pad_first=pad_first,
-            #    )
-            #    model_inputs["decoder_attention_mask"] = self.accelerator.pad_across_processes(
-            #        model_inputs["decoder_attention_mask"],
-            #        dim=1,
-            #        pad_index=0,
-            #        pad_first=pad_first,
-            #    )
+            if self.is_encoder_decoder:
+                model_inputs["decoder_input_ids"] = self.accelerator.pad_across_processes(
+                    model_inputs["decoder_input_ids"],
+                    dim=1,
+                    pad_index=self.tokenizer.pad_token_id,
+                    pad_first=pad_first,
+                )
+
+
         
         model_inputs_names = list(model_inputs.keys())
         #print(model_inputs_names)
@@ -1466,6 +1469,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
         returns = torch.cat((a_returns, lm_returns), dim = 1)
         # upcast to float32 to avoid dataset issues
+
+        
         batch_dict = {
             "queries": queries,
             "responses": responses,
@@ -1484,6 +1489,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         t = time.time()
         all_stats = []
         early_stop = False
+
         for _ in range(self.config.ppo_epochs):
             if early_stop:
                 break
@@ -1589,13 +1595,19 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             responses=responses,
         )
         # Gather/Reduce stats from all processes
+
         if self.is_distributed:
             stats = self.gather_stats(stats)
+        #print("stats gathered")
+
         stats = stats_to_np(stats)
+        
         timing["time/ppo/calc_stats"] = time.time() - t
         stats["ppo/learning_rate"] = self.optimizer.param_groups[0]["lr"]
 
         # Update the KL control - multiply the batch_size by the number of processes
+        
+        
         self.kl_ctl.update(
             stats["objective/kl"],
             self.config.batch_size * self.accelerator.num_processes,
@@ -1606,8 +1618,11 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         stats.update(timing)
 
         # post-process stats for tensorboard and other loggers
+        
+
         if self.config.log_with != "wandb":
             stats = convert_to_scalar(stats)
+
 
         if self.lr_scheduler is not None:
             self.lr_scheduler.step()

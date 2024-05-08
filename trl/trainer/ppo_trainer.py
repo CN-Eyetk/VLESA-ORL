@@ -1295,13 +1295,17 @@ class PPOTrainer(BaseTrainer):
             stats (`dict`):
                 Dictionary of training step statistics
         """
+
         mask = data.pop("masks")
+
 
         kl_list = ((data["logprobs"] - data["ref_logprobs"]) * mask).sum(axis=-1)
         mean_kl = kl_list.mean()
+        
+
         mean_entropy = (-data["logprobs"] * mask).sum(axis=-1).mean()
-        #print("mask", mask.shape)
-        #print("non_score_reward", data["non_score_reward"].shape)
+
+
         mean_non_score_reward = masked_mean(
             data["non_score_reward"], mask
         )  # non_score_reward is size `batch_size`, `response_length`
@@ -1329,8 +1333,11 @@ class PPOTrainer(BaseTrainer):
         }
 
         # Log text properties
+        
+
         query_lens = torch.tensor([len(query) for query in data["queries"]], dtype=torch.float)
         response_lens = torch.tensor([len(response) for response in data["responses"]], dtype=torch.float)
+
 
         stats["tokens/queries_len_mean"] = torch.mean(query_lens).cpu().numpy().item()
         stats["tokens/queries_len_std"] = torch.std(query_lens).cpu().numpy().item()
@@ -1342,6 +1349,7 @@ class PPOTrainer(BaseTrainer):
         for k, v in data["train_stats"].items():
             stats[f"ppo/{k}"] = torch.mean(v, axis=0)
         stats["ppo/val/var_explained"] = 1 - stats["ppo/val/error"] / stats["ppo/returns/var"]
+
         return stats
 
     def log_stats(

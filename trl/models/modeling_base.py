@@ -214,6 +214,7 @@ class PreTrainedModelWrapper(nn.Module):
                 )
                 logging.info("Trained peft adapter loaded")
             else:
+                pretrained_kwargs = {k:v for k,v in pretrained_kwargs.items() if k not in ["device_map"]} #不加这一行，初始化parent model会报错
                 pretrained_model = cls.transformers_parent_class.from_pretrained(
                     pretrained_model_name_or_path, *model_args, **pretrained_kwargs
                 )

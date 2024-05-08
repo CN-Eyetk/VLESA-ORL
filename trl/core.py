@@ -176,7 +176,9 @@ def average_torch_dicts(list_of_dicts: List[Dict]) -> Dict:
 def stats_to_np(stats_dict: Dict) -> Dict:
     """Cast all torch.tensors in dict to numpy arrays."""
     new_dict = dict()
+
     for k, v in stats_dict.items():
+        
         if isinstance(v, torch.Tensor):
             new_dict[k] = v.detach().cpu()
             if new_dict[k].dtype == torch.bfloat16:

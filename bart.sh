@@ -10,7 +10,7 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-ct_loss_ratios=(0.5 0.2 0.1 0.05)
+ct_loss_ratios=(0.2 0.5)
 warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
@@ -24,7 +24,7 @@ root_path="/disk/junlin/EmoSp"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=1
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm328/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --data_path origin_data --log_on_wandb"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag am508 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train --log_on_wandb"
 
 # "
 
@@ -58,30 +58,18 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=" --rl_emb_ratio "$rl_r
                                     cur_comm+=" --emo_loss_rat "$el_r
                                     cur_comm+=" --use_trans "
-                                    
                                     cur_comm+=" --warmup_steps "$warmup
-                                    #cur_comm+=" --use_situ_in_encoder "
-                                    #cur_comm+=" --use_vad_labels"
-                                    #cur_comm+=" --use_situ_in_decoder "
-                                    #cur_comm+=" --wo_comet"
+                                    cur_comm+=" --wo_comet"
                                     cur_comm+=$eos_stg
                                     cur_comm+=$eos_emo
                                     cur_comm+=$stg_cat
-                                    #
                                     cur_comm+=" --use_contrastive_loss"
                                     cur_comm+=" --contrastive_loss_ratio "$cl_loss_ratio
                                     cur_comm+=" --layer_control"
-                                    #cur_comm+=" --fuse_z "
-                                    #$cur_comm
                                     cur_comm+=" --generate_with_predicted_strategy"
                                     $cur_comm
                                     cur_comm+=" --use_emo_in  "
-                                    
-                                    #cur_comm+=" --generate_with_fixed_strategy 4"
                                     $cur_comm
-                                    #
-                                    #$cur_comm
-                                    #cur_comm+=" --use_situ_in_encoder"
                                     done
                                     done
                                     done

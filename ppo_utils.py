@@ -1,5 +1,6 @@
 import re
 import torch
+from tqdm import tqdm
 from BlenderEmotionalSupport import shared_steps
 from torch.nn.utils.rnn import pad_sequence
 from copy import deepcopy
@@ -59,6 +60,7 @@ class Agent:
         self.seeker_func = seeker_func
         self.use_diff_reward = use_diff_reward
         self.use_word_level_reward = use_word_level_reward
+        self.device = device
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
@@ -147,6 +149,7 @@ class Agent:
         all_paras = {}
         bool_paras = {}
         batch_size = len(batch["input_ids"])
+        #print("preparing experience pool")
         for i in range(0, batch_size, self.mini_batch_size):
             end_index = min(batch_size, i + self.mini_batch_size)
             with torch.no_grad():
@@ -183,6 +186,7 @@ class Agent:
                 else:
                     query_vad_ids = None
                 all_query_role_ids += query_role_ids
+                #print("making next state")
                 next_query_tensors, next_query_role_ids, next_query_attention_masks, next_query_vad_ids = self.make_next_state(query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids)
                 all_next_query_tensors += next_query_tensors
                 all_next_query_role_ids += next_query_role_ids                
@@ -248,7 +252,7 @@ class Agent:
         attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
-        self.seeker.model = self.seeker.model.cuda()
+        self.seeker.model = self.seeker.model.to(self.device)
         seeker_reponses = [self.seeker_func(response) for response in history]
         self.seeker.model = self.seeker.model.to(torch.device("cpu"))
         return seeker_reponses
@@ -296,7 +300,7 @@ class Agent:
         history_with_response = [state["histories"][i] + [{"content":response[i], "speaker":"supporter"}] for i in range(len(response))]
         history_with_ref_response = [state["histories"][i] + [{"content":ref_response[i], "speaker":"supporter"}] for i in range(len(ref_response))]
         
-        self.feed_backer.model = self.feed_backer.model.cuda()
+        self.feed_backer.model = self.feed_backer.model.to(self.device)
         
         def compute_w_reward(rewarder, responses, response_tensors):
             sent_rewards = []
@@ -320,6 +324,8 @@ class Agent:
         else:
             rewards = [self.reward_func(response) for response in history_with_response]
             ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
+        
+        
         self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         
         if self.seeker is not None:
@@ -354,6 +360,7 @@ class Agent:
             #    except:
             #        print("cur batch", k)
             state, next_state, all_paras, bool_paras = self.step(batch, recursive = recursive)
+            
             rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
             next_batch = {
                 "input_ids":next_state["input_ids"],
@@ -426,6 +433,7 @@ class Agent:
     
     def prepare_experience_pool(self, batch):
         state, next_state, all_paras, bool_paras = self.step(batch)
+        #print("getting reward")
         rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
         
         
@@ -482,7 +490,7 @@ class Agent:
 
         if seeker_responses is not None:
             ppo_batch["seeker_reponses"] = seeker_responses
-        check_format(query_tensors, paras, self.tokenizer)
+        #check_format(query_tensors, paras, self.tokenizer)
         if self.use_diff_reward:
             scores = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
         else:

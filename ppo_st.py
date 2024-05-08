@@ -34,7 +34,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-05-07"
+today = "2024-05-08"
 #print("Today's date:", today)
 args = load_arg()
 #args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")
@@ -131,6 +131,7 @@ if __name__ == "__main__":
         args.eval_dataset = eval_dataset
         args.test_dataset = test_dataset
         set_seed(args)
+        print("Accelerator().local_process_index", Accelerator().local_process_index)
         device_map = {"": Accelerator().local_process_index}
         peft_config = None
         model = trl_model_class.from_pretrained(
@@ -162,7 +163,7 @@ if __name__ == "__main__":
         #Set a default Device
         device = ppo_trainer.accelerator.device
         if ppo_trainer.accelerator.num_processes == 1:
-            device = 0 if torch.cuda.is_available() else "cpu"  # to avoid a `pipeline` bug
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")  # to avoid a `pipeline` bug
         for param in ppo_trainer.ref_model.parameters():
             param.requires_grad = False
             
@@ -211,7 +212,7 @@ if __name__ == "__main__":
                         seeker = seeker,
                         seeker_func = seeker_func,
                         use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True,
-                        use_word_level_reward = ppo_args.ppo_config.use_word_level_reward
+                        use_word_level_reward = ppo_args.ppo_config.use_word_level_reward,
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
