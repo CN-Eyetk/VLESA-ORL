@@ -1376,10 +1376,6 @@ class BartEncoder(BartPretrainedModel):
         if type(generate_with_fixed_strategy) == int:
             strategy_embs = self.strategy_embedding(torch.LongTensor([generate_with_fixed_strategy]*strategy_logits.size(0)).to(self.device)).unsqueeze(-2) 
         elif generate_with_predicted_strategy:
-            #if self.verbose_generate_with_predicted_strategy > 0:
-            #    print("generate_with_predicted_strategy")
-            #strategy_embs = torch.bmm(F.softmax(strategy_logits, dim=-1).unsqueeze(1),
-            #                        self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
             if add_strategy_noise:
                 strategy_embs = self.strategy_embedding(strategy_noise.argmax(-1)).unsqueeze(-2) 
             else:
