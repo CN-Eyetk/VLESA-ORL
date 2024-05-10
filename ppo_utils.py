@@ -418,13 +418,14 @@ class Agent:
         
 
         assert len(paras["comet_embs"]) == len(query_tensors)
-        rewards = [[a.item(),b.item()] for a,b in zip(all_rewards[0], all_rewards[1])]
-        rewards = torch.tensor(rewards)
-        rewards = [rewards[i] for i in range(rewards.size(0))]
-        #print("rewards",rewards)
-        ref_rewards =  [[a.item(),b.item()] for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
-        ref_rewards = torch.tensor(ref_rewards)
-        ref_rewards =  [ref_rewards[i] for i in range(ref_rewards.size(0))]
+        rewards = [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_rewards[0], all_rewards[1])]
+        
+        #rewards = torch.tensor(rewards)
+        #rewards = [rewards[i] for i in range(rewards.size(0))]
+        #print("rewards",rewards)#[b,t]
+        ref_rewards =  [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
+        #ref_rewards = torch.tensor(ref_rewards)
+        #ref_rewards =  [ref_rewards[i] for i in range(ref_rewards.size(0))]
         response = [f"{a}|{b}" for a,b in zip(all_responses[0], all_responses[1])]
         ref_response =  [f"{a}|{b}" for a,b in zip(all_ref_responses[0], all_ref_responses[1])]
         seeker_responses = [f"{a}|{b}" for a,b in zip(all_seeker_responses[0], all_seeker_responses[1])]
@@ -470,8 +471,6 @@ class Agent:
         if seeker_responses is not None:
             ppo_batch["seeker_reponses"] = seeker_responses
         scores = rewards
-        print("response_tensors",response_tensors.shape)
-        print("scores",scores)
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
                                 scores = scores, #base_line_rewards

@@ -1,7 +1,7 @@
 
 ppo_sent_reward_ratios=(2.0 3.0)
 ppo_init_kl_coef_ratios=(1.0)
-lrs=("2e-06" "5e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+lrs=("1e-06" "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0,1
 batch_size=64
@@ -43,6 +43,7 @@ for lr in "${lrs[@]}";do
                 --ppo_add_strategy_noise
                 --generate_with_predicted_strategy
                 --ppo_use_lm_reward
+                --ppo_recursive
                 --ppo_use_word_level_reward"
 
     ppo_args+=" --root_path "$root_path
@@ -60,10 +61,11 @@ for lr in "${lrs[@]}";do
     
     if [ $train == 1 ]; then
     accelerate launch $comm_a
+    #python3 $comm_a
     fi
 
     if [ $eval == 1 ]; then
-    steps=(79 59 39 19)
+    steps=(39 19)
     for step in "${steps[@]}";do
     pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-05-08/${ppo_prefix}temp"
     eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "

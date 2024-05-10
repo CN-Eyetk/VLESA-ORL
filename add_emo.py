@@ -1,3 +1,4 @@
+import torch
 from transformers import AutoTokenizer, RobertaForSequenceClassification, AutoModelForSequenceClassification
 import argparse
 from typing  import Any, List
@@ -57,7 +58,7 @@ class EmoExtracter:
         tokenizer = AutoTokenizer.from_pretrained(self.model_dir)
         model = RobertaForSequenceClassification.from_pretrained(self.model_dir)
         self.tokenizer = tokenizer
-        self.model = model.cuda()
+        self.model = model.cuda() if torch.cuda.is_available() else model
         self.label_2_id = model.config.label2id
         self.id_2_label = {y:x for x,y in self.label_2_id.items()}
     def load_dict(self):
