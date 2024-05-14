@@ -1163,6 +1163,7 @@ class GenerationMixin:
         all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
             "output_mutual_attentions"] else None
         strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+        emo_out_prob = model_kwargs["encoder_outputs"].get("emo_out_embs")
 
         # init sequence length tensors
         sequence_lengths, unfinished_sequences, cur_len = self._init_sequence_length_for_generation(
@@ -1261,7 +1262,7 @@ class GenerationMixin:
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return input_ids, all_mutual_attentions, all_mutual_attentions_st, strategy_logits
+            return input_ids, all_mutual_attentions, all_mutual_attentions_st, strategy_logits, emo_out_prob
 
     def sample(
         self,
@@ -1390,6 +1391,7 @@ class GenerationMixin:
         all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
             "output_mutual_attentions"] else None
         strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+        emo_out_prob = model_kwargs["encoder_outputs"].get("emo_out_embs")
         # init sequence length tensors
         sequence_lengths, unfinished_sequences, cur_len = self._init_sequence_length_for_generation(
             input_ids, max_length
@@ -1533,7 +1535,7 @@ class GenerationMixin:
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return input_ids, all_mutual_attentions, all_mutual_attentions_st, strategy_logits
+            return input_ids, all_mutual_attentions, all_mutual_attentions_st, strategy_logits, emo_out_prob
 
     def beam_search(
         self,
@@ -1685,6 +1687,8 @@ class GenerationMixin:
         all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
             "output_mutual_attentions"] else None
         strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+        emo_out_prob = model_kwargs["encoder_outputs"].get("emo_out_embs")
+        
 
         while cur_len < max_length:
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
@@ -1940,6 +1944,12 @@ class GenerationMixin:
         beam_scores = torch.zeros((batch_size, num_beams), dtype=torch.float, device=input_ids.device)
         beam_scores = beam_scores.view((batch_size * num_beams,))
 
+        all_mutual_attentions =  model_kwargs["encoder_outputs"].get("all_mutual_attentions") if model_kwargs["output_mutual_attentions"] else None
+        all_mutual_attentions_st = model_kwargs["encoder_outputs"].get("all_mutual_attentions_st") if model_kwargs[
+            "output_mutual_attentions"] else None
+        strategy_logits = model_kwargs["encoder_outputs"].get("strategy_logits")
+        emo_out_prob = model_kwargs["encoder_outputs"].get("emo_out_embs")
+        
         while cur_len < max_length:
             model_inputs = self.prepare_inputs_for_generation(input_ids, **model_kwargs)
 
@@ -1949,7 +1959,7 @@ class GenerationMixin:
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
             )
-            next_token_logits = outputs.logits[:, -1, :]
+            next_token_logits = outputs.lm_logits[:, -1, :]
 
             # adjust token scores (a no-op by default)
             next_token_logits = self.adjust_logits_during_generation(
@@ -2043,7 +2053,7 @@ class GenerationMixin:
                     hidden_states=decoder_hidden_states,
                 )
         else:
-            return sequence_outputs["sequences"]
+            return sequence_outputs["sequences"], all_mutual_attentions, all_mutual_attentions_st, strategy_logits, emo_out_prob
 
     def group_beam_search(
         self,

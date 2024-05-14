@@ -2158,7 +2158,7 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
 
         gts.append(tokenizer.decode(f.decoder_input_ids, skip_special_tokens=True))
         with torch.no_grad():
-            chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits = model.generate(
+            chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, _ = model.generate(
                 input_ids,
                 **paras, max_length=512,
                 min_length=5,

@@ -26,6 +26,13 @@ def load_ref_model(model):
     return ref_model.eval()
 
 
+def show_paras(paras):
+    for k,v in paras.items():
+        print(k)
+        try:
+            print(v.shape)
+        except:
+            print(v)
 
 class Agent:
     def __init__(self, args, model, 
@@ -41,8 +48,8 @@ class Agent:
                  seeker = None, 
                  seeker_func = None, 
                  use_diff_reward = False,
-                 use_word_level_reward = False
-                 
+                 use_word_level_reward = False,
+                 lm_only = False
                  ) -> None:
         self.args = args
         self.model = model
@@ -60,6 +67,7 @@ class Agent:
         self.seeker_func = seeker_func
         self.use_diff_reward = use_diff_reward
         self.use_word_level_reward = use_word_level_reward
+        self.lm_only = lm_only
         self.device = device
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
@@ -127,7 +135,7 @@ class Agent:
             mini_batch_next_role_ids.append(next_role_ids)
             mini_batch_next_attention_masks.append(next_attention_mask)
         return mini_batch_next_query_tensors, mini_batch_next_role_ids, mini_batch_next_attention_masks, mini_batch_next_vad_ids
-    def step(self, batch, recursive = False):
+    def step(self, batch, recursive = False, get_next_state = True):
         all_query_tensors = []
         all_query_role_ids = []
         all_attention_masks = []
@@ -165,8 +173,10 @@ class Agent:
                 history = self.hist_retriver.retrieve(paras["role_ids"], input_ids)
                 all_histories += history
                 query_tensors = [input_ids[i] for i in range(input_ids.size(0))]
-            
-                (response_tensors, response_act), (ref_response_tensors, ref_response_act) = self.ppo_trainer.generate(
+                
+                #show_paras(paras)
+                    
+                (response_tensors, response_act, response_emo), (ref_response_tensors, ref_response_act, ref_response_emo) = self.ppo_trainer.generate(
                                                                                                 query_tensors, 
                                                                                                 batch_size = 4,
                                                                                                 return_prompt=False, 
@@ -176,6 +186,7 @@ class Agent:
                                                                                                 **self.generation_kwargs
                                                                                                     )
                 paras["add_strategy_noise"] = False #收集经验后，停止strategy noise扰动
+                paras["emo_out_prob"] = torch.stack(response_emo, dim = 0)
                 all_query_tensors += query_tensors
                 # 拼接response_tensors和input_ids，放入all_next_query_tensors，注意padding要抹掉
                 query_role_ids = paras["role_ids"]
@@ -187,17 +198,10 @@ class Agent:
                     query_vad_ids = None
                 all_query_role_ids += query_role_ids
                 #print("making next state")
-                next_query_tensors, next_query_role_ids, next_query_attention_masks, next_query_vad_ids = self.make_next_state(query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids)
-                all_next_query_tensors += next_query_tensors
-                all_next_query_role_ids += next_query_role_ids                
                 all_response_tensors += [response_tensors[i] for i in range(len(response_tensors))]
                 all_ref_response_tensors += [ref_response_tensors[i] for i in range(len(ref_response_tensors))]
                 all_attention_masks += attention_masks
-                all_next_query_attention_masks += next_query_attention_masks
                 all_response_acts += response_act
-                #all_ref_response_acts += ref_all_ref_response_acts
-                if self.use_vad_labels:
-                    all_next_query_vad_ids += next_query_vad_ids
                 for k,v in paras.items():
                     if v is not None and type(v) is not bool:
                         if k not in all_paras.keys():
@@ -205,6 +209,16 @@ class Agent:
                         all_paras[k] += [v[i] for i in range(len(v))]
                     else:
                         bool_paras[k] = v
+                if get_next_state:
+                    next_query_tensors, next_query_role_ids, next_query_attention_masks, next_query_vad_ids = self.make_next_state(query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids)
+                    all_next_query_tensors += next_query_tensors
+                    all_next_query_role_ids += next_query_role_ids                
+                    all_next_query_attention_masks += next_query_attention_masks
+                    
+                    #all_ref_response_acts += ref_all_ref_response_acts
+                    if self.use_vad_labels:
+                        all_next_query_vad_ids += next_query_vad_ids
+
         state = {
             "input_ids":all_query_tensors,
             "histories":all_histories,
@@ -215,6 +229,8 @@ class Agent:
             "response_tensor":all_response_tensors,
             "ref_response_tensor":all_ref_response_tensors
         }
+        if not get_next_state:
+            return state,all_paras, bool_paras
         next_state = {
             "input_ids":all_next_query_tensors,
             "role_ids":all_next_query_role_ids,
@@ -249,7 +265,12 @@ class Agent:
         query_tensors = pad_sequence(query_tensors, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         role_ids = pad_sequence(role_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         vad_ids = pad_sequence(vad_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-        attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
+        attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = False).T
+        if self.lm_only:
+            query_tensors = query_tensors.squeeze(1)
+            role_ids = role_ids.squeeze(1)
+            vad_ids = vad_ids.squeeze(1)
+            attention_mask = attention_mask.squeeze(1)
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
         self.seeker.model = self.seeker.model.to(self.device)
@@ -328,7 +349,7 @@ class Agent:
         
         self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         
-        if self.seeker is not None:
+        if self.seeker is not None and not self.lm_only:
             seeker_responses = self.get_seeker_response(history_with_response)
             self.update_next_state_with_seeker_response(next_state = next_state, seeker_reponses = seeker_responses)
         else:
@@ -409,15 +430,10 @@ class Agent:
         paras["strategy_logit_ground"] = torch.stack(all_action_logits, dim = 1)
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
-        #for k,v in paras.items():
-        #    print(k)
-        #    try:
-        #        print(paras[k].shape)
-        #    except:
-        #        print("--")
-        
 
-        assert len(paras["comet_embs"]) == len(query_tensors)
+        
+        if paras["comet_embs"] is not None:
+            assert len(paras["comet_embs"]) == len(query_tensors)
         rewards = [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_rewards[0], all_rewards[1])]
         
         #rewards = torch.tensor(rewards)
@@ -433,12 +449,18 @@ class Agent:
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     
     def prepare_experience_pool(self, batch):
-        state, next_state, all_paras, bool_paras = self.step(batch)
+        if self.lm_only:
+            state, all_paras, bool_paras = self.step(batch, get_next_state=False)
+            next_state = None
+        else:
+            state, next_state, all_paras, bool_paras = self.step(batch)
         #print("getting reward")
         rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
         
-        
-        states = [state, next_state]
+        if self.lm_only:
+            states = [state]
+        else:
+            states = [state, next_state]
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(states)
 
 
@@ -462,7 +484,8 @@ class Agent:
         paras["strategy_logit_ground"] = action_logits
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
-        assert len(paras["comet_embs"]) == len(query_tensors)
+        if paras["comet_embs"] is not None:
+            assert len(paras["comet_embs"]) == len(query_tensors)
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     def recursive_ppo_step(self, batch, ppo_batch):
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
@@ -482,6 +505,7 @@ class Agent:
         ppo_batch["rewards"] = rewards
         self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
     def batched_ppo_step(self, batch, ppo_batch):
+        #print("preparing experience pool")
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool(batch)
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
@@ -491,9 +515,10 @@ class Agent:
             ppo_batch["seeker_reponses"] = seeker_responses
         #check_format(query_tensors, paras, self.tokenizer)
         if self.use_diff_reward:
-            scores = [r - rfr for r, rfr in zip(rewards, ref_rewards)]
+            scores = [r - rfr for r, rfr in zip(deepcopy(rewards), deepcopy(ref_rewards))]
         else:
-            scores = rewards
+            scores = deepcopy(rewards)
+
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
                                 scores = scores, #base_line_rewards
@@ -501,7 +526,7 @@ class Agent:
                                 **paras)
         ppo_batch["ref_rewards"] =  [x.sum() for x in ref_rewards]
         rewards = [x.sum() for x in rewards]
-        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
+        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards"])
 
 def check_format(query_tensors, paras, tokenizer):
     with open("verbose_ppos.txt","w+") as file:

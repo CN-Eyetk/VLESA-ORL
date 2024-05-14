@@ -34,7 +34,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-05-08"
+today = "2024-05-13"
 #print("Today's date:", today)
 args = load_arg()
 #args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")
@@ -56,7 +56,7 @@ class ScriptArguments:
             batch_size=args.ppo_batch_size,
 
             gradient_accumulation_steps=args.ppo_gradient_accumulation_steps,
-            early_stopping=False,
+            early_stopping=False, 
             target_kl=6.0,
             kl_penalty="kl",
             seed=42,
@@ -68,7 +68,8 @@ class ScriptArguments:
             warmup_steps=args.ppo_warmup_steps,
             use_word_level_reward = args.ppo_use_word_level_reward,
             n_action = 8,
-            use_full_loss = args.ppo_use_full_loss
+            use_full_loss = args.ppo_use_full_loss,
+            
             
             
         )
@@ -80,6 +81,7 @@ class ScriptArguments:
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
     frozen_layer_num: int = args.ppo_frozen_layer_num
     use_seq2seq: bool = True
+    lm_only: bool = args.ppo_lm_only
     """whether to use seq2seq models"""
     use_peft: bool = False
     """whether to use peft"""
@@ -123,8 +125,12 @@ if __name__ == "__main__":
         print("config loaded")
         ppo_args = ScriptArguments()
         ppo_args.ppo_config.model_name = args.output_dir
-        trl_model_class = AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
-        trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer
+        if ppo_args.lm_only:
+            trl_model_class = AutoModelForSeq2SeqLMWithValueHead
+            trainer_class = CustomPPOTrainer
+        else:
+            trl_model_class =  AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
+            trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer
         tokenizer, train_dataset, eval_dataset, test_dataset = build_dataset(args, ppo_args)
         vad_tokenizer.load_tokenizer(tokenizer)
         args.train_dataset = train_dataset
@@ -142,7 +148,7 @@ if __name__ == "__main__":
         if not ppo_args.use_lm_reward:
             freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layers\.[01234])")
         else:
-            freeze_parameters(model, "(trans_mat|emo|embed|encoder\.layers\.[01234])")
+            freeze_parameters(model, "(decoder\.layers\.[0123]|trans_mat|emo|embed|encoder\.layers\.[01234])")
         ref_model = load_ref_model(model)
         if args.ppo_train_emo_strat:
             name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
@@ -180,20 +186,37 @@ if __name__ == "__main__":
             seeker_func = None
 
         #Generation Kwargs
+        if 1 == 2:
+            generation_kwargs = {
+                    "do_sample": True,
+                    "pad_token_id": tokenizer.pad_token_id,
+                    "eos_token_id": tokenizer.eos_token_id,
+                    #"max_length":128,
+                    "min_length": -1,
+                    "num_beams":4,
+                    "top_k": 0.0,#"top_k":30,
+                    "top_p": 1.0,#"top_p":0.3,
+                    #"temperature":1.0,
+                    "do_sample":True,
+                    "repetition_penalty":1.03,
+                    #"no_repeat_ngram_size":3,
+                    "max_new_tokens": 128,
+                }
         generation_kwargs = {
             "do_sample": True,
             "pad_token_id": tokenizer.pad_token_id,
-            "eos_token_id": tokenizer.eos_token_id,
-            "max_length":128,
+           "eos_token_id": tokenizer.eos_token_id,
+            #"max_length":128,
             "min_length": -1,
             "num_beams":1,
             "top_k": 0.0,#"top_k":30,
             "top_p": 1.0,#"top_p":0.3,
+            
             "temperature":1.0,
-            "do_sample":True,
-            "repetition_penalty":1.03,
+        
+            #"repetition_penalty":1.03,
             #"no_repeat_ngram_size":3,
-            #"max_new_tokens": 32,
+            "max_length": 512,
         }
 
         best_ppl = 10000
@@ -213,6 +236,7 @@ if __name__ == "__main__":
                         seeker_func = seeker_func,
                         use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True,
                         use_word_level_reward = ppo_args.ppo_config.use_word_level_reward,
+                        lm_only=ppo_args.lm_only
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):

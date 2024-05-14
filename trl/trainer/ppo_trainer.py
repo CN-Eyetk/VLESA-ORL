@@ -1140,11 +1140,6 @@ class PPOTrainer(BaseTrainer):
             non_score_rewards.append(non_score_reward)
             reward = non_score_reward.clone()
             last_non_masked_index = mask.nonzero()[-1]
-            assert reward.shape == score.shape
-            #print("reward shape = ", reward.shape) #printing
-            #print("score shape = ", score.shape) #printing
-            #print("last_non_masked_index = ",last_non_masked_index) #printing
-            # reward is preference model score + KL penalty
             reward += score
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
@@ -1297,6 +1292,7 @@ class PPOTrainer(BaseTrainer):
         """
 
         mask = data.pop("masks")
+        #lm_loss = data["lm_loss"]
 
 
         kl_list = ((data["logprobs"] - data["ref_logprobs"]) * mask).sum(axis=-1)
@@ -1330,6 +1326,7 @@ class PPOTrainer(BaseTrainer):
             "ppo/mean_non_score_reward": mean_non_score_reward,
             "ppo/mean_scores": mean_scores,
             "ppo/std_scores": std_scores,
+            #"objective/lm_loss": lm_loss,
         }
 
         # Log text properties

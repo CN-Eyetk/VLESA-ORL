@@ -402,7 +402,7 @@ class AutoModelForSeq2SeqLMWithValueHead(PreTrainedModelWrapper):
         kwargs["past_key_values"] = past_key_values
         if self.is_peft_model and self.pretrained_model.active_peft_config.peft_type == "PREFIX_TUNING":
             kwargs.pop("past_key_values")
-
+        kwargs = {k:v for k,v in kwargs.items() if k not in ["action_ids"]}
         base_model_output = self.pretrained_model(
             input_ids=input_ids,
             attention_mask=attention_mask,
@@ -410,7 +410,7 @@ class AutoModelForSeq2SeqLMWithValueHead(PreTrainedModelWrapper):
             **kwargs,
         )
 
-        last_hidden_state = base_model_output.decoder_last_hidden_state
+        last_hidden_state = base_model_output.decoder_last_hidden_states
         lm_logits = base_model_output.lm_logits
         loss = base_model_output.loss
 
@@ -773,7 +773,13 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
         kwargs["past_key_values"] = past_key_values
         if self.is_peft_model and self.pretrained_model.active_peft_config.peft_type == "PREFIX_TUNING":
             kwargs.pop("past_key_values")
-        
+        #print("input_ids",input_ids.shape)
+        #print("attention_mask",attention_mask.shape)
+        #for k,v in kwargs.items():
+        #    try:
+        #        print(f"{k}-{v.shape}")
+        #    except:
+        #        print(f"{k}-{v}")
         encoder = self.pretrained_model.get_encoder()
         n_step = input_ids.size(-2)
         batch_size = input_ids.size(0)
@@ -796,15 +802,17 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
                 vad_ids = kwargs["vad_ids"][:,i,:]
             else:
                 vad_ids = None
-                assert 1 == 2
+            
             base_model_encoder_output = encoder(
                 input_ids=input_ids[:,i,:],
                 attention_mask=attention_mask[:,i,:],
                 role_ids=kwargs["role_ids"][:,i,:],
                 vad_ids= vad_ids,
+                generate_with_predicted_strategy = kwargs["generate_with_predicted_strategy"],
                 output_hidden_states=True,  # We force the model to output hidden states
                 #**kwargs,
             )
+            
             act_hidden_state = base_model_encoder_output.strategy_hidden
             #if is_distributional_act:
             #    strategy_logits = base_model_encoder_output.strategy_logits
@@ -819,13 +827,12 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
             act_logits_each_turn[:,i,:] = act_logits
             value_each_turn[:,i] = self.v_head(act_hidden_state).squeeze(-1)
             if i < n_step - 1:
-                #這裡要用有擾動的那個strategy embedding
                 
                 base_model_output = self.pretrained_model(encoder_outputs = base_model_encoder_output,
-                                                          attention_mask = attention_mask[:,i,:],
-                                                          decoder_input_ids = kwargs["decoder_input_ids"][:,i,:],
-                                                          
-                                                          )
+                                                          emo_out_prob = kwargs["emo_out_prob"],
+                                                        attention_mask = attention_mask[:,i,:],
+                                                        decoder_input_ids = kwargs["decoder_input_ids"][:,i,:],
+                                                        )
                 last_hidden_state = base_model_output.decoder_last_hidden_states
                 values[:,i] = self.v_head_lm(last_hidden_state).squeeze(-1) #Use lm value here!
                 lm_logits[:,i] = base_model_output.lm_logits

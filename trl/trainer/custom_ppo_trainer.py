@@ -45,10 +45,93 @@ batch_forward_pass_args = [
     "vad_ids",
 ]
 class CustomPPOTrainer(PPOTrainer):
+    def _generate_batched(
+        self,
+        model: PreTrainedModelWrapper,
+        query_tensors: List[torch.Tensor],
+        length_sampler: Callable = None,
+        batch_size: int = 4,
+        return_prompt: bool = True,
+        pad_to_multiple_of: int = None,
+        remove_padding: bool = True,
+        **generation_kwargs,
+    ):
+        outputs = []
+        dialogue_acts = []
+        dialogue_emotions = []
+        
+
+        padding_side_default = self.tokenizer.padding_side
+        if not self.is_encoder_decoder:
+            self.tokenizer.padding_side = "left"
+
+        # in case we have fewer examples than bs
+        batch_size = min(len(query_tensors), batch_size)
+
+        for i in range(0, len(query_tensors), batch_size):
+            if length_sampler is not None:
+                generation_kwargs["max_new_tokens"] = length_sampler()
+
+            # prevent overflow if query tensors are not even multiple of bs
+            end_index = min(len(query_tensors), i + batch_size)
+
+            batch = query_tensors[i:end_index]
+            #print("batch",len(batch))
+            #print("generation_kwargs.keys()=",generation_kwargs.keys())
+            if "attention_mask" not in generation_kwargs.keys():
+                batch_mask = [torch.ones_like(element) for element in batch]
+                inputs = {"input_ids": batch, "attention_mask": batch_mask}
+            else:
+                batch_mask = None
+                inputs = {"input_ids": batch}
+
+            padded_inputs = self.tokenizer.pad(
+                inputs,
+                padding=True,
+                return_attention_mask = "attention_mask" not in generation_kwargs.keys(),
+                max_length=None,
+                pad_to_multiple_of=pad_to_multiple_of,
+                return_tensors="pt",
+            ).to(self.current_device)
+
+            #print("padded_inputs keys",padded_inputs.keys())
+            batch_generation_kwargs = {k:(v[i:end_index].to(self.current_device) if torch.is_tensor(v) else v) for k,v in generation_kwargs.items()}
+            #print("batch_generation_kwargs",batch_generation_kwargs)
+            if hasattr(torch.cuda, 'empty_cache'):
+                torch.cuda.empty_cache()
+            #try:
+            generations, _, _, strategy_logits, emo_out_probs = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
+            #except:
+            #    print("bug")
+                #print(f"padded_inputs={padded_inputs}", file=open("bug_generation.text","a+"))
+                #print(f"batch_generation_kwargs={batch_generation_kwargs}", file=open("bug_generation.text","a+"))
+            #print("generations = ", generations)
+
+            for generation, strategy_logit, emo_out_prob, mask in zip(generations, strategy_logits, emo_out_probs, (padded_inputs["attention_mask"] if batch_mask is not None else generation_kwargs["attention_mask"])):
+                if not self.is_encoder_decoder:
+                    output = generation[(1 - mask).sum() :]  # remove padding
+                else:
+                    output = generation
+
+                if not return_prompt and not self.is_encoder_decoder:
+                    output = output[(mask).sum() :]  # remove prompt
+
+                if remove_padding and self.tokenizer.eos_token_id in output:
+                    pad_mask = output == self.tokenizer.eos_token_id
+                    pad_start = torch.nonzero(pad_mask, as_tuple=False)[0, 0].item()
+                    output = output[: pad_start + 1]  # keep the eos token at the end
+
+                outputs.append(output)
+                dialogue_acts.append(strategy_logit)
+                dialogue_emotions.append(emo_out_prob)
+
+        self.tokenizer.padding_side = padding_side_default
+        return outputs, dialogue_acts, dialogue_emotions
     def custom_prepare_model_inputs(self, queries: torch.Tensor, responses: torch.Tensor, **kwargs):
         if self.is_encoder_decoder:
             input_data = {
                 "input_ids":queries,
+                
                 "decoder_input_ids":responses,
                 #"decoder_attention_mask": torch.ones_like(responses)
                 }
@@ -223,7 +306,19 @@ class CustomPPOTrainer(PPOTrainer):
                 pad_index=self.tokenizer.pad_token_id,
                 pad_first=pad_first,
             )
-
+            model_inputs["vad_ids"] = self.accelerator.pad_across_processes(
+                model_inputs["vad_ids"],
+                dim=1,
+                pad_index=self.tokenizer.pad_token_id,
+                pad_first=pad_first,
+            )
+            if self.config.use_word_level_reward:
+                scores = self.accelerator.pad_across_processes(
+                scores,
+                dim=1,
+                pad_index=0.0,
+                pad_first=pad_first,
+            )
             model_inputs["attention_mask"] = self.accelerator.pad_across_processes(
                 model_inputs["attention_mask"], dim=1, pad_index=0, pad_first=pad_first
             )
@@ -250,12 +345,10 @@ class CustomPPOTrainer(PPOTrainer):
                 #)
 
         model_inputs_names = list(model_inputs.keys())
-        try:
-            assert "labels" in model_inputs_names
-        except:
-            print(model_inputs)
+
         
         full_kl_penalty = self.config.kl_penalty == "full"
+
         with torch.no_grad():
             all_logprobs, logits_or_none, values, masks = self.batched_forward_pass(
                 self.model,
@@ -494,6 +587,7 @@ class DialogueActPPOTrainer(PPOTrainer):
     ):
         outputs = []
         dialogue_acts = []
+        dialogue_emos = []
 
         padding_side_default = self.tokenizer.padding_side
         if not self.is_encoder_decoder:
@@ -534,14 +628,14 @@ class DialogueActPPOTrainer(PPOTrainer):
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
             #try:
-            generations, _, _, strategy_logits = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
+            generations, _, _, strategy_logits, emo_out_probs = self.accelerator.unwrap_model(model).generate(**padded_inputs, **batch_generation_kwargs)
             #except:
             #    print("bug")
                 #print(f"padded_inputs={padded_inputs}", file=open("bug_generation.text","a+"))
                 #print(f"batch_generation_kwargs={batch_generation_kwargs}", file=open("bug_generation.text","a+"))
             #print("generations = ", generations)
 
-            for generation, strategy_logit, mask in zip(generations, strategy_logits, (padded_inputs["attention_mask"] if batch_mask is not None else generation_kwargs["attention_mask"])):
+            for generation, strategy_logit, emo_out_prob, mask in zip(generations, strategy_logits, emo_out_probs, (padded_inputs["attention_mask"] if batch_mask is not None else generation_kwargs["attention_mask"])):
                 if not self.is_encoder_decoder:
                     output = generation[(1 - mask).sum() :]  # remove padding
                 else:
@@ -557,9 +651,10 @@ class DialogueActPPOTrainer(PPOTrainer):
 
                 outputs.append(output)
                 dialogue_acts.append(strategy_logit)
+                dialogue_emos.append(emo_out_prob)
 
         self.tokenizer.padding_side = padding_side_default
-        return outputs, dialogue_acts
+        return outputs, dialogue_acts, dialogue_emos
     def _step_safety_checker(
         self,
         batch_size: int,
@@ -722,7 +817,11 @@ class DialogueActPPOTrainer(PPOTrainer):
         #print(model_inputs_names)
 
         full_kl_penalty = self.config.kl_penalty == "full"
-
+        for k,v in model_inputs.items():
+            try:
+                print(f"{k}-{v.shape}")
+            except:
+                print(f"{k}-{v}")
         with torch.no_grad():
             all_logprobs, logits_or_none, values, masks = self.batched_forward_pass(
                 self.model,
@@ -1212,7 +1311,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         all_lm_masks = []
         all_lm_values = []
         for i in range(math.ceil(bs / fbs)):
-            input_kwargs = {key: value[i * fbs : (i + 1) * fbs] for key, value in model_inputs.items()}
+            input_kwargs = {key: value[i * fbs : (i + 1) * fbs] if type(value) is not type(None) and type(value) is not bool  else value for key, value in model_inputs.items()}
             query_batch = queries[i * fbs : (i + 1) * fbs]
             response_batch = responses[i * fbs : (i + 1) * fbs]
             if response_masks is not None:
@@ -1234,8 +1333,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             else:
                 input_ids = input_kwargs["input_ids"]
                 attention_mask = input_ids.ne(self.tokenizer.pad_token_id).long()
-            if len(lm_logits.size()) == 4:
-                
+
+            if len(lm_logits.size()) == 4:                
                 lm_logprobs = self.logprobs_from_logits(lm_logits[:, :, :-1, :], input_ids[:, :, 1:])
                 lm_masks = torch.zeros_like(attention_mask)
                 lm_masks[:, :, :-1] = attention_mask[:, :, 1:]
@@ -1385,8 +1484,10 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             # Score clipping
             scores_dtype = scores.dtype
             scores = torch.clip(scores.float(), -self.config.score_clip, self.config.score_clip).to(dtype=scores_dtype)
-
-        scores, wscores = self.get_sent_scores_and_w_scores(scores, score_mask) #[b, t], #[b, t, l]
+        if self.config.use_word_level_reward:
+            scores, wscores = self.get_sent_scores_and_w_scores(scores, score_mask) #[b, t], #[b, t, l]
+        else:
+            wscores = None
         
         # if we want to push best model to the hub
         if hasattr(self, "highest_reward"):
@@ -1420,11 +1521,12 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             model_inputs["attention_mask"] = self.accelerator.pad_across_processes(
                 model_inputs["attention_mask"], dim=2, pad_index=0, pad_first=pad_first
             )
-            wscores = self.accelerator.pad_across_processes(
-                wscores,
-                dim = 2,
-                pad_index = 0.0,
-                pad_first = pad_first)
+            if wscores is not None:
+                wscores = self.accelerator.pad_across_processes(
+                    wscores,
+                    dim = 2,
+                    pad_index = 0.0,
+                    pad_first = pad_first)
             if with_lm_loss:
                 model_inputs["labels"] = self.accelerator.pad_across_processes(
                     model_inputs["labels"],
@@ -1446,6 +1548,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         #print(model_inputs_names)
 
         full_kl_penalty = self.config.kl_penalty == "full"
+
 
         with torch.no_grad():
             #print("model_inputs keys",model_inputs.keys())
@@ -1509,28 +1612,30 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             lm_advantages = lm_advantages.flatten(1)
             lm_returns = lm_returns.flatten(1)
 
-        all_logprobs = torch.cat((all_a_logprobs, all_lm_logprobs), dim = 1) #[b,t,1],[b,t,l,1]
-        all_ref_logprobs = torch.cat((ref_a_logprobs, ref_lm_logprobs), dim = 1)
-        values = torch.cat((a_values, lm_values), dim = 1)
+        #all_logprobs = torch.cat((all_a_logprobs, all_lm_logprobs), dim = 1) #[b,t,1],[b,t,l,1]
+        #all_ref_logprobs = torch.cat((ref_a_logprobs, ref_lm_logprobs), dim = 1)
+        #values = torch.cat((a_values, lm_values), dim = 1)
         #print("values",values.shape)
-        masks = torch.cat((a_masks, lm_masks), dim = 1)
-        advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
-        returns = torch.cat((a_returns, lm_returns), dim = 1)
+        #masks = torch.cat((a_masks, lm_masks), dim = 1)
+        #advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
+        #returns = torch.cat((a_returns, lm_returns), dim = 1)
         # upcast to float32 to avoid dataset issues
 
-        
+
         batch_dict = {
             "queries": queries,
             "responses": responses,
-            "logprobs": all_logprobs.to(torch.float32),#[b,1,1]
-            "values": values.to(torch.float32),#[b,1,1]
-            "masks": masks,#[b,2,1]
-            "advantages": advantages,#[b,1,1]
-            "returns": returns,#[b,1,1]
+            "logprobs": (all_a_logprobs.to(torch.float32), all_lm_logprobs.to(torch.float32)),#all_logprobs.to(torch.float32),#[b,1,1]
+            "values": (a_values.to(torch.float32), lm_values.to(torch.float32)),#[b,1,1]
+            "masks": (a_masks, lm_masks),#[b,2,1]
+            "advantages": (a_advantages, lm_advantages),#[b,1,1]
+            "returns": (a_returns, lm_returns),#[b,1,1]
         }
         
 
         batch_dict.update(model_inputs)
+        if "emo_out_prob" in batch_dict.keys():
+            batch_dict["emo_out_prob"] = None
 
 
         t = time.time()
@@ -1549,17 +1654,26 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                     mini_batch_end = mini_batch_start + self.config.mini_batch_size
                     mini_batch_inds = backward_batch_inds[mini_batch_start:mini_batch_end]
                     mini_batch_dict = {
-                        "logprobs": batch_dict["logprobs"][mini_batch_inds], #[b,1,1]
-                        "values": batch_dict["values"][mini_batch_inds], #[b,1,1]
-                        "masks": batch_dict["masks"][mini_batch_inds], #[b,1,2]
+                        "a_logprobs": batch_dict["logprobs"][0][mini_batch_inds],
+                        "a_values": batch_dict["values"][0][mini_batch_inds],
+                        "a_masks": batch_dict["masks"][0][mini_batch_inds],
+                        "lm_logprobs": batch_dict["logprobs"][1][mini_batch_inds], #[b,1,1]
+                        "lm_values": batch_dict["values"][1][mini_batch_inds], #[b,1,1]
+                        "lm_masks": batch_dict["masks"][1][mini_batch_inds], #[b,1,2]
+                        "a_advantages": batch_dict["advantages"][0][mini_batch_inds], #[b,1,1]
+                        "a_returns": batch_dict["returns"][0][mini_batch_inds], #[b,1,1]
+                        "lm_advantages": batch_dict["advantages"][1][mini_batch_inds], 
+                        "lm_returns": batch_dict["returns"][1][mini_batch_inds], 
                         # hacks: the queries and responses are ragged.
                         "queries": [batch_dict["queries"][i] for i in mini_batch_inds], #[b,2,l]
                         "responses": [batch_dict["responses"][i] for i in mini_batch_inds], #[b,2,l]
-                        "advantages": batch_dict["advantages"][mini_batch_inds], #[b,1,1]
-                        "returns": batch_dict["returns"][mini_batch_inds], #[b,1,1]
+
                     }
                     for k in model_inputs_names:
-                        mini_batch_dict[k] = batch_dict[k][mini_batch_inds]
+                        try:
+                            mini_batch_dict[k] = batch_dict[k][mini_batch_inds]
+                        except:
+                            mini_batch_dict[k] = batch_dict[k]
                     with self.accelerator.accumulate(self.model):
                         model_inputs = {k: mini_batch_dict[k] for k in model_inputs_names}
                         #print("model_inputs keys",model_inputs.keys())
@@ -1571,12 +1685,13 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                             model_inputs,
                             return_logits=True,
                         )
+                        a_vpreds = a_vpreds[:,:-1]
                         if len(lm_logprobs.size()) == 3:
                             lm_logprobs = lm_logprobs.flatten(1)
                             lm_vpreds = lm_vpreds.flatten(1)
-                        logprobs = torch.cat((a_logprobs, lm_logprobs), dim = 1)
-                        vpreds = torch.cat((a_vpreds[:,:-1], lm_vpreds), dim = 1)
-                        logits = (a_logits, lm_logits)
+                        #logprobs = torch.cat((a_logprobs, lm_logprobs), dim = 1)
+                        #vpreds = torch.cat((a_vpreds[:,:-1], lm_vpreds), dim = 1)
+                        #logits = (a_logits, lm_logits)
                         #logits = torch.cat((a_logits, lm_logits), dim = 1)
                         if with_lm_loss:
                             if self.is_distributed:
@@ -1591,26 +1706,42 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                                         {k:v[:,0] if k in ["input_ids","role_ids","attention_mask","vad_ids"] else v for k,v in model_inputs.items() if k in lm_loss_args}
                                         )
                             train_stats = self.train_minibatch_with_lm_loss(
-                                mini_batch_dict["logprobs"],
-                                mini_batch_dict["values"],
-                                logprobs,
-                                logits,
-                                vpreds,
-                                mini_batch_dict["masks"],
-                                mini_batch_dict["advantages"],
-                                mini_batch_dict["returns"],
-                                lm_loss
+                                mini_batch_dict["a_logprobs"],
+                                mini_batch_dict["lm_logprobs"],
+                                mini_batch_dict["a_values"],
+                                mini_batch_dict["lm_values"],
+                                a_logprobs,
+                                a_logits,
+                                lm_logprobs,
+                                lm_logits,
+                                a_vpreds,
+                                lm_vpreds,
+                                mini_batch_dict["a_masks"],
+                                mini_batch_dict["lm_masks"],
+                                mini_batch_dict["a_advantages"],
+                                mini_batch_dict["lm_advantages"],
+                                mini_batch_dict["a_returns"],
+                                mini_batch_dict["lm_returns"],
+                                lm_loss,
                             )
                         else:
                             train_stats = self.train_minibatch(
-                                mini_batch_dict["logprobs"],
-                                mini_batch_dict["values"],
-                                logprobs,
-                                logits,
-                                vpreds,
-                                mini_batch_dict["masks"],
-                                mini_batch_dict["advantages"],
-                                mini_batch_dict["returns"],
+                                mini_batch_dict["a_logprobs"],
+                                mini_batch_dict["lm_logprobs"],
+                                mini_batch_dict["a_values"],
+                                mini_batch_dict["lm_values"],
+                                a_logprobs,
+                                a_logits,
+                                lm_logprobs,
+                                lm_logits,
+                                a_vpreds,
+                                lm_vpreds,
+                                mini_batch_dict["a_masks"],
+                                mini_batch_dict["lm_masks"],
+                                mini_batch_dict["a_advantages"],
+                                mini_batch_dict["lm_advantages"],
+                                mini_batch_dict["a_returns"],
+                                mini_batch_dict["lm_returns"],
                             )
                         all_stats.append(train_stats)
 
@@ -1633,14 +1764,15 @@ class JointPPOTrainer(DialogueActPPOTrainer):
 
         stats = self.record_step_stats(
             scores=scores,
-            logprobs=all_logprobs,
-            ref_logprobs=all_ref_logprobs,
-            non_score_reward=non_score_reward,
+            logprobs=all_lm_logprobs,
+            ref_logprobs=ref_lm_logprobs,
+            non_score_reward=lm_non_score_reward,
             train_stats=train_stats,
             kl_coef=self.kl_ctl.value,
-            masks=masks,
+            masks=lm_masks,
             queries=queries,
             responses=responses,
+            #lm_loss=lm_loss
         )
         # Gather/Reduce stats from all processes
 
@@ -1676,6 +1808,65 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             self.lr_scheduler.step()
 
         return stats
+    @PPODecorators.empty_device_cache()
+    def train_minibatch(
+        self,
+        old_a_logprobs: torch.FloatTensor,
+        old_lm_logprobs: torch.FloatTensor,
+        a_values: torch.FloatTensor,
+        lm_values: torch.FloatTensor,
+        a_logprobs: torch.FloatTensor,
+        a_logits: torch.FloatTensor,
+        lm_logprobs: torch.FloatTensor,
+        lm_logits: torch.FloatTensor,
+        a_vpreds: torch.FloatTensor,
+        lm_vpreds: torch.FloatTensor,
+        a_mask: torch.LongTensor,
+        lm_mask: torch.LongTensor,
+        a_advantages: torch.FloatTensor,
+        lm_advantages: torch.FloatTensor,
+        a_returns: torch.FloatTensor,
+        lm_returns: torch.FloatTensor,
+    ):
+        """
+        Train one PPO minibatch
+
+        Args:
+            logprobs (`torch.FloatTensor`):
+                Log probabilities of the model, shape [mini_batch_size, response_length]
+            values (`torch.FloatTensor`):
+                Values of the value head, shape [mini_batch_size, response_length]
+            query (`torch.LongTensor`):
+                Encoded queries, shape [mini_batch_size, query_length]
+            response (`torch.LongTensor`):
+                Encoded responses, shape [mini_batch_size, response_length]
+            model_input (`torch.LongTensor`):
+                Concatenated queries and responses, shape [mini_batch_size, query_length+response_length]
+
+        Returns:
+            train_stats (dict[str, `torch.Tensor`]):
+                Dictionary of training statistics
+        """
+        self.model.train()
+        #print("calculating loss")
+        a_loss_p, a_loss_v, a_train_stats = self.loss(
+            old_a_logprobs, a_values, a_logits, a_vpreds, a_logprobs, a_mask, a_advantages, a_returns
+        )
+        a_loss = a_loss_p + a_loss_v
+        lm_loss_p, lm_loss_v, lm_train_stats = self.loss(
+            old_lm_logprobs, lm_values, lm_logits, lm_vpreds, lm_logprobs, lm_mask, lm_advantages, lm_returns
+        )
+        lm_loss = lm_loss_p + lm_loss_v
+        loss = a_loss + lm_loss
+        self.accelerator.backward(loss)
+        if self.config.max_grad_norm is not None:
+            if self.accelerator.sync_gradients:
+                self.accelerator.clip_grad_norm_(self.model_params, self.config.max_grad_norm)
+        self.optimizer.step()
+        # we call optimizer.zero_grad() every time and let `accelerator` handle accumulation
+        # see https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation#the-finished-code
+        self.optimizer.zero_grad()
+        return lm_train_stats
     def train_minibatch_with_lm_loss(
             self,
             old_logprobs: torch.FloatTensor,
@@ -1824,8 +2015,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 #"decoder_attention_mask": torch.ones_like(responses)
                 }
             for k,v in kwargs.items():
-                if torch.is_tensor(v):
-                    input_data[k] = v
+                input_data[k] = v
         else:
             pass
         return input_data
@@ -1858,8 +2048,81 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             non_score_reward = -self.kl_ctl.value * kl
             non_score_rewards.append(non_score_reward)
             reward = non_score_reward.clone()
-
-            assert reward.shape == score.shape
-            reward += score
+            if self.config.use_word_level_reward:
+            #assert reward.shape == score.shape
+                reward += score
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
+    def record_step_stats(self, kl_coef: float, **data):
+        """
+        Record training step statistics.
+
+
+        Args:
+            kl_coef (`float`):
+                KL coefficient
+            data (`dict`):
+                Dictionary of training step data
+
+        Returns:
+            stats (`dict`):
+                Dictionary of training step statistics
+        """
+
+        mask = data.pop("masks")
+        #lm_loss = data["lm_loss"]
+
+
+        kl_list = ((self._kl_penalty(data["logprobs"], data["ref_logprobs"])) * mask).sum(axis=-1)
+        mean_kl = kl_list.mean()
+        
+
+        mean_entropy = (-data["logprobs"] * mask).sum(axis=-1).mean()
+
+
+        mean_non_score_reward = masked_mean(
+            data["non_score_reward"], mask
+        )  # non_score_reward is size `batch_size`, `response_length`
+        mean_scores = data["scores"].mean()  # scores is size `batch_size`
+        std_scores = data["scores"].std()
+
+        if mean_kl.item() < -1.0:
+            # warn users
+            warnings.warn(
+                f"KL divergence is starting to become negative: {mean_kl.item():.2f} - this might be a precursor for failed training."
+                " sometimes this happens because the generation kwargs are not correctly set. Please make sure"
+                " that the generation kwargs are set correctly, or review your training hyperparameters."
+            )
+
+        stats = {
+            "objective/kl": mean_kl,
+            "objective/kl_dist": kl_list,
+            "objective/logprobs": data["logprobs"],
+            "objective/ref_logprobs": data["ref_logprobs"],
+            "objective/kl_coef": kl_coef,
+            "objective/entropy": mean_entropy,
+            "ppo/mean_non_score_reward": mean_non_score_reward,
+            "ppo/mean_scores": mean_scores,
+            "ppo/std_scores": std_scores,
+            #"objective/lm_loss": lm_loss,
+        }
+
+        # Log text properties
+        
+
+        query_lens = torch.tensor([len(query) for query in data["queries"]], dtype=torch.float)
+        response_lens = torch.tensor([len(response) for response in data["responses"]], dtype=torch.float)
+
+
+        stats["tokens/queries_len_mean"] = torch.mean(query_lens).cpu().numpy().item()
+        stats["tokens/queries_len_std"] = torch.std(query_lens).cpu().numpy().item()
+        stats["tokens/queries_dist"] = query_lens.cpu().numpy()
+        stats["tokens/responses_len_mean"] = torch.mean(response_lens).cpu().numpy().item()
+        stats["tokens/responses_len_std"] = torch.std(response_lens).cpu().numpy().item()
+        stats["tokens/responses_dist"] = response_lens.cpu().numpy()
+
+        for k, v in data["train_stats"].items():
+            stats[f"ppo/{k}"] = torch.mean(v, axis=0)
+        stats["ppo/val/var_explained"] = 1 - stats["ppo/val/error"] / stats["ppo/returns/var"]
+
+        return stats

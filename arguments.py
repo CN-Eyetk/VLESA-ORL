@@ -158,7 +158,7 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
     ppo_parser.add_argument("--ppo_add_strategy_noise", action="store_true")
     ppo_parser.add_argument("--ppo_recursive", action="store_true")
-    
+    ppo_parser.add_argument("--ppo_lm_only", action="store_true")
     ppo_parser.add_argument("--ppo_return_arg", action="store_true")
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
