@@ -44,6 +44,20 @@ batch_forward_pass_args = [
     "role_ids",
     "vad_ids",
 ]
+
+def check_log_probs(all_lm_logprobs, ref_lm_logprobs, lm_masks, decoder_input_ids):
+    #print("model",all_lm_logprobs.shape)
+    #print("model mean",all_lm_logprobs.mean())
+    #print("model",all_lm_logprobs[0])
+    
+    #print("ref model",ref_lm_logprobs.shape)
+    #print("ref model",ref_lm_logprobs.mean())
+    #print("ref model",ref_lm_logprobs[0])
+    #print("diff", all_lm_logprobs[0] - ref_lm_logprobs[0])
+    print("decoder input ids", decoder_input_ids[0].shape, decoder_input_ids[0])
+    print("mask", lm_masks[0].shape, lm_masks[0])
+    #kl = ((all_lm_logprobs - ref_lm_logprobs) * lm_masks).sum(axis=-1)
+    #print("kl",kl)
 class CustomPPOTrainer(PPOTrainer):
     def _generate_batched(
         self,
@@ -1280,16 +1294,7 @@ class DialogueActPPOTrainer(PPOTrainer):
         return train_stats
 
 class JointPPOTrainer(DialogueActPPOTrainer):
-    def logprobs_from_logits(self, logits: torch.Tensor, labels: torch.Tensor, gather: bool = True) -> torch.Tensor:
-        """
-        See: https://github.com/pytorch/pytorch/issues/563#issuecomment-330103591
-        """
-        logp = F.log_softmax(logits, dim=2)
 
-        if not gather:
-            return logp
-        logpy = torch.gather(logp, -1, labels.unsqueeze(-1)).squeeze(-1)
-        return logpy
     @PPODecorators.empty_device_cache()
     def batched_forward_pass(
         self,
@@ -1298,8 +1303,10 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         responses: torch.Tensor, #[b,t,l_y]
         model_inputs: dict,
         return_logits: bool = False,
-        response_masks: Optional[torch.Tensor] = None
+        response_masks: Optional[torch.Tensor] = None,
+        is_ref: bool = False
     ):
+        verbose = False
         bs = len(queries)
         fbs = self.config.mini_batch_size
         all_a_logprobs = []
@@ -1312,6 +1319,9 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         all_lm_values = []
         for i in range(math.ceil(bs / fbs)):
             input_kwargs = {key: value[i * fbs : (i + 1) * fbs] if type(value) is not type(None) and type(value) is not bool  else value for key, value in model_inputs.items()}
+            if is_ref:
+                input_kwargs["emo_out_prob"] = input_kwargs["emo_out_prob_ref"]
+            del input_kwargs["emo_out_prob_ref"]
             query_batch = queries[i * fbs : (i + 1) * fbs]
             response_batch = responses[i * fbs : (i + 1) * fbs]
             if response_masks is not None:
@@ -1334,68 +1344,77 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 input_ids = input_kwargs["input_ids"]
                 attention_mask = input_ids.ne(self.tokenizer.pad_token_id).long()
 
-            if len(lm_logits.size()) == 4:                
-                lm_logprobs = self.logprobs_from_logits(lm_logits[:, :, :-1, :], input_ids[:, :, 1:])
-                lm_masks = torch.zeros_like(attention_mask)
-                lm_masks[:, :, :-1] = attention_mask[:, :, 1:]
-            else:
-                lm_logprobs = logprobs_from_logits(lm_logits[:, :-1, :], input_ids[:, 1:])
-                lm_masks = torch.zeros_like(attention_mask)
-                lm_masks[:, :-1] = attention_mask[:, 1:]
-            for n in range(lm_masks.size(1)):
-                for j in range(len(query_batch)):
-                    if self.is_encoder_decoder:
-                        # Decoder sentence starts always in the index 1 after padding in the Enc-Dec Models
-                        start = 1
-                        end = attention_mask[j, n, :].sum() - 1
-                        
-                    else:
-                        start = len(query_batch[j]) - 1  # logprobs starts from the second query token
-                        if attention_mask[j, 0] == 0:  # offset left padding
-                            start += attention_mask[j, :].nonzero()[0]
-                        end = start + len(response_batch[j])
-                        if response_masks is not None:
-                            response_masks_batch[j] = torch.cat(
-                                (torch.zeros_like(query_batch[j]), response_masks_batch[j])
-                            )[1:]
-                    lm_masks[j, n, :start] = 0
-                    lm_masks[j, n, end:] = 0
+            #if len(lm_logits.size()) == 4:                
+            #    lm_logprobs = self.logprobs_from_logits(lm_logits[:, :, :-1, :], input_ids[:, :, 1:])
+            #    lm_masks = torch.zeros_like(attention_mask)
+            #    lm_masks[:, :, :-1] = attention_mask[:, :, 1:]
+            #else:
+            lm_logprobs = logprobs_from_logits(lm_logits[:, :-1, :], input_ids[:, 1:])
+            lm_masks = torch.zeros_like(attention_mask)
+            lm_masks[:, :-1] = attention_mask[:, 1:]
+            #for n in range(lm_masks.size(1)):
+            for j in range(len(query_batch)):
+                if self.is_encoder_decoder:
+                    # Decoder sentence starts always in the index 1 after padding in the Enc-Dec Models
+                    start = 1
+                    end = attention_mask[j,  :].sum() - 1
+                    
+                else:
+                    start = len(query_batch[j]) - 1  # logprobs starts from the second query token
+                    if attention_mask[j, 0] == 0:  # offset left padding
+                        start += attention_mask[j, :].nonzero()[0]
+                    end = start + len(response_batch[j])
                     if response_masks is not None:
-                        lm_masks[j, n, start:end] = lm_masks[j, n, start:end] * response_masks_batch[j][start:end]
+                        response_masks_batch[j] = torch.cat(
+                            (torch.zeros_like(query_batch[j]), response_masks_batch[j])
+                        )[1:]
+                lm_masks[j,  :start] = 0
+                lm_masks[j,  end:] = 0
+                if response_masks is not None:
+                    lm_masks[j,  start:end] = lm_masks[j,  start:end] * response_masks_batch[j][start:end]
+                    
             if return_logits:
                 all_a_logits.append(a_logits)
                 all_lm_logits.append(lm_logits)
             else:
                 del a_logits
                 del lm_logits
+            
             all_a_values.append(a_values)
             all_a_logprobs.append(a_logprobs)
             all_a_masks.append(a_masks)
             all_lm_values.append(lm_values)
             all_lm_logprobs.append(lm_logprobs)
             all_lm_masks.append(lm_masks)
-        if len(lm_values.size()) == 3:   
-            return (
-                torch.cat(all_a_logprobs),#[b,t,1]
-                torch.cat(all_a_logits) if return_logits else None,
-                torch.cat(all_a_values),
-                torch.cat(all_a_masks),
-                torch.cat(all_lm_logprobs),#[b,t,l_y-1]
-                torch.cat(all_lm_logits)[:, :, :-1] if return_logits else None, #[b,t,l_y-1, V]
-                torch.cat(all_lm_values)[:, :,  :-1], #[b,t,l_y-1]
-                torch.cat(all_lm_masks)[:, :, :-1], #[b,t,l_y-1]
-            )
-        else:
-            return (
-                torch.cat(all_a_logprobs),
-                torch.cat(all_a_logits) if return_logits else None,
-                torch.cat(all_a_values),
-                torch.cat(all_a_masks),
-                torch.cat(all_lm_logprobs),#[b,t,l_y-1]
-                torch.cat(all_lm_logits)[:, :-1] if return_logits else None, #[b,t,l_y-1]
-                torch.cat(all_lm_values)[:, :-1], #[b,t,l_y-1]
-                torch.cat(all_lm_masks)[:, :-1], #[b,t,l_y-1]
-            )
+            if verbose:
+                print("decoder input ids", input_kwargs["decoder_input_ids"][0])
+                print("lm_masks", lm_masks[0])
+                verbose = False
+        #if len(lm_values.size()) == 3:   
+        #    return (
+        #        torch.cat(all_a_logprobs),#[b,t,1]
+        #        torch.cat(all_a_logits) if return_logits else None,
+        #        torch.cat(all_a_values),
+        #        torch.cat(all_a_masks),
+        #        torch.cat(all_lm_logprobs),#[b,t,l_y-1]
+        #        torch.cat(all_lm_logits)[:, :, :-1] if return_logits else None, #[b,t,l_y-1, V]
+        #        torch.cat(all_lm_values)[:, :,  :-1], #[b,t,l_y-1]
+        #        torch.cat(all_lm_masks)[:, :, :-1], #[b,t,l_y-1]
+        #    )
+        #else:
+        #return_lm_masks = torch.cat(all_lm_masks)
+        #print("decoder input ids", model_inputs["decoder_input_ids"][0])
+        #print("return_lm_masks",return_lm_masks[0])
+        return (
+            torch.cat(all_a_logprobs),
+            torch.cat(all_a_logits) if return_logits else None,
+            torch.cat(all_a_values),
+            torch.cat(all_a_masks),
+            torch.cat(all_lm_logprobs),#[b,t,l_y-1]
+            torch.cat(all_lm_logits)[:, :-1] if return_logits else None, #[b,t,l_y-1]
+            torch.cat(all_lm_values)[:, :-1], #[b,t,l_y-1]
+            torch.cat(all_lm_masks)[:, :-1], #[b,t,l_y-1]
+        )
     def compute_lm_advantages(
         self,
         values: torch.FloatTensor,
@@ -1403,9 +1422,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         mask: torch.FloatTensor,
     ):
         lastgaelam = 0
-        
+        advantages_reversed = []
         gen_len = rewards.shape[-1]
-        gen_step = values.size(1)
 
         values = values * mask
         rewards = rewards * mask
@@ -1413,16 +1431,12 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         if self.config.whiten_rewards:
             rewards = masked_whiten(rewards, mask, shift_mean=False)
 
-
-        advantages = torch.zeros_like(values) #[b, gen_step, gen_len]
-        for i in range(gen_step):
-            advantages_reversed = []
-            for t in reversed(range(gen_len)):
-                nextvalues = values[:, i, t + 1] if t < gen_len - 1 else 0.0
-                delta = rewards[:, i,  t] + self.config.gamma * nextvalues - values[:, i,  t]
-                lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
-                advantages_reversed.append(lastgaelam)
-            advantages[:,i] = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
+        for t in reversed(range(gen_len)):
+            nextvalues = values[:, t + 1] if t < gen_len - 1 else 0.0
+            delta = rewards[:, t] + self.config.gamma * nextvalues - values[:, t]
+            lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
+            advantages_reversed.append(lastgaelam)
+        advantages = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
 
         returns = advantages + values
         advantages = masked_whiten(advantages, mask)
@@ -1572,10 +1586,17 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                     responses,
                     model_inputs,
                     return_logits=full_kl_penalty,
+                    is_ref = True
                 )
 
         timing["time/ppo/forward_pass"] = time.time() - t
-
+        
+        def check_mask():
+            print("checking mask")
+            for i in range(len(model_inputs["decoder_input_ids"])):
+                print(model_inputs["decoder_input_ids"][i])
+                print(lm_masks[i])
+        #check_mask()
         with torch.no_grad():
             t = time.time()
             if full_kl_penalty:
@@ -1586,7 +1607,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 a_rewards, a_non_score_reward = self.compute_rewards(
                     scores, active_full_a_logprobs, ref_full_a_logprobs, a_masks
                 )
-                lm_rewards, lm_non_score_reward = self.compute_rewards(
+                lm_rewards, lm_non_score_reward = self.compute_lm_rewards(
                     scores if wscores is None else wscores, 
                     active_full_lm_logprobs, ref_full_lm_logprobs, lm_masks
                 )
@@ -1602,15 +1623,16 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             lm_values, lm_advantages, lm_returns = self.compute_lm_advantages(lm_values, lm_rewards, lm_masks)
             timing["time/ppo/compute_advantages"] = time.time() - t
             
+            #check_mask()
             #此後把a_values 的batch_size改為batch_size * n_step
 
-        if len(all_lm_logprobs.size()) == 3: #multi step generation
-            all_lm_logprobs = all_lm_logprobs.flatten(1) # [b, t*l_y]
-            ref_lm_logprobs = ref_lm_logprobs.flatten(1) # [b, t*l_y]
-            lm_values = lm_values.flatten(1)
-            lm_masks = lm_masks.flatten(1)
-            lm_advantages = lm_advantages.flatten(1)
-            lm_returns = lm_returns.flatten(1)
+        #if len(all_lm_logprobs.size()) == 3: #multi step generation
+        #    all_lm_logprobs = all_lm_logprobs.flatten(1) # [b, t*l_y]
+        #    ref_lm_logprobs = ref_lm_logprobs.flatten(1) # [b, t*l_y]
+        #    lm_values = lm_values.flatten(1)
+        #    lm_masks = lm_masks.flatten(1)
+        #    lm_advantages = lm_advantages.flatten(1)
+        #    lm_returns = lm_returns.flatten(1)
 
         #all_logprobs = torch.cat((all_a_logprobs, all_lm_logprobs), dim = 1) #[b,t,1],[b,t,l,1]
         #all_ref_logprobs = torch.cat((ref_a_logprobs, ref_lm_logprobs), dim = 1)
@@ -1620,7 +1642,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         #advantages = torch.cat((a_advantages, lm_advantages), dim = 1)
         #returns = torch.cat((a_returns, lm_returns), dim = 1)
         # upcast to float32 to avoid dataset issues
-
+        #print("before ppo")
+        #check_log_probs(all_lm_logprobs, ref_lm_logprobs, lm_masks, model_inputs["decoder_input_ids"])
 
         batch_dict = {
             "queries": queries,
@@ -1636,6 +1659,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         batch_dict.update(model_inputs)
         if "emo_out_prob" in batch_dict.keys():
             batch_dict["emo_out_prob"] = None
+        if "emo_out_prob_ref" in batch_dict.keys():
+            batch_dict["emo_out_prob_ref"] = None
 
 
         t = time.time()
@@ -1675,20 +1700,20 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                         except:
                             mini_batch_dict[k] = batch_dict[k]
                     with self.accelerator.accumulate(self.model):
-                        model_inputs = {k: mini_batch_dict[k] for k in model_inputs_names}
+                        cur_model_inputs = {k: mini_batch_dict[k] for k in model_inputs_names}
                         #print("model_inputs keys",model_inputs.keys())
                         a_logprobs, a_logits, a_vpreds, _, \
                         lm_logprobs, lm_logits, lm_vpreds, _ = self.batched_forward_pass(
                             self.model,
                             mini_batch_dict["queries"], #[b,2,l]
                             mini_batch_dict["responses"],  #[b,2,l]
-                            model_inputs,
+                            cur_model_inputs,
                             return_logits=True,
                         )
                         a_vpreds = a_vpreds[:,:-1]
-                        if len(lm_logprobs.size()) == 3:
-                            lm_logprobs = lm_logprobs.flatten(1)
-                            lm_vpreds = lm_vpreds.flatten(1)
+                        #if len(lm_logprobs.size()) == 3:
+                        #    lm_logprobs = lm_logprobs.flatten(1)
+                        #    lm_vpreds = lm_vpreds.flatten(1)
                         #logprobs = torch.cat((a_logprobs, lm_logprobs), dim = 1)
                         #vpreds = torch.cat((a_vpreds[:,:-1], lm_vpreds), dim = 1)
                         #logits = (a_logits, lm_logits)
@@ -1753,7 +1778,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                     break
 
         timing["time/ppo/optimize_step"] = time.time() - t
-
+        #print("before log")
+        #check_log_probs(all_lm_logprobs, ref_lm_logprobs, lm_masks, model_inputs["decoder_input_ids"])
         t = time.time()
         train_stats = stack_dicts(all_stats)
 
@@ -1761,7 +1787,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         train_stats["policy/advantages"] = torch.flatten(train_stats["policy/advantages"]).unsqueeze(0)
         train_stats["policy/advantages"] = torch.nan_to_num(train_stats["policy/advantages"], WANDB_PADDING)
         train_stats["policy/ratio"] = torch.flatten(train_stats["policy/ratio"]).unsqueeze(0)
-
+        #print("after ppo")
+        #check_log_probs(all_lm_logprobs, ref_lm_logprobs, lm_masks, model_inputs["decoder_input_ids"])
         stats = self.record_step_stats(
             scores=scores,
             logprobs=all_lm_logprobs,
@@ -2004,8 +2031,8 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         )
         return pg_loss, self.config.vf_coef * vf_loss, flatten_dict(stats)
     def custom_prepare_model_inputs(self, queries: torch.Tensor, responses: torch.Tensor, **kwargs):
-        if len(responses.size()) == 2:
-            responses = responses.unsqueeze(1)
+        #if len(responses.size()) == 2:
+        #    responses = responses.unsqueeze(1)
         if self.is_encoder_decoder:
             
             input_data = {
@@ -2050,7 +2077,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             reward = non_score_reward.clone()
             if self.config.use_word_level_reward:
             #assert reward.shape == score.shape
-                reward += score
+                reward += score.squeeze()
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
     def record_step_stats(self, kl_coef: float, **data):

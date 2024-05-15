@@ -148,7 +148,7 @@ if __name__ == "__main__":
         if not ppo_args.use_lm_reward:
             freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layers\.[01234])")
         else:
-            freeze_parameters(model, "(decoder\.layers\.[0123]|trans_mat|emo|embed|encoder\.layers\.[01234])")
+            freeze_parameters(model, "(trans_mat|emo|embed|encoder\.layers\.[01234])")
         ref_model = load_ref_model(model)
         if args.ppo_train_emo_strat:
             name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
@@ -214,9 +214,9 @@ if __name__ == "__main__":
             
             "temperature":1.0,
         
-            #"repetition_penalty":1.03,
+            "repetition_penalty":1.03,
             #"no_repeat_ngram_size":3,
-            "max_length": 512,
+            "max_length": 128,
         }
 
         best_ppl = 10000

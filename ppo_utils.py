@@ -187,6 +187,7 @@ class Agent:
                                                                                                     )
                 paras["add_strategy_noise"] = False #收集经验后，停止strategy noise扰动
                 paras["emo_out_prob"] = torch.stack(response_emo, dim = 0)
+                paras["emo_out_prob_ref"] = torch.stack(ref_response_emo, dim = 0)
                 all_query_tensors += query_tensors
                 # 拼接response_tensors和input_ids，放入all_next_query_tensors，注意padding要抹掉
                 query_role_ids = paras["role_ids"]

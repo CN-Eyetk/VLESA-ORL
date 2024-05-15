@@ -793,10 +793,10 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
                                             ).to(input_ids.device)
         value_each_turn = torch.zeros(batch_size,
                                       n_step).to(input_ids.device)
-        y_len = kwargs["decoder_input_ids"].size(-1)
-        vocab_size = self.pretrained_model.config.vocab_size
-        lm_logits = torch.zeros(batch_size, n_step - 1, y_len, vocab_size).to(input_ids.device) #最后一个step没有generate response
-        values = torch.zeros(batch_size, n_step - 1, y_len).to(input_ids.device)
+        #y_len = kwargs["decoder_input_ids"].size(-1)
+        #vocab_size = self.pretrained_model.config.vocab_size
+        #lm_logits = torch.zeros(batch_size, n_step - 1, y_len, vocab_size).to(input_ids.device) #最后一个step没有generate response
+        #values = torch.zeros(batch_size, n_step - 1, y_len).to(input_ids.device)
         for i in range(n_step):
             if "vad_ids" in kwargs.keys():
                 vad_ids = kwargs["vad_ids"][:,i,:]
@@ -831,12 +831,13 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
                 base_model_output = self.pretrained_model(encoder_outputs = base_model_encoder_output,
                                                           emo_out_prob = kwargs["emo_out_prob"],
                                                         attention_mask = attention_mask[:,i,:],
-                                                        decoder_input_ids = kwargs["decoder_input_ids"][:,i,:],
+                                                        decoder_input_ids = kwargs["decoder_input_ids"],
                                                         )
                 last_hidden_state = base_model_output.decoder_last_hidden_states
-                values[:,i] = self.v_head_lm(last_hidden_state).squeeze(-1) #Use lm value here!
-                lm_logits[:,i] = base_model_output.lm_logits
+                values = self.v_head_lm(last_hidden_state).squeeze(-1) #Use lm value here!
+                lm_logits = base_model_output.lm_logits
                 #loss = base_model_output.loss
+
         return (act_logits_each_turn, loss, value_each_turn, lm_logits, values) #[b,t+1,8], 0, [b,t+1], [b, t, l_y, V], [b, t, l_y]
 
     def generate(self, *args, **kwargs):
