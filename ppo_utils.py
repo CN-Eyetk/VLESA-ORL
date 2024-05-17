@@ -110,19 +110,7 @@ class Agent:
                     response_vad_labels = [-1] + response_vad_labels[1:]
                 active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
                 response_vad_ids[:response_pad_start] = active_response_vad_ids[:response_pad_start] 
-                #if not torch.any(response_tensor == self.tokenizer.eos_token_id):
 
-                    
-                    #except:
-                    #    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids
-                #elif len(active_response_vad_ids) == response_pad_start:
-                #    response_vad_ids[:response_pad_start ] = active_response_vad_ids ##不包括<s>和</s>，之后如果用别的lm，这里就要改
-                #else:
-                #    print(f"The size of response_vad_ids is {len(active_response_vad_ids)}, but the response_pad_start if {response_pad_start}")
-                #    response_vad_ids[:len(active_response_vad_ids)] = active_response_vad_ids 
-                #except:
-                #    print("response_text problem", response_text)
-                #    response_vad_ids[1:len(active_response_vad_ids)+1 ] = active_response_vad_ids 
                 response_vad_ids = response_vad_ids.to(self.model.pretrained_model.device)
                 next_vad_ids = torch.cat((cur_query_vad_ids[ : pad_start + 1], response_vad_ids), dim = -1)
                 if next_vad_ids.size(-1) > max_len:
@@ -240,15 +228,24 @@ class Agent:
         }
         
         return state, next_state, all_paras, bool_paras
-    def aggregate_responses(self, responses):
+    def aggregate_responses(self, responses, remove_time_dimension = False):
         response_tensors = []
         for resp in responses:
             #resp [batch_size, length_of_cur_batch]
             cur_resp = pad_sequence(resp, batch_first = True, padding_value = self.tokenizer.pad_token_id).T
             response_tensors.append(cur_resp)
         response_tensors = pad_sequence(response_tensors, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
+        if remove_time_dimension:
+            gen_step = response_tensors.size(1)
+            batch_size = response_tensors.size(0)
+            response_len = response_tensors.size(-1)
+            new_response_tensor = torch.zeros(batch_size * gen_step, response_len).to(response_tensors.device) + self.tokenizer.pad_token_id
+            for i in range(batch_size):
+                for j in range(gen_step - 1):
+                    new_response_tensor[2 * i: 2 * (i + 1)] = response_tensors[i, j, j+2]
+            return new_response_tensor
         return response_tensors
-    def aggregate_states(self, states):
+    def aggregate_states(self, states, remove_time_dimension = False):
         query_tensors = []
         role_ids = []
         vad_ids = []
@@ -266,12 +263,22 @@ class Agent:
         query_tensors = pad_sequence(query_tensors, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         role_ids = pad_sequence(role_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         vad_ids = pad_sequence(vad_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-        attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = False).T
-        if self.lm_only:
-            query_tensors = query_tensors.squeeze(1)
-            role_ids = role_ids.squeeze(1)
-            vad_ids = vad_ids.squeeze(1)
-            attention_mask = attention_mask.squeeze(1)
+        attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = False).T   
+        if remove_time_dimension:
+            encode_step = query_tensors.size(1)
+            batch_size = query_tensors.size(0)
+            input_len = query_tensors.size(-1)
+            new_query_tensors = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device) + self.tokenizer.pad_token_id
+            new_role_ids = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device)  + self.tokenizer.pad_token_id
+            new_vad_ids = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device)  + self.tokenizer.pad_token_id
+            new_attention_mask = torch.zeros(batch_size * (encode_step - 1), 2, input_len).bool().to(query_tensors.device) 
+            for i in range(batch_size):
+                for j in range(encode_step - 1):
+                    new_query_tensors[2 * i: 2 * (i + 1)] = query_tensors[i, j: j+2]
+                    new_role_ids[2 * i: 2 * (i + 1)] = role_ids[i, j: j+2]
+                    new_vad_ids[2 * i: 2 * (i + 1)] = vad_ids[i, j:j + 2]
+                    new_attention_mask[2 * i: 2 * (i + 1)] = attention_mask[i, j:j + 2]
+            return new_query_tensors, new_role_ids, new_vad_ids, new_attention_mask
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
         self.seeker.model = self.seeker.model.to(self.device)
@@ -361,7 +368,7 @@ class Agent:
         action_ids = action_logits.argmax(-1)
         return rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids
 
-    def prepare_experience_pool_recursive(self, batch, n_step = 2):
+    def prepare_experience_pool_recursive(self, batch, n_step = 2, remove_time_dimension  = False):
         all_states = []
         all_rewards = []
         all_ref_rewards = []
@@ -371,6 +378,8 @@ class Agent:
         all_response_tensors = []
         all_ref_responses = []
         all_seeker_responses = []
+        all_emo_out = []
+        all_ref_emo_out = []
         for i, step in enumerate(range(n_step)):
             if i > 0:
                 recursive = True
@@ -408,10 +417,12 @@ class Agent:
             all_response_tensors.append(response_tensors)
             all_ref_responses.append(ref_response)
             all_seeker_responses.append(seeker_responses)
+            all_emo_out.append(torch.stack(all_paras["emo_out_prob"], dim = 0))
+            all_ref_emo_out.append(torch.stack(all_paras["emo_out_prob_ref"], dim = 0))
             batch = next_batch
         all_states.append(next_state)
-        query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states)
-        response_tensors = self.aggregate_responses(all_response_tensors)
+        query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states, remove_time_dimension = remove_time_dimension)
+        response_tensors = self.aggregate_responses(all_response_tensors, remove_time_dimension = remove_time_dimension)
         
         query_tensors = [query_tensors[i] for i in range(len(query_tensors))]
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
@@ -423,12 +434,20 @@ class Agent:
                                                                         else pad_val[k])) 
                 if not k =="decoder_strategy_ids"  else torch.stack(v)
                 for k,v in all_paras.items() }
+        if remove_time_dimension:
+            paras = {k:v.repeat_interleave(n_step, dim = 0) for k,v in all_paras.items()}
         for k, v in bool_paras.items():
             paras[k] = v
         paras["role_ids"] = role_ids
         paras["attention_mask"] = attention_mask
         paras["action_ids"]  = torch.stack(all_action_ids, dim = 1).squeeze(-1)
         paras["strategy_logit_ground"] = torch.stack(all_action_logits, dim = 1)
+
+        paras["emo_out_prob"] = torch.stack(all_emo_out, dim = 1).squeeze(-2)
+        paras["emo_out_prob_ref"] = torch.stack(all_ref_emo_out, dim = 1).squeeze(-2)
+        if remove_time_dimension:
+            paras["action_ids"] = paras["action_ids"].repeat_interleave(n_step, dim = 0)
+            paras["strategy_logit_ground"] = paras["strategy_logit_ground"].repeat_interleave(n_step, dim = 0)
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
 
@@ -490,6 +509,7 @@ class Agent:
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     def recursive_ppo_step(self, batch, ppo_batch):
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
+        #show_paras(paras)
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
         if seeker_responses is not None:

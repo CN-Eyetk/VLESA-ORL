@@ -1,10 +1,10 @@
 
 ppo_sent_reward_ratios=(2.0 3.0)
-lrs=("1e-06" "5e-07" "2e-06") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+lrs=("1e-06" "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0
 batch_size=64
-mini_batch_size=16
+mini_batch_size=4
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
@@ -41,9 +41,11 @@ for lr in "${lrs[@]}";do
                 --ppo_batch_size $batch_size
                 --ppo_mini_batch_size $mini_batch_size
                 --ppo_train_emo_strat
+                --ppo_recursive
                 --ppo_gradient_accumulation_steps $gradient_accumulation_steps
                 --generate_with_predicted_strategy
                 --ppo_use_word_level_reward
+                --ppo_add_strategy_noise
                 --ppo_use_lm_reward"
 
     ppo_args+=" --root_path "$root_path
@@ -61,14 +63,14 @@ for lr in "${lrs[@]}";do
     comm_a=$cur_comm
     
     if [ $train == 1 ]; then
-    #accelerate launch $comm_a
-    python3 $comm_a
+    accelerate launch $comm_a
+    #python3 $comm_a
     fi
 
     if [ $eval == 1 ]; then
-    steps=(19 39 59 79 99 119) # 29 39 49 59 69)
+    steps=(19) # 29 39 49 59 69)
     for step in "${steps[@]}";do
-    pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-05-13/${ppo_prefix}temp"
+    pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-05-17/${ppo_prefix}temp"
     eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
     $eval_comm_a

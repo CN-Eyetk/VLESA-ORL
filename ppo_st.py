@@ -34,7 +34,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-05-13"
+today = "2024-05-17"
 #print("Today's date:", today)
 args = load_arg()
 #args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")

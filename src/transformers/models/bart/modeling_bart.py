@@ -1121,7 +1121,7 @@ class BartEncoder(BartPretrainedModel):
                 strategy_logit_ground=strategy_logit_ground,
                 generate_with_predicted_strategy=generate_with_predicted_strategy,
                 generate_with_fixed_strategy=generate_with_fixed_strategy,
-                add_strategy_noise = False,
+                add_strategy_noise = add_strategy_noise if random.randint(1,5) == 1 else False,
             )
             emotion_intensity = None
             #if self.stg_use_cat_attn:

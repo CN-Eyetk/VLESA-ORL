@@ -490,6 +490,9 @@ class PPOTrainer(BaseTrainer):
             )
             if generate_ref_response:
                 with self.optional_peft_ctx():
+                    #May 17
+                    if "add_strategy_noise" in generation_kwargs.keys():
+                        generation_kwargs["add_strategy_noise"] = False
                     ref_response = self._generate_batched(
                         ref_model,
                         query_tensor,
