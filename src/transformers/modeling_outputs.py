@@ -69,6 +69,7 @@ class BaseModelOutput(ModelOutput):
     strategy_hidden: torch.FloatTensor = None
     kl_loss_strategy: torch.FloatTensor = None
     z: torch.FloatTensor = None
+    emotion_utt_logits: torch.FloatTensor = None
     
     
 

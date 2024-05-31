@@ -200,6 +200,7 @@ def load_config(args, eval = False):
         config.wo_Sresp = args.wo_Sresp
         config.layer_control = args.layer_control
         config.strategy_use_cvae = args.strategy_use_cvae
+        config.use_joint_emo = args.use_joint_emo
     return config
 
 def load_model_for_eval(args):
@@ -799,7 +800,7 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
     #  process input text
     #print("row",row)
     
-    inputs, roles, turns, strategy_labels, _, _, emo_in_dist, _, vad_ids= _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist else False),
+    inputs, roles, turns, strategy_labels, _, _, emo_in_dist, _, vad_ids= _get_inputs_from_text("EOS".join(row.split("EOS")[:-1]), tokenizer, strategy=strategy, get_emo_dist = False, get_emo_in_dist = (True if use_emo_in_dist or args.use_joint_emo else False),
                                                                                      args = args,
                                                                                      vad_tokenizer = vad_tokenizer 
                                                                                      )

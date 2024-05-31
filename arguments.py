@@ -131,6 +131,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
     parser.add_argument("--layer_control", action="store_true")
     parser.add_argument("--strategy_use_cvae", action="store_true")
+    parser.add_argument("--use_joint_emo", action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -289,7 +290,8 @@ def load_arg(return_tag = False, ):
             "use_uncertainty_loss":args_g.use_uncertainty_loss,
             "stop_norm_weight":args_g.stop_norm_weight,
             "wo_Sresp":args_g.wo_Sresp,
-            "layer_control":args_g.layer_control
+            "layer_control":args_g.layer_control,
+            "use_joint_emo":args_g.use_joint_emo
             }
     #add ppo related args
     ppo_args = {k:v for k,v in vars(args_g).items() if k.startswith("ppo")}

@@ -816,13 +816,22 @@ class BartEncoder(BartPretrainedModel):
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
         self.use_emo_in_dist = config.use_emo_in_dist
         self.n_emo_situ = 11
-        self.n_emo_in = config.n_emo_out if config.use_emo_in_dist else self.n_emo_situ
+        if self.config.use_joint_emo:
+            self.n_emo_in = self.n_emo_situ  + 28
+            self.emotion_head = nn.Linear(config.d_model, self.n_emo_situ)
+            self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_situ)
+            self.emotion_head_utt = nn.Linear(config.d_model, 28)
+            self.batchNorm_emotion_utt = nn.BatchNorm1d(28)
+        else:
+            self.n_emo_in = config.n_emo_out if config.use_emo_in_dist else self.n_emo_situ
+            self.emotion_head = nn.Linear(config.d_model, self.n_emo_in)
+            self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
         
         self.n_emo_out = config.n_emo_out
         self.n_strat = 8
-        self.emotion_head = nn.Linear(config.d_model if not config.emo_use_cat_attn else config.d_model * 2 , self.n_emo_in)
         
-        self.batchNorm_emotion = nn.BatchNorm1d(self.n_emo_in)
+        
+        
         self.batchNorm_strategy = nn.BatchNorm1d(self.n_strat)
         #self.dropout_emotion = nn.Dropout(0.2)
         #self.dropout_strategy = nn.Dropout(0.2)
@@ -940,6 +949,7 @@ class BartEncoder(BartPretrainedModel):
         strategy_logit_ground=None,
         strat_positions = None,
         emo_positions = None,
+        emo_in_dist=None,
         emo_out_dist=None,
         intensity=None,
         situation_hidden_states=None,
@@ -1113,13 +1123,14 @@ class BartEncoder(BartPretrainedModel):
         
         #calculate emo and strat logits
         if role_ids is not None or vad_ids is not None:
-            emotion_logits, emo_hidden = self.predict_emotion(
+            emotion_logits, emotion_utt_logits, emo_hidden = self.predict_emotion(
                 hidden_states=hidden_states,
                 emo_positions=emo_positions,
                 comet_hidden_states=None,
                 comet_mask=None,
                 last_token_index=last_token_index
             )
+            
             strategy_logits, strategy_hidden, strategy_embs, kl_loss_strategy = self.predict_strategy(
                 hidden_states=hidden_states,
                 strat_positions=strat_positions,
@@ -1130,7 +1141,8 @@ class BartEncoder(BartPretrainedModel):
                 generate_with_predicted_strategy=generate_with_predicted_strategy,
                 generate_with_fixed_strategy=generate_with_fixed_strategy,
                 add_strategy_noise = add_strategy_noise if random.randint(1,5) == 1 else False,
-                emotion_logits = emotion_logits if self.config.strategy_use_cvae else None
+                emo_hidden = emo_hidden if self.config.strategy_use_cvae else None,
+
             )
             emotion_intensity = None
             
@@ -1145,6 +1157,8 @@ class BartEncoder(BartPretrainedModel):
             strategy_hidden = None
             z = None
             kl_loss_strategy = None
+            emotion_utt_logits = None
+            
         
         # get strategy embedding
         #get emo out logits
@@ -1198,7 +1212,8 @@ class BartEncoder(BartPretrainedModel):
             situation_attention_mask = situation_attention_mask,
             strategy_hidden = strategy_hidden,
             kl_loss_strategy=kl_loss_strategy,
-            z = z if self.config.fuse_z else None
+            z = z if self.config.fuse_z else None,
+            emotion_utt_logits=emotion_utt_logits if self.config.use_joint_emo else None
 
         )
     def predict_emotion(self,
@@ -1207,41 +1222,26 @@ class BartEncoder(BartPretrainedModel):
                         comet_hidden_states = None,
                         comet_mask = None,
                         last_token_index = None,
-                        
                         ):
-        b = hidden_states.size(0)
-        if self.emo_use_cat_attn:
-                emo_hidden = hidden_states[:, 0, :]# if not self.emo_from_eos else hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                if self.emo_from_eos:
-                    emo_src_hidden = hidden_states[torch.arange(hidden_states.size(0))[:,None], emo_positions, :].squeeze(0)
-                    emo_attn_mask = emo_positions.ne(-1).float()
-                else:
-                    emo_src_hidden = comet_hidden_states
-                    emo_attn_mask = comet_mask.float()
-                if len(emo_src_hidden.size()) == 2:
-                    emo_src_hidden = emo_src_hidden.unsqueeze(0)
-                _, emo_hidden_att_v = self.emo_cat_attn(emo_hidden, emo_src_hidden, emo_attn_mask)
-                emo_hidden = torch.cat((emo_hidden, emo_hidden_att_v), dim = -1)
-                emotion_logits = self.emotion_head(emo_hidden)
-                emotion_intensity = None
+        if self.emo_from_eos:
+            last_eos_state =  hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
+            emo_hidden = last_eos_state
+
+        #elif self.emo_from_situ:
+        #    last_eos_state = None
+        #    emo_hidden = comet_hidden_states[:,0,:]
+        #    emotion_logits = self.emotion_head(emo_hidden)
         else:
-            #Befor 10-6, 1144-1180
-            if self.emo_from_eos:
-                last_eos_state =  hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:]
-                emo_hidden = last_eos_state
-                emotion_logits = self.emotion_head(emo_hidden)
-            #elif self.emo_from_situ:
-            #    last_eos_state = None
-            #    emo_hidden = comet_hidden_states[:,0,:]
-            #    emotion_logits = self.emotion_head(emo_hidden)
-            else:
-                last_eos_state = None
-                emo_hidden = hidden_states[:,0,:]
-                emotion_logits = self.emotion_head(emo_hidden)
-        
+            last_eos_state = None
+            emo_hidden = hidden_states[:,0,:]
+        emotion_logits = self.emotion_head(emo_hidden)
         emotion_logits = self.batchNorm_emotion(emotion_logits)
-        emotion_intensity = None
-        return emotion_logits, emo_hidden
+        if self.config.use_joint_emo:
+            emotion_utt_logits = self.emotion_head_utt(emo_hidden)
+            emotion_utt_logits = self.batchNorm_emotion_utt(emotion_utt_logits)
+        else:
+            emotion_utt_logits = None
+        return emotion_logits, emotion_utt_logits, emo_hidden
     def predict_strategy(self,
                         hidden_states,
                         strat_positions = None,
@@ -1252,12 +1252,12 @@ class BartEncoder(BartPretrainedModel):
                         generate_with_predicted_strategy = False,
                         generate_with_fixed_strategy = False,
                         add_strategy_noise = False,
-                        emotion_logits = False
+                        emo_hidden = None,
                         ):
 
         if self.config.strategy_use_cvae:
             strat_hidden = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:] if self.st_from_eos else hidden_states[:, 0, :]
-            strat_hidden = torch.cat([strat_hidden, emotion_logits], dim = -1)
+            strat_hidden = torch.cat([strat_hidden, emo_hidden], dim = -1)
             mu_prior, logvar_prior, strategy_logits = self.strategy_cvae(strat_hidden)
             if self.training:
                 mu_post, logvar_post, strategy_logits = self.strategy_cvae.forward_train(strat_hidden, strategy_logit_ground)
@@ -1274,6 +1274,7 @@ class BartEncoder(BartPretrainedModel):
                 strat_hidden = hidden_states[:, 0, :]
                 strategy_logits = self.strategy_head(strat_hidden)
             kl_loss_strategy = None
+        strategy_logits = self.batchNorm_strategy(strategy_logits)
 
         batch_size = strategy_logits.shape[0]
         strategy_id = self.strategy_id.to(strategy_logits.device)
@@ -1281,7 +1282,7 @@ class BartEncoder(BartPretrainedModel):
             #noise = torch.zeros((batch_size, 8))
             #from torch.distributions.dirichlet import Dirichlet
             strategy_noise = Dirichlet(torch.tensor([[1.0 / 8] * 8] * batch_size)).sample().to(strategy_logits.device)
-        strategy_logits = self.batchNorm_strategy(strategy_logits)
+        
         if strategy_logit_ground is not None:
             strategy_embs = torch.bmm(strategy_logit_ground.unsqueeze(1),self.strategy_embedding(strategy_id).unsqueeze(0).repeat(batch_size, 1, 1))
         if type(generate_with_fixed_strategy) == int:
@@ -1916,6 +1917,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 turn_ids=None,
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
+                emo_in_dist=emo_in_dist,
                 emo_out_dist=emo_dist if self.use_vae else None,
                 intensity=intensity,
                 strat_positions=strat_positions,
@@ -2122,6 +2124,12 @@ class BartForConditionalGeneration(BartPretrainedModel):
                             #KLLoss = KLLoss / batch_size
             if self.config.strategy_use_cvae and encoder_outputs.kl_loss_strategy is not None:
                 loss += self.emo_out_loss_ratio * encoder_outputs.kl_loss_strategy
+            if self.config.use_joint_emo and encoder_outputs.emotion_utt_logits is not None:
+                emo_in_loss_fct = nn.KLDivLoss(reduction="batchmean")
+                emotion_utt_logits = F.log_softmax(encoder_outputs.emotion_utt_logits, dim = -1)
+                emo_in_loss = emo_in_loss_fct(emotion_utt_logits, emo_in_dist)
+                loss += self.emo_out_loss_ratio * emo_in_loss
+                
 
 
             #if not return_dict:
@@ -2156,7 +2164,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         encoder = self.get_encoder()
         
         encoder_kwargs = {
-            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist") and not argument.startswith("emo_in_dist") #Update 9-27
+            argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist")# and not argument.startswith("emo_in_dist") #Update 5-31
         }
         #encoder_kwargs["emo_out_dist"] = model_kwargs["emo_dist"]
         model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)

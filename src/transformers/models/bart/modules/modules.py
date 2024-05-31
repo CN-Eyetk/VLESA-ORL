@@ -255,11 +255,11 @@ class StrategyVAE(nn.Module):
         self.n_strat = n_strat
         self.hidden_dim = config.d_model
         self.latent_dim = int(self.hidden_dim /2)
-        self.h_prior = nn.Linear(self.hidden_dim + self.n_emo_in, self.hidden_dim)
+        self.h_prior = nn.Linear(self.hidden_dim + self.hidden_dim, self.hidden_dim)
         self.mu_prior = nn.Linear(self.hidden_dim, self.latent_dim)
         self.logvar_prior = nn.Linear(self.hidden_dim, self.latent_dim)
         
-        self.h_posterior = nn.Linear(self.hidden_dim + self.n_emo_in + self.n_strat, self.hidden_dim)
+        self.h_posterior = nn.Linear(self.hidden_dim + self.hidden_dim + self.n_strat, self.hidden_dim)
         self.mu_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
         self.logvar_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
         

@@ -74,6 +74,7 @@ parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over 
 parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
 parser.add_argument("--layer_control", action="store_true")
 parser.add_argument("--strategy_use_cvae", action="store_true")
+parser.add_argument("--use_joint_emo", action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -144,6 +145,7 @@ else:
         +("-uct" if args_g.use_uncertainty_loss else "")  \
             +("-svae" if args_g.strategy_use_cvae else "")  \
                 +("-lc" if args_g.layer_control else "") \
+                    +("-je" if args_g.use_joint_emo else "") \
         +args_g.tag
                                 
 
@@ -221,7 +223,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else ""),
+            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -305,7 +307,8 @@ def load_arg():
             "stop_norm_weight":args_g.stop_norm_weight,
             "wo_Sresp":args_g.wo_Sresp,
             "layer_control":args_g.layer_control,
-            "strategy_use_cvae":args_g.strategy_use_cvae
+            "strategy_use_cvae":args_g.strategy_use_cvae,
+            "use_joint_emo":args_g.use_joint_emo
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
