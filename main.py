@@ -73,6 +73,7 @@ parser.add_argument("--stop_norm_weight",action="store_true")
 parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
 parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
 parser.add_argument("--layer_control", action="store_true")
+parser.add_argument("--strategy_use_cvae", action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -141,7 +142,7 @@ else:
         +("-fz" if args_g.fuse_z else "")  \
         +("-initlm" if args_g.init_embeddings_with_lm else "")  \
         +("-uct" if args_g.use_uncertainty_loss else "")  \
-            +("-swn" if args_g.stop_norm_weight else "")  \
+            +("-svae" if args_g.strategy_use_cvae else "")  \
                 +("-lc" if args_g.layer_control else "") \
         +args_g.tag
                                 
@@ -303,7 +304,8 @@ def load_arg():
             "use_uncertainty_loss":args_g.use_uncertainty_loss,
             "stop_norm_weight":args_g.stop_norm_weight,
             "wo_Sresp":args_g.wo_Sresp,
-            "layer_control":args_g.layer_control
+            "layer_control":args_g.layer_control,
+            "strategy_use_cvae":args_g.strategy_use_cvae
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

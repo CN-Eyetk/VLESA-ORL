@@ -199,6 +199,7 @@ def load_config(args, eval = False):
         config.stop_norm_weight = args.stop_norm_weight
         config.wo_Sresp = args.wo_Sresp
         config.layer_control = args.layer_control
+        config.strategy_use_cvae = args.strategy_use_cvae
     return config
 
 def load_model_for_eval(args):

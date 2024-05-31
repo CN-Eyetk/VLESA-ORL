@@ -213,6 +213,7 @@ class BartConfig(PretrainedConfig):
         self.stop_norm_weight = kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
         self.wo_Sresp = kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
         self.layer_control = kwargs["layer_control"] if "layer_control" in kwargs.keys() else False
+        self.strategy_use_cvae = kwargs["strategy_use_cvae"] if "strategy_use_cvae" in kwargs.keys() else False
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

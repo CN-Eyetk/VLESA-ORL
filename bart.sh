@@ -24,7 +24,7 @@ root_path="/disk/junlin/EmoSp"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_bart --use_kl --tag am508/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --log_on_wandb"
+comm="python3 main.py --no_fuse --use_bart --use_kl --tag am530/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --log_on_wandb"
 
 # "
 
@@ -68,6 +68,7 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=" --layer_control"
                                     cur_comm+=" --generate_with_predicted_strategy"
                                     cur_comm+=" --use_emo_in  "
+                                    cur_comm+=" --strategy_use_cvae "
                                     $cur_comm
                                     done
                                     done

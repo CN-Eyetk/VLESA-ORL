@@ -67,6 +67,7 @@ class BaseModelOutput(ModelOutput):
     situation_hidden_states: torch.FloatTensor = None
     situation_attention_mask: torch.FloatTensor = None
     strategy_hidden: torch.FloatTensor = None
+    kl_loss_strategy: torch.FloatTensor = None
     z: torch.FloatTensor = None
     
     

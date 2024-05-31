@@ -130,6 +130,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
     parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
     parser.add_argument("--layer_control", action="store_true")
+    parser.add_argument("--strategy_use_cvae", action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
