@@ -116,7 +116,7 @@ class Agent:
                 if next_vad_ids.size(-1) > max_len:
                     next_vad_ids = torch.concat((next_vad_ids[:1], next_vad_ids[-max_len+1:]))
                 mini_batch_next_vad_ids.append(next_vad_ids)
-            assert len(next_role_ids) == len(next_vad_ids)
+            #assert len(next_role_ids) == len(next_vad_ids)
             #print("next_role_ids", next_role_ids)
             assert next_role_ids.size(-1) == next_query.size(-1)
             mini_batch_next_query_tensors.append(next_query)
@@ -174,8 +174,8 @@ class Agent:
                                                                                                 **self.generation_kwargs
                                                                                                     )
                 paras["add_strategy_noise"] = False #收集经验后，停止strategy noise扰动
-                paras["emo_out_prob"] = torch.stack(response_emo, dim = 0)
-                paras["emo_out_prob_ref"] = torch.stack(ref_response_emo, dim = 0)
+                paras["emotion_logits"] = torch.stack(response_emo, dim = 0)
+                paras["emotion_logits_ref"] = torch.stack(ref_response_emo, dim = 0)
                 all_query_tensors += query_tensors
                 # 拼接response_tensors和input_ids，放入all_next_query_tensors，注意padding要抹掉
                 query_role_ids = paras["role_ids"]
@@ -248,36 +248,46 @@ class Agent:
     def aggregate_states(self, states, remove_time_dimension = False):
         query_tensors = []
         role_ids = []
-        vad_ids = []
+        if self.use_vad_labels:
+            vad_ids = []
+        else:
+            vad_ids = None
         attention_mask = []
         for state in states:
             cur_query_tensors = pad_sequence(state["input_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
             cur_role_ids = pad_sequence(state["role_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
-            cur_vad_ids = pad_sequence(state["vad_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
             cur_attention_mask = pad_sequence(state["attention_masks"], batch_first = True, padding_value = False).T #attention mask pad False!
             
             query_tensors.append(cur_query_tensors)
             role_ids.append(cur_role_ids)
-            vad_ids.append(cur_vad_ids)
             attention_mask.append(cur_attention_mask)
+            if self.use_vad_labels:
+                cur_vad_ids = pad_sequence(state["vad_ids"], batch_first = True, padding_value = self.tokenizer.pad_token_id).T
+                vad_ids.append(cur_vad_ids)
         query_tensors = pad_sequence(query_tensors, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         role_ids = pad_sequence(role_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
-        vad_ids = pad_sequence(vad_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         attention_mask = pad_sequence(attention_mask, batch_first = False, padding_value = False).T   
+        if self.use_vad_labels:
+            vad_ids = pad_sequence(vad_ids, batch_first = False, padding_value = self.tokenizer.pad_token_id).T
         if remove_time_dimension:
             encode_step = query_tensors.size(1)
             batch_size = query_tensors.size(0)
             input_len = query_tensors.size(-1)
             new_query_tensors = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device) + self.tokenizer.pad_token_id
             new_role_ids = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device)  + self.tokenizer.pad_token_id
-            new_vad_ids = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device)  + self.tokenizer.pad_token_id
             new_attention_mask = torch.zeros(batch_size * (encode_step - 1), 2, input_len).bool().to(query_tensors.device) 
+            
+            if self.use_vad_labels:
+                new_vad_ids = torch.zeros(batch_size * (encode_step - 1), 2, input_len).to(query_tensors.device)  + self.tokenizer.pad_token_id
+            else:
+                new_vad_ids = None
             for i in range(batch_size):
                 for j in range(encode_step - 1):
                     new_query_tensors[2 * i: 2 * (i + 1)] = query_tensors[i, j: j+2]
                     new_role_ids[2 * i: 2 * (i + 1)] = role_ids[i, j: j+2]
-                    new_vad_ids[2 * i: 2 * (i + 1)] = vad_ids[i, j:j + 2]
                     new_attention_mask[2 * i: 2 * (i + 1)] = attention_mask[i, j:j + 2]
+                    if self.use_vad_labels:
+                        new_vad_ids[2 * i: 2 * (i + 1)] = vad_ids[i, j:j + 2]
             return new_query_tensors, new_role_ids, new_vad_ids, new_attention_mask
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
@@ -315,13 +325,17 @@ class Agent:
             input_ids[i] = torch.cat((input_ids[i][:non_path_length], new_input_ids), dim = -1) #Feb9 修正，concat的时候要剔除前面的pad
             role_ids[i] = torch.cat((role_ids[i][:non_path_length], new_role_ids), dim = -1)
             attention_masks[i] = torch.cat((attention_masks[i][:non_path_length], new_attention_masks), dim = -1)
-            vad_ids[i] = torch.cat((vad_ids[i][:non_path_length], new_vad_ids), dim = -1)
-            assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
+            if self.model.config.use_vad_labels:
+                vad_ids[i] = torch.cat((vad_ids[i][:non_path_length], new_vad_ids), dim = -1)
+            assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1)# == vad_ids[i].size(-1)
+            if self.model.config.use_vad_labels:
+                assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
             if input_ids[i].size(-1) > max_len:
                 input_ids[i] = torch.concat((input_ids[i][:1], input_ids[i][-max_len+1:]))
                 role_ids[i] = torch.concat((role_ids[i][:1], role_ids[i][-max_len+1:]))
                 attention_masks[i] = torch.concat((attention_masks[i][:1], attention_masks[i][-max_len+1:]))
-                vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
+                if self.model.config.use_vad_labels:
+                    vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
 
     def get_reward_and_response(self, state, next_state = None):
         response = self.tokenizer.batch_decode(state["response_tensor"], skip_special_tokens = True)
@@ -366,8 +380,18 @@ class Agent:
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?
         action_ids = action_logits.argmax(-1)
-        return rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids
 
+        return rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids
+    def make_multiple_actions(self, batch_actions, batch_emotion_logits):
+        batch_emotions = batch_emotion_logits.argmax(-1)
+        #print("batch_actions",batch_actions)
+        #print("batch_actions",batch_actions.shape)
+        #print("batch_actions",batch_emotions)
+        #print("batch_actions",batch_emotions.shape)
+        new_batch_actions = torch.stack((batch_actions, batch_emotions), dim = -1).view(-1,4)
+        #print("new_batch_actions",new_batch_actions)
+        return new_batch_actions
+        
     def prepare_experience_pool_recursive(self, batch, n_step = 2, remove_time_dimension  = False):
         all_states = []
         all_rewards = []
@@ -393,11 +417,14 @@ class Agent:
             state, next_state, all_paras, bool_paras = self.step(batch, recursive = recursive)
             
             rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
+            
             next_batch = {
                 "input_ids":next_state["input_ids"],
                 "role_ids":next_state["role_ids"],
-                "vad_ids":next_state["vad_ids"]
+                
             }
+            if self.use_vad_labels:
+                next_batch["vad_ids"] = next_state["vad_ids"]
             for k,v in next_batch.items():
                 next_batch[k] = pad_sequence(state[k], batch_first = True, padding_value = self.tokenizer.pad_token_id)
                 #print("next batch ",k ,next_batch[k].shape)
@@ -417,8 +444,8 @@ class Agent:
             all_response_tensors.append(response_tensors)
             all_ref_responses.append(ref_response)
             all_seeker_responses.append(seeker_responses)
-            all_emo_out.append(torch.stack(all_paras["emo_out_prob"], dim = 0))
-            all_ref_emo_out.append(torch.stack(all_paras["emo_out_prob_ref"], dim = 0))
+            all_emo_out.append(torch.stack(all_paras["emotion_logits"], dim = 0))
+            all_ref_emo_out.append(torch.stack(all_paras["emotion_logits_ref"], dim = 0))
             batch = next_batch
         all_states.append(next_state)
         query_tensors, role_ids, vad_ids, attention_mask = self.aggregate_states(all_states, remove_time_dimension = remove_time_dimension)
@@ -442,9 +469,10 @@ class Agent:
         paras["attention_mask"] = attention_mask
         paras["action_ids"]  = torch.stack(all_action_ids, dim = 1).squeeze(-1)
         paras["strategy_logit_ground"] = torch.stack(all_action_logits, dim = 1)
-
-        paras["emo_out_prob"] = torch.stack(all_emo_out, dim = 1).squeeze(-2)
-        paras["emo_out_prob_ref"] = torch.stack(all_ref_emo_out, dim = 1).squeeze(-2)
+        paras["emotion_logits"] = torch.stack(all_emo_out, dim = 1).squeeze(-2)
+        paras["emotion_logits_ref"] = torch.stack(all_ref_emo_out, dim = 1).squeeze(-2)
+        if self.ppo_trainer.config.multiple_actions:
+            paras["action_ids"] = self.make_multiple_actions(paras["action_ids"], paras["emotion_logits"])
         if remove_time_dimension:
             paras["action_ids"] = paras["action_ids"].repeat_interleave(n_step, dim = 0)
             paras["strategy_logit_ground"] = paras["strategy_logit_ground"].repeat_interleave(n_step, dim = 0)
@@ -501,6 +529,8 @@ class Agent:
         paras["role_ids"] = role_ids
         paras["attention_mask"] = attention_mask
         paras["action_ids"]  = action_ids
+        if self.ppo_trainer.config.make_multiple_actions:
+            paras["action_ids"] = self.make_multiple_actions(paras["action_ids"], paras["emotion_logits"])
         paras["strategy_logit_ground"] = action_logits
         if self.use_vad_labels:
             paras["vad_ids"] = vad_ids
@@ -509,12 +539,13 @@ class Agent:
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     def recursive_ppo_step(self, batch, ppo_batch):
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
-        #show_paras(paras)
+        
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
         if seeker_responses is not None:
             ppo_batch["seeker_reponses"] = seeker_responses
         scores = rewards
+        #check_format(query_tensors, paras, self.tokenizer)
         stats = self.ppo_trainer.step(query_tensors, 
                                 response_tensors, 
                                 scores = scores, #base_line_rewards
@@ -552,23 +583,16 @@ class Agent:
 def check_format(query_tensors, paras, tokenizer):
     with open("verbose_ppos.txt","w+") as file:
         for i in range(len(query_tensors)):
-            step_1_query = tokenizer.decode(query_tensors[i][0])
-            step_2_query = tokenizer.decode(query_tensors[i][1])
-            length = len(query_tensors[i][0])
-            file.write(step_1_query.replace("</s><s>","</s>\n<s>"))
+            emo_logits = paras["emotion_logits"][i].tolist()
+            emo_ref_logits = paras["emotion_logits_ref"][i].tolist()
+            action_ids = paras["action_ids"][i].tolist()
+            file.write(emo_logits)
             file.write("========\n")
-            file.write(step_2_query.replace("</s><s>","</s>\n<s>"))
+            file.write(emo_ref_logits)
             file.write("========\n")
-            for j in range(length):
-                id_1 = query_tensors[i][0][j]
-                id_2 = query_tensors[i][1][j]
-                role_1 = paras["role_ids"][i][0][j]
-                role_2 = paras["role_ids"][i][1][j]
-                vad_1 = paras["vad_ids"][i][0][j]
-                vad_2 = paras["vad_ids"][i][1][j]
-                attention_1 = paras["attention_mask"][i][0][j]
-                attention_2 = paras["attention_mask"][i][1][j]
-                file.write(f"{tokenizer.decode(id_2)}\t{role_2}\t{tokenizer.decode(vad_2)}\t{attention_2}\n")
+            file.write(action_ids)
+            file.write("========\n")
+            
             #print("query_tensors",query_tensors[i].shape)
             #print("response_tensors",response_tensors[i].shape)
             #print("rewards",rewards[i])

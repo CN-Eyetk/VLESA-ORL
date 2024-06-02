@@ -70,6 +70,8 @@ class BaseModelOutput(ModelOutput):
     kl_loss_strategy: torch.FloatTensor = None
     z: torch.FloatTensor = None
     emotion_utt_logits: torch.FloatTensor = None
+    action_states: Optional[Tuple[torch.FloatTensor]] = None
+    actions: Optional[Tuple[torch.FloatTensor]] = None
     
     
 

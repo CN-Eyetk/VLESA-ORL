@@ -14,14 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .modeling_base import PreTrainedModelWrapper, create_reference_model
-from .modeling_value_head import AutoModelForCausalLMWithValueHead, AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, AutoModelForMultiLevelWithValueHead
+from .modeling_value_head import AutoModelForCausalLMWithValueHead, AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, AutoModelForMultiLevelWithValueHead, AutoModelForMultiLevelWithValueHead2
 
 
 SUPPORTED_ARCHITECTURES = (
     AutoModelForCausalLMWithValueHead,
     AutoModelForSeq2SeqLMWithValueHead,
     AutoModelForDialogueActLMWithValueHead,
-    AutoModelForMultiLevelWithValueHead
+    AutoModelForMultiLevelWithValueHead,
+    AutoModelForMultiLevelWithValueHead2
 )
 
 from ..import_utils import is_diffusers_available

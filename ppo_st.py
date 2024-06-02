@@ -1,6 +1,8 @@
 
 from dataclasses import dataclass, field
 import os 
+import os
+#os.environ['CUDA_LAUNCH_BLOCKING'] = '1' # 下面老是报错 shape 不一致
 #local_rank = os.getenv("LOCAL_RANK")
 #device_string = "cuda:" + str(local_rank)
 from typing import Optional
@@ -16,7 +18,7 @@ import torch
 import os
 from peft import LoraConfig
 from tqdm import tqdm
-from trl import AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, PPOConfig, CustomPPOTrainer, DialogueActPPOTrainer
+from trl import AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, AutoModelForMultiLevelWithValueHead2, PPOConfig, CustomPPOTrainer, DialogueActPPOTrainer
 from trl import JointPPOTrainer, AutoModelForMultiLevelWithValueHead
 from arguments import load_arg
 from lexical_diversity import lex_div as ld
@@ -67,8 +69,10 @@ class ScriptArguments:
             num_train_epochs=1,
             warmup_steps=args.ppo_warmup_steps,
             use_word_level_reward = args.ppo_use_word_level_reward,
-            n_action = 8,
+            #n_action = 8,
             use_full_loss = args.ppo_use_full_loss,
+            multiple_actions = args.ppo_multiple_actions,
+            n_actions = args.ppo_n_actions
             
             
             
@@ -128,6 +132,10 @@ if __name__ == "__main__":
         if ppo_args.lm_only:
             trl_model_class = AutoModelForSeq2SeqLMWithValueHead
             trainer_class = CustomPPOTrainer
+        elif ppo_args.ppo_config.multiple_actions:
+            print("train both strategy and emotion")
+            trl_model_class = AutoModelForMultiLevelWithValueHead2
+            trainer_class = JointPPOTrainer
         else:
             trl_model_class =  AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
             trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer

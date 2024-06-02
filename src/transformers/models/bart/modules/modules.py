@@ -288,7 +288,7 @@ class StrategyVAE(nn.Module):
         #emotion_id = self.emotion_id.to(hidden_prior.device) 
         #emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
         #E_prob = torch.log(E_prob.squeeze(1))
-        return mu, logvar, strategy_logits
+        return mu, logvar, strategy_logits, z
     
     def forward_train(self,  hidden_prior, strategy_logits_ground):
 
@@ -298,7 +298,7 @@ class StrategyVAE(nn.Module):
         #emotion_id = self.emotion_id.to(hidden_emo.device) 
         #emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
         #E_prob = torch.log(E_prob.squeeze(1))
-        return mu, logvar, strategy_logits
+        return mu, logvar, strategy_logits, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """
@@ -611,25 +611,28 @@ class EmoTransVAE_MixStrat(nn.Module):
         mus, logvars = self.prior(hidden_prior_emo, hidden_prior_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_prior_emo.device)
-        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2)
-        emotion_id = self.emotion_id.to(hidden_prior_emo.device) 
-        #print("emo_out_prob",emo_out_prob.shape)
-        emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
+        emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob, z
-    
+        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
+    def get_emo_out_emb(self, emo_out_logits, q_0 = None):
+        b = emo_out_logits.size(0)
+        emo_out_prob = torch.softmax(emo_out_logits, dim=-1)
+        emotion_id = self.emotion_id.to(emo_out_logits.device) 
+        if q_0 is not None:
+            emo_out_emb = torch.bmm(q_0.unsqueeze(-2),  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
+        else:
+            emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
+        return emo_out_prob, emo_out_emb
     def forward_train(self,  hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
         b = hidden_post_emo.size(0)
         mus, logvars = self.posterior(hidden_post_emo, hidden_post_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_post_emo.device)
-        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2)
-        emotion_id = self.emotion_id.to(emo_out_prob.device) 
-        
-        emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  
-                                self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
+        emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits, q_0 = q_0)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob, z
+        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """

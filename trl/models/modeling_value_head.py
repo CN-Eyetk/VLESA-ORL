@@ -33,14 +33,17 @@ class ValueHead(nn.Module):
         self.dropout = nn.Dropout(summary_dropout_prob) if summary_dropout_prob else nn.Identity()
 
         # some models such as OPT have a projection layer before the word embeddings - e.g. OPT-350m
-        if hasattr(config, "hidden_size"):
-            hidden_size = config.hidden_size
-        if hasattr(config, "word_embed_proj_dim"):
-            hidden_size = config.word_embed_proj_dim
-        elif hasattr(config, "is_encoder_decoder"):
-            if config.is_encoder_decoder and hasattr(config, "decoder"):
-                if hasattr(config.decoder, "hidden_size"):
-                    hidden_size = config.decoder.hidden_size
+        if "hidden_size" in kwargs:
+            hidden_size = kwargs["hidden_size"]
+        else:
+            if hasattr(config, "hidden_size"):
+                hidden_size = config.hidden_size
+            if hasattr(config, "word_embed_proj_dim"):
+                hidden_size = config.word_embed_proj_dim
+            elif hasattr(config, "is_encoder_decoder"):
+                if config.is_encoder_decoder and hasattr(config, "decoder"):
+                    if hasattr(config.decoder, "hidden_size"):
+                        hidden_size = config.decoder.hidden_size
 
         self.summary = nn.Linear(hidden_size, 1)
 
@@ -837,6 +840,239 @@ class AutoModelForMultiLevelWithValueHead(PreTrainedModelWrapper):
                 
                 base_model_output = self.pretrained_model(encoder_outputs = base_model_encoder_output,
                                                           emo_out_prob = emo_out_prob,
+                                                        attention_mask = attention_mask[:,i,:],
+                                                        decoder_input_ids = kwargs["decoder_input_ids"][:,i,:],
+                                                        )
+                last_hidden_state = base_model_output.decoder_last_hidden_states
+                values[:,i] = self.v_head_lm(last_hidden_state).squeeze(-1) #Use lm value here!
+                lm_logits[:,i] = base_model_output.lm_logits
+                #loss = base_model_output.loss
+        lm_logits = lm_logits.flatten(0, 1)
+        values = values.flatten(0, 1)
+        return (act_logits_each_turn, loss, value_each_turn, lm_logits, values) #[b,t+1,8], 0, [b,t+1], [b, t, l_y, V], [b, t, l_y]
+
+    def generate(self, *args, **kwargs):
+        r"""
+        We call `generate` on the wrapped model.
+        """
+        return self.pretrained_model.generate(*args, **kwargs)
+
+
+class AutoModelForMultiLevelWithValueHead2(PreTrainedModelWrapper):
+    r"""
+    A seq2seq model with a value head in addition to the language model head.
+    This class inherits from `~trl.PreTrainedModelWrapper` and wraps a
+    `transformers.PreTrainedModel` class. The wrapper class supports classic functions
+    such as `from_pretrained` and `push_to_hub` and also provides some additional
+    functionalities such as `generate`.
+
+    Args:
+        pretrained_model (`transformers.PreTrainedModel`):
+            The model to wrap. It should be a causal language model such as GPT2.
+            or any model mapped inside the `AutoModelForSeq2SeqLM` class.
+        kwargs:
+            Additional keyword arguments passed along to the `ValueHead` class.
+    """
+    transformers_parent_class = AutoModelForSeq2SeqLM
+    lm_head_namings = ["lm_head", "embed_out", "output_projection"]
+    supported_args = (
+        "summary_dropout_prob",
+        "v_head_initializer_range",
+        "v_head_init_strategy",
+    )
+
+    def __init__(self, pretrained_model, **kwargs):
+        super().__init__(pretrained_model, **kwargs)
+        v_head_kwargs, _, _ = self._split_kwargs(kwargs)
+        self.is_encoder_decoder = True
+
+        if not self._has_lm_head():
+            raise ValueError("The model does not have a language model head, please use a model that has one.")
+
+        self.v_head = ValueHead(self.pretrained_model.config, **v_head_kwargs, hidden_size = 2 * self.pretrained_model.config.d_model)
+        self.v_head_lm = ValueHead(self.pretrained_model.config, **v_head_kwargs)
+
+        self._init_weights(**v_head_kwargs)
+
+    def _has_lm_head(self):
+        # check module names of all modules inside `pretrained_model` to find the language model head
+        for name, module in self.pretrained_model.named_modules():
+            if any(attribute in name for attribute in self.lm_head_namings):
+                return True
+        return False
+
+    def post_init(self, state_dict):
+        r"""
+        We add the state dictionary of the value head to the state dictionary of the wrapped model
+        by prepending the key with `v_head.`. This function removes the `v_head.` prefix from the
+        keys of the value head state dictionary.
+        """
+        for k in list(state_dict.keys()):
+            if "v_head." in k:
+                state_dict[k.replace("v_head.", "")] = state_dict.pop(k)
+
+        self.v_head.load_state_dict(state_dict, strict=False)
+        for k in list(state_dict.keys()):
+            if "v_head_lm." in k:
+                state_dict[k.replace("v_head_lm.", "")] = state_dict.pop(k)
+        self.v_head_lm.load_state_dict(state_dict, strict=False)
+        del state_dict
+
+        if hasattr(self.pretrained_model, "hf_device_map"):
+            if (
+                "cpu" in self.pretrained_model.hf_device_map.values()
+                or "disk" in self.pretrained_model.hf_device_map.values()
+            ):
+                raise ValueError(
+                    "The model is offloaded on CPU or disk - CPU & disk offloading is not supported for ValueHead models."
+                )
+
+            # get the lm_head device
+            for name, module in self.pretrained_model.named_modules():
+                if any(attribute in name for attribute in self.lm_head_namings):
+                    lm_head_device = module.weight.device
+                    break
+
+            # put v_head on the same device as the lm_head to avoid issues
+            self.v_head = self.v_head.to(lm_head_device)
+            self.v_head_lm = self.v_head_lm.to(lm_head_device)
+
+            def set_device_hook(module, input, outputs):
+                r"""
+                A hook that sets the device of the output of the model to the device of the first
+                parameter of the model.
+
+                Args:
+                    module (`nn.Module`):
+                        The module to which the hook is attached.
+                    input (`tuple`):
+                        The input to the module.
+                    outputs (`tuple`):
+                        The output of the module.
+                """
+                new_output = ()
+                for output in outputs:
+                    if isinstance(output, torch.Tensor):
+                        new_output += (output.to(lm_head_device),)
+                    else:
+                        new_output += (output,)
+                return new_output
+
+            self.register_forward_hook(set_device_hook)
+            self.is_sequential_parallel = True
+
+    def state_dict(self, *args, **kwargs):
+        r"""
+        Returns the state dictionary of the model. We add the state dictionary of the value head
+        to the state dictionary of the wrapped model by prepending the key with `v_head.`.
+        """
+        if not self.is_peft_model:
+            pretrained_model_state_dict = self.pretrained_model.state_dict(*args, **kwargs)
+        else:
+            # if it is a peft model, only save the v_head
+            pretrained_model_state_dict = {}
+
+        v_head_state_dict = self.v_head.state_dict(*args, **kwargs)
+        v_head_lm_state_dict = self.v_head_lm.state_dict(*args, **kwargs)
+        for k, v in v_head_state_dict.items():
+            pretrained_model_state_dict[f"v_head.{k}"] = v
+        for k, v in v_head_lm_state_dict.items():
+            pretrained_model_state_dict[f"v_head_lm.{k}"] = v
+        return pretrained_model_state_dict
+
+    def push_to_hub(self, *args, **kwargs):
+        setattr(self.pretrained_model, "v_head", self.v_head)
+        setattr(self.pretrained_model, "v_head_lm", self.v_head_lm)
+
+        return self.pretrained_model.push_to_hub(*args, **kwargs)
+
+    def _init_weights(self, **kwargs):
+        r"""
+        We initialize the weights of the value head.
+        """
+        initializer_range = kwargs.pop("v_head_initializer_range", 0.2)
+        # random init by default
+        init_strategy = kwargs.pop("v_head_init_strategy", None)
+        if init_strategy is None:
+            # do nothing
+            pass
+        elif init_strategy == "normal":
+            self.v_head.summary.weight.data.normal_(mean=0.0, std=initializer_range)
+            self.v_head.summary.bias.data.zero_()
+            self.v_head_lm.summary.weight.data.normal_(mean=0.0, std=initializer_range)
+            self.v_head_lm.summary.bias.data.zero_()
+
+    def forward(
+        self,
+        input_ids=None,#
+        past_key_values=None,
+        attention_mask=None,
+        **kwargs,
+    ):
+        kwargs["past_key_values"] = past_key_values
+        if self.is_peft_model and self.pretrained_model.active_peft_config.peft_type == "PREFIX_TUNING":
+            kwargs.pop("past_key_values")
+        #print("input_ids",input_ids.shape)
+        #print("attention_mask",attention_mask.shape)
+        #for k,v in kwargs.items():
+        #    try:
+        #        print(f"{k}-{v.shape}")
+        #    except:
+        #        print(f"{k}-{v}")
+        encoder = self.pretrained_model.get_encoder()
+        n_step = input_ids.size(-2)
+        batch_size = input_ids.size(0)
+        #act_hidden_state_each_turn = torch.zeros(batch_size, 
+        #                                        n_step,
+        #                                        self.pretrained_model.config.d_model,
+        #                                        ).to(input_ids.device)
+        act_logits_each_turn = torch.zeros(batch_size,
+                                            n_step - 1,
+                                            encoder.n_strat + encoder.n_emo_out,
+                                            ).to(input_ids.device)
+        value_each_turn = torch.zeros(batch_size,
+                                      n_step).to(input_ids.device)
+        y_len = kwargs["decoder_input_ids"].size(-1)
+        vocab_size = self.pretrained_model.config.vocab_size
+        lm_logits = torch.zeros(batch_size, (n_step - 1), y_len, vocab_size).to(input_ids.device) #最后一个step没有generate response
+        values = torch.zeros(batch_size, (n_step - 1), y_len).to(input_ids.device)
+        for i in range(n_step):
+            if "vad_ids" in kwargs.keys():
+                vad_ids = kwargs["vad_ids"][:,i,:]
+            else:
+                vad_ids = None
+            
+            base_model_encoder_output = encoder(
+                input_ids=input_ids[:,i,:],
+                attention_mask=attention_mask[:,i,:],
+                role_ids=kwargs["role_ids"][:,i,:],
+                vad_ids= vad_ids,
+                generate_with_predicted_strategy = kwargs["generate_with_predicted_strategy"],
+                output_hidden_states=True,  # We force the model to output hidden states,
+                strategy_logit_ground=kwargs["strategy_logit_ground"][:,i,:] if "strategy_logit_ground" in kwargs and i < n_step - 1 else None
+                #**kwargs,
+            )
+            loss = None            
+            act_hidden_state = base_model_encoder_output.strategy_hidden
+            
+            value_each_turn[:,i] = self.v_head(act_hidden_state).squeeze(-1)
+            if i < n_step - 1:
+                act_logits = torch.cat((base_model_encoder_output.actions[0], base_model_encoder_output.actions[1].squeeze(1)), dim = -1) #[b, n_strategy + n_emo]
+                # force upcast in fp32 if logits are in half-precision
+                if act_logits.dtype != torch.float32:
+                    act_logits = act_logits.float()
+                act_logits_each_turn[:,i,:] = act_logits
+                
+                if kwargs["emotion_logits"] is not None:
+                    emotion_logits =  kwargs["emotion_logits"][:,i,:]
+                    if len(emotion_logits.size()) == 2:
+                        emotion_logits = emotion_logits[:,None,:]
+                else:
+                    # during ppo
+                    emotion_logits = None
+                
+                base_model_output = self.pretrained_model(encoder_outputs = base_model_encoder_output,
+                                                          emotion_logits = emotion_logits,
                                                         attention_mask = attention_mask[:,i,:],
                                                         decoder_input_ids = kwargs["decoder_input_ids"][:,i,:],
                                                         )

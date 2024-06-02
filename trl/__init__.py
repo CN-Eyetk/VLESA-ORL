@@ -16,6 +16,7 @@ from .models import (
     AutoModelForCausalLMWithValueHead,
     AutoModelForSeq2SeqLMWithValueHead,
     AutoModelForDialogueActLMWithValueHead,
+    AutoModelForMultiLevelWithValueHead2,
     AutoModelForMultiLevelWithValueHead,
     PreTrainedModelWrapper,
     create_reference_model,

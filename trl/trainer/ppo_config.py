@@ -151,7 +151,10 @@ class PPOConfig:
     use_word_level_reward: bool = False
     
     #aciton size
-    n_action: int = None
+    n_actions: list = None
+    multiple_actions: bool = False
+    
+    
     
     
     """TO BE FILLED In RUNTIME: the effective `batch_size` across all processes"""

@@ -61,8 +61,9 @@ def load_tag(args):
     +("-fz" if args.fuse_z else "")  \
         +("-initlm" if args.init_embeddings_with_lm else "")  \
         +("-uct" if args.use_uncertainty_loss else "")  \
-            +("-swn" if args.stop_norm_weight else "")  \
+            +("-svae" if args.strategy_use_cvae else "")  \
                 +("-lc" if args.layer_control else "") \
+                        +("-je" if args.use_joint_emo else "") \
         +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
@@ -162,6 +163,8 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_recursive", action="store_true")
     ppo_parser.add_argument("--ppo_lm_only", action="store_true")
     ppo_parser.add_argument("--ppo_return_arg", action="store_true")
+    ppo_parser.add_argument("--ppo_multiple_actions", action="store_true")
+    ppo_parser.add_argument("--ppo_n_actions", nargs='+', type=int, default=[8, 28])
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
     #GROUP += f"{TAG}_ppo"
@@ -207,7 +210,7 @@ def load_arg(return_tag = False, ):
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/124_II_{}_{}_{}{}cached".format(args_g.root_path,"noprep" if not args_g.use_prepend else "prep", "bart_" if args_g.use_bart else "", "emin_" if args_g.use_emo_in else "","w_vad" if args_g.use_vad_labels else ""),
+            "data_cache_dir":"{}/531_II_{}_{}_{}{}cached".format(args_g.root_path,"noprep" if not args_g.use_prepend else "prep", "bart_" if args_g.use_bart else "", "emin_" if args_g.use_emo_in else "","w_vad" if args_g.use_vad_labels else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":args_g.over_write,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not args_g.use_bart else "facebook/bart-base",
@@ -291,6 +294,7 @@ def load_arg(return_tag = False, ):
             "stop_norm_weight":args_g.stop_norm_weight,
             "wo_Sresp":args_g.wo_Sresp,
             "layer_control":args_g.layer_control,
+            "strategy_use_cvae":args_g.strategy_use_cvae,
             "use_joint_emo":args_g.use_joint_emo
             }
     #add ppo related args
