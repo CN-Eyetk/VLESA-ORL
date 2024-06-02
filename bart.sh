@@ -10,19 +10,19 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-ct_loss_ratios=(0.5)
+ct_loss_ratios=(0.1 0.05)
 warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
 emo_loss_rat=(0.05)
-latent_dims=(32 16 8) # 256)
+latent_dims=(16 32 8) # 256)
 root_path="/disk/junlin/EmoSp"
 #root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
 comm="python3 main.py --no_fuse --use_bart --use_kl --tag pm602 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --log_on_wandb --do_train"
 

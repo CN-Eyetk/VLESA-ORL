@@ -1270,7 +1270,8 @@ class BartEncoder(BartPretrainedModel):
             if self.training and strategy_logit_ground is not None:
                 mu_post, logvar_post, strategy_logits_post, z = self.strategy_cvae.forward_train(strat_hidden, strategy_logit_ground)
                 kl_loss_strategy = self.strategy_cvae.kl_div(mu_prior, logvar_prior, mu_post, logvar_post)
-                rec_loss = CrossEntropyLoss()(strategy_logits_post.view(-1, 8), strategy_logit_ground.argmax(-1).view(-1))
+                strategy_labels = strategy_logit_ground.argmax(-1).view(-1)
+                rec_loss = CrossEntropyLoss()(strategy_logits_post.view(-1, 8), strategy_labels)
                 kl_loss_strategy += rec_loss
             else:
                 kl_loss_strategy = None
@@ -1286,7 +1287,7 @@ class BartEncoder(BartPretrainedModel):
                 strategy_logits = self.strategy_head(strat_hidden)
             kl_loss_strategy = None
             strategy_state = strat_hidden
-        strategy_logits = self.batchNorm_strategy(strategy_logits)
+            strategy_logits = self.batchNorm_strategy(strategy_logits)
 
         batch_size = strategy_logits.shape[0]
         strategy_id = self.strategy_id.to(strategy_logits.device)
