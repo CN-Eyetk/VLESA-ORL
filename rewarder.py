@@ -14,6 +14,7 @@ from openai import OpenAI
 from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments, LLamaSeekerArguments
 from peft import PeftModel
 import transformers
+
 #from nltk import tokenize
 #nltk.download('vader_lexicon')
 class NLTK_Senti:
@@ -110,18 +111,8 @@ class SeekerCollater:
         self.doing_response_generation = doing_response_generation
     def collate(self, features):
         fields = features[0].keys()
-        
-        #print("fields,", fields)
-        #print(features[0])
         batch = {}        
-        #hist_input_ids, (len_turn, len_utt, len_utt_each_turn) = merge_3d([x["hist_input_ids"]   for x in features], self.tokenizer.pad_token_id)
-        #hist_attention_mask, _ = merge_3d([x["hist_attention_mask"] for x in features], 0)
-        #conv_mask = hist_attention_mask.sum(-1).ne(0).long()
-        #targ_index = torch.tensor([x - 1 for x in len_turn]).long()
-        #targ_mask = torch.zeros(conv_mask.size())
-        #targ_mask[torch.LongTensor([x for x in range(targ_mask.size(0))]),targ_index] = 1
-        
-
+ 
         if "labels" in fields:
             if type(features[0]["labels"]) == list:
                 self.doing_response_generation = True
@@ -130,9 +121,6 @@ class SeekerCollater:
                 batch["labels"] = labels.float()
         else:
             batch["labels"] = None
-        
-        #batch["input_ids"] = input_ids
-        #batch["attention_mask"] = attention_mask
         batch["input_ids"] = pad_sequence([torch.tensor([y for x in feature["input_ids"] for y in x ] + [self.tokenizer.eos_token_id]) for feature in features],
                                           batch_first=True,
                                           padding_value=0
@@ -147,14 +135,6 @@ class SeekerCollater:
                                           batch_first=True,
                                           padding_value=self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else 0
                                           )
-        #batch["targ_mask"] = targ_mask
-        #batch["conv_mask"] = conv_mask
-        #batch["token_type_ids"] =  token_type_ids
-        #with open("verbose_collate.txt","a+") as file:
-        #    input_text = self.tokenizer.batch_decode(batch["input_ids"])
-        #    file.write(f"{input_text}")
-        #    file.write("\n")
-        #    file.write("-=======")
         return batch
 def encode_turn(turn, tokenizer):
     res = {}
@@ -185,33 +165,35 @@ def encode_history(turn, tokenizer):
 
 class LLamaSeekerAgent:
     def __init__(self, model_dir):
-        model_name = model_dir
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        #model_name = model_dir
+        tokenizer = AutoTokenizer.from_pretrained(model_dir,
+                                                  token="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",
+                                                  )
         base_model = AutoModelForCausalLM.from_pretrained(
-                    "meta-llama/Llama-2-7b-hf",
+                    model_dir,
                     low_cpu_mem_usage=True,
                     return_dict=True,
                     torch_dtype=torch.float16,
+                    token="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",
                     )
-        model = PeftModel.from_pretrained(base_model, model_name)
+        #model = PeftModel.from_pretrained(base_model,  model_name)
+        
         pipeline = transformers.pipeline(
                 "text-generation",
-                model=model,
+                model=base_model,
                 torch_dtype=torch.float16,
                 device="cuda:0",
                 #device_map="auto",
                 tokenizer=tokenizer
             )
-        #self.model = model
+        self.tokenizer = tokenizer
         self.pipeline = pipeline
+        self.role_map = {"supporter":"user", "seeker":"assistant"}
     def response(self, contents):
-        #contents = contents[-4:]
-        print("contents",contents)
         prompt = self.make_prompt(contents)
         formatted_prompt = (
             f"{prompt}"
         )
-        print("formatted_prompt",formatted_prompt)
         sequences = self.pipeline(
             formatted_prompt,
             do_sample=True,
@@ -219,21 +201,35 @@ class LLamaSeekerAgent:
             top_p = 0.7,
             num_return_sequences=1,
             repetition_penalty=1.1,
-            max_new_tokens=500,
-            return_full_text=False
+            max_new_tokens=100,
+            #temperature=0.7,
+            return_full_text=False,
+            pad_token_id = self.tokenizer.eos_token_id
         )
+        
         output = sequences[0]['generated_text']
-        print("output",output)
-        return output.strip().replace("User : ", "")
+        output = re.compile("\*\w+\*").sub("", output)
+        return output.strip()
     def make_prompt(self, contents):
-        utts = []
+        conv = [{'content': "In this conversation, I will act as an emotional supporter. Please chat with me as you are an emotional support seeker. Please answer in short sentences, within 20 words.", 'role': 'user'},
+        {'content': "Ok, I will take the role of seeker to chat with you", 'role': 'assistant'}]
+        conv_begin = False
         for i, content in enumerate(contents):
-            speaker = "System : " if content["speaker"] == "supporter" else "User : "
-            text = content["content"]
-            utt = f"<s> {speaker}{text}"
-            utts.append(utt)
-        return "".join(utt for utt in utts) + "<s> Question: Please give an utterance to continue this conversation, taking the role of the User"
-    
+            if content["speaker"] == "supporter":
+                conv_begin = True
+            if conv_begin:
+                turn = {}
+                
+                turn["role"] = self.role_map[content["speaker"]]
+                if turn["role"] == conv[-1]["role"]:
+                    conv[-1]["content"] += content["content"]
+                else:
+                    turn["content"] = content["content"]
+                    conv.append(turn)
+        #print("conv",conv)
+        prompt = self.tokenizer.apply_chat_template(conv,tokenize=False)
+        return prompt
+
 class SeekerAgent:
     def __init__(self, args):
         self.tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
@@ -242,6 +238,37 @@ class SeekerAgent:
         self.collator = SeekerCollater(self.tokenizer)
         self.model = self.model.to(self.device)
         self.model.eval()
+    def calculate_load(self, contents):
+
+        cur_data = {
+            "hist":contents
+        }
+        inputs = encode_history(cur_data, self.tokenizer)
+        batch = [
+            {"input_ids": inputs["hist_input_ids"],
+             "token_type_ids": inputs["hist_token_type_ids"],
+             "attention_mask": inputs["hist_attention_mask"]
+             }
+        ]
+        batch = self.collator.collate(batch)
+        batch = {k:v.to(self.model.device) if v is not None else None for k,v in batch.items()}
+        with torch.no_grad():
+            logits = self.model(**batch).logits
+        #print("logits",logits.shape)
+        
+
+        start_index = (batch["input_ids"] == self.tokenizer.convert_tokens_to_ids("[unused1]")).nonzero()[-1][-1]
+        end_index = (batch["attention_mask"] == 1).nonzero()[-1][-1] - 1
+        #print("start",start_index)
+        #print("end_index",end_index)
+        #print(batch["input_ids"][:,start_index:end_index])
+        active_logits = logits[:,start_index:end_index].log_softmax(-1)
+        #print("active_logits",active_logits.shape)
+        index = batch["input_ids"][:,start_index+1:end_index+1]
+        #print("index",index.shape)
+        active_logits = torch.gather(input = active_logits, dim = 2, index = index.unsqueeze(-1))
+        spr = -1 * active_logits.sum()
+        return spr.detach().cpu().item()
     def response(self, contents):
         cur_data = {
                 "hist":contents
@@ -276,6 +303,7 @@ class SeekerAgent:
         response = response.replace("’"," '")
         response = response.strip()
         return response
+
 
 class EmFeedBacker:
     def __init__(self, args, sent_rwd_ratio = 0):

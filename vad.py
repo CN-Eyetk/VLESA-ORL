@@ -6,9 +6,9 @@ import os
 import json
 import numpy as np
 from nltk.tokenize import word_tokenize
-from constants import EMP_HOME
+#from constants import EMP_HOME
 
-DATA_HOME = os.path.join(EMP_HOME, "data")
+#DATA_HOME = os.path.join(EMP_HOME, "data")
 
 
 def load_vad():
@@ -140,7 +140,19 @@ def get_vad_stats(data, system):
             }
         )
 
-    return results
+    diff_max_v_mean = np.mean([x["diff_max_v"] for x in results])
+    diff_max_a_mean = np.mean([x["diff_max_a"] for x in results])
+    diff_max_d_mean = np.mean([x["diff_max_d"] for x in results])
+    diff_max_intensity_mean = np.mean(
+        [x["diff_max_intensity"] for x in results]
+    )
+    summary = {
+            "diff_max_v": diff_max_v_mean,
+            "diff_max_a": diff_max_a_mean,
+            "diff_max_d": diff_max_d_mean,
+            "diff_max_intensity": diff_max_intensity_mean,
+        }
+    return results, summary
 
 
 def compare_vad(filepaths):

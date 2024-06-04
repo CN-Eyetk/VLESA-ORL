@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from vad import get_vad_stats
+from PAIR.main import PairEval
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
 os.environ["HF_HUB_CACHE"] = "/disk/public_data/huggingface/hub"
 def read_text(path):
@@ -116,7 +117,7 @@ tokenizer.add_tokens(comet_additional_special_tokens)
 tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 
 bertscore = load("bertscore")
-
+pairscore = PairEval()
 emb_type = 'other'
 emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
 coh = Coherence(emb_type, emb_path)
@@ -130,7 +131,7 @@ import os
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
         "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae16-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/epoch0_step79_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rectemp/",
         ]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
@@ -172,13 +173,20 @@ def evaluate(dirs, masks = None):
         bert_results = bertscore.compute(predictions = [split_punct(x) for x in hyps], references = [split_punct(x) for x in refs], lang = "en", device = torch.device("cuda"))
         bert_results_summary = {"bert_"+k:np.mean(v) for k,v in bert_results.items() if k in ["precision","recall","f1"]}
         #if prevs is not None:
+        pair_scores = []
+        for prev, hyp in zip(prevs, hyps):
+            score = pairscore.run_model(prev, hyp)[0]
+            pair_scores.append(score)
+        print("PAIR",np.mean(pair_scores))
         coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
                                         response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
         print("coherence:",coh_score)
-        vad_scores = get_vad_stats(conv_objs, dir)
+        all_vad_scores, vad_scores = get_vad_stats(conv_objs, dir)
         print("vad",vad_scores)
-        spec_score = IDFEval(hyps).eval()
-        print("spec", spec_score)
+        spec_= IDFEval(hyps)
+        spec_scores = spec_.eval()
+        print("spec", spec_scores)
+        all_spec_scores = spec_.specificity
         
        
         print(result)
@@ -197,6 +205,11 @@ def evaluate(dirs, masks = None):
             if any([x in k for x in ["precision","recall","f1"]]):
                 all_res_by_sent[dir][k] = [float(x) for x in v]
         all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
+        all_res_by_sent[dir]["spec"] = [float(x) for x in all_spec_scores]
+        all_res_by_sent[dir]["pair"] = pair_scores
+        for vad_metric in all_vad_scores[0]:
+            
+            all_res_by_sent[dir][vad_metric] = [float(vad_score[vad_metric]) for vad_score in all_vad_scores]
     return all_res, all_res_by_sent
 
 #

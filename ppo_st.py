@@ -98,6 +98,8 @@ class ScriptArguments:
             task_type="CAUSAL_LM",
         ),
     )
+    
+    use_load: bool = args.ppo_use_load
     trust_remote_code: bool = field(default=False, metadata={"help": "Enable `trust_remote_code`"})
 
 def build_dataset(args, ppo_args):
@@ -189,11 +191,12 @@ if __name__ == "__main__":
         reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
         if ppo_args.use_seeker:
             if ppo_args.use_llama_seeker:
-                seeker = load_llama_seeker()
+                llama_seeker = load_llama_seeker()
+                seeker_func = lambda x:llama_seeker.response(x)
+                seeker = load_seeker()
             else:
                 seeker = load_seeker()
-            
-            seeker_func = lambda x:seeker.response(x)
+                seeker_func = lambda x:seeker.response(x)
         else:
             seeker = None
             seeker_func = None
@@ -245,11 +248,12 @@ if __name__ == "__main__":
                         device = device,
                         mini_batch_size = ppo_args.ppo_config.mini_batch_size,
                         generation_kwargs = generation_kwargs,
-                        seeker = seeker,
+                        seeker = seeker if not ppo_args.use_llama_seeker else llama_seeker,
                         seeker_func = seeker_func,
                         use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True,
                         use_word_level_reward = ppo_args.ppo_config.use_word_level_reward,
-                        lm_only=ppo_args.lm_only
+                        lm_only=ppo_args.lm_only,
+                        load_func = seeker if ppo_args.use_load else None
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):

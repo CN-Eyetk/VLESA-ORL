@@ -49,7 +49,8 @@ class Agent:
                  seeker_func = None, 
                  use_diff_reward = False,
                  use_word_level_reward = False,
-                 lm_only = False
+                 lm_only = False,
+                 load_func = None
                  ) -> None:
         self.args = args
         self.model = model
@@ -69,6 +70,9 @@ class Agent:
         self.use_word_level_reward = use_word_level_reward
         self.lm_only = lm_only
         self.device = device
+        self.load_func = load_func
+        if self.load_func is not None:
+            print("Using load")
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
@@ -305,6 +309,11 @@ class Agent:
         else:
             self.seeker.model = self.seeker.model.to(torch.device("cpu"))
         return seeker_reponses
+    def get_load(self, history):
+        self.load_func.model = self.load_func.model.to(self.device)
+        load = [self.load_func.calculate_load(response) for response in history]
+        self.load_func.model = self.load_func.model.to(torch.device("cpu"))
+        return load
     def update_next_state_with_seeker_response(self, next_state, seeker_reponses, max_len = 512):
         input_ids = next_state["input_ids"]
         role_ids = next_state["role_ids"]
@@ -386,6 +395,12 @@ class Agent:
             self.update_next_state_with_seeker_response(next_state = next_state, seeker_reponses = seeker_responses)
         else:
             seeker_responses = None
+        
+        if self.load_func is not None:
+            loads = self.get_load(history_with_response)
+            ref_loads = self.get_load(history_with_ref_response)
+            rewards = [r/(0.01 * load) for r, load in zip(rewards, loads)]
+            ref_rewards = [r/(0.01 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?
