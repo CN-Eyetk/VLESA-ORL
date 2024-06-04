@@ -291,9 +291,19 @@ class Agent:
             return new_query_tensors, new_role_ids, new_vad_ids, new_attention_mask
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
-        self.seeker.model = self.seeker.model.to(self.device)
+        if self.args.ppo_use_llama_seeker:
+            #self.seeker.pipeline.model = self.seeker.pipeline.model.to(self.device)
+            pass
+        else:
+            self.seeker.model = self.seeker.model.to(self.device)
+        #print("getting seeker response")
         seeker_reponses = [self.seeker_func(response) for response in history]
-        self.seeker.model = self.seeker.model.to(torch.device("cpu"))
+        #print("seeker_reponses", seeker_reponses)
+        if self.args.ppo_use_llama_seeker:
+            #self.seeker.pipeline.model = self.seeker.pipeline.model.to(torch.device("cpu"))
+            pass
+        else:
+            self.seeker.model = self.seeker.model.to(torch.device("cpu"))
         return seeker_reponses
     def update_next_state_with_seeker_response(self, next_state, seeker_reponses, max_len = 512):
         input_ids = next_state["input_ids"]

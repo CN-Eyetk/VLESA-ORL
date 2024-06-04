@@ -11,8 +11,9 @@ import numpy as np
 from tqdm import tqdm
 from scipy.stats import ttest_rel, ttest_ind
 from openai import OpenAI
-from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments
-
+from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments, LLamaSeekerArguments
+from peft import PeftModel
+import transformers
 #from nltk import tokenize
 #nltk.download('vader_lexicon')
 class NLTK_Senti:
@@ -182,6 +183,57 @@ def encode_history(turn, tokenizer):
         res["hist_token_type_ids"].append(encoded_turn["token_type_ids"])
     return res
 
+class LLamaSeekerAgent:
+    def __init__(self, model_dir):
+        model_name = model_dir
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        base_model = AutoModelForCausalLM.from_pretrained(
+                    "meta-llama/Llama-2-7b-hf",
+                    low_cpu_mem_usage=True,
+                    return_dict=True,
+                    torch_dtype=torch.float16,
+                    )
+        model = PeftModel.from_pretrained(base_model, model_name)
+        pipeline = transformers.pipeline(
+                "text-generation",
+                model=model,
+                torch_dtype=torch.float16,
+                device="cuda:0",
+                #device_map="auto",
+                tokenizer=tokenizer
+            )
+        #self.model = model
+        self.pipeline = pipeline
+    def response(self, contents):
+        #contents = contents[-4:]
+        print("contents",contents)
+        prompt = self.make_prompt(contents)
+        formatted_prompt = (
+            f"{prompt}"
+        )
+        print("formatted_prompt",formatted_prompt)
+        sequences = self.pipeline(
+            formatted_prompt,
+            do_sample=True,
+            top_k=50,
+            top_p = 0.7,
+            num_return_sequences=1,
+            repetition_penalty=1.1,
+            max_new_tokens=500,
+            return_full_text=False
+        )
+        output = sequences[0]['generated_text']
+        print("output",output)
+        return output.strip().replace("User : ", "")
+    def make_prompt(self, contents):
+        utts = []
+        for i, content in enumerate(contents):
+            speaker = "System : " if content["speaker"] == "supporter" else "User : "
+            text = content["content"]
+            utt = f"<s> {speaker}{text}"
+            utts.append(utt)
+        return "".join(utt for utt in utts) + "<s> Question: Please give an utterance to continue this conversation, taking the role of the User"
+    
 class SeekerAgent:
     def __init__(self, args):
         self.tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
@@ -393,6 +445,10 @@ def load_feedbacker():
 
 def load_seeker():
     seeker = SeekerAgent(SeekerArguments)
+    return seeker
+
+def load_llama_seeker():
+    seeker = LLamaSeekerAgent(LLamaSeekerArguments.model_dir)
     return seeker
 
 def summary_to_history(summary, response = None):

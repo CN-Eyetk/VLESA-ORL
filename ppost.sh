@@ -2,20 +2,20 @@
 ppo_sent_reward_ratios=(2.0 3.0)
 lrs=("1e-06" "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
-export CUDA_VISIBLE_DEVICES=0
-batch_size=64
+export CUDA_VISIBLE_DEVICES=1
+batch_size=4
 mini_batch_size=4
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
 train=1
-eval=1
+eval=0
 origin=0
 today=$(date '+%Y-%m-%d')
 echo ${today:5:10}
 
 #pretrained_args="--no_fuse --use_bart --use_kl --tag mar28/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 32 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.5 --layer_control"
-pretrained_args="--no_fuse --use_bart --use_kl --tag am508/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 32 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.5 --layer_control  --wo_comet  --use_emo_in"
+pretrained_args="--no_fuse --use_bart --use_kl --tag pm602/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 4 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.2 --layer_control --generate_with_predicted_strategy --strategy_use_cvae --use_joint_emo"
 tag=$(python3 arguments.py $pretrained_args)
 
 
@@ -54,6 +54,7 @@ for lr in "${lrs[@]}";do
     ppo_args+=" --ppo_lm_loss "$lm_loss
     ppo_args+=" --ppo_lr "$lr
     ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
+    ppo_args+=" --ppo_use_llama_seeker"
     cur_comm+="$ppo_args"
 
     echo $cur_comm
@@ -63,8 +64,8 @@ for lr in "${lrs[@]}";do
     comm_a=$cur_comm
     
     if [ $train == 1 ]; then
-    accelerate launch $comm_a
-    #python3 $comm_a
+    #accelerate launch $comm_a
+    python3 $comm_a
     fi
 
     if [ $eval == 1 ]; then

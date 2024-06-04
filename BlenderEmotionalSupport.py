@@ -201,6 +201,7 @@ def load_config(args, eval = False):
         config.layer_control = args.layer_control
         config.strategy_use_cvae = args.strategy_use_cvae
         config.use_joint_emo = args.use_joint_emo
+        config.use_triplet_loss = args.use_triplet_loss
     return config
 
 def load_model_for_eval(args):

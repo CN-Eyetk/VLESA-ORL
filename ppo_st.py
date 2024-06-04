@@ -11,7 +11,7 @@ from BlenderEmotionalSupport import (load_tokenizer,
                     load_dataset,
                     generate_new
                     )
-from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker, load_seeker
+from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker, load_seeker, load_llama_seeker
 from BlenderEmotionalSupport import set_seed
 from ppo_utils import freeze_parameters, Agent, load_ref_model
 import torch
@@ -36,7 +36,7 @@ print("finished import")
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-05-17"
+today = "2024-06-03"
 #print("Today's date:", today)
 args = load_arg()
 #args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")
@@ -81,6 +81,7 @@ class ScriptArguments:
     ppo_train_emo_strat: bool = args.ppo_train_emo_strat
     ppo_stop_use_diff_reward: bool = args.ppo_stop_use_diff_reward
     use_seeker: bool = args.ppo_train_use_seeker
+    use_llama_seeker: bool = args.ppo_use_llama_seeker
     use_lm_reward: bool = args.ppo_use_lm_reward
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
     frozen_layer_num: int = args.ppo_frozen_layer_num
@@ -187,7 +188,11 @@ if __name__ == "__main__":
         feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
         reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
         if ppo_args.use_seeker:
-            seeker = load_seeker()
+            if ppo_args.use_llama_seeker:
+                seeker = load_llama_seeker()
+            else:
+                seeker = load_seeker()
+            
             seeker_func = lambda x:seeker.response(x)
         else:
             seeker = None

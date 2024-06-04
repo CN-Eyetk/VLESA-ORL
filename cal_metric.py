@@ -10,6 +10,11 @@ from coherence.coherence import Coherence
 import os
 from scipy import stats
 from scipy.stats import f_oneway, ttest_rel
+from transformers import pipeline
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.pipeline import Pipeline
+from vad import get_vad_stats
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
 os.environ["HF_HUB_CACHE"] = "/disk/public_data/huggingface/hub"
 def read_text(path):
@@ -61,6 +66,48 @@ class NLTK_Metric:
         #print(metric_res_list)
         self.res = metric_res
         self.metric_res_list = metric_res_list
+        
+class IDFEval:
+    def __init__(self, corpus) -> None:
+        self.corpus = corpus
+        vocabulary = [nltk.word_tokenize(x) for x in corpus]
+        vocabulary = [y for x in vocabulary for y in x]
+        vocabulary = list(set(vocabulary))
+        self.vocabulary = vocabulary
+        self.pipe = Pipeline([('count', CountVectorizer(vocabulary=vocabulary)),
+                 ('tfid', TfidfTransformer())]).fit(corpus)
+    def eval(self):
+        idfs = self.pipe['tfid'].idf_
+        normed_idfs = (idfs - min(idfs))/(max(idfs) - min(idfs))
+        self.normed_idfs = normed_idfs
+        word_count = self.pipe['count'].transform(self.corpus).toarray()
+        specificity = (word_count * normed_idfs).sum(-1)  / (word_count.sum(-1) + 0.001)
+        self.specificity = specificity
+        return self.specificity.mean()
+
+class SentEval:
+    def __init__(self, pretrained_model, is_distributon = False) -> None:
+        pipe = pipeline(model=pretrained_model, device = 0)
+        self.labels = pipe.model.config.id2label.values()
+        print(self.labels)
+        self.pipe = pipe
+        self.is_distributon = is_distributon
+    def eval(self, sentences, contexts = None, response_sep = "[RESPONSE_TOKEN]"):
+        if contexts is not None:
+            sentences = [f"{context}{response_sep}{sent}" for context, sent in zip(contexts, sentences)]
+            print("Example fo input:",sentences[np.random.randint(0, len(sentences))])
+        scores = self.pipe(sentences)
+        total_scores = {k:[] for k in self.labels}
+        for score in scores:
+            for k in self.labels:
+                if score["label"] == k:
+                    total_scores[k].append(score["score"])
+                else:
+                    if self.is_distributon:
+                        total_scores[k].append(1 - score["score"])
+        total_score = {k:np.mean(v)  for k,v in total_scores.items()}
+        return total_score, total_scores
+
 additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
 tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
 tokenizer.add_tokens(additional_special_tokens)
@@ -82,31 +129,8 @@ import os
 #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step29_2024-04-14/lr_2e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/",
-        
-        #"/home/lijunlin/lijunlin/ESCONV_ACL/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2",
-        #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix",
-    #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix",
-    #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm301/",
-    #"/home/lijunlin/lijunlin/ESCONV/kemi_generated_data",
-    #"/home/lijunlin/lijunlin/ESCONV/kemi_generated_data_2",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am303",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-Emoin-w_eosstg-w_emocat-w_stgcat-ct0.05am303",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am318",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm318",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Sresp-ct0.2pm319",
-    #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2am319",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_comet-ct0.2pm319abla",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Emo-ct0.2pm319abla",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-wo_Stra-ct0.2pm319abla",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcatpm319abla",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHTNoTrans/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2pm319abla",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2-uctam320",
-    #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_120-spst-w_eosstg-w_emocat-w_stgcat-ct0.2-uctpm320",
-    
-    
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae16-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
         ]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
@@ -140,24 +164,23 @@ def evaluate(dirs, masks = None):
             hyps = [hyp for i,hyp in enumerate(hyps) if i not in masks]
             refs = [ref for i,ref in enumerate(refs) if i not in masks]
             prevs = [prev for i,prev in enumerate(prevs) if i not in masks]
+        conv_objs = [{"query":prev,"response":hyp} for prev, hyp in zip(prevs, hyps)]
         metric = Metric(toker=tokenizer, hyps = hyps, refs = refs, use_nltk=True)
         metric_2 = NLTK_Metric( hyps = hyps, refs = refs)
-        #text = read_text(hyp_path)
-        #ppl, md_ppl, res = gpt_ppl.gpt_ppl(text)
-        # print(metric.hyps)
         result, result_list = metric.close()
         result_2 = metric_2.res
-        #result_2 = {k:v for k,v in result_2.items() if not "Bleu" in k}
-        #result["gpt_ppl"] = ppl
-        #for k,v in result_2:
-        #    result[k] = v
-        #result["mid_gpt_ppl"] = md_ppl
         bert_results = bertscore.compute(predictions = [split_punct(x) for x in hyps], references = [split_punct(x) for x in refs], lang = "en", device = torch.device("cuda"))
         bert_results_summary = {"bert_"+k:np.mean(v) for k,v in bert_results.items() if k in ["precision","recall","f1"]}
         #if prevs is not None:
         coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
                                         response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
         print("coherence:",coh_score)
+        vad_scores = get_vad_stats(conv_objs, dir)
+        print("vad",vad_scores)
+        spec_score = IDFEval(hyps).eval()
+        print("spec", spec_score)
+        
+       
         print(result)
         print(result_2)
         print(bert_results_summary)
@@ -206,7 +229,7 @@ hyps_sfl = json.load(open(dirs[0] + "/hyp_strategy.json","r+"))
 hyps_rl = json.load(open(dirs[1] + "/hyp_strategy.json","r+"))
 masks = [i for i,(a,b) in enumerate(zip(hyps_sfl, hyps_rl)) if a == b]
 print(masks)
-all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[2]], masks = masks)
+all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[1]], masks = masks)
 
 
 

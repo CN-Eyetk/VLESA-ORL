@@ -29,6 +29,8 @@ def load_ppo_prefix(args_g):
             prefix += "_nonmix"
         if args_g.ppo_recursive:
             prefix += "_rec"
+        if args_g.ppo_use_llama_seeker:
+            prefix += "_llama"
     else:
         prefix = args_g.prefix
     return prefix
@@ -64,6 +66,7 @@ def load_tag(args):
             +("-svae" if args.strategy_use_cvae else "")  \
                 +("-lc" if args.layer_control else "") \
                         +("-je" if args.use_joint_emo else "") \
+                            +("-tp" if args.use_triplet_loss else "") \
         +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
@@ -133,6 +136,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--layer_control", action="store_true")
     parser.add_argument("--strategy_use_cvae", action="store_true")
     parser.add_argument("--use_joint_emo", action="store_true")
+    parser.add_argument("--use_triplet_loss", action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -158,6 +162,7 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_use_lm_reward", action="store_true")
     ppo_parser.add_argument("--ppo_eval", action="store_true")
     ppo_parser.add_argument("--ppo_train_use_seeker", action="store_true")
+    ppo_parser.add_argument("--ppo_use_llama_seeker", action="store_true")
     ppo_parser.add_argument("--ppo_stop_use_diff_reward", action="store_true")
     ppo_parser.add_argument("--ppo_add_strategy_noise", action="store_true")
     ppo_parser.add_argument("--ppo_recursive", action="store_true")
@@ -295,7 +300,8 @@ def load_arg(return_tag = False, ):
             "wo_Sresp":args_g.wo_Sresp,
             "layer_control":args_g.layer_control,
             "strategy_use_cvae":args_g.strategy_use_cvae,
-            "use_joint_emo":args_g.use_joint_emo
+            "use_joint_emo":args_g.use_joint_emo,
+            "use_triplet_loss":args_g.use_triplet_loss,
             }
     #add ppo related args
     ppo_args = {k:v for k,v in vars(args_g).items() if k.startswith("ppo")}
@@ -332,6 +338,10 @@ class SeekerArguments:
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
 
+class LLamaSeekerArguments:
+    model_dir = "/disk/junlin/EmoSp/llama/checkpoint-400"
+    #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
+    device = torch.device("cpu")
 if __name__ == "__main__":
     arg = load_arg(return_tag=True)
     print(arg)

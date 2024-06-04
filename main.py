@@ -75,6 +75,7 @@ parser.add_argument("--block_size",type=int, default=512) #No strategy control o
 parser.add_argument("--layer_control", action="store_true")
 parser.add_argument("--strategy_use_cvae", action="store_true")
 parser.add_argument("--use_joint_emo", action="store_true")
+parser.add_argument("--use_triplet_loss", action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -146,6 +147,7 @@ else:
             +("-svae" if args_g.strategy_use_cvae else "")  \
                 +("-lc" if args_g.layer_control else "") \
                     +("-je" if args_g.use_joint_emo else "") \
+                        +("-tp" if args_g.use_triplet_loss else "") \
         +args_g.tag
                                 
 
@@ -308,7 +310,8 @@ def load_arg():
             "wo_Sresp":args_g.wo_Sresp,
             "layer_control":args_g.layer_control,
             "strategy_use_cvae":args_g.strategy_use_cvae,
-            "use_joint_emo":args_g.use_joint_emo
+            "use_joint_emo":args_g.use_joint_emo,
+            "use_triplet_loss":args_g.use_triplet_loss
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)

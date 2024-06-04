@@ -1,7 +1,0 @@
-/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss0.6_0.2_0.2_kl-lr_2e-05-Situ-Emoin-nopp-empp-no_fuse-bart-eosemo-role-emocat-stgcat-vae-mvae256-wo_comet-vad-frz_stem124_II
-vocab size = 50265
-10192 10192 10192
-src 0 1 0 [Question] Hello, how is your head or heart today?
-offsets [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-src  0 0 1 Hello, I would like to talk to someone about my situation at work.
-offsets [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]

@@ -790,6 +790,19 @@ class ContrastiveLoss(nn.Module):
         return contrast_loss / n_pair
 
                     
+class TripletLoss(nn.Module):
+    def __init__(self):
+        super(TripletLoss, self).__init__()
+        self.metric = F.cosine_similarity#nn.CosineSimilarity(dim=-1, eps=1e-6)
+    def forward(self, h1, h2):
+        h1 = h1.float()
+        h2 = h2.float()
+        matrix_1 = self.metric(h1[:,:,None], h1.t()[None,:,:])
+        matrix_2 = self.metric(h2[:,:,None], h2.t()[None,:,:])
+        loss = nn.MSELoss(reduction="mean")(matrix_1, matrix_2)
+        return loss.float()
+        
+        
                     
 class CenterLoss(nn.Module):
     """Center loss.

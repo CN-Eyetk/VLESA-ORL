@@ -46,7 +46,7 @@ from ...file_utils import ModelOutput
 from ...modeling_utils import PreTrainedModel
 from ...utils import logging
 from .configuration_bart import BartConfig
-from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, CatAttention, IntensityVAE, EmoTransVAE_MixStrat, StrategyVAE
+from .modules.modules import EmoTrans, EmoTrans_wo_Emo, EmoTrans_wo_STRA, EmoTransVAE_MultiStrat, CatAttention, IntensityVAE, EmoTransVAE_MixStrat, StrategyVAE, TripletLoss
 from .modules.modules import ContrastiveLoss, CenterLoss, get_last_arg_where_equal
 
 logger = logging.get_logger(__name__)
@@ -2101,8 +2101,15 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
                 #print("contrast_loss",contrast_loss)
                 #contrast_loss += contrast_loss_funct(encoder_outputs.z, decoder_strategy_ids)
+
                 if self.training:
+                    if self.config.use_triplet_loss:
+                        triplet_loss_funct = TripletLoss()
+                        triplet_loss = triplet_loss_funct(decoder_eos_hidden, emo_dist)
+                        contrast_loss += triplet_loss
                     loss += self.config.contrastive_loss_ratio * contrast_loss
+                    #else:
+                    #    loss += self.config.contrastive_loss_ratio * contrast_loss
             elif self.config.use_centroid_loss:
                 decoder_eos_hidden = decoder_eos_hidden.view(-1, self.config.d_model)
                 centroid_loss = self.centroid_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
