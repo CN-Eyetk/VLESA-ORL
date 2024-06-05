@@ -296,16 +296,15 @@ class Agent:
         return query_tensors, role_ids, vad_ids, attention_mask
     def get_seeker_response(self, history):
         if self.args.ppo_use_llama_seeker:
-            #self.seeker.pipeline.model = self.seeker.pipeline.model.to(self.device)
-            pass
+            self.seeker.pipeline.model = self.seeker.pipeline.model.to(self.device)
+            
         else:
             self.seeker.model = self.seeker.model.to(self.device)
         #print("getting seeker response")
         seeker_reponses = [self.seeker_func(response) for response in history]
         #print("seeker_reponses", seeker_reponses)
         if self.args.ppo_use_llama_seeker:
-            #self.seeker.pipeline.model = self.seeker.pipeline.model.to(torch.device("cpu"))
-            pass
+            self.seeker.pipeline.model = self.seeker.pipeline.model.to(torch.device("cpu"))
         else:
             self.seeker.model = self.seeker.model.to(torch.device("cpu"))
         return seeker_reponses

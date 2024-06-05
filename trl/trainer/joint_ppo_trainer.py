@@ -289,17 +289,23 @@ class JointPPOTrainer(DialogueActPPOTrainer):
 
             model_inputs["input_ids"] = self.accelerator.pad_across_processes(
                 model_inputs["input_ids"],
-                dim=-1,
+                dim=2,
+                pad_index=self.tokenizer.pad_token_id,
+                pad_first=pad_first,
+            )
+            model_inputs["role_ids"] = self.accelerator.pad_across_processes(
+                model_inputs["role_ids"],
+                dim=2,
                 pad_index=self.tokenizer.pad_token_id,
                 pad_first=pad_first,
             )
             model_inputs["attention_mask"] = self.accelerator.pad_across_processes(
-                model_inputs["attention_mask"], dim=-1, pad_index=0, pad_first=pad_first
+                model_inputs["attention_mask"], dim=2, pad_index=0, pad_first=pad_first
             )
             if wscores is not None:
                 wscores = self.accelerator.pad_across_processes(
                     wscores,
-                    dim = -1,
+                    dim = 2,
                     pad_index = 0.0,
                     pad_first = pad_first)
             if with_lm_loss:
@@ -312,7 +318,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             if self.is_encoder_decoder:
                 model_inputs["decoder_input_ids"] = self.accelerator.pad_across_processes(
                     model_inputs["decoder_input_ids"],
-                    dim=-1,
+                    dim=2,
                     pad_index=self.tokenizer.pad_token_id,
                     pad_first=pad_first,
                 )

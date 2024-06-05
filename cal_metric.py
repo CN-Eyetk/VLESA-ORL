@@ -16,6 +16,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from vad import get_vad_stats
 from PAIR.main import PairEval
+from metric.gather_tree_stats import gather_stats
+from metric.ngrams import SpanProcessor
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
 os.environ["HF_HUB_CACHE"] = "/disk/public_data/huggingface/hub"
 def read_text(path):
@@ -122,6 +124,12 @@ emb_type = 'other'
 emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
 coh = Coherence(emb_type, emb_path)
 
+model_path = 'JungleLee/bert-toxic-comment-classification'
+#contexts = load_context("outputs/edition.txt", row_index=0)
+#print(contexts[:10])
+#print("=========")
+humanlike = SentEval(model_path, is_distributon = True)
+        
 from metric.myMetrics import Metric
 from metric.ppl import GPT_PPL
 import pandas as pd
@@ -131,7 +139,7 @@ import os
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
         "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/epoch0_step79_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rectemp/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/epoch0_step19_2024-06-03/lr_1e-06-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_loadtemp/non_mix/",
         ]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
@@ -140,7 +148,7 @@ all_res = {}
 all_res_by_sent = {}
 #gpt_ppl = GPT_PPL('openai-gpt')
 def evaluate(dirs, masks = None):
-    for dir in dirs:
+    for i,dir in enumerate(dirs):
         print(dir)
         hyp_path = f"{dir}/hyp_strategy.json"
         ref_path = f"{dir}/ref_strategy.json"
@@ -173,6 +181,13 @@ def evaluate(dirs, masks = None):
         bert_results = bertscore.compute(predictions = [split_punct(x) for x in hyps], references = [split_punct(x) for x in refs], lang = "en", device = torch.device("cuda"))
         bert_results_summary = {"bert_"+k:np.mean(v) for k,v in bert_results.items() if k in ["precision","recall","f1"]}
         #if prevs is not None:
+        #data = [nltk.word_tokenize(sent) for sent in hyps]
+        #x = SpanProcessor(f"metric/cache_{i}")
+        #_ = x.spanify(data, pool_size=4)
+        #ngrams_dir = f"metric/outputs/ngrams_{i}"
+        #x.dump(ngrams_dir)
+        #gather_stats(responses=hyps, ngrams_dir=ngrams_dir)
+        
         pair_scores = []
         for prev, hyp in zip(prevs, hyps):
             score = pairscore.run_model(prev, hyp)[0]
@@ -187,6 +202,10 @@ def evaluate(dirs, masks = None):
         spec_scores = spec_.eval()
         print("spec", spec_scores)
         all_spec_scores = spec_.specificity
+        
+        hm, all_hm = humanlike.eval(hyp, contexts = None)
+        print("human",hm)
+        all_hm = all_hm["toxic"]
         
        
         print(result)
@@ -207,6 +226,7 @@ def evaluate(dirs, masks = None):
         all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
         all_res_by_sent[dir]["spec"] = [float(x) for x in all_spec_scores]
         all_res_by_sent[dir]["pair"] = pair_scores
+        all_res_by_sent[dir]["human"] = all_hm
         for vad_metric in all_vad_scores[0]:
             
             all_res_by_sent[dir][vad_metric] = [float(vad_score[vad_metric]) for vad_score in all_vad_scores]

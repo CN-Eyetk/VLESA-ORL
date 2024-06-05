@@ -182,13 +182,14 @@ class LLamaSeekerAgent:
                 "text-generation",
                 model=base_model,
                 torch_dtype=torch.float16,
-                device="cuda:0",
+                device="cuda",
                 #device_map="auto",
                 tokenizer=tokenizer
             )
         self.tokenizer = tokenizer
         self.pipeline = pipeline
         self.role_map = {"supporter":"user", "seeker":"assistant"}
+        
     def response(self, contents):
         prompt = self.make_prompt(contents)
         formatted_prompt = (

@@ -5,9 +5,9 @@ export HF_HUB_CACHE=$HF_HOME"/hub"
 
 ppo_sent_reward_ratios=(2.0 3.0)
 #python3 test.py
-lrs=("1e-06" "5e-07" "1e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+lrs=("5e-07" "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1
 batch_size=64
 mini_batch_size=4
 ppo_init_kl_coef=0.0
@@ -71,17 +71,17 @@ for lr in "${lrs[@]}";do
     comm_a=$cur_comm
     
     if [ $train == 1 ]; then
-    #accelerate launch $comm_a
-    python3 $comm_a
+    accelerate launch $comm_a
+    #python3 $comm_a
     fi
 
     if [ $eval == 1 ]; then
-    steps=(19 39)
+    steps=(19)
     for step in "${steps[@]}";do
     pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-06-03/${ppo_prefix}temp"
-    eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
+    #eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
-    $eval_comm_a
+    #$eval_comm_a
     eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$pretrained_model" "$pretrained_args" "
     $eval_comm_b
     done
