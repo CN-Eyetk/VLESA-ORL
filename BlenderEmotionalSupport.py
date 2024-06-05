@@ -2170,7 +2170,7 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
                 pad_token_id=tokenizer.pad_token_id,
                 early_stopping=True,
                 eos_token_id=tokenizer.eos_token_id, #temperature=0.7,
-                top_p=0.3, 
+                top_p=0.9, 
                 top_k = 30, 
                 do_sample=True, 
                 no_repeat_ngram_size=3,

@@ -5,7 +5,7 @@ export HF_HUB_CACHE=$HF_HOME"/hub"
 
 ppo_sent_reward_ratios=(2.0 3.0)
 #python3 test.py
-lrs=("5e-07" "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+lrs=("2e-07" "1e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0,1
 batch_size=64
@@ -20,7 +20,7 @@ today=$(date '+%Y-%m-%d')
 echo ${today:5:10}
 
 #pretrained_args="--no_fuse --use_bart --use_kl --tag mar28/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 32 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.5 --layer_control"
-pretrained_args="--no_fuse --use_bart --use_kl --tag pm602/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 4 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.2 --layer_control --strategy_use_cvae --use_joint_emo"
+pretrained_args="--no_fuse --use_bart --use_kl --tag pm602/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 4 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.2 --layer_control --strategy_use_cvae --use_joint_emo  --use_triplet_loss "
 tag=$(python3 arguments.py $pretrained_args)
 
 
@@ -42,7 +42,7 @@ for lr in "${lrs[@]}";do
 
     cur_comm="ppo_st.py "$pretrained_args
     ppo_args=" --ppo 
-                --ppo_save_step 20 --ppo_eval_step 20
+                --ppo_save_step 10 --ppo_eval_step 10
                 --ppo_batch_size $batch_size
                 --ppo_mini_batch_size $mini_batch_size
                 --ppo_train_emo_strat
@@ -76,7 +76,7 @@ for lr in "${lrs[@]}";do
     fi
 
     if [ $eval == 1 ]; then
-    steps=(19)
+    steps=(19 39 59)
     for step in "${steps[@]}";do
     pretrained_model="/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-06-03/${ppo_prefix}temp"
     #eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "

@@ -398,8 +398,8 @@ class Agent:
         if self.load_func is not None:
             loads = self.get_load(history_with_response)
             ref_loads = self.get_load(history_with_ref_response)
-            rewards = [r/(0.01 * load) for r, load in zip(rewards, loads)]
-            ref_rewards = [r/(0.01 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
+            rewards = [r/(0.1 * load) for r, load in zip(rewards, loads)]
+            ref_rewards = [r/(0.1 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?
