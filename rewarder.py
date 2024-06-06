@@ -189,7 +189,23 @@ class LLamaSeekerAgent:
         self.tokenizer = tokenizer
         self.pipeline = pipeline
         self.role_map = {"supporter":"user", "seeker":"assistant"}
+        self.bos = self.tokenizer("[INST]", add_special_tokens=False).input_ids[-1]
+        self.eos = self.tokenizer("[/INST]", add_special_tokens=False).input_ids[0]
         
+    def calculate_load(self, contents):
+
+        prompt = self.make_prompt(contents)
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        with torch.no_grad():
+            logits = self.model(**inputs).logits
+        start_index = (inputs["input_ids"][:,:-1] == self.bos).nonzero()[-1][-1]
+        end_index = (inputs["attention_mask"][:,:-1] == 1).nonzero()[-1][-1] - 1
+        active_logits = logits[:,start_index:end_index].log_softmax(-1)
+        index = inputs["input_ids"][:,start_index+1:end_index+1]
+        #print("index",index.shape)
+        active_logits = torch.gather(input = active_logits, dim = 2, index = index.unsqueeze(-1))
+        spr = -1 * active_logits.sum()
+        return spr.detach().cpu().item()
     def response(self, contents):
         prompt = self.make_prompt(contents)
         formatted_prompt = (
