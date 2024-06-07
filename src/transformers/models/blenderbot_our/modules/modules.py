@@ -50,6 +50,7 @@ class EmoTrans(nn.Module):
         emo_out_prob = torch.log(emo_out_prob) #upDATE  9-27-II
         return emo_embed, emo_out_prob
         
+        
 
 class EmoTrans_wo_STRA(nn.Module):
     def __init__(self, n_emo_in, n_emo_out, n_strat, embed_dim):
@@ -247,7 +248,74 @@ class IntensityVAE(nn.Module):
         kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
         kl_div = kl_div / b
         return kl_div
+class StrategyVAE(nn.Module):
+    def __init__(self, config, n_emo_in, n_strat) -> None:
+        super().__init__()
+        self.n_emo_in = n_emo_in
+        self.n_strat = n_strat
+        self.hidden_dim = config.d_model
+        self.latent_dim = int(self.hidden_dim /2)
+        self.h_prior = nn.Linear(self.hidden_dim + self.hidden_dim, self.hidden_dim)
+        self.mu_prior = nn.Linear(self.hidden_dim, self.latent_dim)
+        self.logvar_prior = nn.Linear(self.hidden_dim, self.latent_dim)
+        
+        self.h_posterior = nn.Linear(self.hidden_dim + self.hidden_dim + self.n_strat, self.hidden_dim)
+        self.mu_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
+        self.logvar_posterior = nn.Linear(self.hidden_dim, self.latent_dim)
+        
+        self.Dense_z_prior = nn.Linear(self.latent_dim, self.n_strat)
+    def prior(self,  hidden_prior):
+        h1 = F.relu(self.h_prior(hidden_prior))
+        mu = self.mu_prior(h1)
+        logvar = self.logvar_prior(h1)
+        return mu, logvar
     
+    def posterior(self, hidden_prior, strategy_logits):
+        h1 = F.relu(self.h_posterior(torch.cat((hidden_prior, strategy_logits), dim = -1)))
+        mu = self.mu_posterior(h1)
+        logvar = self.logvar_posterior(h1)
+        return mu, logvar
+
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
+
+    def forward(self, hidden_prior):
+        mu, logvar = self.prior(hidden_prior)
+        z = self.reparameterize(mu, logvar)
+        strategy_logits = self.Dense_z_prior(z)#, dim=-1).unsqueeze(-2) #[b, 1,n_emo]
+        #emotion_id = self.emotion_id.to(hidden_prior.device) 
+        #emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
+        #E_prob = torch.log(E_prob.squeeze(1))
+        return mu, logvar, strategy_logits, z
+    
+    def forward_train(self,  hidden_prior, strategy_logits_ground):
+
+        mu, logvar = self.posterior(hidden_prior, strategy_logits_ground)
+        z = self.reparameterize(mu, logvar)
+        strategy_logits = self.Dense_z_prior(z)
+        #emotion_id = self.emotion_id.to(hidden_emo.device) 
+        #emo_out_emb = torch.bmm(E_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
+        #E_prob = torch.log(E_prob.squeeze(1))
+        return mu, logvar, strategy_logits, z
+    @staticmethod
+    def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
+        """
+        This code is adapted from:
+        https://github.com/ctr4si/A-Hierarchical-Latent-Structure-for-Variational-Conversation-Modeling/blob/83ca9dd96272d3a38978a1dfa316d06d5d6a7c77/model/utils/probability.py#L20
+        """
+        
+        one = torch.FloatTensor([1.0]).to(mu_posterior.device)
+        b = mu_posterior.size(0)
+        
+        if mu_prior == None:
+            mu_prior = torch.FloatTensor([0.0]).to(mu_posterior.device)
+            logvar_prior = torch.FloatTensor([0.0]).to(logvar_posterior.device)
+        kl_div = torch.sum(0.5 * (logvar_prior - logvar_posterior + (logvar_posterior.exp()+(mu_posterior-mu_prior).pow(2))/logvar_prior.exp() - one) )
+        kl_div = kl_div / b
+        return kl_div
+        
 class EmoTransVAE(nn.Module):
     def __init__(self, config, n_emo_in, n_emo_out, n_strat, embed_dim):
         super().__init__()
@@ -543,25 +611,28 @@ class EmoTransVAE_MixStrat(nn.Module):
         mus, logvars = self.prior(hidden_prior_emo, hidden_prior_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_prior_emo.device)
-        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2)
-        emotion_id = self.emotion_id.to(hidden_prior_emo.device) 
-        #print("emo_out_prob",emo_out_prob.shape)
-        emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
+        emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob, z
-    
+        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
+    def get_emo_out_emb(self, emo_out_logits, q_0 = None):
+        b = emo_out_logits.size(0)
+        emo_out_prob = torch.softmax(emo_out_logits, dim=-1)
+        emotion_id = self.emotion_id.to(emo_out_logits.device) 
+        if q_0 is not None:
+            emo_out_emb = torch.bmm(q_0.unsqueeze(-2),  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
+        else:
+            emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
+        return emo_out_prob, emo_out_emb
     def forward_train(self,  hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
         b = hidden_post_emo.size(0)
         mus, logvars = self.posterior(hidden_post_emo, hidden_post_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_post_emo.device)
-        emo_out_prob = torch.softmax(self.Dense_z_prior(z), dim=-1).unsqueeze(-2)
-        emotion_id = self.emotion_id.to(emo_out_prob.device) 
-        
-        emo_out_emb = torch.bmm(q_0.unsqueeze(-2).to(emo_out_prob.dtype),  
-                                self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) # [b, n_e_out, dim]
+        emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
+        emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits, q_0 = q_0)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_prob, z
+        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """
@@ -716,10 +787,22 @@ class ContrastiveLoss(nn.Module):
         if n_pair == 0:
             #only one sample in this batch
             return torch.tensor(contrast_loss).to(ys.device)
-        else:
-            return contrast_loss / n_pair
+        return contrast_loss / n_pair
 
                     
+class TripletLoss(nn.Module):
+    def __init__(self):
+        super(TripletLoss, self).__init__()
+        self.metric = F.cosine_similarity#nn.CosineSimilarity(dim=-1, eps=1e-6)
+    def forward(self, h1, h2):
+        h1 = h1.float()
+        h2 = h2.float()
+        matrix_1 = self.metric(h1[:,:,None], h1.t()[None,:,:])
+        matrix_2 = self.metric(h2[:,:,None], h2.t()[None,:,:])
+        loss = nn.MSELoss(reduction="mean")(matrix_1, matrix_2)
+        return loss.float()
+        
+        
                     
 class CenterLoss(nn.Module):
     """Center loss.

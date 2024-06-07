@@ -21,14 +21,14 @@ from tqdm import tqdm
 from trl import AutoModelForSeq2SeqLMWithValueHead, AutoModelForDialogueActLMWithValueHead, AutoModelForMultiLevelWithValueHead2, PPOConfig, CustomPPOTrainer, DialogueActPPOTrainer
 from trl import JointPPOTrainer, AutoModelForMultiLevelWithValueHead
 from arguments import load_arg
-from lexical_diversity import lex_div as ld
+#from lexical_diversity import lex_div as ld
 from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
 #from metric.text_feats import dependency_distance
 from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval
 from attach_vad.VADTokenizer import W2VAD
 from accelerate import Accelerator
-vad_tokenizer = W2VAD("attach_vad/VAD_space.json")
-print("finished import")
+vad_tokenizer = None
+#print("finished import")
 #from datetime import datetime
 #now = datetime.now()
 #prefix_now = f"{now[1]}_{now[2]}_{now[3]}_{now[4]}"
@@ -100,6 +100,7 @@ class ScriptArguments:
     )
     
     use_load: bool = args.ppo_use_load
+    load_coef: float = args.ppo_load_coef
     trust_remote_code: bool = field(default=False, metadata={"help": "Enable `trust_remote_code`"})
 
 def build_dataset(args, ppo_args):
@@ -143,7 +144,7 @@ if __name__ == "__main__":
             trl_model_class =  AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
             trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer
         tokenizer, train_dataset, eval_dataset, test_dataset = build_dataset(args, ppo_args)
-        vad_tokenizer.load_tokenizer(tokenizer)
+        #vad_tokenizer.load_tokenizer(tokenizer)
         args.train_dataset = train_dataset
         args.eval_dataset = eval_dataset
         args.test_dataset = test_dataset
@@ -193,7 +194,7 @@ if __name__ == "__main__":
             if ppo_args.use_llama_seeker:
                 llama_seeker = load_llama_seeker()
                 seeker_func = lambda x:llama_seeker.response(x)
-                seeker = load_seeker()
+                seeker = llama_seeker
             else:
                 seeker = load_seeker()
                 seeker_func = lambda x:seeker.response(x)
@@ -240,7 +241,7 @@ if __name__ == "__main__":
         agent = Agent(args,
                         model = model,
                         tokenizer = tokenizer,
-                        vad_tokenizer = vad_tokenizer,
+                        vad_tokenizer = None,
                         hist_retriver = hist_retriver,
                         ppo_trainer = ppo_trainer,
                         feed_backer = feed_backer,
@@ -253,7 +254,8 @@ if __name__ == "__main__":
                         use_diff_reward = False if ppo_args.ppo_stop_use_diff_reward else True,
                         use_word_level_reward = ppo_args.ppo_config.use_word_level_reward,
                         lm_only=ppo_args.lm_only,
-                        load_func = seeker if ppo_args.use_load else None
+                        load_func = seeker if ppo_args.use_load else None,
+                        load_coef = ppo_args.load_coef,
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):

@@ -10,7 +10,7 @@ import os
 import numpy as np
 from tqdm import tqdm
 from scipy.stats import ttest_rel, ttest_ind
-from openai import OpenAI
+#from openai import OpenAI
 from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments, LLamaSeekerArguments
 from peft import PeftModel
 import transformers
@@ -191,6 +191,7 @@ class LLamaSeekerAgent:
         self.role_map = {"supporter":"user", "seeker":"assistant"}
         self.bos = self.tokenizer("[INST]", add_special_tokens=False).input_ids[-1]
         self.eos = self.tokenizer("[/INST]", add_special_tokens=False).input_ids[0]
+        self.model = base_model
         
     def calculate_load(self, contents):
 

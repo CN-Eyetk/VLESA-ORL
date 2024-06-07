@@ -1,5 +1,18 @@
-from src.transformers import BartForConditionalGeneration, BartTokenizer
+from src.transformers import BartForConditionalGeneration, BartTokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
+
+class CustomChatbot:
+    def  __init__(self, model_path) -> None:
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.model = model
+        self.tokenizer = tokenizer
+    def make_input(self, chat):
+        pass
+
+        
+        
+    
 class Chatbot:
     def __init__(self, model_path) -> None:
         model = BartForConditionalGeneration.from_pretrained(model_path, from_tf=False)

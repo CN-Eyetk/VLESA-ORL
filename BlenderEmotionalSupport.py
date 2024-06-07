@@ -56,7 +56,7 @@ from src.transformers import (BartForConditionalGeneration, BartTokenizer, BartC
 from add_emo import EmoExtracter
 model_dirs = ["j-hartmann/emotion-english-distilroberta-base","SamLowe/roberta-base-go_emotions"]
 emo_extracter = EmoExtracter(model_dir=model_dirs[1])
-vad_tokenizer = W2VAD("attach_vad/VAD_space.json")
+vad_tokenizer = None
 
 try:
     from torch.utils.tensorboard import SummaryWriter
@@ -785,7 +785,7 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
     else:
         emo_in_dist = None
     
-    intensity = emo_extracter.get_intensity([clean_src])[0]
+    intensity = None
     if prepend_emotion:
         pred = pred[0]
         emo_label = f"[{pred}]"
@@ -2169,8 +2169,8 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
                 use_cache=True,
                 pad_token_id=tokenizer.pad_token_id,
                 early_stopping=True,
-                eos_token_id=tokenizer.eos_token_id, #temperature=0.7,
-                top_p=0.9, 
+                eos_token_id=tokenizer.eos_token_id, temperature=0.7,
+                top_p=0.3, 
                 top_k = 30, 
                 do_sample=True, 
                 no_repeat_ngram_size=3,

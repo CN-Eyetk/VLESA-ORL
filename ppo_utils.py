@@ -50,13 +50,14 @@ class Agent:
                  use_diff_reward = False,
                  use_word_level_reward = False,
                  lm_only = False,
-                 load_func = None
+                 load_func = None,
+                 load_coef = None,
                  ) -> None:
         self.args = args
         self.model = model
         self.tokenizer = tokenizer
         self.vad_tokenizer = vad_tokenizer
-        self.vad_tokenizer.load_tokenizer(self.tokenizer)
+        #self.vad_tokenizer.load_tokenizer(self.tokenizer)
         self.feed_backer = feed_backer
         self.ppo_trainer = ppo_trainer
         self.hist_retriver = hist_retriver
@@ -71,6 +72,7 @@ class Agent:
         self.lm_only = lm_only
         self.device = device
         self.load_func = load_func
+        self.load_coef = load_coef
         if self.load_func is not None:
             print("Using load")
     def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
@@ -398,8 +400,15 @@ class Agent:
         if self.load_func is not None:
             loads = self.get_load(history_with_response)
             ref_loads = self.get_load(history_with_ref_response)
-            rewards = [r/(0.1 * load) for r, load in zip(rewards, loads)]
-            ref_rewards = [r/(0.1 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
+            if self.load_coef == 0.1:
+                rewards = [r/(0.1 * load) for r, load in zip(rewards, loads)]
+                ref_rewards = [r/(0.1 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
+            elif self.load_coef == 0.01:
+                rewards = [r/(0.01 * load) for r, load in zip(rewards, loads)]
+                ref_rewards = [r/(0.01 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
+            else:
+                rewards = [r/(0.1*(load**1.5)) for r, load in zip(rewards, loads)]
+                ref_rewards = [r/(0.1*(ref_load**1.5)) for r, ref_load in zip(ref_rewards, ref_loads)]
         response_tensors = pad_sequence(state["response_tensor"], batch_first = True, padding_value = self.tokenizer.pad_token_id)
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?

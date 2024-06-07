@@ -203,6 +203,10 @@ class BlenderbotSmallConfig(PretrainedConfig):
         self.use_uncertainty_loss = kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
         self.stop_norm_weight = kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
         self.wo_Sresp = kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
+        self.layer_control = kwargs["layer_control"] if "layer_control" in kwargs.keys() else False
+        self.strategy_use_cvae = kwargs["strategy_use_cvae"] if "strategy_use_cvae" in kwargs.keys() else False
+        self.use_joint_emo = kwargs["use_joint_emo"] if "use_joint_emo" in kwargs.keys() else False #utterance and situation emotion
+        self.use_triplet_loss = kwargs["use_triplet_loss"] if "use_triplet_loss" in kwargs.keys() else False #utterance and situation emotion
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

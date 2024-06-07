@@ -1152,7 +1152,6 @@ class BartEncoder(BartPretrainedModel):
             emotion_logits = None
             emotion_intensity = None
             strategy_logits = None
-            strategy_seq_logits = None
             strategy_embs = None
             strategy_hidden = None
             z = None

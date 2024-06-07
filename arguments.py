@@ -32,7 +32,8 @@ def load_ppo_prefix(args_g):
         if args_g.ppo_use_llama_seeker:
             prefix += "_llama"
         if args_g.ppo_use_load:
-            prefix += "_load"
+            prefix += f"_load_{args_g.ppo_load_coef}"
+        
     else:
         prefix = args_g.prefix
     return prefix
@@ -173,6 +174,7 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_multiple_actions", action="store_true")
     ppo_parser.add_argument("--ppo_n_actions", nargs='+', type=int, default=[8, 28])
     ppo_parser.add_argument("--ppo_use_load", action="store_true")
+    ppo_parser.add_argument("--ppo_load_coef", default=0.01, type=float)
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
     #GROUP += f"{TAG}_ppo"
@@ -333,7 +335,8 @@ class EmpathyDetectorArguments:
     model_name = "bert-base-uncased"
 
 class EmpathyFeedbackerArguments:
-    model_dir = "/disk/junlin/models/EmoSupport/bert/output/esconv_fb"
+    #model_dir = "/disk/junlin/models/EmoSupport/bert/output/esconv_fb"
+    model_dir = "/mnt/HD-8T/lijunlin/models/EmoSupport/bert/esconv_fb"
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
     

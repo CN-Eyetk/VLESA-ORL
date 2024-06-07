@@ -1,7 +1,7 @@
 
 use_trans=(" --use_trans")
 use_th_attn=("")
-use_emb_prep=(" --use_emb_prep" )
+use_emb_prep=(" --use_emb_prep")
 use_prepend=("")
 use_cat=( "")
 if_st_em_sampling=(" --sample_strategy_embedding")
@@ -10,21 +10,21 @@ if_stg_from_eos=("")
 if_emo_from_eos=(" --emo_from_eos")
 use_bart=(" ")
 lrs=(2e-5)
-ct_loss_ratios=(0.2)
-warmups=(120)
+ct_loss_ratios=(0.1 0.2)
+warmups=(510)
 use_role=(" --use_role_embed")
 rl_rat=(-1) #)
 vad_rats=(-1) # 0.3 0.8)
 emo_loss_rat=(0.05)
-latent_dims=(32) # 256)
-root_path="/disk/junlin/EmoSp"
+latent_dims=(4) # 256)
+root_path="/mnt/HD-8T/lijunlin/EmoSp"
 #root_path="."
 #export CUDA_VISIBLE_DEVICES=0,1
 #comm="python3 -m torch.distributed.launch --nproc_per_node=2 --use-env main.py --no_fuse  --use_bart --use_kl --tag 124_II"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=0
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_kl --tag am322 --emo_out_loss_ratio 0.05 --strategy_loss_ratio 0.05  --data_path origin_data --block_size 160"
+comm="python3 main.py --no_fuse --use_kl --tag pm602 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.2 --log_on_wandb --do_train"
 
 #--emo_out_loss_ratio higher improves diversity
 for u_r in "${use_role[@]}"; do
@@ -55,29 +55,18 @@ for u_r in "${use_role[@]}"; do
                                     cur_comm+=" --emo_loss_rat "$el_r
                                     cur_comm+=" --use_trans "
                                     cur_comm+=" --warmup_steps "$warmup
+                                    cur_comm+=" --wo_comet"
                                     cur_comm+=$eos_stg
                                     cur_comm+=$eos_emo
                                     cur_comm+=$stg_cat
                                     cur_comm+=" --use_contrastive_loss"
-                                    #cur_comm+=" --use_uncertainty_loss"
                                     cur_comm+=" --contrastive_loss_ratio "$cl_loss_ratio
+                                    cur_comm+=" --layer_control"
+                                    cur_comm+=" --generate_with_predicted_strategy"
+                                    cur_comm+=" --strategy_use_cvae "
+                                    cur_comm+=" --use_joint_emo "
+                                    cur_comm+=" --use_triplet_loss "
                                     $cur_comm
-                                    
-                                    if [ 1 == 2 ];then
-                                    abla_a_comm=${cur_comm//"--use_trans"/$replace}
-                                    abla_b_comm=$cur_comm" --wo_Stra"
-                                    abla_c_comm=$cur_comm" --wo_Emo"
-                                    abla_d_comm=$cur_comm" --wo_comet"
-                                    abla_e_comm=${cur_comm//"--use_contrastive_loss"/$replace}
-                                    $abla_a_comm
-                                    $abla_b_comm
-                                    $abla_c_comm
-                                    $abla_d_comm
-                                    $abla_e_comm
-                                    #$cur_comm
-                                    fi
-
-
                                     done
                                     done
                                     done

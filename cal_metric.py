@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from vad import get_vad_stats
-from PAIR.main import PairEval
+#from PAIR.main import PairEval
 from metric.gather_tree_stats import gather_stats
 from metric.ngrams import SpanProcessor
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
@@ -119,9 +119,9 @@ tokenizer.add_tokens(comet_additional_special_tokens)
 tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 
 bertscore = load("bertscore")
-pairscore = PairEval()
+#pairscore = PairEval()
 emb_type = 'other'
-emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
+emb_path = 'metric/word2vec/glove.6B.300d.model.bin'
 coh = Coherence(emb_type, emb_path)
 
 model_path = 'JungleLee/bert-toxic-comment-classification'
@@ -138,8 +138,8 @@ import os
 #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-jepm602/bleu2/epoch0_step19_2024-06-03/lr_1e-06-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_loadtemp/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.1-svae-lc-je-tppm602/bleu2/non_mix",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.1-svae-lc-je-tppm602/bleu2/epoch0_step79_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.01temp/non_mix",
         ]
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
@@ -189,10 +189,10 @@ def evaluate(dirs, masks = None):
         #gather_stats(responses=hyps, ngrams_dir=ngrams_dir)
         
         pair_scores = []
-        for prev, hyp in zip(prevs, hyps):
-            score = pairscore.run_model(prev, hyp)[0]
-            pair_scores.append(score)
-        print("PAIR",np.mean(pair_scores))
+        #for prev, hyp in zip(prevs, hyps):
+        #    score = pairscore.run_model(prev, hyp)[0]
+        #    pair_scores.append(score)
+        #print("PAIR",np.mean(pair_scores))
         coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
                                         response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
         print("coherence:",coh_score)
@@ -203,7 +203,7 @@ def evaluate(dirs, masks = None):
         print("spec", spec_scores)
         all_spec_scores = spec_.specificity
         
-        hm, all_hm = humanlike.eval(hyp, contexts = None)
+        hm, all_hm = humanlike.eval(hyps, contexts = None)
         print("human",hm)
         all_hm = all_hm["toxic"]
         
@@ -225,7 +225,7 @@ def evaluate(dirs, masks = None):
                 all_res_by_sent[dir][k] = [float(x) for x in v]
         all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
         all_res_by_sent[dir]["spec"] = [float(x) for x in all_spec_scores]
-        all_res_by_sent[dir]["pair"] = pair_scores
+        #all_res_by_sent[dir]["pair"] = pair_scores
         all_res_by_sent[dir]["human"] = all_hm
         for vad_metric in all_vad_scores[0]:
             
