@@ -335,8 +335,8 @@ class EmpathyDetectorArguments:
     model_name = "bert-base-uncased"
 
 class EmpathyFeedbackerArguments:
-    #model_dir = "/disk/junlin/models/EmoSupport/bert/output/esconv_fb"
-    model_dir = "/mnt/HD-8T/lijunlin/models/EmoSupport/bert/esconv_fb"
+    model_dir = "/disk/junlin/models/EmoSupport/bert/output/esconv_fb"
+    #model_dir = "/mnt/HD-8T/lijunlin/models/EmoSupport/bert/esconv_fb"
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
     

@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
 from vad import get_vad_stats
+from lexical_diversity import lex_div as ld
 #from PAIR.main import PairEval
 from metric.gather_tree_stats import gather_stats
 from metric.ngrams import SpanProcessor
@@ -110,7 +111,11 @@ class SentEval:
                         total_scores[k].append(1 - score["score"])
         total_score = {k:np.mean(v)  for k,v in total_scores.items()}
         return total_score, total_scores
-
+    
+def calc_diversity(corpus):
+    flts = [ld.flemmatize(text) for text in corpus]
+    scores = [ld.mtld_ma_bid(flt) for flt in flts]
+    return scores, np.mean(scores)
 additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
 tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
 tokenizer.add_tokens(additional_special_tokens)
@@ -121,7 +126,7 @@ tokenizer.add_special_tokens({'cls_token': '[CLS]'})
 bertscore = load("bertscore")
 #pairscore = PairEval()
 emb_type = 'other'
-emb_path = 'metric/word2vec/glove.6B.300d.model.bin'
+emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
 coh = Coherence(emb_type, emb_path)
 
 model_path = 'JungleLee/bert-toxic-comment-classification'
@@ -138,12 +143,14 @@ import os
 #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
-        "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.1-svae-lc-je-tppm602/bleu2/non_mix",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.1-svae-lc-je-tppm602/bleu2/epoch0_step79_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.01temp/non_mix",
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm602/bleu2/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm602/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_loadtemp/non_mix",
         ]
+dirs.append("kemi_generated_data_2")
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
 dirs.append("multiesc_generated_data_new")
+
 all_res = {}
 all_res_by_sent = {}
 #gpt_ppl = GPT_PPL('openai-gpt')
@@ -154,6 +161,8 @@ def evaluate(dirs, masks = None):
         ref_path = f"{dir}/ref_strategy.json"
         if "multiesc" in dir:
             summary_path = f"{dir}/prev.txt"
+        elif "kemi" in dir:
+            summary_path = f"{dir}/prev.json"
         else:
             summary_path = f"{dir}/summary.txt"
         with open(hyp_path, 'r', encoding='utf-8') as f:
@@ -163,6 +172,8 @@ def evaluate(dirs, masks = None):
         with open(summary_path, 'r', encoding='utf-8') as f:
             if "multiesc" in summary_path:
                 prevs = f.read().strip().split("\n")
+            elif "kemi" in summary_path:
+                prevs = json.load(f)
             elif not "transESC" in summary_path:
                 prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-1]) for x in f.read().strip().split("\n\n")]
             else:
@@ -200,8 +211,13 @@ def evaluate(dirs, masks = None):
         print("vad",vad_scores)
         spec_= IDFEval(hyps)
         spec_scores = spec_.eval()
+        
         print("spec", spec_scores)
         all_spec_scores = spec_.specificity
+        
+        all_div, div = calc_diversity(hyps)
+        print("div", div)
+        
         
         hm, all_hm = humanlike.eval(hyps, contexts = None)
         print("human",hm)

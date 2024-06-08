@@ -2092,21 +2092,27 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 strategy_loss = strategy_loss_fct(strategy_logits.view(-1, 8), strategy_label)
                 if self.training:
                     loss += self.strategy_loss_ratio * strategy_loss
-            if self.config.use_contrastive_loss:
-                contrast_loss_funct = ContrastiveLoss()
-                #decoder_strategy_ids = decoder_strategy_ids.view(-1, 8)
+            if self.config.use_contrastive_loss and strategy_logit_ground is not None:
+                #contrast_loss_funct = ContrastiveLoss()
+                strategy_logit_ground = strategy_logit_ground.view(-1, 8)
                 decoder_eos_hidden = decoder_eos_hidden.view(-1, self.config.d_model)
                 #print(decoder_pool_embedding.shape)
-                contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
+                #contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
                 #print("contrast_loss",contrast_loss)
                 #contrast_loss += contrast_loss_funct(encoder_outputs.z, decoder_strategy_ids)
 
-                if self.training:
-                    if self.config.use_triplet_loss:
-                        triplet_loss_funct = TripletLoss()
-                        triplet_loss = triplet_loss_funct(decoder_eos_hidden, emo_dist)
-                        contrast_loss += triplet_loss
-                    loss += self.config.contrastive_loss_ratio * contrast_loss
+                #if self.training:
+                if self.config.use_triplet_loss:
+                    triplet_loss_funct = TripletLoss()
+                    ref = torch.cat((emo_dist, strategy_logit_ground), dim = -1)
+                    contrast_loss = triplet_loss_funct(decoder_eos_hidden, ref)
+                    
+                    #contrast_loss += triplet_loss
+                else:
+                    contrast_loss_funct = ContrastiveLoss()
+                    #decoder_strategy_ids = decoder_strategy_ids.view(-1, 8)
+                    contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
+                loss += self.config.contrastive_loss_ratio * contrast_loss
                     #else:
                     #    loss += self.config.contrastive_loss_ratio * contrast_loss
             elif self.config.use_centroid_loss:
