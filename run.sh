@@ -5,8 +5,8 @@ export HF_HUB_CACHE=$HF_HOME"/hub"
 
 ppo_sent_reward_ratios=(2.0 3.0)
 #python3 test.py
-lrs=("5e-07" "2e-07") # "5e-07" "2e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
-coefs=("0.1" "1.5") # "0.01")
+lrs=("2e-07" ) # "5e-07" "2e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+coefs=("1.5" "0.1") # "0.01")
 
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0,1
@@ -15,8 +15,8 @@ mini_batch_size=4
 ppo_init_kl_coef=0.0
 lm_loss=0.5
 gradient_accumulation_steps=$(($batch_size/$mini_batch_size))
-train=1
-eval=0
+train=0
+eval=1
 origin=0
 today=$(date '+%Y-%m-%d')
 echo ${today:5:10}
@@ -65,7 +65,7 @@ for lr in "${lrs[@]}";do
     ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
     ppo_args+=" --ppo_multiple_actions"
     ppo_args+=" --ppo_use_load"
-    ppo_args+=" --ppo_use_llama_seeker"
+    #ppo_args+=" --ppo_use_llama_seeker"
     ppo_args+=" --ppo_load_coef "$coef
     cur_comm+="$ppo_args"
 
@@ -82,7 +82,7 @@ for lr in "${lrs[@]}";do
     fi
 
     if [ $eval == 1 ]; then
-    steps=(9 19 29 39)
+    steps=(78)
     for step in "${steps[@]}";do
     pretrained_model="${root_path}/bart-our/-LIGHT-TRANS4PPO/${tag}/epoch0_step${step}_2024-06-03/${ppo_prefix}temp"
     #eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "

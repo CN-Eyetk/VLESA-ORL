@@ -316,10 +316,11 @@ class SeekerAgent:
         
         response = self.tokenizer.batch_decode([prediction[0][input_size:]])[0]
         
-        response = response.split("[unused ")[0]
+        response = response.split("[unused")[0]
         response = response.replace("<|endoftext|>","")
         response = response.replace("’"," '")
         response = response.strip()
+        
         return response
 
 

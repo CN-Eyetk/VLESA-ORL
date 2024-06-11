@@ -116,6 +116,12 @@ def calc_diversity(corpus):
     flts = [ld.flemmatize(text) for text in corpus]
     scores = [ld.mtld_ma_bid(flt) for flt in flts]
     return scores, np.mean(scores)
+
+def calc_hdd(corpus):
+    flts = [ld.flemmatize(text) for text in corpus]
+    scores = [ld.hdd(flt) for flt in flts]
+    return scores, np.mean(scores)
+
 additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
 tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
 tokenizer.add_tokens(additional_special_tokens)
@@ -143,9 +149,14 @@ import os
 #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm602/bleu2/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm602/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_loadtemp/non_mix",
+        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/non_mix/",
+        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step59_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.1temp/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix/"
+        
         ]
+dirs.append("supporter_generated_data")
+dirs.append("cooper_generated_data")
 dirs.append("kemi_generated_data_2")
 dirs.append("misc_generated_data")
 dirs.append("transESC_generated_data")
@@ -161,7 +172,7 @@ def evaluate(dirs, masks = None):
         ref_path = f"{dir}/ref_strategy.json"
         if "multiesc" in dir:
             summary_path = f"{dir}/prev.txt"
-        elif "kemi" in dir:
+        elif "kemi" in dir or "cooper" in dir or "supporter" in dir:
             summary_path = f"{dir}/prev.json"
         else:
             summary_path = f"{dir}/summary.txt"
@@ -172,7 +183,7 @@ def evaluate(dirs, masks = None):
         with open(summary_path, 'r', encoding='utf-8') as f:
             if "multiesc" in summary_path:
                 prevs = f.read().strip().split("\n")
-            elif "kemi" in summary_path:
+            elif "kemi" in dir or "cooper" in dir or "supporter" in dir:
                 prevs = json.load(f)
             elif not "transESC" in summary_path:
                 prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-1]) for x in f.read().strip().split("\n\n")]
@@ -207,8 +218,11 @@ def evaluate(dirs, masks = None):
         coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
                                         response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
         print("coherence:",coh_score)
+        result["coherence"] = coh_score
         all_vad_scores, vad_scores = get_vad_stats(conv_objs, dir)
         print("vad",vad_scores)
+        for k,v in vad_scores.items():
+            result[k] = v
         spec_= IDFEval(hyps)
         spec_scores = spec_.eval()
         
@@ -217,11 +231,16 @@ def evaluate(dirs, masks = None):
         
         all_div, div = calc_diversity(hyps)
         print("div", div)
-        
+
+        all_div_2, div_2 = calc_hdd(hyps)
+        print("div2", div_2)
+        result["div"] = div
+        result["div2"] = div_2
         
         hm, all_hm = humanlike.eval(hyps, contexts = None)
         print("human",hm)
         all_hm = all_hm["toxic"]
+        result["toxic"] = hm['toxic']
         
        
         print(result)
@@ -256,11 +275,12 @@ def evaluate(dirs, masks = None):
 all_res, all_res_by_sent = evaluate(dirs)
 
 our = dirs[1]
-baselines = [dirs[i] for i in [0,-1]]
+baselines = [dirs[i] for i in [0,-1,2,3]]
 for k,v in all_res_by_sent[our].items():
     print(k)
     print(type(v))
     for baseline in baselines:
+        print("baseline=",baseline)
         if "our" in baseline:
             print(ttest_rel(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
             print("*****")
@@ -268,7 +288,7 @@ for k,v in all_res_by_sent[our].items():
             print(f_oneway(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
             print("*****")
     print("========")
-df = pd.DataFrame(all_res)
+df = pd.DataFrame(all_res).T
 df.to_csv("res.csv")
 
 with open("full_results.json", "w+") as file:

@@ -341,7 +341,7 @@ class EmpathyFeedbackerArguments:
     device = torch.device("cpu")
     
 class SeekerArguments:
-    model_dir = "/disk/junlin/models/EmoSupport/gpt/output/esconv/checkpoint-5000"
+    model_dir = "/disk/junlin/models/EmoSupport/gpt/output/esconv_2"
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
 
