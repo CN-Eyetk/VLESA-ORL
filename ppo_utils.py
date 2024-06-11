@@ -17,7 +17,8 @@ def freeze_parameters(model, pattern):
             frozen_layers.append(name)
         else:
             active_layers.append(name)
-    print("active_layers,",active_layers)
+    #print("active_layers,",active_layers)
+    print("frozen_layers,",frozen_layers)
 
 def load_ref_model(model):
     ref_model = deepcopy(model)
@@ -506,6 +507,10 @@ class Agent:
         paras["emotion_logits_ref"] = torch.stack(all_ref_emo_out, dim = 1).squeeze(-2)
         if self.ppo_trainer.config.multiple_actions:
             paras["action_ids"] = self.make_multiple_actions(paras["action_ids"], paras["emotion_logits"])
+        elif self.ppo_trainer.config.wo_e:
+            paras["action_ids"] = paras["action_ids"]
+        elif self.ppo_trainer.config.wo_a:
+            paras["action_ids"] = paras["emotion_logits"].argmax(-1)
         if remove_time_dimension:
             paras["action_ids"] = paras["action_ids"].repeat_interleave(n_step, dim = 0)
             paras["strategy_logit_ground"] = paras["strategy_logit_ground"].repeat_interleave(n_step, dim = 0)

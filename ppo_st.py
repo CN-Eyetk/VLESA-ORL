@@ -24,7 +24,7 @@ from arguments import load_arg
 #from lexical_diversity import lex_div as ld
 from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
 #from metric.text_feats import dependency_distance
-from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval
+from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval, save_value_head
 from attach_vad.VADTokenizer import W2VAD
 from accelerate import Accelerator
 vad_tokenizer = None
@@ -36,14 +36,14 @@ vad_tokenizer = None
 import logging
 logger = logging.getLogger(__name__)
 from datetime import date
-today = "2024-06-03"
+today = "2024-06-11"
 #print("Today's date:", today)
 args = load_arg()
 #args.device = torch.device("cuda:" + device_string if torch.cuda.is_available() else "cpu")
 @dataclass
 class ScriptArguments:
      #
-
+    
     ppo_config: PPOConfig = field(
         default_factory=lambda: PPOConfig(
             #model_name="lvwerra/gpt2-imdb",
@@ -71,8 +71,10 @@ class ScriptArguments:
             use_word_level_reward = args.ppo_use_word_level_reward,
             #n_action = 8,
             use_full_loss = args.ppo_use_full_loss,
-            multiple_actions = args.ppo_multiple_actions,
-            n_actions = args.ppo_n_actions
+            multiple_actions = args.ppo_multiple_actions if not args.ppo_wo_a and not args.ppo_wo_e else False,
+            wo_a = args.ppo_wo_a,
+            wo_e = args.ppo_wo_e,
+            n_actions = args.ppo_n_actions if not args.ppo_wo_a and not args.ppo_wo_e else ([8] if args.ppo_wo_e else [28])
             
             
             
@@ -140,6 +142,14 @@ if __name__ == "__main__":
             print("train both strategy and emotion")
             trl_model_class = AutoModelForMultiLevelWithValueHead2
             trainer_class = JointPPOTrainer
+        elif ppo_args.ppo_config.wo_a:
+            print("wo strategy")
+            trl_model_class = AutoModelForMultiLevelWithValueHead2
+            trainer_class = JointPPOTrainer
+        elif ppo_args.ppo_config.wo_e:
+            print("wo emo")
+            trl_model_class = AutoModelForMultiLevelWithValueHead2
+            trainer_class = JointPPOTrainer
         else:
             trl_model_class =  AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
             trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer
@@ -155,12 +165,21 @@ if __name__ == "__main__":
         model = trl_model_class.from_pretrained(
             ppo_args.ppo_config.model_name,
             config = model_config,
-            device_map=device_map
+            device_map=device_map,
+
         )
+        model.wo_a = ppo_args.ppo_config.wo_a
+        model.wo_e = ppo_args.ppo_config.wo_e
         if not ppo_args.use_lm_reward:
-            freeze_parameters(model, "(decoder|trans_mat|emo|embed|encoder\.layers\.[01234])")
+            
+            freeze_parameters(model, "(decoder|trans_mat|embed|encoder\.layers\.[01234])")
         else:
-            freeze_parameters(model, "(trans_mat|emo|embed|encoder\.layers\.[01234])")
+            if ppo_args.ppo_config.wo_a:
+                freeze_parameters(model, "(strategy|embed|encoder\.layers\.[01234])")
+            if ppo_args.ppo_config.wo_e:
+                freeze_parameters(model, "(trans_mat|embed|encoder\.layers\.[01234])")
+            else:
+                freeze_parameters(model, "(embed|encoder\.layers\.[01234])")
         ref_model = load_ref_model(model)
         if args.ppo_train_emo_strat:
             name_unshared_layers = [n for n, _ in model.named_parameters() if ("strategy" in n or "trans_mat" in n or "encoder" in n) and "emotion_head" not in n and "embedding" not in n and "decoder" not in n and "trans_mat" not in n]
@@ -313,6 +332,12 @@ if __name__ == "__main__":
                                 optimizer = ppo_trainer.optimizer,
                                 scheduler = ppo_trainer.lr_scheduler
                                 )
+                        save_value_head(args,
+                                        model = ppo_trainer.model,
+                                        output_dir = ppo_output_dir,
+                                        checkpoint_prefix = f"{args.ppo_prefix}_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}", 
+                                        )
+                        
                         print("success saved")
                         ppl = results["eval_perplexity"]
                         if ppl > best_ppl:

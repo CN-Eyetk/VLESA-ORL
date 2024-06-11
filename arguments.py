@@ -33,6 +33,10 @@ def load_ppo_prefix(args_g):
             prefix += "_llama"
         if args_g.ppo_use_load:
             prefix += f"_load_{args_g.ppo_load_coef}"
+        if args_g.ppo_wo_a:
+            prefix += "_woa"
+        if args_g.ppo_wo_e:
+            prefix += "_woe"
         
     else:
         prefix = args_g.prefix
@@ -70,7 +74,7 @@ def load_tag(args):
                 +("-lc" if args.layer_control else "") \
                         +("-je" if args.use_joint_emo else "") \
                             +("-tp" if args.use_triplet_loss else "") \
-        +args.tag
+    +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
 def load_arg(return_tag = False, ):
@@ -172,6 +176,8 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_lm_only", action="store_true")
     ppo_parser.add_argument("--ppo_return_arg", action="store_true")
     ppo_parser.add_argument("--ppo_multiple_actions", action="store_true")
+    ppo_parser.add_argument("--ppo_wo_a", action="store_true")
+    ppo_parser.add_argument("--ppo_wo_e", action="store_true")
     ppo_parser.add_argument("--ppo_n_actions", nargs='+', type=int, default=[8, 28])
     ppo_parser.add_argument("--ppo_use_load", action="store_true")
     ppo_parser.add_argument("--ppo_load_coef", default=0.01, type=float)

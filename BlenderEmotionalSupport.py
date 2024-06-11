@@ -119,6 +119,24 @@ def save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optim
         torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
     logger.info("Saving optimizer and scheduler states to %s", output_dir)
 
+def save_value_head(args, model, output_dir, checkpoint_prefix):
+    vhead_output_dir = os.path.join(output_dir,"vhead")
+    os.makedirs(vhead_output_dir, exist_ok=True)
+    model_to_save = (
+        model.module.v_head if hasattr(model, "module") else model.v_head
+    )  # Take care of distributed/parallel training
+    torch.save(model_to_save.state_dict(), os.path.join(vhead_output_dir, "vhead.pt"))
+    logger.info("Saving model checkpoint to %s", vhead_output_dir)
+    _rotate_checkpoints(args, checkpoint_prefix)
+    
+    vhead_lm_output_dir = os.path.join(output_dir,"vhead_lm")
+    os.makedirs(vhead_lm_output_dir, exist_ok=True)
+    model_to_save = (
+        model.module.v_head_lm if hasattr(model, "module") else model.v_head_lm
+    )  # Take care of distributed/parallel training
+    torch.save(model_to_save.state_dict(), os.path.join(vhead_lm_output_dir, "vhead_lm.pt"))
+    logger.info("Saving model checkpoint to %s", vhead_lm_output_dir)
+    _rotate_checkpoints(args, checkpoint_prefix)
 def check(example):
     input_ids = example.input_ids
     #print("input_ids",input_ids)

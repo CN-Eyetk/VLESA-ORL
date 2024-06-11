@@ -891,7 +891,6 @@ class AutoModelForMultiLevelWithValueHead2(PreTrainedModelWrapper):
 
         self.v_head = ValueHead(self.pretrained_model.config, **v_head_kwargs, hidden_size = 2 * self.pretrained_model.config.d_model)
         self.v_head_lm = ValueHead(self.pretrained_model.config, **v_head_kwargs)
-
         self._init_weights(**v_head_kwargs)
 
     def _has_lm_head(self):
@@ -1026,10 +1025,21 @@ class AutoModelForMultiLevelWithValueHead2(PreTrainedModelWrapper):
         #                                        n_step,
         #                                        self.pretrained_model.config.d_model,
         #                                        ).to(input_ids.device)
-        act_logits_each_turn = torch.zeros(batch_size,
-                                            n_step - 1,
-                                            encoder.n_strat + encoder.n_emo_out,
-                                            ).to(input_ids.device)
+        if self.wo_a:
+            act_logits_each_turn = torch.zeros(batch_size,
+                                                n_step - 1,
+                                                encoder.n_emo_out,
+                                                ).to(input_ids.device)
+        elif self.wo_e:
+            act_logits_each_turn = torch.zeros(batch_size,
+                                                n_step - 1,
+                                                encoder.n_strat,
+                                                ).to(input_ids.device)
+        else:
+            act_logits_each_turn = torch.zeros(batch_size,
+                                                n_step - 1,
+                                                encoder.n_strat + encoder.n_emo_out,
+                                                ).to(input_ids.device)
         value_each_turn = torch.zeros(batch_size,
                                       n_step).to(input_ids.device)
         y_len = kwargs["decoder_input_ids"].size(-1)
@@ -1057,7 +1067,12 @@ class AutoModelForMultiLevelWithValueHead2(PreTrainedModelWrapper):
             
             value_each_turn[:,i] = self.v_head(act_hidden_state).squeeze(-1)
             if i < n_step - 1:
-                act_logits = torch.cat((base_model_encoder_output.actions[0], base_model_encoder_output.actions[1].squeeze(1)), dim = -1) #[b, n_strategy + n_emo]
+                if self.wo_a:
+                    act_logits = base_model_encoder_output.actions[1].squeeze(1)
+                elif self.wo_e:
+                    act_logits = base_model_encoder_output.actions[0]
+                else:
+                    act_logits = torch.cat((base_model_encoder_output.actions[0], base_model_encoder_output.actions[1].squeeze(1)), dim = -1) #[b, n_strategy + n_emo]
                 # force upcast in fp32 if logits are in half-precision
                 if act_logits.dtype != torch.float32:
                     act_logits = act_logits.float()

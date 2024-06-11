@@ -153,7 +153,9 @@ class PPOConfig:
     #aciton size
     n_actions: list = None
     multiple_actions: bool = False
-    
+
+    wo_a: bool = False
+    wo_e: bool = False
     
     
     

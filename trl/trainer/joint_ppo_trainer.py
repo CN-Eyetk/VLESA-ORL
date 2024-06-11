@@ -92,7 +92,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 action_ids = input_kwargs["action_ids"].unsqueeze(-1)#[b,n_step]
                 if action_ids.size(-1) == 1 and len(action_ids.size()) == 3:
                     action_ids = action_ids.squeeze(-1)
-                a_logprobs = logprobs_from_logits(a_logits[:,:-1,:], action_ids)
+                a_logprobs = logprobs_from_logits(a_logits, action_ids)
                 a_masks = torch.zeros_like(action_ids)
                 a_masks[:,:] = 1
 
@@ -150,21 +150,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 print("decoder input ids", input_kwargs["decoder_input_ids"][0])
                 print("lm_masks", lm_masks[0])
                 verbose = False
-        #if len(lm_values.size()) == 3:   
-        #    return (
-        #        torch.cat(all_a_logprobs),#[b,t,1]
-        #        torch.cat(all_a_logits) if return_logits else None,
-        #        torch.cat(all_a_values),
-        #        torch.cat(all_a_masks),
-        #        torch.cat(all_lm_logprobs),#[b,t,l_y-1]
-        #        torch.cat(all_lm_logits)[:, :, :-1] if return_logits else None, #[b,t,l_y-1, V]
-        #        torch.cat(all_lm_values)[:, :,  :-1], #[b,t,l_y-1]
-        #        torch.cat(all_lm_masks)[:, :, :-1], #[b,t,l_y-1]
-        #    )
-        #else:
-        #return_lm_masks = torch.cat(all_lm_masks)
-        #print("decoder input ids", model_inputs["decoder_input_ids"][0])
-        #print("return_lm_masks",return_lm_masks[0])
+
         return (
             torch.cat(all_a_logprobs),
             torch.cat(all_a_logits) if return_logits else None,
