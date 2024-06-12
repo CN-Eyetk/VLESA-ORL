@@ -2096,12 +2096,6 @@ class BartForConditionalGeneration(BartPretrainedModel):
                 #contrast_loss_funct = ContrastiveLoss()
                 strategy_logit_ground = strategy_logit_ground.view(-1, 8)
                 decoder_eos_hidden = decoder_eos_hidden.view(-1, self.config.d_model)
-                #print(decoder_pool_embedding.shape)
-                #contrast_loss = contrast_loss_funct(decoder_eos_hidden, decoder_strategy_ids)
-                #print("contrast_loss",contrast_loss)
-                #contrast_loss += contrast_loss_funct(encoder_outputs.z, decoder_strategy_ids)
-
-                #if self.training:
                 if self.config.use_triplet_loss:
                     triplet_loss_funct = TripletLoss()
                     ref = torch.cat((emo_dist, strategy_logit_ground), dim = -1)
