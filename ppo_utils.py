@@ -19,6 +19,7 @@ def freeze_parameters(model, pattern):
             active_layers.append(name)
     #print("active_layers,",active_layers)
     print("frozen_layers,",frozen_layers)
+    #return model
 
 def load_ref_model(model):
     ref_model = deepcopy(model)

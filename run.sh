@@ -5,9 +5,9 @@ export HF_HUB_CACHE=$HF_HOME"/hub"
 
 ppo_sent_reward_ratios=(2.0 3.0)
 #python3 test.py
-lrs=("2e-07" ) # "5e-07" "2e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
+lrs=("2e-07") # "5e-07" "2e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 coefs=("1.5") # "0.01")
-ablations=("" " --ppo_wo_a" " --po_wo_e")
+ablations=("")
 
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0,1
@@ -70,8 +70,7 @@ for lr in "${lrs[@]}";do
 
     ppo_args+=" --ppo_multiple_actions"
     ppo_args+=$abla
-    ppo_args+=" --ppo_use_load"
-    #ppo_args+=" --ppo_use_llama_seeker"
+    
     ppo_args+=" --ppo_load_coef "$coef
     cur_comm+="$ppo_args"
 
@@ -84,7 +83,7 @@ for lr in "${lrs[@]}";do
     if [ $train == 1 ]; then
     accelerate launch $comm_a
     #python3 $comm_a
-    sleep 0.5h
+    sleep 0.2h
     fi
 
     if [ $eval == 1 ]; then
@@ -94,7 +93,7 @@ for lr in "${lrs[@]}";do
     #eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
     #$eval_comm_a
-    eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$pretrained_model" "$pretrained_args" "
+    eval_comm_b="python3 main.py --generate_with_predicted_strategy --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
     $eval_comm_b
     done
     fi

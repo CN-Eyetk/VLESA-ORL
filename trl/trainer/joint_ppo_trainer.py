@@ -53,8 +53,11 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             input_kwargs = {key: value[i * fbs : (i + 1) * fbs] if type(value) is not type(None) and type(value) is not bool  else value for key, value in model_inputs.items()}
             if is_ref:
                 input_kwargs["emotion_logits"] = input_kwargs["emotion_logits_ref"]
+            if is_ppo:
+                input_kwargs["emotion_logits"] = None
             if is_ppo or is_ref:
                 del input_kwargs["strategy_logit_ground"]
+                
             del input_kwargs["emotion_logits_ref"]
             query_batch = queries[i * fbs : (i + 1) * fbs]
             response_batch = responses[i * fbs : (i + 1) * fbs]
@@ -465,6 +468,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                             mini_batch_dict["responses"],  #[b,2,l]
                             cur_model_inputs,
                             return_logits=True,
+                            is_ppo=True,
                         )
                         a_vpreds = a_vpreds[:,:-1]
                         #if len(lm_logprobs.size()) == 3:

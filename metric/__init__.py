@@ -181,8 +181,8 @@ class NLGEval(object):
         if not omit_bleu_i:
             self.scorers.append((Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]))
 
-        #if 'METEOR' not in self.metrics_to_omit:
-        #    self.scorers.append((Meteor(), "METEOR"))
+        if 'METEOR' not in self.metrics_to_omit:
+            self.scorers.append((Meteor(), "METEOR"))
         if 'ROUGE_L' not in self.metrics_to_omit:
             self.scorers.append((Rouge(), "ROUGE_L"))
         if 'CIDEr' not in self.metrics_to_omit:

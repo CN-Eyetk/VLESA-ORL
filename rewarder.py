@@ -730,28 +730,34 @@ def main(summaries, responses, prefix):
     #print("min n_turn:",min(n_turns))
     #print("max n_turn:",max(n_turns))
     n_turns = [max(min(len(x),50), 2) for x in histories]
-    histories = [history[-4:] if len(history) > 4 else history for history in histories]
+    histories = [history[-8:] if len(history) > 8 else history for history in histories]
     feedbacker = load_feedbacker()
+    seeker = load_seeker()
     feedbacker.model = feedbacker.model.cuda()
+    seeker.model = seeker.model.cuda()
     results = []
     bar = tqdm(histories, total = len(histories))
     running_rwd = 0
     rwds = []
+    relvs = []
     turns = []
     for i, history in enumerate(bar):
         s_cur, s_prev, rwd = feedbacker.rewarder(history)
+        load = seeker.calculate_load(history)
+        relv = rwd / load
         turns.append(n_turns[i])
         results.append(f"{s_cur}\t{s_prev}\t{rwd}")
         rwds.append(s_cur)
+        relvs.append(relv)
         #running_rwd += (rwd - running_rwd) / (i + 1)
-        bar.set_description(f"rwd {np.mean(rwds)}")
+        bar.set_description(f"rwd {np.mean(rwds)} relv {np.mean(relvs)}")
 
     with open(f"statistics/empathy_feedbacks_{prefix}.csv","w+") as file:
         for res in results:
             file.write(res)
             file.write("\n")
 
-    return rwds, turns
+    return rwds, relvs, turns
 
 
 if __name__ == "__main__":
@@ -796,8 +802,9 @@ if __name__ == "__main__":
                 }
         print("path=",{path})
         summaries, responses = load(path)
-        rwd, turns = main(summaries, responses, prefix)
+        rwd, relvs, turns = main(summaries, responses, prefix)
         datas[f"reward_{prefix}"] += rwd
+        datas[f"relv_{prefix}"] += relvs
         datas[f"turn_{prefix}"] += turns
         #datas[f"group_{prefix}"] += [prefix] * len(rwd)
         datas[f"response_{prefix}"] += responses
@@ -821,6 +828,16 @@ if __name__ == "__main__":
     for i in range(0,30):
         sfl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["reward_b"]
         rl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["reward_a"] #df[(df["turn"] > start_turn) & (df["group"] == "b")]["reward"].to_list()
+
+    #print("start turn:",start_turn)
+    
+        print(ttest_rel(sfl, rl))
+        print(sfl[df["response_b"] < df["response_a"]].count())
+        print(sfl[df["response_b"] > df["response_a"]].count())
+
+    for i in range(0,30):
+        sfl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["relv_b"]
+        rl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["relv_a"] #df[(df["turn"] > start_turn) & (df["group"] == "b")]["reward"].to_list()
 
     #print("start turn:",start_turn)
     

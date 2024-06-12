@@ -2,6 +2,7 @@ from src.transformers import BlenderbotSmallTokenizer
 from metric import NLGEval
 import nltk
 import numpy as np
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import re
 import torch
 from metric.myMetrics import split_punct
@@ -31,6 +32,21 @@ def postprocess_text(preds, labels):
     labels = [label.strip() for label in labels]
     return preds, labels
 
+
+class Humanlike:
+    def __init__(self, model_card = "microsoft/DialogRPT-human-vs-machine") -> None:
+        tokenizer = AutoTokenizer.from_pretrained(model_card)
+        model = AutoModelForSequenceClassification.from_pretrained(model_card).eval()
+        model = model.cuda()
+        
+        self.model = model
+        self.tokenizer = tokenizer
+    def score(self, cxt, hyp):
+        with torch.no_grad():
+            model_input = self.tokenizer.encode(cxt + "<|endoftext|>" + hyp, return_tensors="pt")
+            result = self.model(model_input.to(self.model.device), return_dict=True)
+        
+        return torch.sigmoid(result.logits).detach().cpu().squeeze()
 
 class NLTK_Metric:
     def __init__(self, hyp_path = None, ref_path = None, hyps = None, refs = None):
@@ -140,7 +156,8 @@ model_path = 'JungleLee/bert-toxic-comment-classification'
 #print(contexts[:10])
 #print("=========")
 humanlike = SentEval(model_path, is_distributon = True)
-        
+diag_humanlike = Humanlike()
+diag_relav = Humanlike("microsoft/DialogRPT-updown")
 from metric.myMetrics import Metric
 from metric.ppl import GPT_PPL
 import pandas as pd
@@ -150,9 +167,11 @@ import os
 #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
 dirs = [    
         "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/non_mix/",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/non_mix/",
         #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step59_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.1temp/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix/"
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woatemp/non_mix",
+        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woetemp/non_mix"
         
         ]
 dirs.append("supporter_generated_data")
@@ -209,8 +228,12 @@ def evaluate(dirs, masks = None):
         #ngrams_dir = f"metric/outputs/ngrams_{i}"
         #x.dump(ngrams_dir)
         #gather_stats(responses=hyps, ngrams_dir=ngrams_dir)
+
         
-        pair_scores = []
+        humanlike_scores = [diag_humanlike.score(prev.lower(), hyp.lower()) for prev, hyp in zip(prevs, hyps)]
+        print("human like", np.mean(humanlike_scores))
+        rel_scores = [diag_relav.score(prev.lower(), hyp.lower()) for prev, hyp in zip(prevs, hyps)]
+        print("rel like", np.mean(rel_scores))
         #for prev, hyp in zip(prevs, hyps):
         #    score = pairscore.run_model(prev, hyp)[0]
         #    pair_scores.append(score)
@@ -241,6 +264,7 @@ def evaluate(dirs, masks = None):
         print("human",hm)
         all_hm = all_hm["toxic"]
         result["toxic"] = hm['toxic']
+
         
        
         print(result)
@@ -262,6 +286,8 @@ def evaluate(dirs, masks = None):
         all_res_by_sent[dir]["spec"] = [float(x) for x in all_spec_scores]
         #all_res_by_sent[dir]["pair"] = pair_scores
         all_res_by_sent[dir]["human"] = all_hm
+        all_res_by_sent[dir]["upvote"] = rel_scores
+        all_res_by_sent[dir]["humanlike"] = humanlike_scores
         for vad_metric in all_vad_scores[0]:
             
             all_res_by_sent[dir][vad_metric] = [float(vad_score[vad_metric]) for vad_score in all_vad_scores]
@@ -275,7 +301,7 @@ def evaluate(dirs, masks = None):
 all_res, all_res_by_sent = evaluate(dirs)
 
 our = dirs[1]
-baselines = [dirs[i] for i in [0,-1,2,3]]
+baselines = [dirs[i] for i in [0,-1,5,6]]
 for k,v in all_res_by_sent[our].items():
     print(k)
     print(type(v))
