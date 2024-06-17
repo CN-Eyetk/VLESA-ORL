@@ -1,6 +1,9 @@
 from src.transformers import BartForConditionalGeneration, BartTokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 
+torch.manual_seed(42)
+import numpy as np
+np.random.seed(42)
 class CustomChatbot:
     def  __init__(self, model_path) -> None:
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
@@ -15,9 +18,16 @@ class CustomChatbot:
     
 class Chatbot:
     def __init__(self, model_path) -> None:
-        model = BartForConditionalGeneration.from_pretrained(model_path, from_tf=False)
+        #config = BartForConditionalGeneration.from_pretrained(model_path)
+        if "2024-06-03" in model_path:
+            model = BartForConditionalGeneration.from_pretrained(model_path, from_tf=False, origin_latent_dim = True)
+        else:
+            model = BartForConditionalGeneration.from_pretrained(model_path, from_tf=False)
+        model.eval()
         tokenizer = BartTokenizer.from_pretrained(model_path)
-        self.model = model
+        
+            
+        self.model = model.cuda()
         self.tokenizer = tokenizer
     def make_input(self, chat):
         input_ids = []
@@ -34,11 +44,11 @@ class Chatbot:
         input_ids = self.tokenizer.encode(self.tokenizer.cls_token, add_special_tokens = False) + input_ids
         role_ids = [self.tokenizer.pad_token_id] + role_ids
         batch = {
-            "input_ids":torch.tensor([input_ids]),
-            "role_ids":torch.tensor([role_ids])
+            "input_ids":torch.tensor([input_ids]).to(self.model.device),
+            "role_ids":torch.tensor([role_ids]).to(self.model.device)
         }
         batch["output_mutual_attentions"] = False
-        batch["generate_with_predicted_strategy"] = True
+        batch["generate_with_predicted_strategy"] = False
         return batch
     def response(self, chat):
         batch = self.make_input(chat)
@@ -50,8 +60,8 @@ class Chatbot:
                 use_cache=True,
                 pad_token_id=self.tokenizer.pad_token_id,
                 early_stopping=True,
-                eos_token_id=self.tokenizer.eos_token_id, temperature=1.0,
-                top_p=0.9, 
+                eos_token_id=self.tokenizer.eos_token_id, temperature=0.7,
+                top_p=1.0, 
                 top_k = 30, 
                 do_sample=True, 
                 no_repeat_ngram_size=3,

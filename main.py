@@ -51,6 +51,7 @@ parser.add_argument("--sample_strategy_embedding", action = "store_true")
 parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
 parser.add_argument("--do_train",action="store_true")
 parser.add_argument("--do_show_emotion",action="store_true")
+parser.add_argument("--do_show_latent",action="store_true")
 parser.add_argument("--log_on_wandb",action="store_true")
 #parser.add_argument("--emo_out_coef", default = 1.0, type = float)
 #parser.add_argument("--emo_in_coef", default = 1.0, type = float)
@@ -76,6 +77,7 @@ parser.add_argument("--layer_control", action="store_true")
 parser.add_argument("--strategy_use_cvae", action="store_true")
 parser.add_argument("--use_joint_emo", action="store_true")
 parser.add_argument("--use_triplet_loss", action="store_true")
+parser.add_argument("--origin_latent_dim",action="store_true")
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -311,7 +313,8 @@ def load_arg():
             "layer_control":args_g.layer_control,
             "strategy_use_cvae":args_g.strategy_use_cvae,
             "use_joint_emo":args_g.use_joint_emo,
-            "use_triplet_loss":args_g.use_triplet_loss
+            "use_triplet_loss":args_g.use_triplet_loss,
+            "origin_latent_dim":args_g.origin_latent_dim
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
@@ -458,6 +461,24 @@ def show_emotion(args):
         res[emo] = [emotion[i] for emotion in emotions]
     df = pd.DataFrame(res)
     df.to_csv("emotion_output.csv",sep = "\t")
+
+def show_latent(args):
+    import pandas as pd
+    a_latents, e_latents, a_logits, e_logits, e = evaluate(args, model, tokenizer, args.test_dataset, "of test set", show_latent = True)
+    a_pred = [a_logit.argmax() for a_logit in a_logits]
+    e_pred = [e_logit.argmax() for e_logit in e_logits]
+    res = {"z_a":[],"z_e":[], "a":[], "e": [],"a_logits":[],"e_logits":[], "e_in":[]}
+    for z_a, z_e, a, e, a_logit, e_logit, e_in in zip(a_latents, e_latents, a_pred, e_pred, a_logits, e_logits, e):
+        res["z_a"].append(z_a.detach().cpu().tolist())
+        res["z_e"].append(z_e.detach().cpu().tolist())
+        res["a"].append(float(a.detach().cpu()))
+        res["e"].append(float(e.detach().cpu()))
+        res["a_logits"].append(a_logit.detach().cpu().tolist())
+        res["e_logits"].append(e_logit.detach().cpu().tolist())
+        res["e_in"].append(e_in)
+    df = pd.DataFrame(res)
+    df.to_csv("analysis/latent_output.csv",sep = "\t")
+    
         
     
     
@@ -492,6 +513,8 @@ if __name__ == "__main__":
             explain(args)
         elif args_g.do_show_emotion:
             show_emotion(args)
+        elif args_g.do_show_latent:
+            show_latent(args)
         else:
             test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"

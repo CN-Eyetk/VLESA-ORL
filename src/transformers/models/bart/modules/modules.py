@@ -254,7 +254,10 @@ class StrategyVAE(nn.Module):
         self.n_emo_in = n_emo_in
         self.n_strat = n_strat
         self.hidden_dim = config.d_model
-        self.latent_dim = int(self.hidden_dim /2)
+        if config.origin_latent_dim:
+            self.latent_dim = int(self.hidden_dim /2)
+        else:
+            self.latent_dim = int(config.latent_dim/2)
         self.h_prior = nn.Linear(self.hidden_dim + self.hidden_dim, self.hidden_dim)
         self.mu_prior = nn.Linear(self.hidden_dim, self.latent_dim)
         self.logvar_prior = nn.Linear(self.hidden_dim, self.latent_dim)

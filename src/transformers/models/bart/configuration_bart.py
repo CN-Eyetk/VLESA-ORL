@@ -216,6 +216,7 @@ class BartConfig(PretrainedConfig):
         self.strategy_use_cvae = kwargs["strategy_use_cvae"] if "strategy_use_cvae" in kwargs.keys() else False
         self.use_joint_emo = kwargs["use_joint_emo"] if "use_joint_emo" in kwargs.keys() else False #utterance and situation emotion
         self.use_triplet_loss = kwargs["use_triplet_loss"] if "use_triplet_loss" in kwargs.keys() else False #utterance and situation emotion
+        self.origin_latent_dim = kwargs["origin_latent_dim"] if "origin_latent_dim" in kwargs.keys() else False #utterance and situation emotion
         
     @property
     def num_attention_heads(self) -> int:

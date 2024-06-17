@@ -204,6 +204,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         scores: List[torch.FloatTensor],
         wscores: List[torch.FloatTensor] = None,
         response_masks: Optional[List[torch.LongTensor]] = None,
+        wo_w = False,
         **kwargs: dict
     ):
         """

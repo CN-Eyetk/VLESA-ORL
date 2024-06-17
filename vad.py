@@ -146,11 +146,19 @@ def get_vad_stats(data, system):
     diff_max_intensity_mean = np.mean(
         [x["diff_max_intensity"] for x in results]
     )
+
+    diff_mean_v_mean = np.mean([x["diff_mean_v"] for x in results])
+    diff_mean_a_mean = np.mean([x["diff_mean_a"] for x in results])
+    diff_mean_d_mean = np.mean([x["diff_mean_d"] for x in results])
+
     summary = {
             "diff_max_v": diff_max_v_mean,
             "diff_max_a": diff_max_a_mean,
             "diff_max_d": diff_max_d_mean,
             "diff_max_intensity": diff_max_intensity_mean,
+            "diff_mean_v": diff_mean_v_mean,
+            "diff_mean_a": diff_mean_a_mean,
+            "diff_mean_d": diff_mean_d_mean,
         }
     return results, summary
 

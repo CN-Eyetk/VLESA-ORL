@@ -498,6 +498,25 @@ def load_llama_seeker():
     seeker = LLamaSeekerAgent(LLamaSeekerArguments.model_dir)
     return seeker
 
+
+def summary_to_history_for_eval(summary, response = None):
+    # "convert summary txt to histories"
+    pattern = re.compile("^(\d+\s\d\s\d+)\s(\[[\s\w-]+\])?\s{0,1}(.*?)$")
+    lines = summary.split("\n")
+    #print(lines)
+    ctx = lines[0].split("\t")[1]
+    history = ctx.split("EOS")
+    history = [x.strip() for x in history]
+    
+    history = [pattern.findall(x)[0] for x in history]
+    history = [{"content":x[-1].strip().lower(),"speaker":"supporter" if x[0].split(" ")[1] == "1" else "seeker"} for x in history]
+    history = history[:-1]
+    hypo_response = lines[2].split("\t")[1]
+    if response is None:
+        response = hypo_response
+    history.append({"content":response.lower(), "speaker":"supporter"})
+    return history
+
 def summary_to_history(summary, response = None):
     # "convert summary txt to histories"
     pattern = re.compile("^(\d+\s\d\s\d+)\s(\[[\s\w-]+\])?\s{0,1}(.*?)$")
@@ -508,12 +527,26 @@ def summary_to_history(summary, response = None):
     history = [x.strip() for x in history]
     history = [pattern.findall(x)[0] for x in history]
     history = [{"content":x[-1].strip().lower(),"speaker":"supporter" if x[0].split(" ")[1] == "1" else "seeker"} for x in history]
+    
     hypo_response = lines[2].split("\t")[1]
     if response is None:
         response = hypo_response
     history.append({"content":response.lower(), "speaker":"supporter"})
+
     return history
 
+def summary_to_history_for_cooper(summary):
+    history = []
+    diag_history = summary["dialogue_history"]
+    utts = re.compile(r"(?=(usr: |sys: ))").split(diag_history)
+    for utt in utts:
+        if "usr: " in utt:
+            speaker = "seeker"
+        else:
+            speaker = "supporter"
+        content = re.compile(r"(usr: |sys: )").sub("", utt).strip()
+        history.append({"content":content, "speaker":speaker})
+    return history
 def summary_to_history_for_multiesc(summary):
     history = []
     utts = re.compile(r"(?<!\]\s)\t").split(summary)
@@ -528,6 +561,7 @@ def summary_to_history_for_multiesc(summary):
                 speaker = "seeker"
             content = re.compile(r"\s@\[[\w\-s]+\]").sub("", utt).strip()
             history.append({"content":content, "speaker":speaker})
+
     return history
 def distribute_word_score_to_tokens(tokenizer, tokens_with_scores): #calculate the score of each subtoken of target tokenizer
     #token_ids = []
@@ -708,6 +742,8 @@ def align_score_from_seq_2_seq_pro(tokenizer, response_tokens, graded_tokens, sc
 def load(path):
     if "multiesc" in path:
         summaries = open(os.path.join(path, "summary.txt"),"r+").read().strip().split("\n")
+    elif "cooper" in path:
+        summaries = json.load(open(os.path.join(path, "esconv.json"), "r+"))
     else:
         summaries = open(os.path.join(path, "summary.txt"),"r+").read().strip().split("\n\n")
     #print(len(summaries))
@@ -721,20 +757,22 @@ def main(summaries, responses, prefix):
     #print(summaries[:10])
     #histories = [summary_to_history(summary) for summary in summaries]
     if "multiesc" in path:
-        histories =[summary_to_history_for_multiesc(summary) for summary in summaries]
+        histories = [summary_to_history_for_multiesc(summary) for summary in summaries]
         histories = [h for h in histories if len(h) > 1]
+    elif "cooper" in path:
+        histories = [summary_to_history_for_cooper(summary) for summary in summaries]
     else:
-        histories = [summary_to_history(summary, repo) for summary, repo in zip(summaries,responses)]
+        histories = [summary_to_history_for_eval(summary, repo) for summary, repo in zip(summaries,responses)]
     #print(histories[:10])
     n_turns = [len(x) for x in histories]
     #print("min n_turn:",min(n_turns))
     #print("max n_turn:",max(n_turns))
     n_turns = [max(min(len(x),50), 2) for x in histories]
-    histories = [history[-8:] if len(history) > 8 else history for history in histories]
+    histories = [history for history in histories]
     feedbacker = load_feedbacker()
-    seeker = load_seeker()
+    #seeker = load_seeker()
     feedbacker.model = feedbacker.model.cuda()
-    seeker.model = seeker.model.cuda()
+    #seeker.model = seeker.model.cuda()
     results = []
     bar = tqdm(histories, total = len(histories))
     running_rwd = 0
@@ -743,27 +781,27 @@ def main(summaries, responses, prefix):
     turns = []
     for i, history in enumerate(bar):
         s_cur, s_prev, rwd = feedbacker.rewarder(history)
-        load = seeker.calculate_load(history)
-        relv = rwd / load
+        #load = seeker.calculate_load(history)
+        #relv = rwd / load
         turns.append(n_turns[i])
         results.append(f"{s_cur}\t{s_prev}\t{rwd}")
-        rwds.append(s_cur)
-        relvs.append(relv)
+        rwds.append(rwd)
+        #relvs.append(relv)
         #running_rwd += (rwd - running_rwd) / (i + 1)
-        bar.set_description(f"rwd {np.mean(rwds)} relv {np.mean(relvs)}")
+        bar.set_description(f"rwd {np.mean(rwds)} ")
 
     with open(f"statistics/empathy_feedbacks_{prefix}.csv","w+") as file:
         for res in results:
             file.write(res)
             file.write("\n")
 
-    return rwds, relvs, turns
+    return rwds, turns
 
 
 if __name__ == "__main__":
     #paths = [
-    #    "/home/lijunlin/lijunlin/ESCONV/multiesc_generated_data_new",
-    #    "/home/lijunlin/lijunlin/ESCONV/misc_generated_data",
+    #    "/home/lijunlin/lijunlin/ESCONV_ACL/multiesc_generated_data_new",
+    #    "/home/lijunlin/lijunlin/ESCONV_ACL/misc_generated_data",
     #"/home/lijunlin/lijunlin/ESCONV/our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step69_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix0.7/non_mix/",
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-14/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full_nonmix1.0/non_mix/",
@@ -772,9 +810,14 @@ if __name__ == "__main__":
     #]
     #
     paths = [
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step39_2024-05-08/lr_2e-06-bs_64-sl_0-gs_4-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/non_mix",
-        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/epoch0_step29_2024-04-14/lr_2e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmixtemp/non_mix/", #previous king
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.5-lcmar28/bleu2/",
+        "/home/lijunlin/lijunlin/ESCONV_ACL/cooper_generated_data",
+            "/home/lijunlin/lijunlin/ESCONV_ACL/multiesc_generated_data_new",
+            
+        "/home/lijunlin/lijunlin/ESCONV_ACL/misc_generated_data",
+       "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/",
+            "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/",
+
+
         
     ]
     #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-Emoin-w_eosstg-w_emocat-w_stgcat-vae-mvae32-vad--1.0-ct0.05am205/bleu2/epoch0_step78_2024-02-09/lr_5e-07-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_full0.7"
@@ -793,7 +836,7 @@ if __name__ == "__main__":
     import pandas as pd
     rwds = []
 
-    prefixes = ["a","b"]
+    prefixes = ["a","b","c","d","e"]
     all_datas = {}
     for path, prefix in zip(paths,prefixes):
         datas = {f"reward_{prefix}":[],
@@ -802,9 +845,9 @@ if __name__ == "__main__":
                 }
         print("path=",{path})
         summaries, responses = load(path)
-        rwd, relvs, turns = main(summaries, responses, prefix)
+        rwd, turns = main(summaries, responses, prefix)
         datas[f"reward_{prefix}"] += rwd
-        datas[f"relv_{prefix}"] += relvs
+        #datas[f"relv_{prefix}"] += relvs
         datas[f"turn_{prefix}"] += turns
         #datas[f"group_{prefix}"] += [prefix] * len(rwd)
         datas[f"response_{prefix}"] += responses
@@ -835,19 +878,3 @@ if __name__ == "__main__":
         print(sfl[df["response_b"] < df["response_a"]].count())
         print(sfl[df["response_b"] > df["response_a"]].count())
 
-    for i in range(0,30):
-        sfl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["relv_b"]
-        rl = df[(df["response_b"] != df["response_a"])&(df["turn_a"] > i)]["relv_a"] #df[(df["turn"] > start_turn) & (df["group"] == "b")]["reward"].to_list()
-
-    #print("start turn:",start_turn)
-    
-        print(ttest_rel(sfl, rl))
-        print(sfl[df["response_b"] < df["response_a"]].count())
-        print(sfl[df["response_b"] > df["response_a"]].count())
-    #print(df.groupby("turns").apply(lambda df: ttest_rel(df['a'], df['b'])))
-    
-    #print(ttest_rel(rwds[0], rwds[1]))
-        
-        #df = pd.read_csv("feedback.csv", sep=",",)
-        #del df["Unnamed: 0"]
-        #df.groupby(["turn","group"]).boxplot()

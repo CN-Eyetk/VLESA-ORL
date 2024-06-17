@@ -20,6 +20,8 @@ from lexical_diversity import lex_div as ld
 #from PAIR.main import PairEval
 from metric.gather_tree_stats import gather_stats
 from metric.ngrams import SpanProcessor
+from metric.toxic import Toxity
+
 os.environ["HF_HOME"]="/disk/public_data/huggingface"
 os.environ["HF_HUB_CACHE"] = "/disk/public_data/huggingface/hub"
 def read_text(path):
@@ -86,109 +88,12 @@ class NLTK_Metric:
         #print(metric_res_list)
         self.res = metric_res
         self.metric_res_list = metric_res_list
-        
-class IDFEval:
-    def __init__(self, corpus) -> None:
-        self.corpus = corpus
-        vocabulary = [nltk.word_tokenize(x) for x in corpus]
-        vocabulary = [y for x in vocabulary for y in x]
-        vocabulary = list(set(vocabulary))
-        self.vocabulary = vocabulary
-        self.pipe = Pipeline([('count', CountVectorizer(vocabulary=vocabulary)),
-                 ('tfid', TfidfTransformer())]).fit(corpus)
-    def eval(self):
-        idfs = self.pipe['tfid'].idf_
-        normed_idfs = (idfs - min(idfs))/(max(idfs) - min(idfs))
-        self.normed_idfs = normed_idfs
-        word_count = self.pipe['count'].transform(self.corpus).toarray()
-        specificity = (word_count * normed_idfs).sum(-1)  / (word_count.sum(-1) + 0.001)
-        self.specificity = specificity
-        return self.specificity.mean()
 
-class SentEval:
-    def __init__(self, pretrained_model, is_distributon = False) -> None:
-        pipe = pipeline(model=pretrained_model, device = 0)
-        self.labels = pipe.model.config.id2label.values()
-        print(self.labels)
-        self.pipe = pipe
-        self.is_distributon = is_distributon
-    def eval(self, sentences, contexts = None, response_sep = "[RESPONSE_TOKEN]"):
-        if contexts is not None:
-            sentences = [f"{context}{response_sep}{sent}" for context, sent in zip(contexts, sentences)]
-            print("Example fo input:",sentences[np.random.randint(0, len(sentences))])
-        scores = self.pipe(sentences)
-        total_scores = {k:[] for k in self.labels}
-        for score in scores:
-            for k in self.labels:
-                if score["label"] == k:
-                    total_scores[k].append(score["score"])
-                else:
-                    if self.is_distributon:
-                        total_scores[k].append(1 - score["score"])
-        total_score = {k:np.mean(v)  for k,v in total_scores.items()}
-        return total_score, total_scores
-    
-def calc_diversity(corpus):
-    flts = [ld.flemmatize(text) for text in corpus]
-    scores = [ld.mtld_ma_bid(flt) for flt in flts]
-    return scores, np.mean(scores)
-
-def calc_hdd(corpus):
-    flts = [ld.flemmatize(text) for text in corpus]
-    scores = [ld.hdd(flt) for flt in flts]
-    return scores, np.mean(scores)
-
-additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
-tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
-tokenizer.add_tokens(additional_special_tokens)
-comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
-tokenizer.add_tokens(comet_additional_special_tokens)
-tokenizer.add_special_tokens({'cls_token': '[CLS]'})
-
-bertscore = load("bertscore")
-#pairscore = PairEval()
-emb_type = 'other'
-emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
-coh = Coherence(emb_type, emb_path)
-
-model_path = 'JungleLee/bert-toxic-comment-classification'
-#contexts = load_context("outputs/edition.txt", row_index=0)
-#print(contexts[:10])
-#print("=========")
-humanlike = SentEval(model_path, is_distributon = True)
-diag_humanlike = Humanlike()
-diag_relav = Humanlike("microsoft/DialogRPT-updown")
-from metric.myMetrics import Metric
-from metric.ppl import GPT_PPL
-import pandas as pd
-import json
-import os
-#dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
-#dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
-dirs = [    
-        "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/non_mix/",
-        #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step59_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.1temp/non_mix/",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woatemp/non_mix",
-        "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woetemp/non_mix"
-        
-        ]
-dirs.append("supporter_generated_data")
-dirs.append("cooper_generated_data")
-dirs.append("kemi_generated_data_2")
-dirs.append("misc_generated_data")
-dirs.append("transESC_generated_data")
-dirs.append("multiesc_generated_data_new")
-
-all_res = {}
-all_res_by_sent = {}
-#gpt_ppl = GPT_PPL('openai-gpt')
 def evaluate(dirs, masks = None):
     for i,dir in enumerate(dirs):
         print(dir)
-        hyp_path = f"{dir}/hyp_strategy.json"
-        ref_path = f"{dir}/ref_strategy.json"
+        hyp_path = os.path.join(dir, "hyp_strategy.json")
+        ref_path = os.path.join(dir, "ref_strategy.json")
         if "multiesc" in dir:
             summary_path = f"{dir}/prev.txt"
         elif "kemi" in dir or "cooper" in dir or "supporter" in dir:
@@ -205,7 +110,7 @@ def evaluate(dirs, masks = None):
             elif "kemi" in dir or "cooper" in dir or "supporter" in dir:
                 prevs = json.load(f)
             elif not "transESC" in summary_path:
-                prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-1]) for x in f.read().strip().split("\n\n")]
+                prevs = [re.compile(r"\d+\s\d+\s\d+\s(\[[\w\-\s]+\]\s)?").sub("",x.split("\n")[0].split("EOS")[-2]) for x in f.read().strip().split("\n\n")]
             else:
                 prevs = [x.split("\t")[-2] for x in f.read().strip().split("\n")]
         #print(prevs[:5])
@@ -215,6 +120,9 @@ def evaluate(dirs, masks = None):
             refs = [ref for i,ref in enumerate(refs) if i not in masks]
             prevs = [prev for i,prev in enumerate(prevs) if i not in masks]
         conv_objs = [{"query":prev,"response":hyp} for prev, hyp in zip(prevs, hyps)]
+        toxics = [toxic.eval(prev, hyp) for prev, hyp in zip(prevs, hyps)]
+        mean_toxics = np.mean(toxics)
+        print("toxic",mean_toxics)
         metric = Metric(toker=tokenizer, hyps = hyps, refs = refs, use_nltk=True)
         metric_2 = NLTK_Metric( hyps = hyps, refs = refs)
         result, result_list = metric.close()
@@ -231,9 +139,11 @@ def evaluate(dirs, masks = None):
 
         
         humanlike_scores = [diag_humanlike.score(prev.lower(), hyp.lower()) for prev, hyp in zip(prevs, hyps)]
+        result["humanlike"] = np.mean(humanlike_scores)
         print("human like", np.mean(humanlike_scores))
         rel_scores = [diag_relav.score(prev.lower(), hyp.lower()) for prev, hyp in zip(prevs, hyps)]
         print("rel like", np.mean(rel_scores))
+        result["relevance"] = np.mean(rel_scores)
         #for prev, hyp in zip(prevs, hyps):
         #    score = pairscore.run_model(prev, hyp)[0]
         #    pair_scores.append(score)
@@ -260,13 +170,16 @@ def evaluate(dirs, masks = None):
         result["div"] = div
         result["div2"] = div_2
         
-        hm, all_hm = humanlike.eval(hyps, contexts = None)
-        print("human",hm)
-        all_hm = all_hm["toxic"]
-        result["toxic"] = hm['toxic']
+        #hm, all_hm = humanlike.eval(hyps, contexts = None)
+        emp, all_emp = empathy.eval(hyps, contexts = None)
+        #print("human",hm)
+        print("emp", emp)
+        #all_hm = all_hm["toxic"]
+        #result["toxic"] = hm['toxic']
+        result["toxic"] = mean_toxics
 
         
-       
+    
         print(result)
         print(result_2)
         print(bert_results_summary)
@@ -275,7 +188,7 @@ def evaluate(dirs, masks = None):
         result.update(bert_results_summary)
         result.update(result_2)
         # print(result_list)
-        all_res[dir.replace("our_generated_data","")] = {k:round(v,3) for k,v in result.items()}
+        all_res[dir.replace("our_generated_data","")] = {k:v for k,v in result.items()}
         all_res_by_sent[dir] = {}
         for k,v in metric_2.metric_res_list.items():
             all_res_by_sent[dir][k] = [float(x) for x in v]
@@ -285,54 +198,165 @@ def evaluate(dirs, masks = None):
         all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
         all_res_by_sent[dir]["spec"] = [float(x) for x in all_spec_scores]
         #all_res_by_sent[dir]["pair"] = pair_scores
-        all_res_by_sent[dir]["human"] = all_hm
-        all_res_by_sent[dir]["upvote"] = rel_scores
-        all_res_by_sent[dir]["humanlike"] = humanlike_scores
+        #all_res_by_sent[dir]["human"] = all_hm
+        #all_res_by_sent[dir][""]
+        all_res_by_sent[dir]["toxic"] = toxics
+        all_res_by_sent[dir]["upvote"] = [float(x) for x in rel_scores]
+        all_res_by_sent[dir]["humanlike"] =[float(x) for x in humanlike_scores] 
         for vad_metric in all_vad_scores[0]:
             
             all_res_by_sent[dir][vad_metric] = [float(vad_score[vad_metric]) for vad_score in all_vad_scores]
     return all_res, all_res_by_sent
+class IDFEval:
+    def __init__(self, corpus) -> None:
+        self.corpus = corpus
+        vocabulary = [nltk.word_tokenize(x) for x in corpus]
+        vocabulary = [y for x in vocabulary for y in x]
+        vocabulary = list(set(vocabulary))
+        self.vocabulary = vocabulary
+        self.pipe = Pipeline([('count', CountVectorizer(vocabulary=vocabulary)),
+                 ('tfid', TfidfTransformer())]).fit(corpus)
+    def eval(self):
+        idfs = self.pipe['tfid'].idf_
+        normed_idfs = (idfs - min(idfs))/(max(idfs) - min(idfs))
+        self.normed_idfs = normed_idfs
+        word_count = self.pipe['count'].transform(self.corpus).toarray()
+        specificity = (word_count * normed_idfs).sum(-1)  / (word_count.sum(-1) + 0.001)
+        self.specificity = specificity
+        return self.specificity.mean()
 
-#
+class SentEval:
+    def __init__(self, pretrained_model, is_distributon = False) -> None:
+        pipe = pipeline(model=pretrained_model, device = 0)
+        self.labels = pipe.model.config.id2label.values()
+        print(self.labels)
+        self.pipe = pipe
+        self.is_distributon = is_distributon        
+    def eval(self, sentences, contexts = None, response_sep = "[RESPONSE_TOKEN]"):
+        if contexts is not None:
+            sentences = [f"{context}{response_sep}{sent}" for context, sent in zip(contexts, sentences)]
+            print("Example fo input:",sentences[np.random.randint(0, len(sentences))])
+        scores = self.pipe(sentences)
+        total_scores = {k:[] for k in self.labels}
+        for score in scores:
+            for k in self.labels:
+                if score["label"] == k:
+                    total_scores[k].append(score["score"])
+                else:
+                    if self.is_distributon:
+                        total_scores[k].append(1 - score["score"])
+        total_score = {k:np.mean(v)  for k,v in total_scores.items()}
+        return total_score, total_scores
+    
+def calc_diversity(corpus):
+    flts = [ld.flemmatize(text) for text in corpus]
+    scores = [ld.mtld_ma_bid(flt) for flt in flts]
+    return scores, np.mean(scores)
+
+def calc_hdd(corpus):
+    flts = [ld.flemmatize(text) for text in corpus]
+    scores = [ld.hdd(flt) for flt in flts]
+    return scores, np.mean(scores)
+
+if __name__ == "__main__":
+    additional_special_tokens = ["[Question]","[Reflection of feelings]","[Information]","[Restatement or Paraphrasing]","[Others]","[Self-disclosure]","[Affirmation and Reassurance]","[Providing Suggestions]"]
+    tokenizer = BlenderbotSmallTokenizer.from_pretrained("facebook/blenderbot_small-90M")
+    tokenizer.add_tokens(additional_special_tokens)
+    comet_additional_special_tokens = ["[xAttr]", "[xEffect]", "[xIntent]", "[xNeed]", "[xReact]", "[xWant]", "[oWant]", "[oEffect]", "[oReact]"]
+    tokenizer.add_tokens(comet_additional_special_tokens)
+    tokenizer.add_special_tokens({'cls_token': '[CLS]'})
+
+    bertscore = load("bertscore")
+    
+    #pairscore = PairEval()
+    emb_type = 'other'
+    emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
+    coh = Coherence(emb_type, emb_path)
+
+    model_path = 'JungleLee/bert-toxic-comment-classification'
+    #contexts = load_context("outputs/edition.txt", row_index=0)
+    #print(contexts[:10])
+    #print("=========")
+    #humanlike = SentEval(model_path, is_distributon = True)
+    empathy = SentEval("bdotloh/roberta-base-empathy")
+    toxic = Toxity()
+    diag_humanlike = Humanlike("microsoft/DialogRPT-updown")
+    diag_relav = Humanlike("microsoft/DialogRPT-depth")
+    from metric.myMetrics import Metric
+    from metric.ppl import GPT_PPL
+    import pandas as pd
+    import json
+    import os
+    #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
+    #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
+    dirs = [    
+            "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/",
+            "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/",
+            
+            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llamatemp/",
+            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/",
+            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woatemp/",
+            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step59_2024-06-03/lr_5e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.1temp/non_mix/",
+            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woetemp/",
+
+            
+            ]
+    #dirs.append("supporter_generated_data")
+    #dirs.append("cooper_generated_data")
+    #dirs.append("kemi_generated_data_2")
+    #dirs.append("misc_generated_data")
+    #dirs.append("transESC_generated_data")
+    #dirs.append("multiesc_generated_data_new")
+    
+    
+    
+
+    all_res = {}
+    all_res_by_sent = {}
+    #gpt_ppl = GPT_PPL('openai-gpt')
+    
+
+    #
 
 
 
 
-all_res, all_res_by_sent = evaluate(dirs)
+    all_res, all_res_by_sent = evaluate(dirs)
+    df = pd.DataFrame(all_res).T
+    df.to_csv("res.csv")
 
-our = dirs[1]
-baselines = [dirs[i] for i in [0,-1,5,6]]
-for k,v in all_res_by_sent[our].items():
-    print(k)
-    print(type(v))
-    for baseline in baselines:
-        print("baseline=",baseline)
-        if "our" in baseline:
-            print(ttest_rel(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
-            print("*****")
-        else:
-            print(f_oneway(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
-            print("*****")
-    print("========")
-df = pd.DataFrame(all_res).T
-df.to_csv("res.csv")
-
-with open("full_results.json", "w+") as file:
-    json.dump(all_res_by_sent, file)
-
-hyps_sfl = json.load(open(dirs[0] + "/hyp_strategy.json","r+"))
-hyps_rl = json.load(open(dirs[1] + "/hyp_strategy.json","r+"))
-masks = [i for i,(a,b) in enumerate(zip(hyps_sfl, hyps_rl)) if a == b]
-print(masks)
-all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[1]], masks = masks)
+    our = dirs[1]
+    baselines = [dirs[i] for i in [0,1]]
+    for k,v in all_res_by_sent[our].items():
+        print(k)
+        print(type(v))
+        for baseline in baselines:
+            print("baseline=",baseline)
+            if "our" in baseline:
+                print(ttest_rel(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
+                print("*****")
+            else:
+                print(f_oneway(all_res_by_sent[our][k], all_res_by_sent[baseline][k]))
+                print("*****")
+        print("========")
 
 
+    with open("full_results.json", "w+") as file:
+        json.dump(all_res_by_sent, file)
 
-for k,v in all_res_by_sent_2[our].items():
-    print(k)
-    print(type(v))
-    for baseline in baselines:
-        if "our" in baseline:
-            print(stats.ttest_rel(all_res_by_sent_2[our][k], all_res_by_sent_2[baseline][k]))
-            print("*****")
-    print("========")
+    hyps_sfl = json.load(open(dirs[0] + "/hyp_strategy.json","r+"))
+    hyps_rl = json.load(open(dirs[1] + "/hyp_strategy.json","r+"))
+    masks = [i for i,(a,b) in enumerate(zip(hyps_sfl, hyps_rl)) if a == b]
+    print(masks)
+    all_res_2, all_res_by_sent_2 = evaluate([dirs[0], dirs[1]], masks = masks)
+
+
+
+    for k,v in all_res_by_sent_2[our].items():
+        print(k)
+        print(type(v))
+        for baseline in baselines:
+            if "our" in baseline:
+                print(stats.ttest_rel(all_res_by_sent_2[our][k], all_res_by_sent_2[baseline][k]))
+                print("*****")
+        print("========")

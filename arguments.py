@@ -31,7 +31,7 @@ def load_ppo_prefix(args_g):
             prefix += "_rec"
         if args_g.ppo_use_llama_seeker:
             prefix += "_llama"
-        if args_g.ppo_use_load:
+        if args_g.ppo_use_load and not args_g.ppo_wo_load:
             prefix += f"_load_{args_g.ppo_load_coef}"
         if args_g.ppo_wo_a:
             prefix += "_woa"
@@ -144,6 +144,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--strategy_use_cvae", action="store_true")
     parser.add_argument("--use_joint_emo", action="store_true")
     parser.add_argument("--use_triplet_loss", action="store_true")
+    parser.add_argument("--origin_latent_dim", action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -177,7 +178,9 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_return_arg", action="store_true")
     ppo_parser.add_argument("--ppo_multiple_actions", action="store_true")
     ppo_parser.add_argument("--ppo_wo_a", action="store_true")
+    ppo_parser.add_argument("--ppo_wo_load", action="store_true")
     ppo_parser.add_argument("--ppo_wo_e", action="store_true")
+    ppo_parser.add_argument("--ppo_wo_w", action="store_true")
     ppo_parser.add_argument("--ppo_n_actions", nargs='+', type=int, default=[8, 28])
     ppo_parser.add_argument("--ppo_use_load", action="store_true")
     ppo_parser.add_argument("--ppo_load_coef", default=0.01, type=float)
@@ -313,6 +316,7 @@ def load_arg(return_tag = False, ):
             "strategy_use_cvae":args_g.strategy_use_cvae,
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
+            "origin_latent_dim":args_g.origin_latent_dim,
             
             }
     #add ppo related args
@@ -321,6 +325,8 @@ def load_arg(return_tag = False, ):
     os.makedirs(ppo_args["ppo_output_dir"], exist_ok = True)
     for k,v in ppo_args.items():
         args[k] = v
+    if args["ppo_wo_a"]:
+        args["ppo_add_strategy_noise"] = False
     args = argparse.Namespace(**args)
     if return_tag:
         if args_g.ppo_return_arg:

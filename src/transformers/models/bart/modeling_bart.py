@@ -926,6 +926,7 @@ class BartEncoder(BartPretrainedModel):
         
         if self.config.strategy_use_cvae:
             self.strategy_cvae = StrategyVAE(config, self.n_emo_in, self.n_strat)
+            self.batchNorm_strategy_post = nn.BatchNorm1d(self.n_strat)
         self.init_weights()
 
     def forward(
@@ -1261,20 +1262,23 @@ class BartEncoder(BartPretrainedModel):
                         add_strategy_noise = False,
                         emo_hidden = None,
                         ):
-
         if self.config.strategy_use_cvae:
             strat_hidden = hidden_states[torch.arange(hidden_states.size(0)),last_token_index,:] if self.st_from_eos else hidden_states[:, 0, :]
             strat_hidden = torch.cat([strat_hidden, emo_hidden], dim = -1)
             mu_prior, logvar_prior, strategy_logits, z = self.strategy_cvae(strat_hidden)
+            strategy_logits = self.batchNorm_strategy(strategy_logits)
             if self.training and strategy_logit_ground is not None:
                 mu_post, logvar_post, strategy_logits_post, z = self.strategy_cvae.forward_train(strat_hidden, strategy_logit_ground)
+                strategy_logits_post = self.batchNorm_strategy_post(strategy_logits_post)
                 kl_loss_strategy = self.strategy_cvae.kl_div(mu_prior, logvar_prior, mu_post, logvar_post)
                 strategy_labels = strategy_logit_ground.argmax(-1).view(-1)
                 rec_loss = CrossEntropyLoss()(strategy_logits_post.view(-1, 8), strategy_labels)
                 kl_loss_strategy += rec_loss
+                
             else:
                 kl_loss_strategy = None
             strategy_state = z
+            
             
         else:
             if self.st_from_eos:
@@ -1673,6 +1677,7 @@ class BartModel(BartPretrainedModel):
         use_cache=None,
         output_attentions=None,
         output_hidden_states=None,
+        return_latent=None,
         return_dict=None,    ):
 
         # different to other models, Bart automatically creates decoder_input_ids from
@@ -1739,6 +1744,7 @@ class BartModel(BartPretrainedModel):
             last_hidden_state=decoder_outputs.last_hidden_state,
             last_comet_hidden_state = encoder_outputs.last_comet_hidden_state,
             last_comet_hidden_state_st = encoder_outputs.last_comet_hidden_state_st,
+            
             past_key_values=decoder_outputs.past_key_values,
             decoder_hidden_states=decoder_outputs.hidden_states,
             decoder_attentions=decoder_outputs.attentions,
@@ -1875,6 +1881,7 @@ class BartForConditionalGeneration(BartPretrainedModel):
         emo_out_prob=None,
         emotion_logits=None,
         strategy_logits=None,
+        return_latent=False
     ):
         r"""
         labels (:obj:`torch.LongTensor` of shape :obj:`(batch_size, sequence_length)`, `optional`):
@@ -2184,6 +2191,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,
             encoder_hidden_states=encoder_outputs.hidden_states,
             encoder_attentions=encoder_outputs.attentions,
+            action_states = encoder_outputs.action_states if return_latent else None,
+            actions = encoder_outputs.actions if return_latent else None
         )
     def _prepare_encoder_decoder_kwargs_for_generation(
         self, input_ids: torch.LongTensor, model_kwargs

@@ -156,6 +156,7 @@ class PPOConfig:
 
     wo_a: bool = False
     wo_e: bool = False
+    wo_w: bool = False
     
     
     

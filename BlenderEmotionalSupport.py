@@ -36,7 +36,7 @@ import time
 from pathlib import Path
 import json
 import wandb
-from attach_vad.VADTokenizer import W2VAD
+#from attach_vad.VADTokenizer import W2VAD
 from cleantext import clean
 
 from src.transformers import (
@@ -170,6 +170,8 @@ def load_config(args, eval = False):
             config = BartConfig.from_pretrained(args.output_dir)
         else:
             config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
+    if args.origin_latent_dim:
+        config.origin_latent_dim = True
     print("config = ", config)
     if args.pretrained_model_path is None:
         #config = BlenderbotSmallConfig.from_dict(config)
@@ -220,6 +222,7 @@ def load_config(args, eval = False):
         config.strategy_use_cvae = args.strategy_use_cvae
         config.use_joint_emo = args.use_joint_emo
         config.use_triplet_loss = args.use_triplet_loss
+        config.origin_latent_dim = args.origin_latent_dim
     return config
 
 def load_model_for_eval(args):
@@ -1557,7 +1560,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
     return global_step, tr_loss / global_step
 
 # Evaluation of some model
-def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="", eval_output_dir = None, show_emotion = False) -> Dict:
+def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_dataset, prefix="", eval_output_dir = None, show_emotion = False, show_latent = False) -> Dict:
     print("evaluating")
     import numpy as np
     # Loop to handle MNLI double evaluation (matched, mis-matched)
@@ -1610,20 +1613,36 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     if show_emotion:
         turn_ids = []
         emotions = []
+    if show_latent:
+        a_latents = []
+        e_latents = []
+        a_logits = []
+        e_logits = []
+        e = []
         
     with torch.no_grad():
         for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True, total = len(eval_dataloader)):
-            outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids) = shared_steps(batch, model, tokenizer, args, phase = "eval")
+            outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids) = shared_steps(batch, model, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
             if show_emotion:
                 cur_turn_ids = [max(x) for x in batch["decoder_token_type_ids"].detach().cpu().tolist()]
                 turn_ids += cur_turn_ids
                 cur_emotions = outputs.emo_out_prob.detach().exp().cpu().tolist()
                 emotions += cur_emotions
+            
         
             loss = outputs.loss
             ppl = outputs.lm_loss
             emo_logits = outputs.emo_logits
             strategy_logits = outputs.strategy_logits
+            
+            if show_latent:
+                a_latent, e_latent = outputs.action_states
+                strategy_logits, _ = outputs.actions
+                a_latents += a_latent
+                e_latents += e_latent
+                a_logits += strategy_logits
+                e_logits += emo_logits
+                e += emotion.detach().cpu().tolist()
             
 
             # print(strategy_logits.argmax(dim=-1))
@@ -1664,6 +1683,8 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
         
     if show_emotion:
         return turn_ids, emotions
+    if show_latent:
+        return a_latents, e_latents, a_logits, e_logits, e
 
     eval_loss = eval_loss/ sum(num_samples)
     
@@ -2467,8 +2488,8 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
                             turn_ids=None, 
                             role_ids=role_ids,
                             vad_ids=vad_ids,
-                            labels = decoder_label_ids, 
-                            decoder_strategy_ids=decoder_strategy_ids, 
+                            labels = decoder_label_ids,
+                            decoder_strategy_ids=decoder_strategy_ids,# if not phase == "eval_and_show_latent" else None, 
                             comet_embs=comet_embs, 
                             comet_mask=comet_mask, 
                             comet_embs_st=comet_embs_st, 
@@ -2480,7 +2501,8 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
                             emo_positions = emo_positions, 
                             intensity = intensity,
                             situation_hidden_states = situation_hidden_states,
-                            situation_attention_mask = situ_attention_mask
+                            situation_attention_mask = situ_attention_mask,
+                            return_latent = True if phase == "eval_and_show_latent" else False
                             )
     return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
 if __name__ == "__main__":

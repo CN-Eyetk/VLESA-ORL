@@ -74,6 +74,7 @@ class ScriptArguments:
             multiple_actions = args.ppo_multiple_actions if not args.ppo_wo_a and not args.ppo_wo_e else False,
             wo_a = args.ppo_wo_a,
             wo_e = args.ppo_wo_e,
+            wo_w = args.ppo_wo_w,
             n_actions = args.ppo_n_actions if not args.ppo_wo_a and not args.ppo_wo_e else ([8] if args.ppo_wo_e else [28])
             
             
@@ -101,7 +102,7 @@ class ScriptArguments:
         ),
     )
     
-    use_load: bool = args.ppo_use_load
+    use_load: bool = False if args.ppo_wo_load else args.ppo_use_load 
     load_coef: float = args.ppo_load_coef
     trust_remote_code: bool = field(default=False, metadata={"help": "Enable `trust_remote_code`"})
 
@@ -150,6 +151,10 @@ if __name__ == "__main__":
             print("wo emo")
             trl_model_class = AutoModelForMultiLevelWithValueHead2
             trainer_class = JointPPOTrainer
+        elif ppo_args.ppo_config.wo_w:
+            print("wo word")
+            trl_model_class = AutoModelForMultiLevelWithValueHead2
+            trainer_class = JointPPOTrainer
         else:
             trl_model_class =  AutoModelForDialogueActLMWithValueHead if not ppo_args.use_lm_reward else AutoModelForMultiLevelWithValueHead
             trainer_class = DialogueActPPOTrainer  if not ppo_args.use_lm_reward else JointPPOTrainer
@@ -170,14 +175,17 @@ if __name__ == "__main__":
         )
         model.wo_a = ppo_args.ppo_config.wo_a
         model.wo_e = ppo_args.ppo_config.wo_e
+        model.wo_w = ppo_args.ppo_config.wo_w
         if not ppo_args.use_lm_reward:
             
             freeze_parameters(model, "(decoder|trans_mat|embed|encoder\.layers\.[01234])")
         else:
             if ppo_args.ppo_config.wo_a:
-                freeze_parameters(model, "(strategy|embed|encoder\.layers\.[01234])")
-            if ppo_args.ppo_config.wo_e:
-                freeze_parameters(model, "(trans_mat|embed|encoder\.layers\.[01234])")
+                freeze_parameters(model, "(strategy|embed|encoder)")
+            elif ppo_args.ppo_config.wo_e:
+                freeze_parameters(model, "(trans_mat|embed|encoder)")
+            elif ppo_args.ppo_config.wo_w:
+                freeze_parameters(model, "(embed|encoder\.layers\.[01234]|decoder)")
             else:
                 freeze_parameters(model, "(embed|encoder\.layers\.[01234])")
         parameter_names = [n for n, _ in model.named_parameters()]
