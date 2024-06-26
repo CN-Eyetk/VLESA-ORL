@@ -18,6 +18,7 @@ parser.add_argument("--use_emb_prep", action= "store_true")
 parser.add_argument("--merge", action= "store_true")
 parser.add_argument("--use_situ_in_encoder", action= "store_true")
 parser.add_argument("--use_situ_in_decoder", action= "store_true")
+parser.add_argument("--use_situ", action= "store_true")
 parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
 parser.add_argument("--use_emo_in", action= "store_true")
@@ -78,6 +79,7 @@ parser.add_argument("--strategy_use_cvae", action="store_true")
 parser.add_argument("--use_joint_emo", action="store_true")
 parser.add_argument("--use_triplet_loss", action="store_true")
 parser.add_argument("--origin_latent_dim",action="store_true")
+parser.add_argument("--strategy_latent_dim",default=None)
 args_g = parser.parse_args()
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
@@ -122,25 +124,11 @@ else:
     TAG = "all_loss" \
         + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_{args_g.warmup_steps}" \
         +("-spst" if args_g.sample_strategy_embedding else "")  \
-        + ("-Emoin" if USE_EMO_IN_DIST else "") \
-        + ("-ensitu" if args_g.use_situ_in_encoder else "") \
-        + ("-desitu" if args_g.use_situ_in_decoder else "") \
-        + ("-w_eosstg" if not ST_FROM_EOS else "") \
-        + ("-w_eosemo" if not EMO_FROM_EOS else "") \
-        +("-w_role" if not USE_ROLE else "") \
-        +("-w_emocat" if not EMO_USE_CAT_ATTN else "") \
-        +("-w_stgcat" if not STG_USE_CAT_ATTN else "") \
+        + ("-nokl" if not args_g.use_kl else "") \
         +("-vae" if USE_VAE else "") \
         +("-ivae" if INT_VAE else "") \
-        +("-mvae" if MIX_VAE else "") \
         +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
         +("-smp_str" if SMP_STRAT_EMB else "")\
-        +("-wo_Stra" if WO_STRA else "") \
-        +("-wo_Emo" if WO_EMO else "") \
-        +("-wo_comet" if WO_COMET else "") \
-        +("-wo_Sresp" if args_g.wo_Sresp else "") \
-        +(f"-vad-{args_g.vad_emb_ratio}" if args_g.use_vad_labels else "") \
-        +("-frz_stem" if args_g.freeze_emo_stag_params else "")  \
         +("-ct" if args_g.use_contrastive_loss else "")  \
         + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
         +("-fz" if args_g.fuse_z else "")  \
@@ -150,6 +138,8 @@ else:
                 +("-lc" if args_g.layer_control else "") \
                     +("-je" if args_g.use_joint_emo else "") \
                         +("-tp" if args_g.use_triplet_loss else "") \
+                            +("-situ" if args_g.use_situ else "") \
+                                +(f"-stg_{args_g.strategy_latent_dim}" if args_g.strategy_latent_dim else "") \
         +args_g.tag
                                 
 
@@ -227,7 +217,7 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else ""),
+            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
@@ -248,7 +238,7 @@ def load_arg():
             "warmup_steps":args_g.warmup_steps,#once 510
             "fp16":False,
             "fp16_opt_level":'O1',
-            "num_train_epochs":10 if BART else 8,
+            "num_train_epochs":20 if BART else 8,
             "role":False,
             "turn":False,
             "logging_steps":510 if args_g.data_path == "converted_dataset" else 614,#1 March from 510 to 300
@@ -271,6 +261,7 @@ def load_arg():
             "generation_dir":generation_dir,
             "use_situ_in_encoder":args_g.use_situ_in_encoder,
             "use_situ_in_decoder":args_g.use_situ_in_decoder,
+            "use_situ":args_g.use_situ,
             "use_emo_in_dist":USE_EMO_IN_DIST,
             "use_emb_prep":USE_EMB_PREP,
             "use_copy":COPY,
@@ -314,7 +305,8 @@ def load_arg():
             "strategy_use_cvae":args_g.strategy_use_cvae,
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
-            "origin_latent_dim":args_g.origin_latent_dim
+            "origin_latent_dim":args_g.origin_latent_dim,
+            "strategy_latent_dim":args_g.strategy_latent_dim
             }
     #torch.cuda.set_device(local_rank)
     #device = torch.device("cuda", local_rank)
@@ -516,10 +508,10 @@ if __name__ == "__main__":
         elif args_g.do_show_latent:
             show_latent(args)
         else:
-            test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
+            #test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
             #generate_new(args, model = model, prefix="of eval set")
-            result = generate_new(args, model = model, prefix="of test set")
+            result = generate_new(args, model = model, prefix="of test set", batch_size = 1)
             prefix = args.generation_dir.split("/")[-2] if re.compile(r"^.*?/$").search(args.generation_dir) else generation_dir.split("/")[-1]
             print("calculating reward, prefix =", prefix)
             rwds = calculate_reward(path=args.generation_dir, prefix=prefix)

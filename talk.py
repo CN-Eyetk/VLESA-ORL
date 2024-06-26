@@ -1,10 +1,13 @@
 from chatbot.agent import Chatbot
 import streamlit as st
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 
-dirs = ["/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp",
-        "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step78_2024-06-03/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_0.1temp",
+dirs = ["/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-stg_4pm619",
+        "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_4pm619",
         ]
 
 cb_A = Chatbot(model_path = dirs[0])
@@ -25,4 +28,4 @@ for i in range(5):
     sys_utt_B = {"role":"assistant", "content":resp_B}
     print(sys_utt_A)
     print(sys_utt_B)
-    chat.append(sys_utt_B)
+    chat.append(sys_utt_A)

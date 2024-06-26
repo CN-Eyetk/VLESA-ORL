@@ -280,8 +280,8 @@ if __name__ == "__main__":
     #humanlike = SentEval(model_path, is_distributon = True)
     empathy = SentEval("bdotloh/roberta-base-empathy")
     toxic = Toxity()
-    diag_humanlike = Humanlike("microsoft/DialogRPT-updown")
-    diag_relav = Humanlike("microsoft/DialogRPT-depth")
+    diag_humanlike = Humanlike("microsoft/DialogRPT-human-vs-machine")
+    diag_relav = Humanlike("microsoft/DialogRPT-human-vs-rand")
     from metric.myMetrics import Metric
     from metric.ppl import GPT_PPL
     import pandas as pd
@@ -290,8 +290,8 @@ if __name__ == "__main__":
     #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
     #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
     dirs = [    
-            "our_generated_data/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/",
-            "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/",
+            "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae48-ct0.1-svae-lc-je-tp-situ-stg_4pm619/non_mix/",
+            "our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_4am620/",
             
             #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llamatemp/",
             #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae8-wo_comet-ct0.2-svae-lc-je-tppm613/bleu2/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/",
@@ -302,9 +302,9 @@ if __name__ == "__main__":
             
             ]
     #dirs.append("supporter_generated_data")
-    #dirs.append("cooper_generated_data")
+    dirs.append("cooper_generated_data")
     #dirs.append("kemi_generated_data_2")
-    #dirs.append("misc_generated_data")
+    dirs.append("misc_generated_data")
     #dirs.append("transESC_generated_data")
     #dirs.append("multiesc_generated_data_new")
     
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     df.to_csv("res.csv")
 
     our = dirs[1]
-    baselines = [dirs[i] for i in [0,1]]
+    baselines = [dirs[i] for i in [0,1,2,3]]
     for k,v in all_res_by_sent[our].items():
         print(k)
         print(type(v))

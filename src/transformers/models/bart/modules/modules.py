@@ -256,6 +256,11 @@ class StrategyVAE(nn.Module):
         self.hidden_dim = config.d_model
         if config.origin_latent_dim:
             self.latent_dim = int(self.hidden_dim /2)
+        elif config.strategy_latent_dim is not None:
+            print("config.strategy_latent_dim",config.strategy_latent_dim)
+            self.latent_dim = int(config.strategy_latent_dim)
+            print("self.latent_dim", self.latent_dim)
+            print("self.hidden_dim", self.hidden_dim)
         else:
             self.latent_dim = int(config.latent_dim/2)
         self.h_prior = nn.Linear(self.hidden_dim + self.hidden_dim, self.hidden_dim)
@@ -566,30 +571,25 @@ class EmoTransVAE_MixStrat(nn.Module):
         self.dropout = nn.Dropout(0.1)
         
         self.hidden_dim = config.d_model
-        self.hidden_dim_prior_stg = self.hidden_dim
+        self.hidden_dim_prior_stg = int(config.latent_dim / 2) if config.strategy_latent_dim is None else int(config.strategy_latent_dim)#self.hidden_dim
         self.hidden_dim_prior_emo = self.hidden_dim
-        if config.stg_use_cat_attn:
-            self.hidden_dim_prior_stg += config.d_model
-        if config.emo_use_cat_attn:
-            self.hidden_dim_prior_emo += config.d_model
         self.latent_dim = config.latent_dim
         
-        self.h_prior_emo = nn.Linear(self.hidden_dim_prior_emo, self.hidden_dim_prior_emo)
-        self.h_prior_strat = nn.Linear(self.hidden_dim_prior_stg, self.hidden_dim_prior_stg)
-        self.mu_prior = nn.Linear(self.hidden_dim_prior_emo, self.latent_dim)
-        self.logvar_prior = nn.Linear(self.hidden_dim_prior_stg, self.latent_dim)
+        self.h_prior_emo = nn.Linear(self.hidden_dim_prior_emo, self.latent_dim * 8)
+        self.h_prior_strat = nn.Linear(self.hidden_dim_prior_stg, self.latent_dim * 8)
+        self.mu_prior = nn.Linear(self.latent_dim * 8, self.latent_dim)
+        self.logvar_prior = nn.Linear(self.latent_dim * 8, self.latent_dim)
         self.Dense_z_prior =  nn.Linear(self.latent_dim, self.n_emo_out)
 
 
-        self.hidden_dim_post_emo = self.hidden_dim_prior_emo + self.hidden_dim
-        self.hidden_dim_post_stg = self.hidden_dim_prior_stg + self.hidden_dim
-        self.h_posterior_emo = nn.Linear(self.hidden_dim_post_emo, self.hidden_dim_post_emo)
-        self.h_posterior_strat = nn.Linear(self.hidden_dim_post_stg, self.hidden_dim_post_stg)
-        self.mu_posterior = nn.Linear(self.hidden_dim_post_emo, self.latent_dim)
-        self.logvar_posterior = nn.Linear(self.hidden_dim_post_stg, self.latent_dim)
+        self.hidden_dim_post_emo = self.hidden_dim_prior_emo + self.n_emo_out
+        self.hidden_dim_post_stg = self.hidden_dim_prior_stg + self.n_emo_out
+        self.h_posterior_emo = nn.Linear(self.hidden_dim_post_emo, self.latent_dim * 8)
+        self.h_posterior_strat = nn.Linear(self.hidden_dim_post_stg, self.latent_dim * 8)
+        self.mu_posterior = nn.Linear(self.latent_dim * 8, self.latent_dim)
+        self.logvar_posterior = nn.Linear(self.latent_dim * 8, self.latent_dim)
 
     def prior(self, hidden_prior_emo, hidden_prior_strat):
-        b = hidden_prior_emo.size(0)
         h1_emo = F.relu(self.h_prior_emo(hidden_prior_emo))
         h1_strat = F.relu(self.h_prior_strat(hidden_prior_strat))
         mu_emo = self.mu_prior(h1_emo)
@@ -597,7 +597,6 @@ class EmoTransVAE_MixStrat(nn.Module):
         return mu_emo, logvar_strat
     
     def posterior(self, hidden_post_emo, hidden_post_strat):
-        b = hidden_post_emo.size(0)
         h1_emo = F.relu(self.h_posterior_emo(hidden_post_emo))
         h1_strat = F.relu(self.h_posterior_strat(hidden_post_strat))
         mu_emo = self.mu_posterior(h1_emo)
@@ -610,14 +609,13 @@ class EmoTransVAE_MixStrat(nn.Module):
         return mu + eps * std
 
     def forward(self, hidden_prior_emo, hidden_prior_strat):
-        b = hidden_prior_emo.size(0)
         mus, logvars = self.prior(hidden_prior_emo, hidden_prior_strat)
         z = self.reparameterize(mus, logvars)
         z = z.to(hidden_prior_emo.device)
         emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
         emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
+        return emo_out_emb, mus, logvars, emo_out_logits.squeeze(-2), emo_out_prob, z
     def get_emo_out_emb(self, emo_out_logits, q_0 = None):
         b = emo_out_logits.size(0)
         emo_out_prob = torch.softmax(emo_out_logits, dim=-1)
@@ -627,15 +625,14 @@ class EmoTransVAE_MixStrat(nn.Module):
         else:
             emo_out_emb = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1)) 
         return emo_out_prob, emo_out_emb
-    def forward_train(self,  hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
-        b = hidden_post_emo.size(0)
+    def forward_train(self, hidden_post_emo, hidden_post_strat, q_0): #p_emo_in 和 p_strat输入的都是logits
         mus, logvars = self.posterior(hidden_post_emo, hidden_post_strat)
         z = self.reparameterize(mus, logvars)
-        z = z.to(hidden_post_emo.device)
+        z = z.to(q_0.device)
         emo_out_logits = self.Dense_z_prior(z).unsqueeze(-2)
         emo_out_prob, emo_out_emb = self.get_emo_out_emb(emo_out_logits, q_0 = q_0)
         emo_out_prob = torch.log(emo_out_prob.squeeze(1))
-        return emo_out_emb, mus, logvars, emo_out_logits, emo_out_prob, z
+        return emo_out_emb, mus, logvars, emo_out_logits.squeeze(-2), emo_out_prob, z
     @staticmethod
     def kl_div(mu_posterior, logvar_posterior, mu_prior=None, logvar_prior=None):
         """

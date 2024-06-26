@@ -29,7 +29,7 @@ class Chatbot:
             
         self.model = model.cuda()
         self.tokenizer = tokenizer
-    def make_input(self, chat):
+    def make_input(self, chat, situ = None):
         input_ids = []
         role_ids = []
         for utt in chat:
@@ -42,7 +42,12 @@ class Chatbot:
             input_ids += cur_input_ids
             role_ids += cur_role_ids
         input_ids = self.tokenizer.encode(self.tokenizer.cls_token, add_special_tokens = False) + input_ids
+        
         role_ids = [self.tokenizer.pad_token_id] + role_ids
+        if situ is not None:
+            situ_ids = self.tokenizer.encode(f"{self.tokenizer.cls_token} [SITU] {situ}", add_special_tokens = True)[1:]
+            input_ids += situ_ids
+            role_ids += [self.tokenizer.convert_tokens_to_ids("[SEK]")] * len(situ_ids)
         batch = {
             "input_ids":torch.tensor([input_ids]).to(self.model.device),
             "role_ids":torch.tensor([role_ids]).to(self.model.device)

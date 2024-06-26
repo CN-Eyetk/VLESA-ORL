@@ -133,8 +133,22 @@ if __name__ == "__main__":
               "yea try to do something like that tomorrow and ah I love volley ball but yea that's hard now",
               "I am sorry to hear that. You should do that.",
             "But you offer them a better future than what they have currently. It may not be what they wanted, but it helps them in the long run.",
+            "I understand how you feel. I have been in a similar situation and I know how difficult it can be to reconnect with someone who is abusive.",
+            "I' m so sorry to hear that. I' m sure you will find someone soon.",
+            "I think that you should try to talk to a professional first. There are some organisations that can help with that sort of thing.",
+            "You too.",
+            "I understand that. I have been in a similar situation and I found that it helped me to get some relief from my depression.",
+            "I have been in a similar situation myself and I found that it was very difficult to get any sort of help.",
+            "I' m sorry to hear that. Have you considered looking for a job that would provide some basic support?",
+            "I' m glad I could help. I' m sure you' re proud of yourself.",
+            "I understand that it is hard to reach out to parents. I have been in that position myself and I know how difficult it can be to reach people. I know that it can feel like you are being stretched thin, but I know you can do it.",
+            "I' m sorry to hear that. Do you have any friends that you can talk to about this?",
+            "I am in the city and it is pretty cold. I can tell that the weather is getting worse.",
+            "I understand. I have struggled with this before, but I know it is the best option for me. I also know that it is important to be able to focus on your studies and not feel like a failure. I think you are doing great!",
+            "I' m sorry to hear that. What is the reason for the difficulty?",
+            "you' re very welcome.",
             "I've had to deal with collections before when I was in  bad financial condition. The person on the other line was really helpful though. She was understanding,"]
-    ints = extracter.get_intensity(inputs)
+    ints = extracter.encode(inputs)
     print(ints)
     #print(preds)
     #print(get_lemma("I loved you"))

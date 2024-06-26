@@ -223,6 +223,7 @@ def load_config(args, eval = False):
         config.use_joint_emo = args.use_joint_emo
         config.use_triplet_loss = args.use_triplet_loss
         config.origin_latent_dim = args.origin_latent_dim
+        config.strategy_latent_dim = args.strategy_latent_dim
     return config
 
 def load_model_for_eval(args):
@@ -282,6 +283,9 @@ def load_tokenizer(args):
         #    vad_tokenizer.load_pretrained_tokenizer("facebook/bart-base")
         #else:
         vad_tokenizer.load_tokenizer(tokenizer)
+    if args.use_situ:
+        situ_token = ["[SITU]"]
+        tokenizer.add_tokens(situ_token)
     return config, tokenizer
 
 def load_emo_emb(model, tokenizer, emo_extracter):
@@ -831,13 +835,18 @@ def construct_conv_ESD(args, idx, row, comet_row, comet_st_row, tokenizer, eos =
                                                                                                                       vad_tokenizer = vad_tokenizer 
                                                                                                                       )
     #print("d_strategy_labels",d_strategy_labels)
-    situ_ids = tokenizer.encode(situation) 
+    situ_ids = tokenizer.encode(f"[SITU] {situation}") 
     if situ_ids[-1] !=  tokenizer.eos_token_id:
         situ_ids.append(tokenizer.eos_token_id)
     #print(f"situ_ids-{tokenizer.decode(situ_ids)}")
     #print("situ_ids in construct_conv_ESD", situ_ids)
     #print("situation", situation)
     # make feature for input text
+    if args.use_situ:
+        inputs.append(situ_ids)
+        roles.append(0)
+        turns.append(0)
+        
     feature = _make_feature(args, idx, inputs, roles, turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation, vad_ids = vad_ids)
     # make feature for output (decoder input) text
     d_feature = _make_feature(args, idx, d_inputs, d_roles, d_turns, tokenizer.eos_token_id, tokenizer.pad_token_id, pad=pad, strategy_labels=d_strategy_labels, situ_ids = situ_ids, evaluate=evaluate, str_embd=True, generation=generation, vad_ids = d_vad_ids, decoder = True)
@@ -1492,29 +1501,28 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         with torch.no_grad():
                             results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if 1 < epoch < 8 :
+                            if 2 < epoch :
                                 #pass
-                                stop_reproducability()
-                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
-                                activate_reproducability()
+                                with torch.no_grad():
+                                    test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                #
                                 wandb.log(test_result)
+
+                                #save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
                             
                     else:
                         with torch.no_grad():
                             results = evaluate(args, model.module, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                             wandb.log(results)
-                            if 1 < epoch < 8 :
-                                #pass
-                                stop_reproducability()
-                                test_result = generate_new(args, model, verbose = False, prefix = "{}-{}".format("checkpoint", global_step))
-                                activate_reproducability()
-                                wandb.log(test_result)
+                            if 2 < epoch :
+                                with torch.no_grad():
+                                    test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                #save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
                             
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
-                    if hasattr(torch.cuda, 'empty_cache'):
-                        torch.cuda.empty_cache()
+
                     if scheduler is not None:
                         tb_writer.add_scalar("lr", scheduler.get_last_lr()[0], global_step)
                         tb_writer.add_scalar("loss", (tr_loss - logging_loss) / args.logging_steps, global_step)
@@ -1528,22 +1536,32 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     logging_emo_loss = tr_emo_loss
                     logging_strategy_loss = tr_strategy_loss
                     logging_intensity_loss = tr_intensity_loss
-                    if epoch == 5:
-                        #if test_result["bleu-2"] > best_bleu_2:
+                    #if epoch == 5:
+                    #if test_result["bleu-2"] > best_bleu_2:
                         #    best_bleu_2 = test_result["bleu-2"]
-                            checkpoint_prefix = "bleu_checkpoint"
-                            output_dir = os.path.join(args.output_dir, "bleu2")
-                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                    #    checkpoint_prefix = "bleu_checkpoint"
+                    #    output_dir = os.path.join(args.output_dir, "bleu2")
+                    #    save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
                         #pass
                             
-                    if results['eval_perplexity']< best_ppl :
-                        best_ppl = results['eval_perplexity']
 
-                        checkpoint_prefix = "checkpoint"
+                    if 2 < epoch  :
+                        if test_result["bleu-2"] > best_bleu_2:
+                            best_bleu_2 = test_result["bleu-2"]
+                            checkpoint_prefix = "bleu_checkpoint"
+                            output_dir = args.output_dir
+                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                    else:
+                        if results['eval_perplexity']< best_ppl :
+                            best_ppl = results['eval_perplexity']
 
-                        output_dir = args.output_dir
-                        save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
-                        
+                            checkpoint_prefix = "checkpoint"
+
+                            output_dir = args.output_dir
+                            save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
+                    if hasattr(torch.cuda, 'empty_cache'):
+                        torch.cuda.empty_cache()
+                
 
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
@@ -1608,6 +1626,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     cls_labels_list = []
     num_samples = []
     emo_hits = []
+    emo_out_hits = []
     # strategy_hits_topk = [[] for _ in range(7)]
     strategy_hits = []
     if show_emotion:
@@ -1622,7 +1641,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
         
     with torch.no_grad():
         for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True, total = len(eval_dataloader)):
-            outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids) = shared_steps(batch, model, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
+            outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids, emo_dist) = shared_steps(batch, model, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
             if show_emotion:
                 cur_turn_ids = [max(x) for x in batch["decoder_token_type_ids"].detach().cpu().tolist()]
                 turn_ids += cur_turn_ids
@@ -1634,6 +1653,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
             ppl = outputs.lm_loss
             emo_logits = outputs.emo_logits
             strategy_logits = outputs.strategy_logits
+            emo_out_probs = outputs.emo_out_prob
             
             if show_latent:
                 a_latent, e_latent = outputs.action_states
@@ -1651,6 +1671,12 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
                     emo_hits.append(1)
                 else:
                     emo_hits.append(0)
+
+            for idx, emo_out_prob in enumerate(emo_out_probs):
+                if emo_out_prob.argmax() == emo_dist[idx].argmax():
+                    emo_out_hits.append(1)
+                else:
+                    emo_out_hits.append(0)
 
             # print(decoder_input_ids)
             # strategy_ids = decoder_input_ids[:, 0] - 54944
@@ -1692,7 +1718,9 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
     # np_strategy = np.array(strategy_probs)
     # np_cls_labels = np.array(cls_labels_list)
     # result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits)/len(emo_hits), "eval_strategy_predict_accuracy": sum(strategy_hits)/len(strategy_hits), "eval_number_of_evaluated_examples": len(emo_hits)}
-    result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits) / len(emo_hits),"eval_strategy_predict_accuracy": sum(strategy_hits) / len(strategy_hits),
+    result = {"eval_perplexity": perplexity, "eval_emotion_predict_accuracy": sum(emo_hits) / len(emo_hits),
+              "eval_strategy_predict_accuracy": sum(strategy_hits) / len(strategy_hits),
+              "eval_emo_out_predict_accuracy": sum(emo_out_hits) / len(emo_out_hits),
               "eval_number_of_evaluated_examples": len(emo_hits),
               "contrastive_loss":contrastive_loss,
               "emo_out_loss":emo_out_loss
@@ -2134,7 +2162,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir = None):
+def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir = None, batch_size = None):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",
@@ -2188,17 +2216,19 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
         dataset = args.eval_dataset
     else:
         dataset = args.test_dataset
-    for idx in tqdm(range(len(dataset)), desc="Testing"):
-        f = dataset[idx]
-        batch = dataset.collate([f])
-        input_ids, paras = shared_steps(batch, model, tokenizer, args, phase = "generation")
+    gen_sampler = SequentialSampler(dataset)
+    gen_dataloader = DataLoader(
+        dataset, sampler=gen_sampler, batch_size=16 if batch_size is None else batch_size, collate_fn=dataset.collate, drop_last = False
+    )
+    
+    #for idx in tqdm(range(len(dataset)), desc="Testing"):
+    for batch in tqdm(gen_dataloader, desc="Testing",total = len(gen_dataloader)):
+        #f = dataset[idx]
+        #batch = dataset.collate([f])
         
-        next_strategy_id = f.decoder_strategy_ids[0]
-        decoder_strategy_ids = torch.tensor([f.decoder_strategy_ids], dtype=torch.long)
-        decoder_strategy_ids = decoder_strategy_ids.to(device)
-        decoder_strategy_ids = decoder_strategy_ids[:, 0]
+        input_ids, paras = shared_steps(batch, model, tokenizer, args, phase = "generation")
+        bs = input_ids.size(0)
 
-        gts.append(tokenizer.decode(f.decoder_input_ids, skip_special_tokens=True))
         with torch.no_grad():
             chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, _ = model.generate(
                 input_ids,
@@ -2215,37 +2245,33 @@ def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir
                 no_repeat_ngram_size=3,
                 repetition_penalty=1.03
                 ) #top_p 0.9, topk 30
+        chat_history_ids = chat_history_ids.detach().cpu()
+        for j in range(bs):
+            next_strategy_id = batch["decoder_strategy_ids"][j][0]
+            gts.append(tokenizer.decode(batch["decoder_input_ids"][j], skip_special_tokens=True))
+            generated_text = tokenizer.decode(chat_history_ids[:, :][j], skip_special_tokens=True)
+            refs.append(generated_text)
+            if verbose:
+                print(generated_text)
 
-        if mutual_attention is not None:
-            chat_history_ids, mutual_attention, mutual_attention_st = chat_history_ids.cpu(), mutual_attention[-1][0].cpu(), mutual_attention_st[-1][0].cpu()
-            mutual_attention = torch.mean(mutual_attention, dim=0) 
-            mutual_attention_st = torch.mean(mutual_attention_st, dim=0)
-            mutual_attentions.append(mutual_attention)
-            mutual_attentions_st.append(mutual_attention_st)
-        else:
-            chat_history_ids = chat_history_ids.cpu()
-
-        generated_text = tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True)
-        refs.append(generated_text)
-        if verbose:
-            print(generated_text)
         
-        strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  "hyp strategy":tokenizer.decode([strategy_logits[0].argmax()+args.base_vocab_size])})
+            strategy_record.append({"ref strategy":tokenizer.decode([next_strategy_id + args.base_vocab_size]),  
+                                    "hyp strategy":tokenizer.decode([strategy_logits[j].argmax()+args.base_vocab_size])})
         # print({"ref strategy":tokenizer.decode([next_strategy_id + 54944]),  "hyp strategy":tokenizer.decode([chat_history_ids[:, :][0][1]])})
-        if verbose:
-            print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
-                "hyp strategy": tokenizer.decode([strategy_logits[0].argmax() + args.base_vocab_size])})
-        if strategy_logits[0].argmax() == next_strategy_id:
-            strategy_hits.append(1)
-        else:
-            strategy_hits.append(0)
+            if verbose:
+                print({"ref strategy": tokenizer.decode([next_strategy_id + args.base_vocab_size]),
+                    "hyp strategy": tokenizer.decode([strategy_logits[j].argmax() + args.base_vocab_size])})
+            if strategy_logits[j].argmax() == next_strategy_id:
+                strategy_hits.append(1)
+            else:
+                strategy_hits.append(0)
 
-        for k in range(8):
-            _, topk = strategy_logits[0].topk(k+1, -1)
-            strategy_hits_topk[k].append(sum((topk == next_strategy_id).cpu().numpy().tolist()))
-        strategy_logits = strategy_logits[0].cpu().numpy().tolist()
-        strategy_logits = ["%.4f" % logit for logit in strategy_logits]
-        strategy_logit_str.append('\t'.join(strategy_logits))
+            for k in range(8):
+                _, topk = strategy_logits[j].topk(k+1, -1)
+                strategy_hits_topk[k].append(sum((topk == next_strategy_id).cpu().numpy().tolist()))
+            strategy_logits_ = strategy_logits[j].cpu().numpy().tolist()
+            strategy_logits_ = ["%.4f" % logit for logit in strategy_logits_]
+            strategy_logit_str.append('\t'.join(strategy_logits_))
         # print(strategy_logit_str)
         # print(strategy_hits_topk)
         # print(1 / 0)
@@ -2504,7 +2530,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
                             situation_attention_mask = situ_attention_mask,
                             return_latent = True if phase == "eval_and_show_latent" else False
                             )
-    return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids)
+    return outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids, emo_dist)
 if __name__ == "__main__":
     args = Args()
     # main(args)

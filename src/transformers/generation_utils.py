@@ -1420,38 +1420,15 @@ class GenerationMixin:
                 output_attentions=output_attentions,
                 output_hidden_states=output_hidden_states,
             )
+            
 
             next_token_logits = outputs.lm_logits[:, -1, :]
+            
 
             if next_token_logits.size()[1] >= 54954:  # strategy comet
                 for batch_idx in range(next_token_logits.size()[0]):
                     next_token_logits[batch_idx, 54944:] = -float("inf")
-            # batch_size = next_token_logits.size()[0]
-            # if cur_len == begin_len:  #if no strategy token, set False
-            #     if 50257<next_token_logits.size()[1]<50266:
-            #         for batch_idx in range(batch_size):
-            #             next_token_logits[batch_idx, :50257] = -float("inf")
-            #             next_token_logits[batch_idx, 50265] = -float("inf")
-            #     elif 54945<next_token_logits.size()[1]<54954: # strategy
-            #         for batch_idx in range(next_token_logits.size()[0]):
-            #             next_token_logits[batch_idx, :50257+4687] = -float("inf")
-            #             next_token_logits[batch_idx, 50265+4687] = -float("inf")
-            #     elif  next_token_logits.size()[1] >= 54954: # strategy comet
-            #         for batch_idx in range(next_token_logits.size()[0]):
-            #             next_token_logits[batch_idx, :54944] = -float("inf")
-            #             next_token_logits[batch_idx, 54952:] = -float("inf")
-            # else:
-            #     if 50257<next_token_logits.size()[1] < 50266:
-            #         for batch_idx in range(batch_size):
-            #             next_token_logits[batch_idx, 50257:] = -float("inf")
-            #     elif 54945<next_token_logits.size()[1] < 54954:
-            #         for batch_idx in range(next_token_logits.size()[0]):
-            #             next_token_logits[batch_idx, 50257+4687:] = -float("inf")
-            #     elif next_token_logits.size()[1] >= 54954: # strategy comet
-            #         for batch_idx in range(next_token_logits.size()[0]):
-            #             next_token_logits[batch_idx, 54944:] = -float("inf")
-
-            # pre-process distribution
+            
             if encoder_input_ids is not None:
                 next_token_scores = logits_processor(torch.cat([encoder_input_ids, input_ids],dim=-1), next_token_logits)
                 #next_token_scores = logits_processor(input_ids, next_token_scores)
