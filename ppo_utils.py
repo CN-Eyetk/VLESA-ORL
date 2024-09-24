@@ -109,21 +109,21 @@ class Agent:
                 next_query = torch.concat((next_query[:1], next_query[-max_len+1:]))
                 next_role_ids = torch.concat((next_role_ids[:1], next_role_ids[-max_len+1:]))
                 next_attention_mask = torch.concat((next_attention_mask[:1], next_attention_mask[-max_len+1:]))
-            if query_vad_ids is not None:
-                cur_query_vad_ids = query_vad_ids[i]
-                response_vad_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
-                response_text = self.tokenizer.decode(response_tensor, skip_special_tokens = True)
-                _, _, response_vad_labels = self.vad_tokenizer.tokenizer_vad_with_prepared_ids(sent = response_text, input_ids = response_tensor, char_to_remove = "Ġ")
-                if self.args.use_bart:
-                    response_vad_labels = [-1] + response_vad_labels[1:]
-                active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
-                response_vad_ids[:response_pad_start] = active_response_vad_ids[:response_pad_start] 
-
-                response_vad_ids = response_vad_ids.to(self.model.pretrained_model.device)
-                next_vad_ids = torch.cat((cur_query_vad_ids[ : pad_start + 1], response_vad_ids), dim = -1)
-                if next_vad_ids.size(-1) > max_len:
-                    next_vad_ids = torch.concat((next_vad_ids[:1], next_vad_ids[-max_len+1:]))
-                mini_batch_next_vad_ids.append(next_vad_ids)
+            #if query_vad_ids is not None:
+            #    cur_query_vad_ids = query_vad_ids[i]
+            #    response_vad_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
+            #    response_text = self.tokenizer.decode(response_tensor, skip_special_tokens = True)
+            #    _, _, response_vad_labels = self.vad_tokenizer.tokenizer_vad_with_prepared_ids(sent = response_text, input_ids = response_tensor, char_to_remove = "Ġ")
+            #    if self.args.use_bart:
+            #        response_vad_labels = [-1] + response_vad_labels[1:]
+            #    active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
+            #    response_vad_ids[:response_pad_start] = active_response_vad_ids[:response_pad_start] 
+            #
+            #    response_vad_ids = response_vad_ids.to(self.model.pretrained_model.device)
+            #    next_vad_ids = torch.cat((cur_query_vad_ids[ : pad_start + 1], response_vad_ids), dim = -1)
+            #    if next_vad_ids.size(-1) > max_len:
+            #        next_vad_ids = torch.concat((next_vad_ids[:1], next_vad_ids[-max_len+1:]))
+            #    mini_batch_next_vad_ids.append(next_vad_ids)
             #assert len(next_role_ids) == len(next_vad_ids)
             #print("next_role_ids", next_role_ids)
             assert next_role_ids.size(-1) == next_query.size(-1)

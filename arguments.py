@@ -43,38 +43,27 @@ def load_ppo_prefix(args_g):
     return prefix
         
 def load_tag(args):
-    
+
     TAG = "all_loss" \
-    + f"{args.rl_emb_ratio}_{args.emo_loss_ratio}_{args.emo_out_loss_ratio}_{args.warmup_steps}" \
-    +("-spst" if args.sample_strategy_embedding else "")  \
-    + ("-Emoin" if args.use_emo_in else "") \
-    + ("-ensitu" if args.use_situ_in_encoder else "") \
-    + ("-desitu" if args.use_situ_in_decoder else "") \
-    + ("-w_eosstg" if not args.stg_from_eos else "") \
-    + ("-w_eosemo" if not args.emo_from_eos else "") \
-    +("-w_role" if not args.use_role_embed else "") \
-    +("-w_emocat" if not args.emo_use_cat_attn else "") \
-    +("-w_stgcat" if not args.stg_use_cat_attn else "") \
-    +("-vae" if args.use_vae else "") \
-    +("-ivae" if args.intensity_vae else "") \
-    +("-mvae" if args.mixed_vae else "") \
-    +(f"{args.latent_dim}" if args.use_vae or args.intensity_vae else "") \
-    +("-smp_str" if args.sample_strat_emb else "")\
-    +("-wo_Stra" if args.wo_Stra else "") \
-    +("-wo_Emo" if args.wo_Emo else "") \
-    +("-wo_comet" if args.wo_comet else "") \
-    +(f"-vad-{args.vad_emb_ratio}" if args.use_vad_labels else "") \
-    +("-frz_stem" if args.freeze_emo_stag_params else "")  \
-    +("-ct" if args.use_contrastive_loss else "")  \
-    + (f"{args.contrastive_loss_ratio}" if args.use_contrastive_loss else "")  \
-    +("-fz" if args.fuse_z else "")  \
+        + f"{args.rl_emb_ratio}_{args.emo_loss_ratio}_{args.emo_out_loss_ratio}_{args.warmup_steps}" \
+        +("-spst" if args.sample_strategy_embedding else "")  \
+        + ("-nokl" if not args.use_kl else "") \
+        +("-vae" if args.use_vae else "") \
+        +("-ivae" if args.intensity_vae else "") \
+        +(f"{args.latent_dim}" if args.use_vae or args.intensity_vae else "") \
+        +("-smp_str" if args.sample_strat_emb else "")\
+        +("-ct" if args.use_contrastive_loss else "")  \
+        + (f"{args.contrastive_loss_ratio}" if args.use_contrastive_loss else "")  \
+        +("-fz" if args.fuse_z else "")  \
         +("-initlm" if args.init_embeddings_with_lm else "")  \
         +("-uct" if args.use_uncertainty_loss else "")  \
             +("-svae" if args.strategy_use_cvae else "")  \
                 +("-lc" if args.layer_control else "") \
-                        +("-je" if args.use_joint_emo else "") \
-                            +("-tp" if args.use_triplet_loss else "") \
-    +args.tag
+                    +("-je" if args.use_joint_emo else "") \
+                        +("-tp" if args.use_triplet_loss else "") \
+                            +("-situ" if args.use_situ else "") \
+                                +(f"-stg_{args.strategy_latent_dim}" if args.strategy_latent_dim else "") \
+        +args.tag
     GROUP = ("-LIGHT" if not args.use_th_attn else "") + ("-TRANS4" if args.use_trans else "NoTrans") if args.use_emb_prep else ((("-TRANS3" if args.use_trans else "NoTrans") if args.use_prepend else "-TRANS2") if args.use_trans else "NoTrans")
     return TAG, GROUP
 def load_arg(return_tag = False, ):
@@ -89,6 +78,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--merge", action= "store_true")
     parser.add_argument("--use_situ_in_encoder", action= "store_true")
     parser.add_argument("--use_situ_in_decoder", action= "store_true")
+    parser.add_argument("--use_situ", action= "store_true")
     parser.add_argument("--no_fuse", action= "store_true")
     parser.add_argument("--use_bart", action= "store_true")
     parser.add_argument("--use_emo_in", action= "store_true")
@@ -145,6 +135,7 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--use_joint_emo", action="store_true")
     parser.add_argument("--use_triplet_loss", action="store_true")
     parser.add_argument("--origin_latent_dim", action="store_true")
+    parser.add_argument("--strategy_latent_dim",default=None)
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -273,6 +264,7 @@ def load_arg(return_tag = False, ):
             "generation_dir":generation_dir,
             "use_situ_in_encoder":args_g.use_situ_in_encoder,
             "use_situ_in_decoder":args_g.use_situ_in_decoder,
+            "use_situ":args_g.use_situ,
             "use_emo_in_dist":args_g.use_emo_in,
             "use_emb_prep":args_g.use_emb_prep,
             "use_copy":args_g.use_copy,
@@ -317,7 +309,7 @@ def load_arg(return_tag = False, ):
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
             "origin_latent_dim":args_g.origin_latent_dim,
-            
+            "strategy_latent_dim":args_g.strategy_latent_dim
             }
     #add ppo related args
     ppo_args = {k:v for k,v in vars(args_g).items() if k.startswith("ppo")}
