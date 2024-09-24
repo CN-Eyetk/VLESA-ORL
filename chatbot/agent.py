@@ -30,6 +30,7 @@ class Chatbot:
         self.model = model.cuda()
         self.tokenizer = tokenizer
     def make_input(self, chat, situ = None):
+        print("chat",chat)
         input_ids = []
         role_ids = []
         for utt in chat:
@@ -37,12 +38,12 @@ class Chatbot:
                 cur_role_id = self.tokenizer.convert_tokens_to_ids("[SEK]")
             else:
                 cur_role_id = self.tokenizer.convert_tokens_to_ids("[SPT]")
-            cur_input_ids = self.tokenizer.encode(utt["content"])
+            cur_input_ids = [self.tokenizer.bos_token_id] + self.tokenizer.encode(utt["content"])[1:]
             cur_role_ids = [cur_role_id for x in cur_input_ids]
             input_ids += cur_input_ids
             role_ids += cur_role_ids
         input_ids = self.tokenizer.encode(self.tokenizer.cls_token, add_special_tokens = False) + input_ids
-        
+        print("input_ids",self.tokenizer.decode(input_ids))
         role_ids = [self.tokenizer.pad_token_id] + role_ids
         if situ is not None:
             situ_ids = self.tokenizer.encode(f"{self.tokenizer.cls_token} [SITU] {situ}", add_special_tokens = True)[1:]
@@ -65,9 +66,9 @@ class Chatbot:
                 use_cache=True,
                 pad_token_id=self.tokenizer.pad_token_id,
                 early_stopping=True,
-                eos_token_id=self.tokenizer.eos_token_id, temperature=0.7,
-                top_p=1.0, 
-                top_k = 30, 
+                eos_token_id=self.tokenizer.eos_token_id, temperature=1.05,
+                top_p=0.9, 
+                top_k = 50, 
                 do_sample=True, 
                 no_repeat_ngram_size=3,
                 repetition_penalty=1.03

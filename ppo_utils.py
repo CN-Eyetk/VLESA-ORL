@@ -77,7 +77,51 @@ class Agent:
         self.load_coef = load_coef
         if self.load_func is not None:
             print("Using load")
-    def make_next_state(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
+    def make_next_state(self, input_ids, role_ids, attention_mask, decoder_output_ids, max_len = 512):
+        pad_mask = input_ids == self.tokenizer.eos_token_id
+        pad_start = torch.nonzero(pad_mask, as_tuple=False)[-1, 0].item()
+
+        #response_tensor = response_tensors[i][1:] #[<\s>, <s>, I, think, so, <\s>, <pad>, <pad>] -> [ <s>, I, think, so, <\s>, <pad>, <pad>]
+        next_query = torch.cat((input_ids[ : pad_start + 1], decoder_output_ids), dim = -1)
+        response_length = len(decoder_output_ids)
+        if not torch.any(decoder_output_ids == self.tokenizer.eos_token_id):
+            response_pad_start = len(decoder_output_ids)
+        else:
+            response_pad_start = torch.nonzero(decoder_output_ids == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item() + 1
+        response_role_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
+        response_role_ids[:response_pad_start] = self.hist_retriver.role_to_id["supporter"]
+        #print("next_query_role_ids", next_query_role_ids)
+        response_role_ids = response_role_ids.to(self.model.pretrained_model.device)            
+        next_role_ids = torch.cat((role_ids[ : pad_start + 1], response_role_ids), dim = -1)
+        next_attention_mask = torch.cat((attention_mask[ : pad_start + 1], decoder_output_ids.ne(self.tokenizer.pad_token_id).to(attention_mask.dtype)), dim = -1)
+        if next_role_ids.size(-1) > max_len:
+            next_query = torch.concat((next_query[:1], next_query[-max_len+1:]))
+            next_role_ids = torch.concat((next_role_ids[:1], next_role_ids[-max_len+1:]))
+            next_attention_mask = torch.concat((next_attention_mask[:1], next_attention_mask[-max_len+1:]))
+        return next_query, next_role_ids, next_attention_mask
+    def make_next_state_with_situ(self, input_ids, role_ids, attention_mask, decoder_output_ids, max_len = 512):
+        situ_start = torch.nonzero(input_ids == self.tokenizer.convert_tokens_to_ids("[CLS]"), as_tuple=False)[-1, 0].item()
+        pad_start = torch.nonzero(input_ids == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item()
+        
+        if not torch.any(decoder_output_ids == self.tokenizer.eos_token_id):
+            response_pad_start = len(decoder_output_ids)
+        else:
+            response_pad_start = torch.nonzero(decoder_output_ids == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item() + 1
+        decoder_output_ids = decoder_output_ids[:response_pad_start]
+        next_query = torch.cat((input_ids[:situ_start], decoder_output_ids, input_ids[situ_start:pad_start+1]), dim = -1)
+        response_length = len(decoder_output_ids)
+        response_role_ids = torch.zeros(response_length)
+        response_role_ids[:response_pad_start] = self.hist_retriver.role_to_id["supporter"]
+        #print("next_query_role_ids", next_query_role_ids)
+        response_role_ids = response_role_ids.to(self.model.pretrained_model.device)   
+        next_role_ids = torch.cat((role_ids[:situ_start], response_role_ids, torch.zeros(pad_start+1-situ_start).to(self.model.pretrained_model.device)), dim = -1)
+        next_attention_mask = next_query.ne(self.tokenizer.pad_token_id)
+        if next_role_ids.size(-1) > max_len:
+            next_query = torch.concat((next_query[:1], next_query[-max_len+1:]))
+            next_role_ids = torch.concat((next_role_ids[:1], next_role_ids[-max_len+1:]))
+            next_attention_mask = torch.concat((next_attention_mask[:1], next_attention_mask[-max_len+1:]))
+        return next_query, next_role_ids, next_attention_mask
+    def make_next_states(self, query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids = None, max_len = 512):
         mini_batch_next_query_tensors = []
         mini_batch_next_role_ids = []
         mini_batch_next_attention_masks = []
@@ -89,43 +133,21 @@ class Agent:
             cur_query_tensors = query_tensors[i]
             cur_query_role_ids = query_role_ids[i]
             cur_attention_mask = attention_masks[i]
-            pad_mask = cur_query_tensors == self.tokenizer.eos_token_id
-            pad_start = torch.nonzero(pad_mask, as_tuple=False)[-1, 0].item()
-
-            response_tensor = response_tensors[i][1:] #[<\s>, <s>, I, think, so, <\s>, <pad>, <pad>] -> [ <s>, I, think, so, <\s>, <pad>, <pad>]
-            next_query = torch.cat((query_tensors[i][ : pad_start + 1], response_tensor), dim = -1)
-            response_length = len(response_tensor)
-            if not torch.any(response_tensor == self.tokenizer.eos_token_id):
-                response_pad_start = len(response_tensor)
+            response_tensor = response_tensors[i][1:]
+            if not self.args.use_situ:
+                next_query, next_role_ids, next_attention_mask = self.make_next_state(input_ids=cur_query_tensors,
+                                                                                    role_ids=cur_query_role_ids,
+                                                                                    attention_mask=cur_attention_mask,
+                                                                                    decoder_output_ids=response_tensor,
+                                                                                    max_len = max_len
+                                                                                    )
             else:
-                response_pad_start = torch.nonzero(response_tensor == self.tokenizer.eos_token_id, as_tuple=False)[-1, 0].item() + 1
-            response_role_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
-            response_role_ids[:response_pad_start] = self.hist_retriver.role_to_id["supporter"]
-            #print("next_query_role_ids", next_query_role_ids)
-            response_role_ids = response_role_ids.to(self.model.pretrained_model.device)            
-            next_role_ids = torch.cat((cur_query_role_ids[ : pad_start + 1], response_role_ids), dim = -1)
-            next_attention_mask = torch.cat((cur_attention_mask[ : pad_start + 1], response_tensor.ne(self.tokenizer.pad_token_id).to(attention_masks[i].dtype)), dim = -1)
-            if next_role_ids.size(-1) > max_len:
-                next_query = torch.concat((next_query[:1], next_query[-max_len+1:]))
-                next_role_ids = torch.concat((next_role_ids[:1], next_role_ids[-max_len+1:]))
-                next_attention_mask = torch.concat((next_attention_mask[:1], next_attention_mask[-max_len+1:]))
-            #if query_vad_ids is not None:
-            #    cur_query_vad_ids = query_vad_ids[i]
-            #    response_vad_ids = torch.zeros(response_length) + self.tokenizer.pad_token_id
-            #    response_text = self.tokenizer.decode(response_tensor, skip_special_tokens = True)
-            #    _, _, response_vad_labels = self.vad_tokenizer.tokenizer_vad_with_prepared_ids(sent = response_text, input_ids = response_tensor, char_to_remove = "Ġ")
-            #    if self.args.use_bart:
-            #        response_vad_labels = [-1] + response_vad_labels[1:]
-            #    active_response_vad_ids = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(response_vad_labels))
-            #    response_vad_ids[:response_pad_start] = active_response_vad_ids[:response_pad_start] 
-            #
-            #    response_vad_ids = response_vad_ids.to(self.model.pretrained_model.device)
-            #    next_vad_ids = torch.cat((cur_query_vad_ids[ : pad_start + 1], response_vad_ids), dim = -1)
-            #    if next_vad_ids.size(-1) > max_len:
-            #        next_vad_ids = torch.concat((next_vad_ids[:1], next_vad_ids[-max_len+1:]))
-            #    mini_batch_next_vad_ids.append(next_vad_ids)
-            #assert len(next_role_ids) == len(next_vad_ids)
-            #print("next_role_ids", next_role_ids)
+                next_query, next_role_ids, next_attention_mask = self.make_next_state_with_situ(input_ids=cur_query_tensors,
+                                                                                    role_ids=cur_query_role_ids,
+                                                                                    attention_mask=cur_attention_mask,
+                                                                                    decoder_output_ids=response_tensor,
+                                                                                    max_len = max_len
+                                                                                    )
             assert next_role_ids.size(-1) == next_query.size(-1)
             mini_batch_next_query_tensors.append(next_query)
             mini_batch_next_role_ids.append(next_role_ids)
@@ -207,7 +229,7 @@ class Agent:
                     else:
                         bool_paras[k] = v
                 if get_next_state:
-                    next_query_tensors, next_query_role_ids, next_query_attention_masks, next_query_vad_ids = self.make_next_state(query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids)
+                    next_query_tensors, next_query_role_ids, next_query_attention_masks, next_query_vad_ids = self.make_next_states(query_tensors, response_tensors, query_role_ids, attention_masks, query_vad_ids)
                     all_next_query_tensors += next_query_tensors
                     all_next_query_role_ids += next_query_role_ids                
                     all_next_query_attention_masks += next_query_attention_masks
