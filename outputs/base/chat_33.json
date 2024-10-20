@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "Academic burnout."
+  },
+  {
+    "role": "assistant",
+    "content": "It' s a tough time for many. It sounds like you are feeling lonely, which can be hard. Is there anyone you could talk to about your feelings?"
+  },
+  {
+    "role": "user",
+    "content": "My mom."
+  },
+  {
+    "role": "assistant",
+    "content": "That' s a tough situation to be in, especially during the pandemic. Are there people around that are close to you who can help?"
+  },
+  {
+    "situation": "Pay Cuts."
+  }
+]

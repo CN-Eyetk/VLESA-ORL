@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My supervisor is so toxic. He requires to do everything for him."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that, it sounds like your supervisor needs to be around to make sure that you are doing everything right. Do you feel that is the reason you have a toxic supervisor?"
+  },
+  {
+    "role": "user",
+    "content": "Yes he is so demanding."
+  },
+  {
+    "role": "assistant",
+    "content": "I can definitely understand how hard that must be, being a cooped up household is a stressful situation. What do you do when he becomes demanding?"
+  },
+  {
+    "situation": "Toxic supervisor."
+  }
+]

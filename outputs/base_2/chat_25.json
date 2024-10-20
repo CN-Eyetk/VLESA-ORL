@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "All the uncertainty and anxiety in the workplace these days is putting me under more pressure than usual."
+  },
+  {
+    "role": "assistant",
+    "content": "'s good to hear. what's going on in your life that's causing you to feel anxious?"
+  },
+  {
+    "role": "user",
+    "content": "Maybe I need to look for a close friend to drink together."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling stressed and anxious at the moment due to the uncertainty and uncertainty in the workplace."
+  },
+  {
+    "situation": "Workplace anxiety"
+  }
+]

@@ -2,17 +2,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 import numpy as np
-df = pd.read_table("results/summary.txt", sep = "\t")
+plt.style.use("ggplot")
+df = pd.read_table("results/summary_all.txt", sep = "\t")
 print(df.head())
-y_rows = ["toxic", "humanlike", "helpfulness", "load", "relv"]
-y_name = ["Toxic", "HumanLike", "Effect (Helpful) ", "Effort (Suprisal)", "Cognitive Relevance (Reward)"]
+y_rows = ["toxic", "humanlike", "helpfulness", "load", "relv", "non_random"]
+y_name = ["Non-Toxic", "HumanLike", "Effect (Helpful) ", "Effort (Suprisal)", "Cognitive Relevance (Reward)", "Non_Random"]
 label_map = {"llama":"feat. Llama", "non_load":"w/o Effort", "load":"feat. DialogGPT"}
 def draw_matric(y_row, y_name):
     x_row = "step"
     group_row = "group"
     group_vals = df[group_row].value_counts().keys()
     print("group_vas",group_vals)
-    colors = ["khaki", "lightblue", "orchid"]
+    colors = ["darkred", "lightblue", "orchid"]
     
     for i,group_val in enumerate(group_vals):
         frame = df[df["group"] == group_val]
@@ -21,14 +22,14 @@ def draw_matric(y_row, y_name):
         y = frame[y_row]
         plt.plot(x, y, 's-', color = colors[i], label=label_map[group_val])
         
-        for step in [9,19,29,39,49,59,69,78]:
-            samples = json.load(open(f"results/result_{group_val}_{step}.json","r+"))[y_row]
-            mean = np.mean(samples)
-            std = np.std(samples)
-            confidence_interval = 0.90 * std / np.sqrt(len(samples))
-            top = mean - confidence_interval
-            bottom = mean + confidence_interval
-            plt.plot([step, step], [top, bottom], color=colors[i])
+        #for step in [9,19,29,39,49,59,69,78]:
+        #    samples = json.load(open(f"results/result_{group_val}_{step}.json","r+"))[y_row]
+        #    mean = np.mean(samples)
+        #    std = np.std(samples)
+        #    confidence_interval = 0.90 * std / np.sqrt(len(samples))
+        #    top = mean - confidence_interval
+        #    bottom = mean + confidence_interval
+        #    plt.plot([step, step], [top, bottom], color=colors[i])
             
     plt.legend()
     plt.title(y_name)
@@ -49,4 +50,6 @@ plt.subplot(234)
 draw_matric("load", y_name[3])
 plt.subplot(235)
 draw_matric("relv", y_name[4])
+plt.subplot(236)
+draw_matric("non_random", y_name[5])
 plt.savefig("progress.png")

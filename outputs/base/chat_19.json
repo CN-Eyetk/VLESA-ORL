@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I have difficulty pushing through my workload as no one wants to lend a help."
+  },
+  {
+    "role": "assistant",
+    "content": "That is understandable. I' ve been feeling quite down lately in the workplace too. Is there anyone that you feel that would be willing to help?"
+  },
+  {
+    "role": "user",
+    "content": "My leader won't help. My colleagues are also cold."
+  },
+  {
+    "role": "assistant",
+    "content": "What is it that has been making you feel cold in your work?"
+  },
+  {
+    "situation": "Burnout in workplace."
+  }
+]

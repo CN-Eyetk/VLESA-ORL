@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My supervisor is so toxic. He requires to do everything for him."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like a toxic supervisor."
+  },
+  {
+    "role": "user",
+    "content": "Yes he is so demanding."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like a very toxic supervisor..."
+  },
+  {
+    "situation": "Toxic supervisor."
+  }
+]

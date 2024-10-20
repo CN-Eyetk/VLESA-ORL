@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I want to rebuild the relationship with someone but I hurt that person so deep. I feel so guilty."
+  },
+  {
+    "role": "assistant",
+    "content": "I can understand how that feels. I have had to deal with similar feelings in the past. Have you been able to talk to someone about this?"
+  },
+  {
+    "role": "user",
+    "content": "May I talk with you?"
+  },
+  {
+    "role": "assistant",
+    "content": "I think that would be a great idea. It sounds like you are really feeling guilty about the situation and want to rebuild the relationship with someone."
+  },
+  {
+    "situation": "The guilt is killing me."
+  }
+]

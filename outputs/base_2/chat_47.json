@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I blew up my relationship by cheating. I\u2019ve started drinking excessively. I ended up having an abortion."
+  },
+  {
+    "role": "assistant",
+    "content": "'s good to hear. what's going on?"
+  },
+  {
+    "role": "user",
+    "content": "That's true. I\u2019m spiralling out of control and I don\u2019t seem to know how to stop."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling stressed and anxious about things that are going on."
+  },
+  {
+    "situation": "Faced trauma and wanted to get out if a rut."
+  }
+]

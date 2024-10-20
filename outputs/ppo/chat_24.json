@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My classmates are so distinguished. I feel ashamed when I am among them."
+  },
+  {
+    "role": "assistant",
+    "content": "I understand how you feel. My classmates are so distinguished, and I am very embarrassed myself at times. I can tell from my conversation that it is making you feel shameful."
+  },
+  {
+    "role": "user",
+    "content": "Yes I am selected to somewhere I am not up for."
+  },
+  {
+    "role": "assistant",
+    "content": "It sounds like you feel put off because of your looks. Is that correct?"
+  },
+  {
+    "situation": "Peer Pressure"
+  }
+]

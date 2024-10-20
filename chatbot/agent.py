@@ -29,8 +29,11 @@ class Chatbot:
             
         self.model = model.cuda()
         self.tokenizer = tokenizer
+        if "situ" in model_path:
+            self.use_situ = True
+        else:
+            self.use_situ = False
     def make_input(self, chat, situ = None):
-        print("chat",chat)
         input_ids = []
         role_ids = []
         for utt in chat:
@@ -43,12 +46,11 @@ class Chatbot:
             input_ids += cur_input_ids
             role_ids += cur_role_ids
         input_ids = self.tokenizer.encode(self.tokenizer.cls_token, add_special_tokens = False) + input_ids
-        print("input_ids",self.tokenizer.decode(input_ids))
         role_ids = [self.tokenizer.pad_token_id] + role_ids
         if situ is not None:
-            situ_ids = self.tokenizer.encode(f"{self.tokenizer.cls_token} [SITU] {situ}", add_special_tokens = True)[1:]
+            situ_ids = self.tokenizer.encode(f"[SITU] {situ}", add_special_tokens = True)
             input_ids += situ_ids
-            role_ids += [self.tokenizer.convert_tokens_to_ids("[SEK]")] * len(situ_ids)
+            role_ids += [0] * len(situ_ids)
         batch = {
             "input_ids":torch.tensor([input_ids]).to(self.model.device),
             "role_ids":torch.tensor([role_ids]).to(self.model.device)
@@ -56,8 +58,8 @@ class Chatbot:
         batch["output_mutual_attentions"] = False
         batch["generate_with_predicted_strategy"] = False
         return batch
-    def response(self, chat):
-        batch = self.make_input(chat)
+    def response(self, chat, situ = None):
+        batch = self.make_input(chat, situ)
         with torch.no_grad():
             chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, _ = self.model.generate(
                 **batch, max_length=512,
@@ -66,7 +68,7 @@ class Chatbot:
                 use_cache=True,
                 pad_token_id=self.tokenizer.pad_token_id,
                 early_stopping=True,
-                eos_token_id=self.tokenizer.eos_token_id, temperature=1.05,
+                eos_token_id=self.tokenizer.eos_token_id, temperature=1.0,
                 top_p=0.9, 
                 top_k = 50, 
                 do_sample=True, 

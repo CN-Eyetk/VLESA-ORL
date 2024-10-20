@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel there are so many misunderstandings between me and my wife. She is overthinking that I betrayed her."
+  },
+  {
+    "role": "assistant",
+    "content": "That seems like a really difficult situation to be going through. It can be difficult to feel so invested in someone when it seems you were the one to do the wrong. How long has this been going on?"
+  },
+  {
+    "role": "user",
+    "content": "Maybe just two years ago since I get promoted in my company."
+  },
+  {
+    "role": "assistant",
+    "content": "Wow, that' s a long time. It sounds like it was a surprise and not a result of an unfair conflict. Do you have friends or family who can help you feel better about things like this? I know someone who has been through this situation, so it is great to hear that you have reached out to help and they are doing their best to make things right."
+  },
+  {
+    "situation": "Misunderstandings in marriage."
+  }
+]

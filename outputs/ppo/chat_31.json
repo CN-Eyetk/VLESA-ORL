@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel myself a bad communicator. No one wants to talk with me."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that. Sometimes people feel that they can not or shouldn' t talk to us, that we are the problem. Correct me if I am wrong."
+  },
+  {
+    "role": "user",
+    "content": "Maybe you are right."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that, would you like to talk about the problem specifically with me?"
+  },
+  {
+    "situation": "Low communication skills."
+  }
+]

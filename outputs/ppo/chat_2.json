@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel so ashamed since I saw my boyfriend flirting my friend."
+  },
+  {
+    "role": "assistant",
+    "content": "That is so disappointing. You have been a very strong person to come out of this, despite what happened."
+  },
+  {
+    "role": "user",
+    "content": "Yes, I should have been strong. But it is super frustrating."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that. Have you considered talking to your friends about this? This can be a very difficult situation to be in."
+  },
+  {
+    "situation": "My boyfriend betrayed me."
+  }
+]

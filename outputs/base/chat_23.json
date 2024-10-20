@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am harrassed by some bullshits online."
+  },
+  {
+    "role": "assistant",
+    "content": "It sounds like you have been feeling a little bullied online due to the pandemic, I hear you saying this is a common experience."
+  },
+  {
+    "role": "user",
+    "content": "It is common and uncommon."
+  },
+  {
+    "role": "assistant",
+    "content": "That sounds like a really hard thing to deal with. It sounds like you have been having a hard time dealing with this especially since the pandemic has been making things so difficult for you. Have you been able to reach out to friends or family to share some of your concerns?"
+  },
+  {
+    "situation": "Cyberbullying"
+  }
+]

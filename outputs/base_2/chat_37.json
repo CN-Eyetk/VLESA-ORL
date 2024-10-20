@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am having a lot of anxiety about quitting my current job. It is too stressful but pays well."
+  },
+  {
+    "role": "assistant",
+    "content": ", how are you feeling right now?"
+  },
+  {
+    "role": "user",
+    "content": "Maybe a museum curator."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like a great idea..."
+  },
+  {
+    "situation": "Job anxiety"
+  }
+]

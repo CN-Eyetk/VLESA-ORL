@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My doctor just called me and started laughing hysterically when I was making a telephone appointment with him. Am I overthinking?"
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are having a hard time dealing with the situation."
+  },
+  {
+    "role": "user",
+    "content": "He was just talking to his co worker about something else. Am I correct?"
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like he is having a hard time with his co - worker."
+  },
+  {
+    "situation": "My doctor just called me and started laughing hysterically\u2026"
+  }
+]

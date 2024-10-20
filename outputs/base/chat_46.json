@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "It's a challenging year. My colleagues are fired and my salary is cut."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that. Has there been any sudden turnover at your job? Or a reorganization that has put pressure on you in the past?"
+  },
+  {
+    "role": "user",
+    "content": "Maybe a huge reorganization in my company since the depression."
+  },
+  {
+    "role": "assistant",
+    "content": "Do you feel as though you are under a significant stressor?"
+  },
+  {
+    "situation": "Challenging year."
+  }
+]

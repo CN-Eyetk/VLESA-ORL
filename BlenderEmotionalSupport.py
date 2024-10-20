@@ -2162,7 +2162,7 @@ def generate(args):
     print(result)
     print("=" * 100)
 
-def generate_new(args, model = None, verbose = True, prefix = "",test_output_dir = None, batch_size = None):
+def generate_new(args, model = None, verbose = False, prefix = "",test_output_dir = None, batch_size = None):
 
     #additional_special_tokens = ["[Question]", "[Reflection of feelings]", "[Information]",
     #                            "[Restatement or Paraphrasing]", "[Others]", "[Self-disclosure]",

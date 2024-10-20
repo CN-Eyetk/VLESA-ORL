@@ -7,7 +7,7 @@ export HF_HUB_CACHE=$HF_HOME"/hub"
 #python3 test.py
 lrs=("2e-07") # "5e-07" "2e-07") # "1e-07") # "1e-07") # "5e-07") # "1e-06" "1e-07") # "5e-07") # "2e-06" "5e-07") # "1e-06") # "1e-07" "2e-06") # "1e-07" "5e-07") # "5e-07")
 coefs=("1.5") # "0.01")
-ablations=("")  #"  --ppo_wo_a" "  --ppo_wo_e")
+ablations=("" " --ppo_use_load")
 
 root_path="/disk/junlin/EmoSp"
 export CUDA_VISIBLE_DEVICES=0,1
@@ -25,7 +25,7 @@ today=$(date '+%Y-%m-%d')
 echo ${today:5:10}
 
 #pretrained_args="--no_fuse --use_bart --use_kl --tag pm608/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 4 --use_emb_prep --vad_emb_ratio -1 --use_role_embed --rl_emb_ratio -1 --emo_loss_rat 0.05 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.2 --layer_control --strategy_use_cvae --use_joint_emo --use_triplet_loss"
-pretrained_args="--no_fuse --use_bart --tag am922 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 16 --use_emb_prep --vad_emb_ratio -1 --rl_emb_ratio -1 --use_role_embed --emo_loss_rat 0.1 --emo_out_loss_ratio 0.1 --strategy_loss_ratio 0.1 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.1 --layer_control --strategy_use_cvae --use_joint_emo --use_triplet_loss --strategy_latent_dim 8"
+pretrained_args="--no_fuse --use_bart --tag am922 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --strategy_loss_ratio 0.05 --root_path /disk/junlin/EmoSp --lr 2e-5 --latent_dim 16 --use_emb_prep --vad_emb_ratio -1 --rl_emb_ratio -1 --use_role_embed --emo_loss_rat 0.1 --emo_out_loss_ratio 0.1 --strategy_loss_ratio 0.1 --use_trans --warmup_steps 510 --wo_comet --emo_from_eos --sample_strategy_embedding --use_contrastive_loss --contrastive_loss_ratio 0.1 --layer_control --strategy_use_cvae --use_joint_emo --use_triplet_loss --strategy_latent_dim 8 --use_situ"
 tag=$(python3 arguments.py $pretrained_args)
 
 
@@ -57,18 +57,17 @@ for lr in "${lrs[@]}";do
                 --ppo_recursive
                 --ppo_gradient_accumulation_steps $gradient_accumulation_steps
                 --generate_with_predicted_strategy
-                --ppo_use_word_level_reward
                 --ppo_add_strategy_noise
-                --ppo_use_llama_seeker
                 --ppo_use_lm_reward"
 
+    ppo_args+=" --ppo_use_word_level_reward"
     ppo_args+=" --root_path "$root_path
     ppo_args+=" --ppo_frozen_layer_num 0"
     ppo_args+=" --ppo_init_kl_coef "$ppo_init_kl_coef
     ppo_args+=" --ppo_lm_loss "$lm_loss
     ppo_args+=" --ppo_lr "$lr
     ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
-    ppo_args+=" --ppo_use_load"
+    ppo_args+=" --ppo_use_llama_seeker"
     ppo_args+=" --ppo_multiple_actions"
     ppo_args+=$abla
     ppo_args+=" --ppo_load_coef "$coef
@@ -93,8 +92,8 @@ for lr in "${lrs[@]}";do
     #eval_comm_a="python3 main.py --log_on_wandb --pretrained_model "$pretrained_model" "$pretrained_args" "
 
     #$eval_comm_a
-    eval_comm_b="python3 main.py --log_on_wandb  --pretrained_model "$pretrained_model" "$pretrained_args""
-    $eval_comm_b
+    eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$pretrained_model" "$pretrained_args""
+    CUDA_VISIBLE_DEVICES=1 $eval_comm_b
     done
     fi
     done

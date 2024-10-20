@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I broke up with my ex and I realize that there is no one who really loves me."
+  },
+  {
+    "role": "assistant",
+    "content": ", how are you feeling right now?"
+  },
+  {
+    "role": "user",
+    "content": "I blew up my relationship by cheating."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling a bit lonely right now."
+  },
+  {
+    "situation": "No one loves me."
+  }
+]

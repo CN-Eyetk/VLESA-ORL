@@ -220,7 +220,7 @@ def load_arg(return_tag = False, ):
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/531_II_{}_{}_{}{}cached".format(args_g.root_path,"noprep" if not args_g.use_prepend else "prep", "bart_" if args_g.use_bart else "", "emin_" if args_g.use_emo_in else "","w_vad" if args_g.use_vad_labels else ""),
+            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(args_g.root_path,"noprep" if not args_g.use_prepend else "prep", "bart_" if args_g.use_bart else "", "emin_" if args_g.use_emo_in else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":args_g.over_write,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not args_g.use_bart else "facebook/bart-base",

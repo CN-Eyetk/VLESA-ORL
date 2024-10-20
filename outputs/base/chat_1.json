@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I failed in the final exam."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that, failed an exam can be a very stressful experience to have to deal with. Have you taken any steps to address the issue in the past?"
+  },
+  {
+    "role": "user",
+    "content": "I tried hard to cram but it doesn't work."
+  },
+  {
+    "role": "assistant",
+    "content": "I completely understand how difficult that can be. Having to cram for something that you don' t feel up to can be stressful, especially if it' s a big exam."
+  },
+  {
+    "situation": "Academic Failure"
+  }
+]

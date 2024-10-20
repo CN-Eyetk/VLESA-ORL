@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "The government tore down my house without paying me any refund."
+  },
+  {
+    "role": "assistant",
+    "content": "'s so sorry to hear that. what's going on?"
+  },
+  {
+    "role": "user",
+    "content": "I want to be the president so that I can take revenge of the local government and rectify this situation."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling overwhelmed by the situation and would like to take revenge of the local government and rectify it."
+  },
+  {
+    "situation": "My house is torn down."
+  }
+]

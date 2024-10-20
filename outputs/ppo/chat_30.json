@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am cyber-harrassed by someone I don't know."
+  },
+  {
+    "role": "assistant",
+    "content": "I can understand how that could be, I have been in the same situation before, and I' ve had to deal with it a lot. Would you like to talk about what has caused the attack?"
+  },
+  {
+    "role": "user",
+    "content": "They grab a photo of mine and threaten to spread to online."
+  },
+  {
+    "role": "assistant",
+    "content": "Wow, that' s really awful. This has become a problem for a lot of people, I can feel how anxious you are right now. Have you tried doing any community work to support people who are having these issues?"
+  },
+  {
+    "situation": "Harrassed."
+  }
+]

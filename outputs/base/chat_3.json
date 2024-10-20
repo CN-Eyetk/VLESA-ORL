@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My boss streches us so thin. He asks everyone to work overtime."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that. So when your boss makes you feel as though you are useless, does he see that this is causing you problems or is it just his general stress?"
+  },
+  {
+    "role": "user",
+    "content": "He doesn't want to talk with anyone."
+  },
+  {
+    "role": "assistant",
+    "content": "Is there something that you have had to do to avoid him that has caused the stress of being in his job? Or is it just a general change in behavior?"
+  },
+  {
+    "situation": "Job burnout"
+  }
+]

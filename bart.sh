@@ -30,7 +30,7 @@ root_path="/disk/junlin/EmoSp"
 #export WANDB_DISABLED=true
 export CUDA_VISIBLE_DEVICES=1
 #Before 1 March: comm="python3 main.py --no_fuse --use_bart --use_kl --tag am205/bleu2 --emo_out_loss_ratio 0.05 --use_vae --mixed_vae --use_vad_labels --strategy_loss_ratio 0.05 --do_train"
-comm="python3 main.py --no_fuse --use_bart --tag am922 --use_role_embed --use_vae --mixed_vae --log_on_wandb --do_train"
+comm="python3 main.py --no_fuse --use_bart --tag am922 --use_role_embed --use_vae --mixed_vae --log_on_wandb"
 
 # "
 
@@ -81,9 +81,9 @@ for u_k in "${use_kls[@]}"; do
                                     cur_comm+=" --use_joint_emo "
                                     cur_comm+=" --use_triplet_loss "
                                     cur_comm+=" --strategy_latent_dim "$stg_lt
-                                    
-                                    $cur_comm
-                                    sleep 0.5h
+                                    cur_comm+=" --do_show_latent"
+                                    #$cur_comm
+                                    #sleep 0.5h
                                     cur_comm+=" --use_situ"
 
                                     $cur_comm

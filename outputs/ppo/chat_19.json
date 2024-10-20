@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I have difficulty pushing through my workload as no one wants to lend a help."
+  },
+  {
+    "role": "assistant",
+    "content": "What sort of things are you having difficulty dealing with, especially with so many people calling in to lend a helping hand?"
+  },
+  {
+    "role": "user",
+    "content": "I am a layman to the issues I am going to deal with."
+  },
+  {
+    "role": "assistant",
+    "content": "I see. So there are a lot of tasks you' re having difficulty dealing with, and there is no one to lend a helping hand? Is there something specific you' d like to discuss?"
+  },
+  {
+    "situation": "Burnout in workplace."
+  }
+]

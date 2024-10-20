@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel myself a bad communicator. No one wants to talk with me."
+  },
+  {
+    "role": "assistant",
+    "content": "That can be hard to hear, I' ve been there myself. It' s so refreshing to hear that other people are interested in listening and asking how to do something."
+  },
+  {
+    "role": "user",
+    "content": "Yes I hope I can be the refreshing guy."
+  },
+  {
+    "role": "assistant",
+    "content": "It sounds like you have a lot of things going on with life and you don' t want to let them consume you."
+  },
+  {
+    "situation": "Low communication skills."
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I moved overseas and I am in a homesick. I have hard time getting accustomed to my new life."
+  },
+  {
+    "role": "assistant",
+    "content": "I understand that you have been a bit apprehensive. What type of things are you looking forward to?"
+  },
+  {
+    "role": "user",
+    "content": "Maybe some local network? But I have no resource."
+  },
+  {
+    "role": "assistant",
+    "content": "I know that local people are often at a loss for what to do right now. I have also had a problem in my quest for connections as well. Whereabouts do you live?"
+  },
+  {
+    "situation": "Homesick."
+  }
+]

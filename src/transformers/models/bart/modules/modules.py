@@ -257,10 +257,10 @@ class StrategyVAE(nn.Module):
         if config.origin_latent_dim:
             self.latent_dim = int(self.hidden_dim /2)
         elif config.strategy_latent_dim is not None:
-            print("config.strategy_latent_dim",config.strategy_latent_dim)
+            #print("config.strategy_latent_dim",config.strategy_latent_dim)
             self.latent_dim = int(config.strategy_latent_dim)
-            print("self.latent_dim", self.latent_dim)
-            print("self.hidden_dim", self.hidden_dim)
+            #print("self.latent_dim", self.latent_dim)
+            #print("self.hidden_dim", self.hidden_dim)
         else:
             self.latent_dim = int(config.latent_dim/2)
         self.h_prior = nn.Linear(self.hidden_dim + self.hidden_dim, self.hidden_dim)

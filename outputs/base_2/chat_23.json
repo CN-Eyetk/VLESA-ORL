@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am too busy to accompany my family."
+  },
+  {
+    "role": "assistant",
+    "content": ", how are you?"
+  },
+  {
+    "role": "user",
+    "content": "I always plan to go home early but my boss always stops me from this."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling stressed about the situation and are worried about your boss stopping you from going home early?"
+  },
+  {
+    "situation": "Bad Work-Life Balance."
+  }
+]

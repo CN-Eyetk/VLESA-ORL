@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "It's a challenging year. My colleagues are fired and my salary is cut."
+  },
+  {
+    "role": "assistant",
+    "content": "That must be really rough. It sounds like you are in a difficult spot."
+  },
+  {
+    "role": "user",
+    "content": "Yes you are right."
+  },
+  {
+    "role": "assistant",
+    "content": "So, it sounds like you are dealing with a difficult year. That is understandable. When did this start?"
+  },
+  {
+    "situation": "Challenging year."
+  }
+]

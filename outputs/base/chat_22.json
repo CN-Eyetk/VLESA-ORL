@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am feeling like a fraud at work, doubting my accomplishments, and having a persistent fear of being exposed as incompetent."
+  },
+  {
+    "role": "assistant",
+    "content": "It sounds like you are feeling insecure and afraid of being exposed as incompetent. Is that correct?"
+  },
+  {
+    "role": "user",
+    "content": "Partly correct."
+  },
+  {
+    "role": "assistant",
+    "content": "I have often felt like I was failing in my field as well. Have you been able to get past this?"
+  },
+  {
+    "situation": "Imposter Syndrome"
+  }
+]

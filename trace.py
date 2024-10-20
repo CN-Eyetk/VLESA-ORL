@@ -2,20 +2,38 @@ import json
 import sys
 import re
 import numpy as np
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import re
+import torch
 
 from rewarder import summary_to_history, load_feedbacker, load_seeker, summary_to_history_for_eval
 from tqdm import tqdm
-from cal_metric import SentEval, Humanlike
 from vad import get_vad_stats
 import os
 import argparse
 from metric.toxic import Toxity
+class DialogRPTEval:
+    def __init__(self, model_card = "microsoft/DialogRPT-human-vs-machine") -> None:
+        tokenizer = AutoTokenizer.from_pretrained(model_card)
+        model = AutoModelForSequenceClassification.from_pretrained(model_card).eval()
+        model = model.cuda()
+        
+        self.model = model
+        self.tokenizer = tokenizer
+    def score(self, cxt, hyp):
+        with torch.no_grad():
+            model_input = self.tokenizer.encode(cxt + "<|endoftext|>" + hyp, return_tensors="pt")
+            result = self.model(model_input.to(self.model.device), return_dict=True)
+        
+        return torch.sigmoid(result.logits).detach().cpu().squeeze()
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--group", type=str, default="llama")
 parser.add_argument("--step", type=int, default=78)
 args = parser.parse_args()
 if args.group == "non_load":
-    suffix = "rectemp"
+    suffix = "rec_llamatemp"
 elif args.group == "load":
     suffix = "rec_load_1.5temp"
 elif args.group == "llama":
@@ -27,7 +45,7 @@ dirs = []
 def load_funcs():
     toxic = Toxity()
     toxic_func = lambda x,y,z: toxic.eval(z,x)
-    diag_humanlike_model = Humanlike()
+    diag_humanlike_model = DialogRPTEval()
     humanlike_func = lambda x,y,z:diag_humanlike_model.score(z,x)
     return {"toxic":toxic_func, "humanlike":humanlike_func}
 
@@ -121,7 +139,7 @@ if __name__ == "__main__":
     load_calculator = seeker.calculate_load
     other_funcs = load_funcs()
     
-    directory = f"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.05_0.05_510-spst-w_eosstg-w_emocat-w_stgcat-vae-mvae4-wo_comet-ct0.2-svae-lc-je-tppm608/bleu2/epoch0_step{args.step}_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_{suffix}/non_mix/"
+    directory = f"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step{args.step}_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_{suffix}/non_mix/"
     trace = Trace(path_to_dir=directory, 
                   rewarder=rewarder,
                   load_calculator=load_calculator,

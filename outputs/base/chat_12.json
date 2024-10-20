@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I blew up my relationship by cheating. I\u2019ve started drinking excessively. I ended up having an abortion."
+  },
+  {
+    "role": "assistant",
+    "content": "That' s a really rough thing to go through, especially in the context of life. Can you talk about why you' ve been drinking?"
+  },
+  {
+    "role": "user",
+    "content": "I\u2019m spiralling out of control and I don\u2019t seem to know how to stop."
+  },
+  {
+    "role": "assistant",
+    "content": "From what I have seen, it sounds like you are going through a lot of trauma and you' re not getting the help you need right now. It sounds like drinking is a symptom of your problems, and you should be able to get help from a professional and not just a narc. Have you tried reaching out to your doctor for support?"
+  },
+  {
+    "situation": "Faced trauma and wanted to get out if a rut."
+  }
+]

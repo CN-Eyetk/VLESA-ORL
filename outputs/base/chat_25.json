@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My parents are constantly undermining my self-worth."
+  },
+  {
+    "role": "assistant",
+    "content": "That is a difficult situation to be in, I know that you are feeling stressed out and resentful. That must be a very hard situation to go through. Have you spoken to your parents about their problems?"
+  },
+  {
+    "role": "user",
+    "content": "I tried but they are not open-mined enough to take my perspective."
+  },
+  {
+    "role": "assistant",
+    "content": "I know how difficult that can be. It is unfortunate that they aren' t able to come to you to talk. Have you had any open conversations with your parents about how you are feeling?"
+  },
+  {
+    "situation": "Emotional Bullying"
+  }
+]

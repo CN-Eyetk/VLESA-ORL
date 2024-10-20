@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am too busy to accompany my family."
+  },
+  {
+    "role": "assistant",
+    "content": "How long have you been trying to visit?"
+  },
+  {
+    "role": "user",
+    "content": "Not long."
+  },
+  {
+    "role": "assistant",
+    "content": "I am sorry to hear that, that must be hard."
+  },
+  {
+    "situation": "Bad Work-Life Balance."
+  }
+]

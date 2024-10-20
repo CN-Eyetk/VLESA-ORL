@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am too busy to accompany my family."
+  },
+  {
+    "role": "assistant",
+    "content": "I am sorry to hear that. It sounds like your family are feeling a bit overwhelmed about it. I know how hard it can be to go for a holiday.. What specifically has got you feeling that way?"
+  },
+  {
+    "role": "user",
+    "content": "I always plan to go home early but my boss always stops me from this."
+  },
+  {
+    "role": "assistant",
+    "content": "I am sorry to hear that. It sounds like your boss has made it difficult to spend time with you without an alarm! Am I understanding correctly?"
+  },
+  {
+    "situation": "Bad Work-Life Balance."
+  }
+]

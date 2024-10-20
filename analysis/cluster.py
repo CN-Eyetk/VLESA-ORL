@@ -73,25 +73,25 @@ def confidence_ellipse(x, y, ax, n_std=1.0, facecolor='none', **kwargs):
 
 df = pd.read_csv("latent_output.csv",sep ="\t")
 print(df.head())
-df = df.sample(n=500, random_state=1).reset_index()
+df = df.sample(n=2000, random_state=1).reset_index()
 
 
 
-sample_row = "z_a"
-sample_row2 = "z_e"
+sample_row = "z_e"
+#sample_row2 = "z_e"
 df[sample_row] = df[sample_row].apply(lambda x:eval(x))
-df[sample_row2] = df[sample_row2].apply(lambda x:eval(x))
+#df[sample_row2] = df[sample_row2].apply(lambda x:eval(x))
 
 vals = [df[sample_row][i] for i in range(len(df[sample_row]))]
-vals2 = [df[sample_row2][i] for i in range(len(df[sample_row]))]
+#vals2 = [df[sample_row2][i] for i in range(len(df[sample_row]))]
 
 vals = np.array(vals)
-vals2 = np.array(vals2)
+#vals2 = np.array(vals2)
 
-vals = np.concatenate((vals, vals2), axis = 1)
+#vals = np.concatenate((vals, vals2), axis = 1)
 vals = min_max_scaler.fit_transform(vals)
 
-t_sne_features = TSNE(n_components=2, perplexity=7, learning_rate='auto', init="pca", n_iter = 10000).fit_transform(vals)
+t_sne_features = TSNE(n_components=2, perplexity=7, learning_rate='auto', init="pca", n_iter = 2000).fit_transform(vals)
  
 df['PC1'] = t_sne_features[:, 0]
 df['PC2'] = t_sne_features[:, 1] 
@@ -133,7 +133,7 @@ for cat in list(set(category)):
                 #zs.append(zdata[i])
         xs = np.array(xs)
         ys = np.array(ys)
-        ax.scatter(xs, ys, color=colors[int(cat)], label = strategy_labels[int(cat)], marker="o", s=50, edgecolors="black", linewidth = 0.1)
+        ax.scatter(xs, ys, color=colors[int(cat)], label = emo_out_lables[int(cat)], marker="o", s=50, edgecolors="black", linewidth = 0.1)
         confidence_ellipse(xs, ys, ax, edgecolor=colors[int(cat)])
 
 ax.legend()

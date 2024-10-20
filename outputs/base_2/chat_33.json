@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I cannot trust my husband since he keeps come back late at night."
+  },
+  {
+    "role": "assistant",
+    "content": "'s good to hear. what's going on?"
+  },
+  {
+    "role": "user",
+    "content": "Yes I cannot stop overthinking."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling a lot of guilt over your husband's behavior."
+  },
+  {
+    "situation": "A lack of trust with husband."
+  }
+]

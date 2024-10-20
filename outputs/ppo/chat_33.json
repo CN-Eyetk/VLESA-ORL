@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "Academic burnout."
+  },
+  {
+    "role": "assistant",
+    "content": "So, just to clarify, you are currently at an academic burnout, and there' s been a huge amount of research on how to deal with it?"
+  },
+  {
+    "role": "user",
+    "content": "Yes, that's true. I am confused about what research can I do."
+  },
+  {
+    "role": "assistant",
+    "content": "I understand, there are a lot of different types of research out there. One thing that has helped me in the past is having a podcast where I listen to some really helpful music and discuss what I' ve been struggling with. Have you considered doing podcasts?"
+  },
+  {
+    "situation": "Pay Cuts."
+  }
+]

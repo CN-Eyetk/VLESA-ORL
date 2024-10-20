@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel my husband so indifferent when I am talking about my daily concerns."
+  },
+  {
+    "role": "assistant",
+    "content": "'s good to hear. what's going on?"
+  },
+  {
+    "role": "user",
+    "content": "He is always some asshole like this"
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are having a hard time dealing with your husband."
+  },
+  {
+    "situation": "Tension with husband."
+  }
+]

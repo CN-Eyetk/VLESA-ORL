@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "Since the outbreak of global depression, my salary has dropped a lot."
+  },
+  {
+    "role": "assistant",
+    "content": "So, there has been a global depression in the past and you feel that you have been working for very little?"
+  },
+  {
+    "role": "user",
+    "content": "Yes you are right. I feel insecure."
+  },
+  {
+    "role": "assistant",
+    "content": "I know that there is a lot of insecurity at work. Have you considered seeking out professional help?"
+  },
+  {
+    "situation": "Wage Reduction"
+  }
+]

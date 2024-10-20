@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am harrassed by some bullshits online."
+  },
+  {
+    "role": "assistant",
+    "content": "It sounds like you have been getting attacked online for a while, which is understandable. I have had some bad experiences in the past when I was being bullied. Would you like to talk about it?"
+  },
+  {
+    "role": "user",
+    "content": "Someone is trying to keep an eye on my personal life."
+  },
+  {
+    "role": "assistant",
+    "content": "I see. It sounds like you are concerned about how these things are affecting you and that this could be stopping you from doing any activities that you enjoy. Is this true?"
+  },
+  {
+    "situation": "Cyberbullying"
+  }
+]

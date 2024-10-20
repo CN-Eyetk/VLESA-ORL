@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My parents are constantly undermining my self-worth."
+  },
+  {
+    "role": "assistant",
+    "content": "I can see that having had some consequences for a while. I' ve been through similar things myself, so it' s understandable that you feel like you are being bullied and your parents are making you feel that way?"
+  },
+  {
+    "role": "user",
+    "content": "Yes, they piss me off when they undergrade my academic performance."
+  },
+  {
+    "role": "assistant",
+    "content": "Have you talked to anyone about it in the past that has helped you understand how you feel?"
+  },
+  {
+    "situation": "Emotional Bullying"
+  }
+]

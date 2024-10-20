@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "Everyday I meet my boyfriend, I feel I am in a black hole. He is too demanding and keeps an eye on my life."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that. Do you feel as though you are being ignored because you think that this guy is the one?"
+  },
+  {
+    "role": "user",
+    "content": "I don't think I am ignored. Conversely, I am over-controlled."
+  },
+  {
+    "role": "assistant",
+    "content": "I can imagine how this must feel. I have been in a similar situation and it' s not easy. Have you spoken to your boyfriend about this?"
+  },
+  {
+    "situation": "Abusive relationship"
+  }
+]

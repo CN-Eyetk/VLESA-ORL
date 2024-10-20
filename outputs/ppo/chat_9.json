@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I try to control everything. I feel so nervous if I lose control of everyone and everything in my life."
+  },
+  {
+    "role": "assistant",
+    "content": "So, you feel like you are losing control of everything in your life? Is that right?"
+  },
+  {
+    "role": "user",
+    "content": "Recently true. I feel so down when I found I forgot somehting important to do."
+  },
+  {
+    "role": "assistant",
+    "content": "I understand that feeling can be a bit overwhelming. I know how hard it can be to find the things you need in life to take control."
+  },
+  {
+    "situation": "Perfectionism"
+  }
+]

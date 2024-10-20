@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel so shy when I try to express my feelings in front of my boss."
+  },
+  {
+    "role": "assistant",
+    "content": "'s good to hear. what's going on?"
+  },
+  {
+    "role": "user",
+    "content": "Yes, I hate being refused and denied, so I don't dare to say it aloud."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling anxious about your situation and want to express it to your boss."
+  },
+  {
+    "situation": "Shy"
+  }
+]

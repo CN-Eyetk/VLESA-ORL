@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "My boss streches us so thin. He asks everyone to work overtime."
+  },
+  {
+    "role": "assistant",
+    "content": ", how are you?"
+  },
+  {
+    "role": "user",
+    "content": "I tired to think about the positive side of my job. It is at least well-paid."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling stressed about your job situation."
+  },
+  {
+    "situation": "Job burnout"
+  }
+]

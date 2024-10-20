@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I am feeling like a fraud at work, doubting my accomplishments, and having a persistent fear of being exposed as incompetent."
+  },
+  {
+    "role": "assistant",
+    "content": ", how are you feeling?"
+  },
+  {
+    "role": "user",
+    "content": "It really distracts me from focusing on the real challenge in my work."
+  },
+  {
+    "role": "assistant",
+    "content": " sounds like you are feeling stressed and anxious at work."
+  },
+  {
+    "situation": "Imposter Syndrome"
+  }
+]

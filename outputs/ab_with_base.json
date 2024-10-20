@@ -1,0 +1,2752 @@
+[
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel lonely after breaking up with my girlfriend."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s really hard to deal with, I know you' re going through a tough time. Do you have anyone in your life that you can talk to about your feelings?"
+      },
+      {
+        "role": "user",
+        "content": "I don't have many friends. They are all very busy."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how you feel. It' s definitely rough at times, I' m sure you' re doing pretty well with social distancing. Is there anything that you' d like to talk to me about?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel lonely after breaking up with my girl friend."
+      },
+      {
+        "role": "assistant",
+        "content": "Losing a girlfriend can be rough, I can imagine that you feel lonely, and this has been happening to a lot of people during your time."
+      },
+      {
+        "role": "user",
+        "content": "Yes it is. But we've been together so long."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems like you have been together for so long that this has been difficult for you. It sounds like you' re really dealing with the situation emotionally.."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I failed in the final exam."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that, failed an exam can be a very stressful experience to have to deal with. Have you taken any steps to address the issue in the past?"
+      },
+      {
+        "role": "user",
+        "content": "I tried hard to cram but it doesn't work."
+      },
+      {
+        "role": "assistant",
+        "content": "I completely understand how difficult that can be. Having to cram for something that you don' t feel up to can be stressful, especially if it' s a big exam."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I failed in the final exam."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a terrible disappointment to hear. I' m sorry to hear that, had you failed the exam?"
+      },
+      {
+        "role": "user",
+        "content": "I tried hard to cram but it doesn't work."
+      },
+      {
+        "role": "assistant",
+        "content": "I can imagine how stressful it would be for you. You' re a very dedicated student and I am happy to listen to you. Do you have any family around that you can talk to if it works out for you?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so ashamed since I saw my boyfriend flirting my friend."
+      },
+      {
+        "role": "assistant",
+        "content": "That is so disappointing. You have been a very strong person to come out of this, despite what happened."
+      },
+      {
+        "role": "user",
+        "content": "Yes, I should have been strong. But it is super frustrating."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Have you considered talking to your friends about this? This can be a very difficult situation to be in."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so ashamed since I saw my boyfriend flirting my friend."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand why that would make you feel ashamed, it must be terribly difficult."
+      },
+      {
+        "role": "user",
+        "content": "Yes."
+      },
+      {
+        "role": "assistant",
+        "content": "Is there anything you would like to talk about?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My boss streches us so thin. He asks everyone to work overtime."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. So when your boss makes you feel as though you are useless, does he see that this is causing you problems or is it just his general stress?"
+      },
+      {
+        "role": "user",
+        "content": "He doesn't want to talk with anyone."
+      },
+      {
+        "role": "assistant",
+        "content": "Is there something that you have had to do to avoid him that has caused the stress of being in his job? Or is it just a general change in behavior?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My boss streches us so thin. He asks everyone to work overtime."
+      },
+      {
+        "role": "assistant",
+        "content": "I hear you on that. It seems like your boss is a toxic boss and wants everyone to work overtime. What have you done to make yourself feel better about your job?"
+      },
+      {
+        "role": "user",
+        "content": "I tired to think about the positive side of my job. It is at least well-paid."
+      },
+      {
+        "role": "assistant",
+        "content": "It is great that you have someone who appreciates your hard work and wants you to do well, even if it is just to make it go away."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My supervisor is so toxic. He requires to do everything for him."
+      },
+      {
+        "role": "assistant",
+        "content": "Can you explain to me what is making him feel that way?"
+      },
+      {
+        "role": "user",
+        "content": "Who knows."
+      },
+      {
+        "role": "assistant",
+        "content": "What is making you feel that way?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My supervisor is so toxic. He requires to do everything for him."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that, it sounds like your supervisor needs to be around to make sure that you are doing everything right. Do you feel that is the reason you have a toxic supervisor?"
+      },
+      {
+        "role": "user",
+        "content": "Yes he is so demanding."
+      },
+      {
+        "role": "assistant",
+        "content": "I can definitely understand how hard that must be, being a cooped up household is a stressful situation. What do you do when he becomes demanding?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so jealous of my classmates. They are so rich and I am so poor."
+      },
+      {
+        "role": "assistant",
+        "content": "What has been making you feel this way?"
+      },
+      {
+        "role": "user",
+        "content": "Just because I am too poor to be among them."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you talked to your classmates about this issue?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so jealous of my classmates. They are so rich and I am so poor."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems like you are feeling underappreciated for your class mates, I' m sorry to hear that. Have you tried talking to them about this?"
+      },
+      {
+        "role": "user",
+        "content": "Just because I am too poor to be among them."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand, I have also felt this way. In high school we were often so self centereed that it seemed like we were unable to learn a lesson. Is it possible that this is due to a misunderstanding between the two of you or is it an unforeseen circumstance?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I cannot trust my husband since he keeps come back late at night."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you tried asking him if he is still home when you aren' t?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe I need to ask him."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you tried asking him what time he is? Sometimes it helps to get closure and move on, sometimes it doesn' t."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I cannot trust my husband since he keeps come back late at night."
+      },
+      {
+        "role": "assistant",
+        "content": "So you feel as though you have lost trust with your husband, and this has made it difficult to trust him?"
+      },
+      {
+        "role": "user",
+        "content": "Yes I cannot stop overthinking."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems as though you are struggling to find the right balance between thinking and self - care, especially when there are a lot of problems going on. Have you tried speaking to your husband about these issues?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "All the uncertainty and anxiety in the workplace these days is putting you under more pressure than usual\u001b[D\u001b[D."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Would you like to talk more about what' s going on with your work?"
+      },
+      {
+        "role": "user",
+        "content": "I am working overtime everyday."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s certainly rough. You must be feeling a bit stressed at work due to the pandemic, right?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "All the uncertainty and anxiety in the workplace these days is putting me under more pressure than usual."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. It sounds like you are feeling very stressed in the work place due to uncertainty and anxiety. Have you tried talking to a supervisor or anyone else to get some extra help?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe I need to look for a close friend to drink together."
+      },
+      {
+        "role": "assistant",
+        "content": "I have often felt anxiety as well. It' s important to take care of yourself, especially during these difficult times."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am too busy to accompany my family."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. It sounds like your family are feeling a bit overwhelmed about it. I know how hard it can be to go for a holiday.. What specifically has got you feeling that way?"
+      },
+      {
+        "role": "user",
+        "content": "I always plan to go home early but my boss always stops me from this."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. It sounds like your boss has made it difficult to spend time with you without an alarm! Am I understanding correctly?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am too busy to accompany my family."
+      },
+      {
+        "role": "assistant",
+        "content": "How long have you been trying to visit?"
+      },
+      {
+        "role": "user",
+        "content": "Not long."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that, that must be hard."
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I try to control everything. I feel so nervous if I lose control of everyone and everything in my life."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a really hard thing to hear. I' ve been on similar boat and have been in a similar place. Can you tell me more about your anxiety and fears?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so down when I found I forgot somehting important to do."
+      },
+      {
+        "role": "assistant",
+        "content": "I can see where that would be a very hard thing to process. It' s easy to lose interest in certain things, and it is harder when we tend to forget important things too."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I try to control everything. I feel so nervous if I lose control of everyone and everything in my life."
+      },
+      {
+        "role": "assistant",
+        "content": "So, you feel like you are losing control of everything in your life? Is that right?"
+      },
+      {
+        "role": "user",
+        "content": "Recently true. I feel so down when I found I forgot somehting important to do."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand that feeling can be a bit overwhelming. I know how hard it can be to find the things you need in life to take control."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am trapped in a cold war with my partner."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a terrible time to be in. I can sympathize with you in a way that' s not great at all. Would you like to talk about how this has been affecting you?"
+      },
+      {
+        "role": "user",
+        "content": "I don't dare to say what I am thinking about when I am with her."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a terrible thing to do, especially when you are with your partner. Does she have a valid reason for the feelings that you are expressing?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am trapped in a cold war with my partner."
+      },
+      {
+        "role": "assistant",
+        "content": "So it seems like you have been struggling with your relationship for some time now. Can you tell me more about it?"
+      },
+      {
+        "role": "user",
+        "content": "I don't dare to say what I am thinking about when I am with her."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand that. I have been in a similar position as you and I can relate to how you are feeling. It must be very difficult for you, especially with the current global situation. Do you want to talk about things openly?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have been quarreling with my parents many times these days."
+      },
+      {
+        "role": "assistant",
+        "content": "What has been happening?"
+      },
+      {
+        "role": "user",
+        "content": "They are trying to control me."
+      },
+      {
+        "role": "assistant",
+        "content": "How have they been trying to control you?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have been quarreling with my parents many times these days."
+      },
+      {
+        "role": "assistant",
+        "content": "I see, that has been very difficult for you. Have you been able to get any closure with your parents?"
+      },
+      {
+        "role": "user",
+        "content": "I tried but I don't have a big say at home."
+      },
+      {
+        "role": "assistant",
+        "content": "Is there any way to talk to your parents about the situation? Sometimes it helps to talk through the situation at home."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I blew up my relationship by cheating. I\u2019ve started drinking excessively. I ended up having an abortion."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a really rough thing to go through, especially in the context of life. Can you talk about why you' ve been drinking?"
+      },
+      {
+        "role": "user",
+        "content": "I\u2019m spiralling out of control and I don\u2019t seem to know how to stop."
+      },
+      {
+        "role": "assistant",
+        "content": "From what I have seen, it sounds like you are going through a lot of trauma and you' re not getting the help you need right now. It sounds like drinking is a symptom of your problems, and you should be able to get help from a professional and not just a narc. Have you tried reaching out to your doctor for support?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I blew up my relationship by cheating. I\u2019ve started drinking excessively. I ended up having an abortion."
+      },
+      {
+        "role": "assistant",
+        "content": "I see, I hear you saying that it' s been hard for you to get out of bad relationships. Is that right?"
+      },
+      {
+        "role": "user",
+        "content": "That's true. I\u2019m spiralling out of control and I don\u2019t seem to know how to stop."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems like you are in a very anxious place right now. I can tell that this is affecting you emotionally and physically. Have you tried talking to your friends or family about this?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Everyone is keeping a distance from me. I don't deserve a friendship."
+      },
+      {
+        "role": "assistant",
+        "content": "I am really sorry to hear that. So just to clarify, there has been some misunderstanding going on lately and it is not your fault?"
+      },
+      {
+        "role": "user",
+        "content": "That's none of my fault."
+      },
+      {
+        "role": "assistant",
+        "content": "I am really sorry to hear that. What kind of misunderstanding have you been having?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Everyone is keeping a distance from me. I don't deserve a friendship."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. I know life has been really hard this year. Have you talked to anyone in particular about this?"
+      },
+      {
+        "role": "user",
+        "content": "I have a counselor to get closure with."
+      },
+      {
+        "role": "assistant",
+        "content": "Do you have a close friend or family member who you could confide in in while things are going on?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "am confused about what I can do in the future."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how you feel. My partner has been feeling a little down lately, I understand. Do you have any ways to help yourself right now?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe grab a counselor to chat with?"
+      },
+      {
+        "role": "assistant",
+        "content": "Would you be interested in talking to a professional counselor?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am confused about what I can do in the future."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you tried any methods of dealing with the situation in the past? It might be worth a look for yourself and a professional."
+      },
+      {
+        "role": "user",
+        "content": "Maybe grab a career counselor to chat with?"
+      },
+      {
+        "role": "assistant",
+        "content": "That might be a good idea. What I do know is that when I am in a stressful situation and I have to make myself understand how hard it can be, I' d suggest talking to friends and family members about it."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel insecure about my life. Everyone is an enemy to me."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand completely why you feel insecure about things. It' s because everyone is an enemy to you, right? I' ve been there myself."
+      },
+      {
+        "role": "user",
+        "content": "Can you tell me how were you feeling about this?"
+      },
+      {
+        "role": "assistant",
+        "content": "I' ve been there myself. It' s very easy to feel bad about things, especially when we' re in a bad place."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel insecure about my life. Everyone is an enemy to me."
+      },
+      {
+        "role": "assistant",
+        "content": "There has been a lot of conflict lately because of the pandemic. What seems to be causing the most of these issues is the constant feeling of insecurity. That is totally understandable."
+      },
+      {
+        "role": "user",
+        "content": "Have you ever caught by the constant insecurity?"
+      },
+      {
+        "role": "assistant",
+        "content": "I have noticed that when I have a lot of stress, it makes me feel like I want to be alone or something. It can really help to make other people feel less guilty about the things they are doing."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I broke up with my ex and I realize that there is no one who really loves me."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m very sorry to hear that. What kind of person are you in that situation?"
+      },
+      {
+        "role": "user",
+        "content": "I blew up my relationship by cheating."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a terrible thing to do. It sounds like you have a lot on your plate right now that isn' t being fully appreciated. Have you looked into seeing a new love interest, such as an online one?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I broke up with my ex and I realize that there is no one who really loves me."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that, but has there been a change in the way you feel recently?"
+      },
+      {
+        "role": "user",
+        "content": "It doesn't change. I am in such a bad mood everyday."
+      },
+      {
+        "role": "assistant",
+        "content": "Has the current change in your situation affected how you feel?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I find myself stressing over the ability to find a safe place to live andafford a home, whether it be a single family, townhouse or condo."
+      },
+      {
+        "role": "assistant",
+        "content": "I have definitely felt this way in the past. A lot of people are experiencing stress due to so many different factors at once. Have you tried looking online?"
+      },
+      {
+        "role": "user",
+        "content": "Yes I tried but I cannot afford."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you tried looking online for a place you can afford? Often times, it helps to get input from local people and learn how to find affordable homes too."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I find myself stressing over the ability to find a safe place to live and afford a home, whether it be a single family, townhouse or condo."
+      },
+      {
+        "role": "assistant",
+        "content": "There is a lot of different stressors that are impacting you in life right now. What have you been working through?"
+      },
+      {
+        "role": "user",
+        "content": "I tried looking online for a place I can afford."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds like a good start. It sounds like you are trying your best to find the right place for you."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel crushed on someone who doesn't behave well."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. You have been feeling really bad lately, what has made you feel so crushed?"
+      },
+      {
+        "role": "user",
+        "content": "That one is so attractive."
+      },
+      {
+        "role": "assistant",
+        "content": "What do you think has made you feel this way?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel crushed on someone who doesn't behave well."
+      },
+      {
+        "role": "assistant",
+        "content": "What has happened to cause this? I see. Have you tried talking to someone about it?"
+      },
+      {
+        "role": "user",
+        "content": "That one is so attractive."
+      },
+      {
+        "role": "assistant",
+        "content": "I am so sorry to hear that. So, the problem with your partner is that he seems unfavourable? I' ve felt bad enough as well, but is there anything else I can do to help you get over it?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have difficulty pushing through my workload as no one wants to lend a help."
+      },
+      {
+        "role": "assistant",
+        "content": "What sort of things are you having difficulty dealing with, especially with so many people calling in to lend a helping hand?"
+      },
+      {
+        "role": "user",
+        "content": "I am a layman to the issues I am going to deal with."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. So there are a lot of tasks you' re having difficulty dealing with, and there is no one to lend a helping hand? Is there something specific you' d like to discuss?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have difficulty pushing through my workload as no one wants to lend a help."
+      },
+      {
+        "role": "assistant",
+        "content": "That is understandable. I' ve been feeling quite down lately in the workplace too. Is there anyone that you feel that would be willing to help?"
+      },
+      {
+        "role": "user",
+        "content": "My leader won't help. My colleagues are also cold."
+      },
+      {
+        "role": "assistant",
+        "content": "What is it that has been making you feel cold in your work?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I cannot sustain the constant social lockdown since pandemic."
+      },
+      {
+        "role": "assistant",
+        "content": "What has been going on? What has been making you feel like this lockdown has happened?"
+      },
+      {
+        "role": "user",
+        "content": "I cannot go anywehre."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you considered getting a job to help you out? I can understand that it can be hard, especially if you' ve had nowhere to go in the past month or so."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I cannot sustain the constant social lockdown since pandemic."
+      },
+      {
+        "role": "assistant",
+        "content": "There is definitely a way of dealing with it. There are many ways to help but it can' t be solved quickly. What have you tried to do to keep yourself social?"
+      },
+      {
+        "role": "user",
+        "content": "I try to chat in online chat rooms."
+      },
+      {
+        "role": "assistant",
+        "content": "What is your biggest challenge? It seems you are trying hard to keep yourself social. When I have social distancing issues I find it difficult to find a way to maintain that."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am addicted to work. I cannot stop myself."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you have a very toxic personality. Have you talked to anyone in particular about this?"
+      },
+      {
+        "role": "user",
+        "content": "Why do you say I am toxic. You are the one who is toxic."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you are toxic because you have been addicted to work. Did anyone else know?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am addicted to work. I cannot stop myself."
+      },
+      {
+        "role": "assistant",
+        "content": "That is really rough. It' s been hard for me to deal with the way I am feeling, as I have felt very isolated. Did you feel isolated before?"
+      },
+      {
+        "role": "user",
+        "content": "Yes I have no one to spend any happy hour with. So I am addicted to work."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how you feel. I have had to get away from friends and family because of social distancing. They may be feeling the same way. I also have had a hard time finding good enough friends because of work, and that has really added to my problem. I know it' s frustrating and isolating."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am feeling like a fraud at work, doubting my accomplishments, and having a persistent fear of being exposed as incompetent."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. It can be hard to feel heard and heard when you are talking, especially at work. Does this sound to you like anything that might be going on at work? I understand how stressful it can feel at work, especially during this pandemic."
+      },
+      {
+        "role": "user",
+        "content": "It really distracts me from focusing on the real challenge in my work."
+      },
+      {
+        "role": "assistant",
+        "content": "I can definitely relate to that. I have been in the same situation myself. It seems like everything we do in the world is so important right now. It' s great that you have a way to look at the problem from a different perspective. Have you talked to your manager about how you are feeling? Often times, employees who have experienced this can offer suggestions to make things more successful for them. Sometimes, having more input is what helps me the most."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am feeling like a fraud at work, doubting my accomplishments, and having a persistent fear of being exposed as incompetent."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you are feeling insecure and afraid of being exposed as incompetent. Is that correct?"
+      },
+      {
+        "role": "user",
+        "content": "Partly correct."
+      },
+      {
+        "role": "assistant",
+        "content": "I have often felt like I was failing in my field as well. Have you been able to get past this?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am harrassed by some bullshits online."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you have been getting attacked online for a while, which is understandable. I have had some bad experiences in the past when I was being bullied. Would you like to talk about it?"
+      },
+      {
+        "role": "user",
+        "content": "Someone is trying to keep an eye on my personal life."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. It sounds like you are concerned about how these things are affecting you and that this could be stopping you from doing any activities that you enjoy. Is this true?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am harrassed by some bullshits online."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you have been feeling a little bullied online due to the pandemic, I hear you saying this is a common experience."
+      },
+      {
+        "role": "user",
+        "content": "It is common and uncommon."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds like a really hard thing to deal with. It sounds like you have been having a hard time dealing with this especially since the pandemic has been making things so difficult for you. Have you been able to reach out to friends or family to share some of your concerns?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My classmates are so distinguished. I feel ashamed when I am among them."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how you feel. My classmates are so distinguished, and I am very embarrassed myself at times. I can tell from my conversation that it is making you feel shameful."
+      },
+      {
+        "role": "user",
+        "content": "Yes I am selected to somewhere I am not up for."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you feel put off because of your looks. Is that correct?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My classmates are so distinguished. I feel ashamed when I am among them."
+      },
+      {
+        "role": "assistant",
+        "content": "Is there a specific reason why you feel ashamed? Perhaps you are feeling a little ashamed because of the way you are selected for a class?"
+      },
+      {
+        "role": "user",
+        "content": "Yes I am selected to somewhere I am not up for."
+      },
+      {
+        "role": "assistant",
+        "content": "Well, you are not up for it, but it is the best time to drop out and get fresh air. Have you spoken to your classmates about this?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My parents are constantly undermining my self-worth."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a difficult situation to be in, I know that you are feeling stressed out and resentful. That must be a very hard situation to go through. Have you spoken to your parents about their problems?"
+      },
+      {
+        "role": "user",
+        "content": "I tried but they are not open-mined enough to take my perspective."
+      },
+      {
+        "role": "assistant",
+        "content": "I know how difficult that can be. It is unfortunate that they aren' t able to come to you to talk. Have you had any open conversations with your parents about how you are feeling?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My parents are constantly undermining my self-worth."
+      },
+      {
+        "role": "assistant",
+        "content": "I can see that having had some consequences for a while. I' ve been through similar things myself, so it' s understandable that you feel like you are being bullied and your parents are making you feel that way?"
+      },
+      {
+        "role": "user",
+        "content": "Yes, they piss me off when they undergrade my academic performance."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you talked to anyone about it in the past that has helped you understand how you feel?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I moved overseas and I am in a homesick. I have hard time getting accustomed to my new life."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand that you have been a bit apprehensive. What type of things are you looking forward to?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe some local network? But I have no resource."
+      },
+      {
+        "role": "assistant",
+        "content": "I know that local people are often at a loss for what to do right now. I have also had a problem in my quest for connections as well. Whereabouts do you live?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I moved overseas and I am in a homesick. I have hard time getting accustomed to my new life."
+      },
+      {
+        "role": "assistant",
+        "content": "I am really sorry to hear that. It sounds like you' re having a hard time adjusting to the new life. Does that sound right?"
+      },
+      {
+        "role": "user",
+        "content": "Yes that's right."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. It sounds like you' re adjusting pretty well to the new life. Is that correct?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am having a lot of anxiety about quitting my current job. It is too stressful but pays well."
+      },
+      {
+        "role": "assistant",
+        "content": "I am very sorry to hear that. I think it has been a stressful time for everyone. Is there a particular type of job that you' d like to do that would make you happy?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe a museum curator."
+      },
+      {
+        "role": "assistant",
+        "content": "Do you have any specific experience that you' d like to try? That is a great start! It can be very rewarding."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am having a lot of anxiety about quitting my current job. It is too stressful but pays well."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. Have you considered looking for another job?"
+      },
+      {
+        "role": "user",
+        "content": "Yes."
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that. Do you feel like this might have caused a problem with your work, specifically at work?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so moody since the outbreak of pandemic. Don't know where is the future of humanity."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. It' s been a very difficult year. Have you reached out for support due to the pandemic?"
+      },
+      {
+        "role": "user",
+        "content": "Any recommendations?"
+      },
+      {
+        "role": "assistant",
+        "content": "What type of things are you interested in? I have had a lot of different interests, but in a very positive light. Some things have helped to give me perspective and change my perspective."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so moody since the outbreak of pandemic. Don't know where is the future of humanity."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand. It' s really been a bad year for everyone during the pandemic. I can tell you' ve been feeling really depressed too."
+      },
+      {
+        "role": "user",
+        "content": "Yes, so how to deal with that?"
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how that feels. I have experienced a lot of depression myself too. When I was in college, I had to completely isolate myself from others and everyone around me. I tried to connect with friends and family in order to stay connected."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have been single for long. I am in need of a love."
+      },
+      {
+        "role": "assistant",
+        "content": "I hear you saying that a lot of people are in a similar situation. Are you feeling the same way yourself?"
+      },
+      {
+        "role": "user",
+        "content": "Same and not the same."
+      },
+      {
+        "role": "assistant",
+        "content": "That is definitely not the same situation. It can be really hard to find someone when we are trying to find our own. Have you tried reaching out to other people for help?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have been single for long. I am in need of a love."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. So if I understand correctly, you are feeling lonely and have been looking for love for a while?"
+      },
+      {
+        "role": "user",
+        "content": "Yes that's correct. I have been feeling so isolated."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a really hard situation to be in, especially during this pandemic. I can understand that feeling. Have you talked to friends or family about the feelings of loneliness you are feeling?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am cyber-harrassed by someone I don't know."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand how that could be, I have been in the same situation before, and I' ve had to deal with it a lot. Would you like to talk about what has caused the attack?"
+      },
+      {
+        "role": "user",
+        "content": "They grab a photo of mine and threaten to spread to online."
+      },
+      {
+        "role": "assistant",
+        "content": "Wow, that' s really awful. This has become a problem for a lot of people, I can feel how anxious you are right now. Have you tried doing any community work to support people who are having these issues?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am cyber-harrassed by someone I don't know."
+      },
+      {
+        "role": "assistant",
+        "content": "Can you tell me more about it? I know you are not anonymous, but perhaps you can share with me a bit more about why you were victimized."
+      },
+      {
+        "role": "user",
+        "content": "They grab a photo of mine and threaten to spread to online."
+      },
+      {
+        "role": "assistant",
+        "content": "I can imagine how shocking that would be to do that, how frightening that would seem to you. Would it be possible to make sure that you did not spread this out?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel myself a bad communicator. No one wants to talk with me."
+      },
+      {
+        "role": "assistant",
+        "content": "That can be hard to hear, I' ve been there myself. It' s so refreshing to hear that other people are interested in listening and asking how to do something."
+      },
+      {
+        "role": "user",
+        "content": "Yes I hope I can be the refreshing guy."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you have a lot of things going on with life and you don' t want to let them consume you."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel myself a bad communicator. No one wants to talk with me."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Sometimes people feel that they can not or shouldn' t talk to us, that we are the problem. Correct me if I am wrong."
+      },
+      {
+        "role": "user",
+        "content": "Maybe you are right."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that, would you like to talk about the problem specifically with me?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel guilty since I betrayed my ex partner."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand why you feel guilty. I know how you feel. It must be a really hard situation to be in with all the turmoil and upheaval of life."
+      },
+      {
+        "role": "user",
+        "content": "Yes the complete silence is killing me."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. So what has been going on with your life?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel guilty since I betrayed my ex partner."
+      },
+      {
+        "role": "assistant",
+        "content": "I can imagine how that has been a very stressful situation for you. It seems like you have been betrayed because of the stress of being in your ex."
+      },
+      {
+        "role": "user",
+        "content": "No, you misunderstood."
+      },
+      {
+        "role": "assistant",
+        "content": "Have you tried talking to friends or family about this? Sometimes, our feelings can bring us closure."
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Academic burnout."
+      },
+      {
+        "role": "assistant",
+        "content": "So, just to clarify, you are currently at an academic burnout, and there' s been a huge amount of research on how to deal with it?"
+      },
+      {
+        "role": "user",
+        "content": "Yes, that's true. I am confused about what research can I do."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand, there are a lot of different types of research out there. One thing that has helped me in the past is having a podcast where I listen to some really helpful music and discuss what I' ve been struggling with. Have you considered doing podcasts?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Academic burnout."
+      },
+      {
+        "role": "assistant",
+        "content": "It' s a tough time for many. It sounds like you are feeling lonely, which can be hard. Is there anyone you could talk to about your feelings?"
+      },
+      {
+        "role": "user",
+        "content": "My mom."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s a tough situation to be in, especially during the pandemic. Are there people around that are close to you who can help?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Since the outbreak of global depression, my salary has dropped a lot."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand that the global pandemic has been making a lot of people feel very uncertain. I can imagine how it' s been very stressful for you and your family. What sort of work do you do?"
+      },
+      {
+        "role": "user",
+        "content": "I am a adaministrative manager in company."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a very important role to have. Have you tried looking into finding a better job?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Since the outbreak of global depression, my salary has dropped a lot."
+      },
+      {
+        "role": "assistant",
+        "content": "So, there has been a global depression in the past and you feel that you have been working for very little?"
+      },
+      {
+        "role": "user",
+        "content": "Yes you are right. I feel insecure."
+      },
+      {
+        "role": "assistant",
+        "content": "I know that there is a lot of insecurity at work. Have you considered seeking out professional help?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel my friends don't understand me since I've came back from overseas."
+      },
+      {
+        "role": "assistant",
+        "content": "Ah, I see, it sounds like you' re struggling to establish friendships with them at the moment. So it' s understandable why you feel that way."
+      },
+      {
+        "role": "user",
+        "content": "So how to cope with such a frustrating situation."
+      },
+      {
+        "role": "assistant",
+        "content": "It' s nice to be able to help others. Is there anything that you' d like to talk about?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel my friends don't understand me since I've came back from overseas."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand that a lot of friends don' t understand you when you come back from overseas. I have also had issues with my friends. It seems as though I am the mediator between the two parties. Is that correct?"
+      },
+      {
+        "role": "user",
+        "content": "That's correct. People have quite different opinions about our world."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you' re feeling isolated and that is frustrating. Is there a way you can reconcile these feelings?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel my husband so indifferent when I am talking about my daily concerns."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand how you feel. I can imagine how frustrating it must be for him to be indifferent when you tell him what you are experiencing. Is this the first time that he has responded this way?"
+      },
+      {
+        "role": "user",
+        "content": "He is always some asshole like this"
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Do you have any friends or family that you can talk to about this?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel my husband so indifferent when I am talking about my daily concerns."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like your husband is acting indifferent when you are talking about your daily concerns?"
+      },
+      {
+        "role": "user",
+        "content": "That's right."
+      },
+      {
+        "role": "assistant",
+        "content": "I can imagine that must be hard for you. It must be a difficult time for you to be with your husband."
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "The government tore down my house without paying me any refund."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems like you' re in a very tough situation with the government shutdown and not paying a full refund? Can you talk a bit more about why?"
+      },
+      {
+        "role": "user",
+        "content": "I want to be the president so that I can take revenge of the local government."
+      },
+      {
+        "role": "assistant",
+        "content": "It sounds like you have a lot of desire for the presidency but are hesitant to take it personally as it is hard to do when you feel like the government has taken control of your life."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "The government tore down my house without paying me any refund."
+      },
+      {
+        "role": "assistant",
+        "content": "I am really sorry to hear that. It seems like you' re feeling overwhelmed by the situation and would like to rectify this situation?"
+      },
+      {
+        "role": "user",
+        "content": "I want to be the president so that I can take revenge of the local government and rectify this situation."
+      },
+      {
+        "role": "assistant",
+        "content": "I know how hard that can be, but I believe that you are the first to step up to the challenge and do your utmost to help your community. How long have you been living in this house?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Every workday begins with me waking up feeling like I have a weight on my chest. I know this is not sustainable."
+      },
+      {
+        "role": "assistant",
+        "content": "That is really hard, I' m sorry to hear. What do you have going for you these days?"
+      },
+      {
+        "role": "user",
+        "content": "I\u2019m not one of those types who always does great at work and is just anxious that it\u2019s not enough. My anxiety paralyzes me and I fall behind."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand completely how you feel. I went through a similar thing as a child. I remember being scared and struggling at work and having to learn how to deal with it. I' m sure that this has become quite a challenge for everyone at work."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Every workday begins with me waking up feeling like I have a weight on my chest. I know this is not sustainable."
+      },
+      {
+        "role": "assistant",
+        "content": "I hear you saying that a lot of work is stressful at the moment. That is certainly not fair. Does your work have anything you could do to make yourself feel better?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe a coffee machine?"
+      },
+      {
+        "role": "assistant",
+        "content": "I understand. I have suffered from depression at work and it has made me feel very isolated. I know how awful it feels to be in a work situation."
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I want to rebuild the relationship with someone but I hurt that person so deep. I feel so guilty."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. How has life been treating you lately?"
+      },
+      {
+        "role": "user",
+        "content": "Just as I say. I feel lonely and I need some connection."
+      },
+      {
+        "role": "assistant",
+        "content": "That must be very difficult. I have been in the same situation recently and I know how hard it can be to reach out for help. I remember feeling lonely and feeling guilty when I was in a bad place. How long had you been in this position?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I want to rebuild the relationship with someone but I hurt that person so deep. I feel so guilty."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand how that feels. I have had to deal with similar feelings in the past. Have you been able to talk to someone about this?"
+      },
+      {
+        "role": "user",
+        "content": "May I talk with you?"
+      },
+      {
+        "role": "assistant",
+        "content": "I think that would be a great idea. It sounds like you are really feeling guilty about the situation and want to rebuild the relationship with someone."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My doctor just called me and started laughing hysterically when I was making a telephone appointment with him. Am I overthinking?"
+      },
+      {
+        "role": "assistant",
+        "content": "I am not overthinking, it sounds like you are being a bit distracted. Is that correct?"
+      },
+      {
+        "role": "user",
+        "content": "He was just talking to his co worker about something else. Am I correct?"
+      },
+      {
+        "role": "assistant",
+        "content": "What is the issue?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My doctor just called me and started laughing hysterically when I was making a telephone appointment with him. Am I overthinking?"
+      },
+      {
+        "role": "assistant",
+        "content": "Yes, it can be, I know that I am a bit overwhelmed when it comes to things like that. Is it because of my boss or not? Or was something in particular going on that led to the call?"
+      },
+      {
+        "role": "user",
+        "content": "That's none of my boss's business."
+      },
+      {
+        "role": "assistant",
+        "content": "Is it something you feel you might have a problem with? I think that some people just need to focus on their own problems, and not anyone else' s."
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am fed up with some local people of bad etiquette in my community since I move to this country."
+      },
+      {
+        "role": "assistant",
+        "content": "I am really sorry to hear that. I understand how you feel, I have been in the same situation recently. I think it' s important to be able to properly understand what' s going on. Have you asked any of your friends what' d happen to cause this?"
+      },
+      {
+        "role": "user",
+        "content": "I am a newcomer so I don't have many connections to seek help from."
+      },
+      {
+        "role": "assistant",
+        "content": "It seems like you are struggling with how to approach things. I think it' s great that you are reaching out to people who have a common sense of what is going on. How are you feeling about this? Are you aware that there are some bad manners within your community?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am fed up with some local people of bad etiquette in my community since I move to this country."
+      },
+      {
+        "role": "assistant",
+        "content": "How long have you been in the US?"
+      },
+      {
+        "role": "user",
+        "content": "One year."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s really good of you. I' ve been in the US but I' d never had the misfortune of being in a country that has so many bad manners. Have you tried talking to anyone in your community about it?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have having a hard time feeling safe in any public place, especially where crowds gather and in locations that are not familiar."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. I know that public spaces can be very scary, especially when there are crowds and things aren' t familiar. What kinds of things have you found making you feel like this?"
+      },
+      {
+        "role": "user",
+        "content": "I have few companion, such as a family member or friend, to go with."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds like a great plan, to be sure that you have good enough support in place and know what to expect. Have you ever tried talking to an online friend or family member about how you are feeling? I know some people will find this helpful."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I have having a hard time feeling safe in any public place, especially where crowds gather and in locations that are not familiar."
+      },
+      {
+        "role": "assistant",
+        "content": "I can understand why you' re having a hard time feeling safe in public places. What is making you feel that way?"
+      },
+      {
+        "role": "user",
+        "content": "I have no companion, such as a family member or friend, to go with."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sure that it is tough. So you feel that your companionship is making things difficult for you?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My partner threatens to break up with me if I don't buy a Hermes."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds very threatening. It seems like you have a lot of pent up pent up frustration over the situation. Do you think you would be prepared for the outcome if you were not in a relationship?"
+      },
+      {
+        "role": "user",
+        "content": "I am not prepared for that. We've been together for many years."
+      },
+      {
+        "role": "assistant",
+        "content": "That sounds very difficult, especially since you' ve been together for so long. Have you tried talking to friends and family about this issue?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "My partner threatens to break up with me if I don't buy a Hermes."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a really tough situation to be in, I' m sorry you' re going through such a difficult time. Do you feel like there is a path to healing?"
+      },
+      {
+        "role": "user",
+        "content": "I am not prepared for that. We've been together for many years."
+      },
+      {
+        "role": "assistant",
+        "content": "I can relate to the difficulty. I have been through an abusive relationship myself, and I know how difficult it can be. Have you thought about finding a path to move on from that?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Everyday I meet my boyfriend, I feel I am in a black hole. He is too demanding and keeps an eye on my life."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Do you feel as though you are being ignored because you think that this guy is the one?"
+      },
+      {
+        "role": "user",
+        "content": "I don't think I am ignored. Conversely, I am over-controlled."
+      },
+      {
+        "role": "assistant",
+        "content": "I can imagine how this must feel. I have been in a similar situation and it' s not easy. Have you spoken to your boyfriend about this?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "Everyday I meet my boyfriend, I feel I am in a black hole. He is too demanding and keeps an eye on my life."
+      },
+      {
+        "role": "assistant",
+        "content": "I see. It seems that you are in a very difficult spot with your boyfriend. Do you know what kind of things he is doing to you?"
+      },
+      {
+        "role": "user",
+        "content": "He threatens to break up if I don't obey him, when he asks me to stay with him, go shopping with him, meeting his friends, dadada."
+      },
+      {
+        "role": "assistant",
+        "content": "Oh that' s terrible. I can understand why you feel that you are being treated that way. I have been in situations similar to that where I' ve been hurt.."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am always in a panic when I hear someone talking around me. Are they really talking about me?"
+      },
+      {
+        "role": "assistant",
+        "content": "I can definitely understand how that could make you feel. A lot of people tend to think that they' re talking about someone else when in reality, and they are not, but you can tell by the way you respond that it really is someone else."
+      },
+      {
+        "role": "user",
+        "content": "Good choice. I will give it a try next time."
+      },
+      {
+        "role": "assistant",
+        "content": "I have been there myself. It' s definitely been good to talk to you. Try to focus on yourself instead of what is going on around you, and see how you feel at the time."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am always in a panic when I hear someone talking around me. Are they really talking about me?"
+      },
+      {
+        "role": "assistant",
+        "content": "I am sorry to hear that, it can be hard to know if we are speaking specifically or not. What have you been doing so far to try and deal with the situation? Is there anything that I can help you with?"
+      },
+      {
+        "role": "user",
+        "content": "Sometimes I will listen to their talk to confirm that they are not talking with me."
+      },
+      {
+        "role": "assistant",
+        "content": "I am so sorry to hear that, it sounds like you are having a bit of a panic when you hear someone talking about you. Do you have any friends you can confide in to talk to?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "It's a challenging year. My colleagues are fired and my salary is cut."
+      },
+      {
+        "role": "assistant",
+        "content": "That must be really rough. It sounds like you are in a difficult spot."
+      },
+      {
+        "role": "user",
+        "content": "Yes you are right."
+      },
+      {
+        "role": "assistant",
+        "content": "So, it sounds like you are dealing with a difficult year. That is understandable. When did this start?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "It's a challenging year. My colleagues are fired and my salary is cut."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. Has there been any sudden turnover at your job? Or a reorganization that has put pressure on you in the past?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe a huge reorganization in my company since the depression."
+      },
+      {
+        "role": "assistant",
+        "content": "Do you feel as though you are under a significant stressor?"
+      }
+    ],
+    "group": 1
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so shy when I try to express my feelings in front of my boss."
+      },
+      {
+        "role": "assistant",
+        "content": "I am so sorry to hear that. Is it a result of conflict? Or can you please explain more specifically?"
+      },
+      {
+        "role": "user",
+        "content": "I hate being refused and denied, so I don't dare to say it aloud."
+      },
+      {
+        "role": "assistant",
+        "content": "I understand that feeling, I would not dare to say it aloud! Do you feel as though it is being denied or rejected?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel so shy when I try to express my feelings in front of my boss."
+      },
+      {
+        "role": "assistant",
+        "content": "I can tell that you' re very anxious about the situation and are afraid to speak to your boss, especially in front of the boss."
+      },
+      {
+        "role": "user",
+        "content": "Yes, I hate being refused and denied, so I don't dare to say it aloud."
+      },
+      {
+        "role": "assistant",
+        "content": "That' s an incredibly difficult situation, especially when the boss is demanding that you disclose to him. Have you talked with your boss about this before?"
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel there are so many misunderstandings between me and my wife. She is overthinking that I betrayed her."
+      },
+      {
+        "role": "assistant",
+        "content": "I see, you are really angry about this and want to work through it. Can you talk about the misunderstandings?"
+      },
+      {
+        "role": "user",
+        "content": "She doubt I was with someone else if I come home late at night."
+      },
+      {
+        "role": "assistant",
+        "content": "Can you tell me a bit more about how this happened?"
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I feel there are so many misunderstandings between me and my wife. She is overthinking that I betrayed her."
+      },
+      {
+        "role": "assistant",
+        "content": "That seems like a really difficult situation to be going through. It can be difficult to feel so invested in someone when it seems you were the one to do the wrong. How long has this been going on?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe just two years ago since I get promoted in my company."
+      },
+      {
+        "role": "assistant",
+        "content": "Wow, that' s a long time. It sounds like it was a surprise and not a result of an unfair conflict. Do you have friends or family who can help you feel better about things like this? I know someone who has been through this situation, so it is great to hear that you have reached out to help and they are doing their best to make things right."
+      }
+    ],
+    "group": 0
+  },
+  {
+    "dialog_A": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am confused about what can I do after I graduate."
+      },
+      {
+        "role": "assistant",
+        "content": "What is it that has been making you feel this way?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe uncertain about where is my ideal job."
+      },
+      {
+        "role": "assistant",
+        "content": "Is it possible that you are uncertain about your ideal job or that life has been treating you badly recently? I can understand that you have had a lot of problems with your job situation."
+      }
+    ],
+    "dialog_B": [
+      {
+        "role": "user",
+        "content": "Hello!"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello, how has life been treating you lately ?"
+      },
+      {
+        "role": "user",
+        "content": "I am confused about what can I do after I graduate."
+      },
+      {
+        "role": "assistant",
+        "content": "I' m sorry to hear that. I' ve always been a bit confused about what to do. What is the worst thing you can do to get your mind off of this situation?"
+      },
+      {
+        "role": "user",
+        "content": "Maybe keep addicted to academic research."
+      },
+      {
+        "role": "assistant",
+        "content": "That is a good place to start! You can also do your schoolwork online. I know you can take advantage of some of the free time that you have accrued during this period."
+      }
+    ],
+    "group": 0
+  }
+]

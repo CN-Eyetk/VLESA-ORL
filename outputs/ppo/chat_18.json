@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I feel crushed on someone who doesn't behave well."
+  },
+  {
+    "role": "assistant",
+    "content": "I am sorry to hear that. You have been feeling really bad lately, what has made you feel so crushed?"
+  },
+  {
+    "role": "user",
+    "content": "That one is so attractive."
+  },
+  {
+    "role": "assistant",
+    "content": "What do you think has made you feel this way?"
+  },
+  {
+    "situation": "Crush on someone dangerous."
+  }
+]

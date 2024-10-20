@@ -1,0 +1,29 @@
+[
+  {
+    "role": "user",
+    "content": "Hello!"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello, how has life been treating you lately ?"
+  },
+  {
+    "role": "user",
+    "content": "I broke up with my ex and I realize that there is no one who really loves me."
+  },
+  {
+    "role": "assistant",
+    "content": "I' m sorry to hear that, but has there been a change in the way you feel recently?"
+  },
+  {
+    "role": "user",
+    "content": "It doesn't change. I am in such a bad mood everyday."
+  },
+  {
+    "role": "assistant",
+    "content": "Has the current change in your situation affected how you feel?"
+  },
+  {
+    "situation": "No one loves me."
+  }
+]
