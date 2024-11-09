@@ -222,7 +222,7 @@ def load_arg():
             "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
-            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-large",
+            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
             "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
