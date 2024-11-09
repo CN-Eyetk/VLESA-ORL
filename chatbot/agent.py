@@ -1,9 +1,22 @@
 from src.transformers import BartForConditionalGeneration, BartTokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
-
+import json
 torch.manual_seed(42)
 import numpy as np
 np.random.seed(42)
+strategy_labels = [
+    "[Providing Suggestions or Information]",
+    "[Greeting]",
+    "[Question]",
+    "[Self-disclosure]",
+    "[Reflection of feelings]",
+    "[Affirmation and Reassurance]",
+    "[Restatement or Paraphrasing]",
+    "[Others]",    
+]
+
+emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
+emo_out_labels = [v for k,v in emo_out_lables.items()]
 class CustomChatbot:
     def  __init__(self, model_path) -> None:
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
@@ -56,12 +69,12 @@ class Chatbot:
             "role_ids":torch.tensor([role_ids]).to(self.model.device)
         }
         batch["output_mutual_attentions"] = False
-        batch["generate_with_predicted_strategy"] = False
+        batch["generate_with_predicted_strategy"] = True
         return batch
     def response(self, chat, situ = None):
         batch = self.make_input(chat, situ)
         with torch.no_grad():
-            chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, _ = self.model.generate(
+            chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, emotion_logits = self.model.generate(
                 **batch, max_length=512,
                 min_length=5,
                 num_beams=1,
@@ -75,6 +88,10 @@ class Chatbot:
                 no_repeat_ngram_size=3,
                 repetition_penalty=1.03
                 ) #top_p 0.9, topk 30
+        strategy_id = strategy_logits.squeeze().argmax()
+        emo_id = emotion_logits.squeeze().argmax()
+        print("strategy",strategy_labels[strategy_id])
+        print("emotion",emo_out_labels[emo_id])
         generated_text = self.tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True)
         return generated_text
 

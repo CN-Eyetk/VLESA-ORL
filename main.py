@@ -80,7 +80,9 @@ parser.add_argument("--use_joint_emo", action="store_true")
 parser.add_argument("--use_triplet_loss", action="store_true")
 parser.add_argument("--origin_latent_dim",action="store_true")
 parser.add_argument("--strategy_latent_dim",default=None)
+#parser.add_argument("--local-rank", type=int, default=0)
 args_g = parser.parse_args()
+args_g.local_rank = int(os.environ['LOCAL_RANK'])
 root_path = args_g.root_path
 USE_TRANS = args_g.use_trans
 USE_PREPEND = args_g.use_prepend
@@ -200,8 +202,8 @@ else:
 logger = logging.getLogger(__name__)
 
 def load_arg():
-    #torch.distributed.init_process_group(backend="nccl")
-    #local_rank = torch.distributed.get_rank()
+    torch.distributed.init_process_group(backend="nccl")
+    local_rank = args_g.local_rank
     args = {"do_train":args_g.do_train,
             "do_show_emotion":args_g.do_show_emotion,
            "data_path":args_g.data_path, 
@@ -220,17 +222,17 @@ def load_arg():
             "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
             "model_type":"misc_model" if MISC else "mymodel",
             "overwrite_cache":OVERWRITE,
-            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
+            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-large",
             "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
-            "local_rank":-1,#local_rank,
-            "per_gpu_train_batch_size":20,
-            "per_gpu_eval_batch_size":20,
+            "local_rank":local_rank,#local_rank,
+            "per_gpu_train_batch_size":2,
+            "per_gpu_eval_batch_size":2,
             "save_total_limit":1,
-            "n_gpu":1,
+            "n_gpu":2,
             "max_steps":-1,
-            "gradient_accumulation_steps":1,
+            "gradient_accumulation_steps":8,
             "weight_decay":0,
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
@@ -308,9 +310,9 @@ def load_arg():
             "origin_latent_dim":args_g.origin_latent_dim,
             "strategy_latent_dim":args_g.strategy_latent_dim
             }
-    #torch.cuda.set_device(local_rank)
-    #device = torch.device("cuda", local_rank)
-    #args["device"] = device
+    torch.cuda.set_device(local_rank)
+    device = torch.device("cuda", local_rank)
+    args["device"] = device
     args = argparse.Namespace(**args)
     print("data_cache_dir",args.data_cache_dir)
     return args

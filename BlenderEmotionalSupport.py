@@ -1446,7 +1446,6 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                 steps_trained_in_current_epoch -= 1
                 continue
             if args.local_rank != -1:
-                #print("here")
                 outputs, _ = shared_steps(batch, model = model.module, tokenizer= tokenizer,args= args, phase = "train")
             else:
                 outputs, _ = shared_steps(batch, model = model, tokenizer= tokenizer,args= args, phase = "train")
@@ -1457,9 +1456,9 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
             intensity_loss = outputs.intensity_loss
             strategy_loss = outputs.strategy_loss
             
-            # if not args.no_cuda and args.n_gpu >= 1:
-            #     loss = loss.mean()  # mean() to average on multi-gpu parallel training
-            #     ppl = ppl.mean()
+            if not args.no_cuda and args.n_gpu >= 1:
+                 loss = loss.mean()  # mean() to average on multi-gpu parallel training
+                 ppl = ppl.mean()
 
             if args.gradient_accumulation_steps > 1:
                 loss = loss / args.gradient_accumulation_steps
@@ -1493,6 +1492,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     scheduler.step()  # Update learning rate schedule
                 model.zero_grad()
                 global_step += 1
+                torch.distributed.barrier()
                 if args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
                     # Log metrics
                     if (
@@ -1516,7 +1516,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                             wandb.log(results)
                             if 2 < epoch :
                                 with torch.no_grad():
-                                    test_result = generate_new(args, model, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
+                                    test_result = generate_new(args, model.module, verbose = False, prefix = "{}-{}-".format("checkpoint", global_step))
                                 #save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
                             
                         #test_results = evaluate(args, model, tokenizer, args.eval_dataset, "{}-{}".format("checkpoint", global_step))
@@ -1561,8 +1561,10 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                             save_checkpoint(args, model, tokenizer, output_dir, checkpoint_prefix, optimizer, scheduler)
                     if hasattr(torch.cuda, 'empty_cache'):
                         torch.cuda.empty_cache()
-                
-
+                    if args.local_rank != -1:
+                        torch.distributed.barrier()
+                if not args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
+                    torch.distributed.barrier()
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
             if args.max_steps > 0 and global_step > args.max_steps:
@@ -1608,8 +1610,8 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
         model = amp.initialize(model, opt_level=args.fp16_opt_level)
 
     #multi-gpu evaluate
-    #if args.n_gpu > 1:
-    #    model = torch.nn.DataParallel(model)
+    if args.n_gpu > 1:
+        model = torch.nn.DataParallel(model)
     # Eval!
     logger.info("***** Running evaluation {} *****".format(prefix))
     logger.info("  Num examples = %d", len(eval_dataset))
@@ -1641,7 +1643,10 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, eval_
         
     with torch.no_grad():
         for batch in tqdm(eval_dataloader, desc="Evaluating",disable=True, total = len(eval_dataloader)):
-            outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids, emo_dist) = shared_steps(batch, model, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
+            if args.local_rank != -1:
+                outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids, emo_dist) = shared_steps(batch, model.module, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
+            else:
+                outputs, (emotion, decoder_input_ids, decoder_strategy_ids, decoder_label_ids, emo_dist) = shared_steps(batch, model, tokenizer, args, phase = "eval" if not show_latent else "eval_and_show_latent")
             if show_emotion:
                 cur_turn_ids = [max(x) for x in batch["decoder_token_type_ids"].detach().cpu().tolist()]
                 turn_ids += cur_turn_ids

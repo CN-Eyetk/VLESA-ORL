@@ -12,7 +12,7 @@ from tqdm import tqdm
 from scipy.stats import ttest_rel, ttest_ind
 #from openai import OpenAI
 from arguments import EmpathyDetectorArguments, EmpathyFeedbackerArguments, SeekerArguments, LLamaSeekerArguments
-from peft import PeftModel
+
 import transformers
 
 #from nltk import tokenize

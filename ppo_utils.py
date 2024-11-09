@@ -543,12 +543,18 @@ class Agent:
         
         if paras["comet_embs"] is not None:
             assert len(paras["comet_embs"]) == len(query_tensors)
-        rewards = [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_rewards[0], all_rewards[1])]
+        
+        if not self.use_word_level_reward:
+            rewards = [torch.stack([a,b], dim = 0).unsqueeze(-1) for a,b in zip(all_rewards[0], all_rewards[1])]
+            ref_rewards =  [torch.stack([a,b], dim = 0).unsqueeze(-1) for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
+        else:
+            rewards = [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_rewards[0], all_rewards[1])]
+            ref_rewards =  [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
         
         #rewards = torch.tensor(rewards)
         #rewards = [rewards[i] for i in range(rewards.size(0))]
         #print("rewards",rewards)#[b,t]
-        ref_rewards =  [pad_sequence([a,b], batch_first = True, padding_value = 0) for a,b in zip(all_ref_rewards[0], all_ref_rewards[1])]
+        
         #ref_rewards = torch.tensor(ref_rewards)
         #ref_rewards =  [ref_rewards[i] for i in range(ref_rewards.size(0))]
         response = [f"{a}|{b}" for a,b in zip(all_responses[0], all_responses[1])]

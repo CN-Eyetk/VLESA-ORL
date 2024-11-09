@@ -270,7 +270,7 @@ class BartEncoderLayer(nn.Module):
             dropout=config.attention_dropout,
         )
         self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim)
-        self.attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
+        #self.attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
         self.dropout = config.dropout
         self.config = config
         self.activation_fn = ACT2FN[config.activation_function]
@@ -434,9 +434,9 @@ class BartDecoderLayer(nn.Module):
         else:
             self.encoder_attn_strategy = None
         self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
-        self.encoder_attn_layer_norm_strategy = nn.LayerNorm(self.embed_dim)
-        self.encoder_attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
-        self.encoder_attn_layer_norm_total = nn.LayerNorm(self.embed_dim)
+        #self.encoder_attn_layer_norm_strategy = nn.LayerNorm(self.embed_dim)
+        #self.encoder_attn_layer_norm_comet = nn.LayerNorm(self.embed_dim)
+        #self.encoder_attn_layer_norm_total = nn.LayerNorm(self.embed_dim)
         self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
         self.final_layer_norm = nn.LayerNorm(self.embed_dim)

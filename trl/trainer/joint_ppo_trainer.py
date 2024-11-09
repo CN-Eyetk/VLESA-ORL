@@ -230,6 +230,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
         )
 
         scores = torch.stack(scores, dim = 0).to(self.current_device) #[b, t, l]
+
         if len(scores.size()) == 2 and scores.size(-1) > 1:
             scores = scores.unsqueeze(-2) 
         score_mask = scores.ne(0).to(self.current_device) #[b, t, l]
@@ -252,7 +253,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             scores, wscores = self.get_sent_scores_and_w_scores(scores, score_mask) #[b, t], #[b, t, l]
         else:
             wscores = None
-        
+
         # if we want to push best model to the hub
         if hasattr(self, "highest_reward"):
             if self.compare_step % self.config.compare_steps == 0:
@@ -353,7 +354,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             for i in range(len(model_inputs["decoder_input_ids"])):
                 print(model_inputs["decoder_input_ids"][i])
                 print(lm_masks[i])
-        #check_mask()
+
         with torch.no_grad():
             t = time.time()
             if full_kl_penalty:
@@ -361,6 +362,7 @@ class JointPPOTrainer(DialogueActPPOTrainer):
                 active_full_lm_logprobs = logprobs_from_logits(lm_logits_or_none, None, gather=False)
                 ref_full_a_logprobs = logprobs_from_logits(ref_a_logits_or_none, None, gather=False)
                 ref_full_lm_logprobs = logprobs_from_logits(ref_lm_logits_or_none, None, gather=False)
+                
                 a_rewards, a_non_score_reward = self.compute_rewards(
                     scores, active_full_a_logprobs, ref_full_a_logprobs, a_masks
                 )
@@ -869,6 +871,9 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             if self.config.use_word_level_reward:
             #assert reward.shape == score.shape
                 reward += score.squeeze()
+            else:
+                last_non_masked_index = mask.nonzero()[-1]
+                reward[last_non_masked_index] += score
             rewards.append(reward)
         return torch.stack(rewards), torch.stack(non_score_rewards)
     def record_step_stats(self, kl_coef: float, **data):
@@ -978,7 +983,10 @@ class JointPPOTrainer(DialogueActPPOTrainer):
             #assert reward.shape == score.shape
             if self.config.multiple_actions:
                 assert reward.size(0) == score.size(0) * len(self.config.n_actions)
-                reward = self.make_rewards_for_multiple_action(reward, score)
+                if not self.config.use_word_level_reward:
+                    reward = self.make_rewards_for_multiple_action(reward, score.squeeze())
+                else:
+                    reward = self.make_rewards_for_multiple_action(reward, score)
             else:
                 assert reward.shape == score.shape
                 reward += score
