@@ -170,54 +170,57 @@ class BartConfig(PretrainedConfig):
         self.scale_embedding = scale_embedding  # scale factor will be sqrt(d_model) if True
         self.force_bos_token_to_be_generated = force_bos_token_to_be_generated  # only relevant for CNN
         self.n_emo_out = kwargs["n_emo_out"] if "n_emo_out" in kwargs.keys() else False
-        self.use_th_attn = kwargs["use_th_attn"] if "use_th_attn" in kwargs.keys() else False
-        self.use_trans_mat = kwargs["use_trans_mat"] if "use_trans_mat" in kwargs.keys() else False
-        self.add_emo_cross_attn = kwargs["add_emo_cross_attn"] if "add_emo_cross_attn" in kwargs.keys() else False
-        self.prepend = kwargs["prepend"] if "prepend" in kwargs.keys() else False
         self.use_kl = kwargs["use_kl"] if "use_kl" in kwargs.keys() else False
-        self.emo_from_eos = kwargs["emo_from_eos"] if "emo_from_eos" in kwargs.keys() else False
-        self.emo_from_situ = kwargs["emo_from_situ"] if "emo_from_situ" in kwargs.keys() else False
-        self.use_emo_in_dist = kwargs["use_emo_in_dist"] if "use_emo_in_dist" in kwargs.keys() else False
-        self.use_emb_prep = kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
-        self.use_copy = kwargs["use_copy"] if "use_copy" in kwargs.keys() else False
-        self.st_from_eos = kwargs["st_from_eos"] if "st_from_eos" in kwargs.keys() else False
-        self.use_st_seq = kwargs["use_st_seq"] if "use_st_seq" in kwargs.keys() else False
-        self.lstm_st_seq = kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
-        self.merge = kwargs["merge"] if "merge" in kwargs.keys() else False
-        self.no_fuse = kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
-        self.stg_use_cat_attn = kwargs["stg_use_cat_attn"] if "stg_use_cat_attn" in kwargs.keys() else False
-        self.emo_use_cat_attn = kwargs["emo_use_cat_attn"] if "emo_use_cat_attn" in kwargs.keys() else False
-        self.use_role_embed = kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
-        self.use_vad_labels = kwargs["use_vad_labels"] if "use_vad_labels" in kwargs.keys() else False
-        self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
-        self.mixed_vae = kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
+        
         self.latent_dim = kwargs["latent_dim"] if "latent_dim" in kwargs.keys() else False
-        self.sample_strat_emb = kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
-        self.wo_comet = kwargs["wo_comet"] if "wo_comet" in kwargs.keys() else False
         self.wo_stra = kwargs["wo_stra"] if "wo_stra" in kwargs.keys() else False
         self.wo_emo = kwargs["wo_emo"] if "wo_emo" in kwargs.keys() else False
-        self.rl_emb_ratio = kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
-        self.vad_emb_ratio = kwargs["vad_emb_ratio"] if "vad_emb_ratio" in kwargs.keys() else 0.2
         self.emo_loss_ratio = kwargs["emo_loss_ratio"] if "emo_loss_ratio" in kwargs.keys() else 1.0
         self.strategy_loss_ratio = kwargs["strategy_loss_ratio"] if "strategy_loss_ratio" in kwargs.keys() else 0.05
         self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
-        self.intensity_vae = kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
-        self.use_situ_in_encoder = kwargs["use_situ_in_encoder"] if "use_situ_in_encoder" in kwargs.keys() else False
-        self.use_situ_in_decoder = kwargs["use_situ_in_decoder"] if "use_situ_in_decoder" in kwargs.keys() else False
         self.use_contrastive_loss = kwargs["use_contrastive_loss"] if "use_contrastive_loss" in kwargs.keys() else False
         self.contrastive_loss_ratio = kwargs["contrastive_loss_ratio"] if "contrastive_loss_ratio" in kwargs.keys() else 0.05
-        self.sample_strategy_embedding = kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
-        self.fuse_z = kwargs["fuse_z"] if "fuse_z" in kwargs.keys() else False
-        self.use_centroid_loss = kwargs["use_centroid_loss"] if "use_centroid_loss" in kwargs.keys() else False
-        self.use_uncertainty_loss = kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
-        self.stop_norm_weight = kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
-        self.wo_Sresp = kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
-        self.layer_control = kwargs["layer_control"] if "layer_control" in kwargs.keys() else False
-        self.strategy_use_cvae = kwargs["strategy_use_cvae"] if "strategy_use_cvae" in kwargs.keys() else False
         self.use_joint_emo = kwargs["use_joint_emo"] if "use_joint_emo" in kwargs.keys() else False #utterance and situation emotion
-        self.use_triplet_loss = kwargs["use_triplet_loss"] if "use_triplet_loss" in kwargs.keys() else False #utterance and situation emotion
-        self.origin_latent_dim = kwargs["origin_latent_dim"] if "origin_latent_dim" in kwargs.keys() else False #utterance and situation emotion
         self.strategy_latent_dim = kwargs["strategy_latent_dim"] if "strategy_latent_dim" in kwargs.keys() else False #utterance and situation emotion
+        self.rl_emb_ratio = -1 #kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
+        self.vad_emb_ratio = -1 #kwargs["vad_emb_ratio"] if "vad_emb_ratio" in kwargs.keys() else 0.2
+        
+        self.use_trans_mat = True #kwargs["use_trans_mat"] if "use_trans_mat" in kwargs.keys() else False
+        self.emo_from_eos = True #kwargs["emo_from_eos"] if "emo_from_eos" in kwargs.keys() else False
+        self.use_emb_prep = True #kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
+        self.no_fuse = True#kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
+        self.use_role_embed = True#kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
+        self.use_vae = True#kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
+        self.mixed_vae = True#kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
+        self.wo_comet = True #kwargs["wo_comet"] if "wo_comet" in kwargs.keys() else False
+        self.sample_strategy_embedding = True #kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False
+        self.layer_control = True #kwargs["layer_control"] if "layer_control" in kwargs.keys() else False
+        self.strategy_use_cvae = True #kwargs["strategy_use_cvae"] if "strategy_use_cvae" in kwargs.keys() else False
+        self.use_triplet_loss = True #kwargs["use_triplet_loss"] if "use_triplet_loss" in kwargs.keys() else False #utterance and situation emotion
+        self.use_th_attn = False #kwargs["use_th_attn"] if "use_th_attn" in kwargs.keys() else False
+        self.add_emo_cross_attn = False #kwargs["add_emo_cross_attn"] if "add_emo_cross_attn" in kwargs.keys() else False
+        self.prepend = False# kwargs["prepend"] if "prepend" in kwargs.keys() else False        
+        self.emo_from_situ = False# kwargs["emo_from_situ"] if "emo_from_situ" in kwargs.keys() else False        
+        self.st_from_eos = False#kwargs["st_from_eos"] if "st_from_eos" in kwargs.keys() else False
+        self.use_st_seq = False#kwargs["use_st_seq"] if "use_st_seq" in kwargs.keys() else False
+        self.lstm_st_seq = False#kwargs["lstm_st_seq"] if "lstm_st_seq" in kwargs.keys() else False
+        self.emo_use_cat_attn = False#kwargs["emo_use_cat_attn"] if "emo_use_cat_attn" in kwargs.keys() else False
+        self.use_vad_labels = False#kwargs["use_vad_labels"] if "use_vad_labels" in kwargs.keys() else False
+        self.sample_strat_emb = False #kwargs["sample_strat_emb"] if "sample_strat_emb" in kwargs.keys() else False
+        self.intensity_vae = False#kwargs["intensity_vae"] if "intensity_vae" in kwargs.keys() else False
+        self.use_situ_in_encoder = False#kwargs["use_situ_in_encoder"] if "use_situ_in_encoder" in kwargs.keys() else False
+        self.use_situ_in_decoder = False#kwargs["use_situ_in_decoder"] if "use_situ_in_decoder" in kwargs.keys() else False
+
+        self.use_emo_in_dist = False
+        self.fuse_z = False#kwargs["fuse_z"] if "fuse_z" in kwargs.keys() else False
+        self.use_centroid_loss = False#kwargs["use_centroid_loss"] if "use_centroid_loss" in kwargs.keys() else False
+        self.use_uncertainty_loss = False#kwargs["use_uncertainty_loss"] if "use_uncertainty_loss" in kwargs.keys() else False
+        self.stop_norm_weight = False#kwargs["stop_norm_weight"] if "stop_norm_weight" in kwargs.keys() else False
+        self.wo_Sresp = False#kwargs["wo_Sresp"] if "wo_Sresp" in kwargs.keys() else False
+
+
+        self.origin_latent_dim = False #kwargs["origin_latent_dim"] if "origin_latent_dim" in kwargs.keys() else False #utterance and situation emotion
+
     @property
     def num_attention_heads(self) -> int:
         return self.encoder_attention_heads

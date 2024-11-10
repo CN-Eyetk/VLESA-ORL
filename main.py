@@ -12,50 +12,20 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--root_path", type = str, default=".")
 parser.add_argument("--data_path", type = str, default="converted_dataset")
 parser.add_argument("--explain", action= "store_true")
-parser.add_argument("--use_trans", action= "store_true")
-parser.add_argument("--use_prepend", action= "store_true")
-parser.add_argument("--use_emb_prep", action= "store_true")
-parser.add_argument("--merge", action= "store_true")
-parser.add_argument("--use_situ_in_encoder", action= "store_true")
-parser.add_argument("--use_situ_in_decoder", action= "store_true")
 parser.add_argument("--use_situ", action= "store_true")
-parser.add_argument("--no_fuse", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
-parser.add_argument("--use_emo_in", action= "store_true")
-parser.add_argument("--emo_from_eos", action= "store_true")
-parser.add_argument("--stg_from_eos", action= "store_true")
 parser.add_argument("--use_kl", action= "store_true")
-parser.add_argument("--stg_use_cat_attn", action= "store_true")
-parser.add_argument("--emo_use_cat_attn", action= "store_true")
-parser.add_argument("--attend_eos", action= "store_true")
-parser.add_argument("--use_copy", action= "store_true")
-parser.add_argument("--use_th_attn", action= "store_true")
-parser.add_argument("--use_role_embed", action= "store_true")
-parser.add_argument("--lstm_st_seq", action= "store_true")
-parser.add_argument("--use_st_seq", action= "store_true")
-parser.add_argument("--sample_strat_emb", action= "store_true")
 parser.add_argument("--latent_dim", type = int, default=256)
-parser.add_argument("--use_vae", action= "store_true")
-parser.add_argument("--mixed_vae", action= "store_true")
 parser.add_argument("--wo_Stra", action= "store_true")
 parser.add_argument("--wo_Emo", action= "store_true")
-parser.add_argument("--wo_comet", action= "store_true")
-parser.add_argument("--use_vad_labels", action = "store_true")
-parser.add_argument("--rl_emb_ratio", type = float, default=0.2)
-parser.add_argument("--vad_emb_ratio", type = float, default=0.2)
 parser.add_argument("--emo_loss_ratio", type = float, default=1.0)
 parser.add_argument("--emo_out_loss_ratio", type = float, default=1.0)
-parser.add_argument("--intensity_vae", action = "store_true")
 parser.add_argument("--use_contrastive_loss", action = "store_true")
-parser.add_argument("--use_centroid_loss", action = "store_true")
-parser.add_argument("--sample_strategy_embedding", action = "store_true")
 parser.add_argument("--contrastive_loss_ratio",type=float, default=0.01)
 parser.add_argument("--do_train",action="store_true")
 parser.add_argument("--do_show_emotion",action="store_true")
 parser.add_argument("--do_show_latent",action="store_true")
 parser.add_argument("--log_on_wandb",action="store_true")
-#parser.add_argument("--emo_out_coef", default = 1.0, type = float)
-#parser.add_argument("--emo_in_coef", default = 1.0, type = float)
 parser.add_argument("--over_write", action= "store_true")
 parser.add_argument("--freeze_emo_stag_params", action= "store_true")
 parser.add_argument("--lr", type=float, default=5e-5)
@@ -63,60 +33,31 @@ parser.add_argument("--tag", type=str)
 parser.add_argument("--use_trainer", action= "store_true")
 parser.add_argument("--warmup_steps", type = int, default = 100)
 parser.add_argument("--pretrained_model_path", type = str, default = None)
-parser.add_argument("--fuse_z", action="store_true")
 parser.add_argument("--strategy_loss_ratio",type = float, default = 0.05)
-parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true")
 parser.add_argument("--generate_with_predicted_strategy",action="store_true")
 parser.add_argument("--generate_with_fixed_strategy", type=int,default=False)
-parser.add_argument("--add_situation_to_input_ids", action="store_true")
-parser.add_argument("--init_embeddings_with_lm",action="store_true")
-parser.add_argument("--use_uncertainty_loss",action="store_true")
-parser.add_argument("--stop_norm_weight",action="store_true")
 parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over response
 parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
 parser.add_argument("--layer_control", action="store_true")
 parser.add_argument("--strategy_use_cvae", action="store_true")
 parser.add_argument("--use_joint_emo", action="store_true")
 parser.add_argument("--use_triplet_loss", action="store_true")
-parser.add_argument("--origin_latent_dim",action="store_true")
 parser.add_argument("--strategy_latent_dim",default=None)
-#parser.add_argument("--local-rank", type=int, default=0)
+parser.add_argument("--distributed",action="store_true")
+
 args_g = parser.parse_args()
-args_g.local_rank = int(os.environ['LOCAL_RANK'])
+if args_g.distributed:
+    args_g.local_rank = int(os.environ['LOCAL_RANK'])
+else:
+    args_g.local_rank = -1
 root_path = args_g.root_path
-USE_TRANS = args_g.use_trans
-USE_PREPEND = args_g.use_prepend
-USE_EMB_PREP = args_g.use_emb_prep
-MISC = False
 KL = args_g.use_kl
-ST_FROM_EOS = args_g.stg_from_eos
-USE_ST_SEQ = args_g.use_st_seq
-LSTM_ST_SEQ = args_g.lstm_st_seq
-EMO_FROM_EOS = args_g.emo_from_eos
-EMO_FROM_SITU = False
-COPY = args_g.use_copy
-STG_USE_CAT_ATTN = args_g.stg_use_cat_attn
-EMO_USE_CAT_ATTN = args_g.emo_use_cat_attn
-EMO_CRO_ATTN = False
-USE_EMO_IN_DIST = args_g.use_emo_in
-MERGE = args_g.merge
-NO_FUSE = args_g.no_fuse
-OVERWRITE = args_g.over_write
 BART = args_g.use_bart
-ATTEN_EOS = args_g.attend_eos
-USE_SATTN = args_g.use_th_attn
-USE_ROLE = args_g.use_role_embed
-USE_VAE = args_g.use_vae
 LATENT_DIM = args_g.latent_dim
-SMP_STRAT_EMB = args_g.sample_strat_emb
 WO_STRA = args_g.wo_Stra
 WO_EMO = args_g.wo_Emo
-WO_COMET = args_g.wo_comet
-RL_EMB_RAT = args_g.rl_emb_ratio
 EM_LS_RAT = args_g.emo_loss_ratio
 EM_OT_LS_RAT = args_g.emo_out_loss_ratio
-INT_VAE = args_g.intensity_vae
-MIX_VAE = args_g.mixed_vae
 
 os.environ["WANDB_DISABLED"] = "true" if not args_g.log_on_wandb else "false"
 if args_g.pretrained_model_path is not None:
@@ -124,86 +65,60 @@ if args_g.pretrained_model_path is not None:
     GROUP = args_g.pretrained_model_path.split("/")[-2]
 else:
     TAG = "all_loss" \
-        + f"{RL_EMB_RAT}_{EM_LS_RAT}_{EM_OT_LS_RAT}_{args_g.warmup_steps}" \
-        +("-spst" if args_g.sample_strategy_embedding else "")  \
         + ("-nokl" if not args_g.use_kl else "") \
-        +("-vae" if USE_VAE else "") \
-        +("-ivae" if INT_VAE else "") \
-        +(f"{LATENT_DIM}" if USE_VAE or INT_VAE else "") \
-        +("-smp_str" if SMP_STRAT_EMB else "")\
         +("-ct" if args_g.use_contrastive_loss else "")  \
         + (f"{args_g.contrastive_loss_ratio}" if args_g.use_contrastive_loss else "")  \
-        +("-fz" if args_g.fuse_z else "")  \
-        +("-initlm" if args_g.init_embeddings_with_lm else "")  \
-        +("-uct" if args_g.use_uncertainty_loss else "")  \
-            +("-svae" if args_g.strategy_use_cvae else "")  \
-                +("-lc" if args_g.layer_control else "") \
-                    +("-je" if args_g.use_joint_emo else "") \
-                        +("-tp" if args_g.use_triplet_loss else "") \
-                            +("-situ" if args_g.use_situ else "") \
-                                +(f"-stg_{args_g.strategy_latent_dim}" if args_g.strategy_latent_dim else "") \
+        +("-svae" if args_g.strategy_use_cvae else "")  \
+        +("-lc" if args_g.layer_control else "") \
+        +("-je" if args_g.use_joint_emo else "") \
+        +("-tp" if args_g.use_triplet_loss else "") \
+        +("-situ" if args_g.use_situ else "") \
+        +(f"-stg_{args_g.strategy_latent_dim}" if args_g.strategy_latent_dim else "") \
         +args_g.tag
                                 
 
-    GROUP = ("-LIGHT" if not USE_SATTN else "") + ("-TRANS4" if USE_TRANS else "NoTrans") if USE_EMB_PREP else ((("-TRANS3" if USE_TRANS else "NoTrans") if USE_PREPEND else "-TRANS2") if USE_TRANS else "NoTrans") 
+    GROUP = "base"
 
 import torch
 import argparse
 import os
 import logging
 import json
-
-if MISC:
-    from BlenderEmotionalSupport_origin import (
-                                        load_and_cache_examples, 
-                                        InputFeatures_blender,
-                                        train,
-                                        evaluate,
-                                        generate,
-                                        #load_tokenizer,
-                                        set_seed,
-                                        load_model_for_eval,
-                                        logger,
-                                        load_optimizer
-                                        )
-    from BlenderEmotionalSupport import load_tokenizer
-    output_dir = os.path.join('blender-small' + GROUP, TAG)
-    generation_dir = "misc_generated_data"
+from BlenderEmotionalSupport import (
+                                    load_and_cache_examples, 
+                                    InputFeatures_blender,
+                                    train,
+                                    evaluate,
+                                    generate,
+                                    generate_new,
+                                    load_tokenizer,
+                                    set_seed,
+                                    load_model_for_eval,
+                                    load_model,
+                                    logger,
+                                    load_optimizer
+                                    )
+if  args_g.pretrained_model_path is not None:
+    output_dir = args_g.pretrained_model_path
+    #generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+    generation_dir = output_dir.replace(args_g.root_path, "our_generated_data")
 else:
-    from BlenderEmotionalSupport import (
-                                        load_and_cache_examples, 
-                                        InputFeatures_blender,
-                                        train,
-                                        evaluate,
-                                        generate,
-                                        generate_new,
-                                        load_tokenizer,
-                                        set_seed,
-                                        load_model_for_eval,
-                                        load_model,
-                                        logger,
-                                        load_optimizer
-                                        )
-    if  args_g.pretrained_model_path is not None:
-        output_dir = args_g.pretrained_model_path
-        #generation_dir = "our_generated_data/" + GROUP + "/" + TAG
-        generation_dir = output_dir.replace(args_g.root_path, "our_generated_data")
+    if BART:
+        output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
     else:
-        if BART:
-            output_dir = os.path.join(root_path, 'bart-our', GROUP, TAG)
-        else:
-            output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
-        generation_dir = "our_generated_data/" + GROUP + "/" + TAG
-    if args_g.generate_with_predicted_strategy:
-        generation_dir = os.path.join(generation_dir, "non_mix")
-    if args_g.generate_with_fixed_strategy:
-        generation_dir = os.path.join(generation_dir, f"stg{args_g.generate_with_fixed_strategy}")
+        output_dir = os.path.join(root_path, 'blender-our', GROUP, TAG)
+    generation_dir = "our_generated_data/" + GROUP + "/" + TAG
+if args_g.generate_with_predicted_strategy:
+    generation_dir = os.path.join(generation_dir, "non_mix")
+if args_g.generate_with_fixed_strategy:
+    generation_dir = os.path.join(generation_dir, f"stg{args_g.generate_with_fixed_strategy}")
 #from src.transformers.models.blenderbot_small.modeling_blenderbot_small import BlenderbotSmallForConditionalGeneration
 logger = logging.getLogger(__name__)
 
 def load_arg():
-    torch.distributed.init_process_group(backend="nccl")
+    
     local_rank = args_g.local_rank
+
     args = {"do_train":args_g.do_train,
             "do_show_emotion":args_g.do_show_emotion,
            "data_path":args_g.data_path, 
@@ -219,20 +134,20 @@ def load_arg():
             "situation_test_file":"testSituation.txt",
             "situation_test_comet_file":"testComet_st.txt",
             "test_file_name":"testWithStrategy_short.tsv",
-            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep" if not USE_PREPEND else "prep", "bart_" if BART else "", "emin_" if USE_EMO_IN_DIST else "","w_vad" if args_g.use_vad_labels else "", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
-            "model_type":"misc_model" if MISC else "mymodel",
-            "overwrite_cache":OVERWRITE,
+            "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep", "bart_" if BART else "", "","", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
+            "model_type":"mymodel",
+            "overwrite_cache":args_g.over_write,
             "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
             "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
             "local_rank":local_rank,#local_rank,
-            "per_gpu_train_batch_size":2,
-            "per_gpu_eval_batch_size":2,
+            "per_gpu_train_batch_size":20,
+            "per_gpu_eval_batch_size":20,
             "save_total_limit":1,
-            "n_gpu":2,
+            "n_gpu":1 if args_g.local_rank == -1 else 2,
             "max_steps":-1,
-            "gradient_accumulation_steps":8,
+            "gradient_accumulation_steps":1,
             "weight_decay":0,
             "device":torch.device("cuda" if torch.cuda.is_available() else "cpu"),
             "learning_rate":args_g.lr,
@@ -248,71 +163,37 @@ def load_arg():
             "output_dir":output_dir,
             "seed":42,
             "max_grad_norm":1.0,
-            "prepend_emotion":USE_PREPEND,
-            "use_trans_mat":USE_TRANS,
-            "use_th_attn":USE_SATTN,
-            "add_emo_cross_attn":EMO_CRO_ATTN,
-            "st_from_eos":ST_FROM_EOS,
-            "use_st_seq":USE_ST_SEQ,
-            "lstm_st_seq":LSTM_ST_SEQ,
-            "emo_from_eos":EMO_FROM_EOS,
-            "emo_from_situ":EMO_FROM_SITU,
             "use_kl":KL,
             "no_cuda":False,
             "block_size":args_g.block_size,
             "generation_dir":generation_dir,
-            "use_situ_in_encoder":args_g.use_situ_in_encoder,
-            "use_situ_in_decoder":args_g.use_situ_in_decoder,
             "use_situ":args_g.use_situ,
-            "use_emo_in_dist":USE_EMO_IN_DIST,
-            "use_emb_prep":USE_EMB_PREP,
-            "use_copy":COPY,
-            "merge":MERGE,
-            "no_fuse":NO_FUSE,
             "use_bart":BART,
-            "stg_use_cat_attn":STG_USE_CAT_ATTN,
-            "emo_use_cat_attn":EMO_USE_CAT_ATTN,
-            "attend_eos":ATTEN_EOS,
-            "use_role_embed":USE_ROLE,
-            "use_vae":USE_VAE,
-            "mixed_vae":MIX_VAE,
             "latent_dim":LATENT_DIM,
-            "sample_strat_emb":SMP_STRAT_EMB,
             "wo_stra":WO_STRA,
             "wo_emo":WO_EMO,
-            "rl_emb_ratio":RL_EMB_RAT,
-            "vad_emb_ratio":args_g.vad_emb_ratio,
             "emo_loss_ratio":EM_LS_RAT,
             "emo_out_loss_ratio":EM_OT_LS_RAT,
-            "intensity_vae":INT_VAE,
-            "wo_comet":WO_COMET,
-            "use_vad_labels":args_g.use_vad_labels,
             "freeze_emo_stag_params":args_g.freeze_emo_stag_params,
             "use_contrastive_loss":args_g.use_contrastive_loss,
-            "sample_strategy_embedding":args_g.sample_strategy_embedding,
             "contrastive_loss_ratio":args_g.contrastive_loss_ratio,
             "pretrained_model_path":args_g.pretrained_model_path,
-            "fuse_z":args_g.fuse_z,
-            "use_centroid_loss":args_g.use_centroid_loss,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
             "generate_with_predicted_strategy":args_g.generate_with_predicted_strategy,
-            "generate_with_fixed_strategy":args_g.generate_with_fixed_strategy,
-            "add_situation_to_input_ids":args_g.add_situation_to_input_ids,
-            "init_embeddings_with_lm":args_g.init_embeddings_with_lm,
-            "prefix_dialogue_begin_by_supporter":args_g.prefix_dialogue_begin_by_supporter,
-            "use_uncertainty_loss":args_g.use_uncertainty_loss,
-            "stop_norm_weight":args_g.stop_norm_weight,
+            "prefix_dialogue_begin_by_supporter":False,
             "wo_Sresp":args_g.wo_Sresp,
             "layer_control":args_g.layer_control,
             "strategy_use_cvae":args_g.strategy_use_cvae,
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
-            "origin_latent_dim":args_g.origin_latent_dim,
-            "strategy_latent_dim":args_g.strategy_latent_dim
+            "strategy_latent_dim":args_g.strategy_latent_dim,
+            "use_emo_in_dist":False
             }
-    torch.cuda.set_device(local_rank)
-    device = torch.device("cuda", local_rank)
-    args["device"] = device
+    if local_rank > -1:
+        torch.cuda.set_device(local_rank)
+        device = torch.device("cuda", local_rank)
+        torch.distributed.init_process_group(backend="nccl")
+        args["device"] = device
     args = argparse.Namespace(**args)
     print("data_cache_dir",args.data_cache_dir)
     return args
@@ -523,5 +404,51 @@ if __name__ == "__main__":
             generation_test_result.update(result)
             wandb.log(generation_test_result)
 
-#lr_1e-06-bs_128-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7
-#lr_1e-06-bs_128-sl_0-gs_8-kl_0.0-wr_0-sr_0.5-lm_0.05_stem_1wo_fullwo_diff0.7
+
+#parser.add_argument("--use_trans", action= "store_true")
+#parser.add_argument("--use_prepend", action= "store_true")
+#parser.add_argument("--use_emb_prep", action= "store_true")
+#parser.add_argument("--merge", action= "store_true")
+#parser.add_argument("--use_situ_in_encoder", action= "store_true")
+#parser.add_argument("--use_situ_in_decoder", action= "store_true")
+
+#parser.add_argument("--no_fuse", action= "store_true")
+#parser.add_argument("--use_emo_in", action= "store_true")
+#parser.add_argument("--emo_from_eos", action= "store_true")
+#parser.add_argument("--stg_from_eos", action= "store_true")
+#parser.add_argument("--stg_use_cat_attn", action= "store_true")
+#parser.add_argument("--emo_use_cat_attn", action= "store_true")
+#parser.add_argument("--attend_eos", action= "store_true")
+#parser.add_argument("--use_copy", action= "store_true")
+#parser.add_argument("--use_th_attn", action= "store_true")
+#parser.add_argument("--use_role_embed", action= "store_true")
+#parser.add_argument("--lstm_st_seq", action= "store_true")
+#arser.add_argument("--use_st_seq", action= "store_true")
+#parser.add_argument("--sample_strat_emb", action= "store_true")
+
+#parser.add_argument("--use_vae", action= "store_true")
+#arser.add_argument("--mixed_vae", action= "store_true")
+
+#parser.add_argument("--wo_comet", action= "store_true")
+#parser.add_argument("--use_vad_labels", action = "store_true")
+#parser.add_argument("--rl_emb_ratio", type = float, default=0.2)
+#parser.add_argument("--vad_emb_ratio", type = float, default=0.2)
+
+#parser.add_argument("--intensity_vae", action = "store_true")
+#parser.add_argument("--use_centroid_loss", action = "store_true")
+#parser.add_argument("--sample_strategy_embedding", action = "store_true")
+
+#parser.add_argument("--emo_out_coef", default = 1.0, type = float)
+#parser.add_argument("--emo_in_coef", default = 1.0, type = float)
+
+#parser.add_argument("--fuse_z", action="store_true")
+
+#parser.add_argument("--prefix_dialogue_begin_by_supporter", action ="store_true")
+
+#parser.add_argument("--add_situation_to_input_ids", action="store_true")
+#parser.add_argument("--init_embeddings_with_lm",action="store_true")
+#parser.add_argument("--use_uncertainty_loss",action="store_true")
+#parser.add_argument("--stop_norm_weight",action="store_true")
+
+#parser.add_argument("--origin_latent_dim",action="store_true")
+#parser.add_argument("--local-rank", type=int, default=0)

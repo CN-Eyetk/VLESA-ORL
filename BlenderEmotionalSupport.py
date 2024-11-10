@@ -170,59 +170,26 @@ def load_config(args, eval = False):
             config = BartConfig.from_pretrained(args.output_dir)
         else:
             config = BlenderbotSmallConfig.from_pretrained(args.output_dir)
-    if args.origin_latent_dim:
-        config.origin_latent_dim = True
+    #if args.origin_latent_dim:
+    #    config.origin_latent_dim = True
     print("config = ", config)
     if args.pretrained_model_path is None:
         #config = BlenderbotSmallConfig.from_dict(config)
-        config.use_th_attn = args.use_th_attn
-        config.prepend = args.prepend_emotion
-        config.use_trans_mat = args.use_trans_mat
         config.use_kl = args.use_kl
-        config.add_emo_cross_attn = args.add_emo_cross_attn
-        config.emo_from_eos = args.emo_from_eos
-        config.st_from_eos = args.st_from_eos
-        config.emo_from_situ = args.emo_from_situ
-        config.use_emo_in_dist = args.use_emo_in_dist
-        config.use_emb_prep = args.use_emb_prep
         config.n_emo_out = len(emo_extracter.id_2_label)
-        config.use_copy = args.use_copy
-        config.use_st_seq = args.use_st_seq
-        config.lstm_st_seq= args.lstm_st_seq
-        config.merge = args.merge
-        config.no_fuse = args.no_fuse
-        config.stg_use_cat_attn = args.stg_use_cat_attn
-        config.emo_use_cat_attn = args.emo_use_cat_attn
-        config.use_role_embed = args.use_role_embed
-        config.use_vae = args.use_vae
-        config.mixed_vae = args.mixed_vae
         config.latent_dim = args.latent_dim
-        config.sample_strat_emb = args.sample_strat_emb
         config.wo_stra = args.wo_stra
         config.wo_emo = args.wo_emo
-        config.wo_comet = args.wo_comet
-        config.rl_emb_ratio = args.rl_emb_ratio
-        config.vad_emb_ratio = args.vad_emb_ratio
         config.emo_loss_ratio = args.emo_loss_ratio
         config.emo_out_loss_ratio = args.emo_out_loss_ratio
-        config.intensity_vae = args.intensity_vae
-        config.use_situ_in_decoder = args.use_situ_in_decoder
-        config.use_situ_in_encoder = args.use_situ_in_encoder
-        config.use_vad_labels = args.use_vad_labels
         config.use_contrastive_loss = args.use_contrastive_loss
-        config.sample_strategy_embedding = args.sample_strategy_embedding
         config.contrastive_loss_ratio = args.contrastive_loss_ratio
-        config.fuse_z = args.fuse_z
-        config.use_centroid_loss = args.use_centroid_loss
         config.strategy_loss_ratio = args.strategy_loss_ratio
-        config.use_uncertainty_loss = args.use_uncertainty_loss
-        config.stop_norm_weight = args.stop_norm_weight
         config.wo_Sresp = args.wo_Sresp
         config.layer_control = args.layer_control
         config.strategy_use_cvae = args.strategy_use_cvae
         config.use_joint_emo = args.use_joint_emo
         config.use_triplet_loss = args.use_triplet_loss
-        config.origin_latent_dim = args.origin_latent_dim
         config.strategy_latent_dim = args.strategy_latent_dim
     return config
 
@@ -269,14 +236,13 @@ def load_tokenizer(args):
     tokenizer.add_tokens(additional_special_tokens)
     tokenizer.add_tokens(comet_additional_special_tokens)
     tokenizer.add_special_tokens({'cls_token': '[CLS]'})
-    if args.use_role_embed:
-        role_special_tokens = ["[SEK]","[SPT]"]
-        tokenizer.add_tokens(role_special_tokens)
-    if args.prepend_emotion:
+    role_special_tokens = ["[SEK]","[SPT]"]
+    tokenizer.add_tokens(role_special_tokens)
+    if 1 == 2:
         emotion_special_tokens = [f"[{label}]" for label in emo_extracter.label_2_id.keys()]
         print(emotion_special_tokens)
         tokenizer.add_tokens(emotion_special_tokens)
-    if args.use_vad_labels:
+    if 1 == 2:
         vad_labels = vad_tokenizer.vad_labels
         tokenizer.add_tokens(vad_labels)
         #if args.use_bart:
@@ -529,7 +495,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
         return InputFeatures_train([], [], [], [], [],
                             [], [] , [], [])
     input_ids = [i for s in sents for i in s+[eos]] #添加eos
-    if args.use_vad_labels:
+    if 1 == 2:
 
         vad_ids = [i for s in vad_ids for i in s+[-1]]
         if not decoder:
@@ -594,7 +560,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
             break
         i -= 1
     input_ids = input_ids[:i+1]
-    if args.use_vad_labels:
+    if 1 == 2:
         vad_ids = vad_ids[:i+1]
         if not decoder:
             assert len(input_ids) == len(vad_ids)
@@ -620,7 +586,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     if len(input_ids) > block_size:
         cut_index = input_ids.index(eos,-512) + 1
         input_ids = input_ids[cut_index: ]
-        if args.use_vad_labels:
+        if 1 == 2:
             vad_ids = vad_ids[cut_index:]
         token_type_ids = token_type_ids[cut_index: ]
         lm_labels = lm_labels[cut_index: ]
@@ -639,7 +605,7 @@ def _make_feature(args, id_, sents, rls, ts, eos, pad_token_id, pad=False, block
     if pad:
         while len(input_ids) % 8 != 0:
             input_ids.append(pad_token_id)
-            if args.use_vad_labels:
+            if 1 == 2:
                 vad_ids.append(-1)
             token_type_ids.append(0)
             lm_labels.append(-100)
@@ -763,7 +729,7 @@ def _get_inputs_from_text(text, tokenizer, strategy=True, cls = False, get_emo_d
         else:
             strategy_labels.append(8)
 
-        if args.use_vad_labels and vad_tokenizer is not None:
+        if 1 == 2 and vad_tokenizer is not None:
             vad_input = src if not src_role==1 else src.split("] ")[-1]
             #print("vad_input",vad_input)
             context_id_new, tokens, vad_labels = vad_tokenizer.tokenizer_vad(vad_input
@@ -919,7 +885,7 @@ class ESDDataset(Dataset):
                 if len(conv.input_ids) >= block_size:
                     conv.input_ids = conv.input_ids[-block_size:]
                     conv.role_ids = conv.role_ids[-block_size:] #leave the 0-th id to pad in collate function
-                    if args.use_vad_labels:
+                    if 1 == 2:
                         
                         conv.vad_ids = conv.vad_ids[-block_size:] #leave the 0-th id to pad in collate function
                     conv.is_strat_targ = conv.is_strat_targ[-block_size:]
@@ -970,32 +936,19 @@ class ESDDataset(Dataset):
                                                     dtype=torch.long)
                                     for f in features],
                                     batch_first=True, padding_value=0)
-        if self.args.use_vad_labels:
-            #vad_ids = [vad_id if not vad_id == self.tokenizer.unk_token_id else self.tokenizer.vocab["[0v0a0d]"] for vad_id in f.vad_ids ]
-            vad_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [i  if i > -1 else self.tokenizer.pad_token_id for i in f.vad_ids], 
-                                                 dtype=torch.long)
+
+        vad_ids = None
+        role_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [self.role_id_2_token_id[i]  if i > -1 else self.tokenizer.pad_token_id for i in f.role_ids], 
+                                            dtype=torch.long)
                                     for f in features],
                                     batch_first=True, padding_value=self.tokenizer.pad_token_id)
-            #vad_ids[vad_ids == self.tokenizer.unk_token_id] = self.tokenizer.convert_tokens_to_ids(["[0v0a0d]"])[0]
-            vad_ids = vad_ids[:,:input_ids.size(1)]
-        else:
-            vad_ids = None
-        if self.args.use_role_embed:
-            role_ids = pad_sequence([torch.tensor([self.tokenizer.pad_token_id] + [self.role_id_2_token_id[i]  if i > -1 else self.tokenizer.pad_token_id for i in f.role_ids], 
-                                                dtype=torch.long)
-                                        for f in features],
-                                        batch_first=True, padding_value=self.tokenizer.pad_token_id)
-            #role_ids = torch.cat((input_ids[:,0,:].unsqu))
-            #print("role_ids", role_ids.shape)
-            #print("input_ids", input_ids.shape)
-            role_ids = role_ids[:,:input_ids.size(1)]
-            assert role_ids is not None
-            #print("role_ids", role_ids)
-        else:
-            role_ids = pad_sequence([torch.tensor(f.role_ids, 
-                                                dtype=torch.long)
-                                        for f in features],
-                                        batch_first=True, padding_value=0)
+        #role_ids = torch.cat((input_ids[:,0,:].unsqu))
+        #print("role_ids", role_ids.shape)
+        #print("input_ids", input_ids.shape)
+        role_ids = role_ids[:,:input_ids.size(1)]
+        assert role_ids is not None
+        #print("role_ids", role_ids)
+
         labels = pad_sequence([torch.tensor(f.lm_labels, dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-100)
@@ -1067,10 +1020,8 @@ class ESDDataset(Dataset):
         emo_positions = pad_sequence([torch.tensor([i for i,x in enumerate(f.is_emo_targ) if x == 1], dtype=torch.long)
                             for f in features],
                             batch_first=True, padding_value=-1)
-        if self.args.intensity_vae:
-            intensity = torch.tensor([f.intensity for f in features], dtype=torch.float32)
-        else:
-            intensity = None
+
+        intensity = None
         if self.collate_verbose_step > 0:
             inputs =  self.tokenizer.batch_decode(input_ids, )
             decoder_inputs = self.tokenizer.batch_decode(decoder_input_ids,)
@@ -1295,7 +1246,7 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
 
     model = model.module if hasattr(model, "module") else model  # Take care of distributed/parallel training
     model.resize_token_embeddings(len(tokenizer))
-    if args.init_embeddings_with_lm:
+    if 1 == 2:
         print("initiating with embeddings")
         emo_vecs = load_emo_emb(model.model.encoder, tokenizer, emo_extracter= emo_extracter)
         strat_vesc = load_stra_emb(model.model.encoder, tokenizer, strat_labels = ["Question","Reflection of feelings","Information","Restatement or Paraphrasing","Others","Self-disclosure","Affirmation and Reassurance","Providing Suggestions"])
@@ -1492,7 +1443,8 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                     scheduler.step()  # Update learning rate schedule
                 model.zero_grad()
                 global_step += 1
-                torch.distributed.barrier()
+                if not args.local_rank == -1:
+                    torch.distributed.barrier()
                 if args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
                     # Log metrics
                     if (
@@ -1563,8 +1515,9 @@ def train(args, logger, train_dataset, model: PreTrainedModel, tokenizer: PreTra
                         torch.cuda.empty_cache()
                     if args.local_rank != -1:
                         torch.distributed.barrier()
-                if not args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
-                    torch.distributed.barrier()
+                if args.local_rank != -1:
+                    if not args.local_rank in [-1, 0] and args.logging_steps > 0 and global_step % args.logging_steps == 0 and global_step >t_total*0.0:
+                        torch.distributed.barrier()
             if hasattr(torch.cuda, 'empty_cache'):
                 torch.cuda.empty_cache()
             if args.max_steps > 0 and global_step > args.max_steps:
@@ -2009,12 +1962,12 @@ def generate(args):
         emo_dist = emo_dist.to(args.device) if emo_dist is not None else None
         emo_in_dist = emo_in_dist.to(args.device) if emo_in_dist is not None else None
 
-        if args.stg_use_cat_attn:
+        if 1 == 2:
             strat_positions =torch.tensor([[i for i,x in enumerate(f.is_strat_targ) if x == 1]], dtype=torch.long)
             strat_positions = strat_positions.to(args.device)
         else:
             strat_positions = None
-        if args.emo_use_cat_attn:
+        if 1 == 2:
             emo_positions = torch.tensor([[i for i,x in enumerate(f.is_emo_targ) if x == 1]], dtype=torch.long)
             emo_positions = emo_positions.to(args.device)
         else:
@@ -2032,14 +1985,12 @@ def generate(args):
 
         input_ids = torch.tensor([f.input_ids], dtype=torch.long).to(args.device)
         role_id_2_token_id = [tokenizer.convert_tokens_to_ids("[SEK]"),tokenizer.convert_tokens_to_ids("[SPT]")]
-        if args.use_role_embed:
-            role_ids = torch.tensor([[tokenizer.pad_token_id] + [role_id_2_token_id[i] if i > -1 else tokenizer.pad_token_id for i in f.role_ids ]], 
-                                                dtype=torch.long)
-            #role_ids = role_ids[:,]
-            role_ids = role_ids[:,:input_ids.size(1)]
-            role_ids = role_ids.to(args.device)
-        else:
-            role_ids = None
+        role_ids = torch.tensor([[tokenizer.pad_token_id] + [role_id_2_token_id[i] if i > -1 else tokenizer.pad_token_id for i in f.role_ids ]], 
+                                            dtype=torch.long)
+        #role_ids = role_ids[:,]
+        role_ids = role_ids[:,:input_ids.size(1)]
+        role_ids = role_ids.to(args.device)
+
         #if f.is_strat_targ is not None:
             
        #     spt_eos_indice = torch.tensor([i for i,x in enumerate(f.is_strat_targ) if x != 8], dtype=torch.long)
@@ -2064,8 +2015,7 @@ def generate(args):
         paras["strat_positions"] = strat_positions
         paras["emo_positions"] = emo_positions
         paras["intensity"] = intensity
-        if args.use_role_embed:
-            paras["role_ids"] = role_ids
+        paras["role_ids"] = role_ids
         #paras["strat_seq"] = strat_seq
 
         # batch_size = decoder_strategy_ids.shape[0]
@@ -2364,7 +2314,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         emotion = emotion.to(model.device)
     else:
         emotion = emo_in_dist.argmax(-1).to(model.device)        
-    if args.use_situ_in_decoder or args.use_situ_in_encoder:
+    if 1 == 2:
         situ_ids = situ_ids.to(model.device)
         with torch.no_grad():
             if isinstance(model,torch.nn.DataParallel):
@@ -2380,7 +2330,7 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         situ_attention_mask = None
 
 
-    if not args.wo_comet:
+    if 1 == 2:
         #print("comet_ids shape", comet_ids.shape)
         comet_ids = comet_ids.to(model.device)
         batch_size, n_attr, len_attr = comet_ids.shape
@@ -2412,10 +2362,8 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         comet_embs_st = None
         comet_mask_st = None
     input_ids = input_ids.to(model.device)
-    if args.intensity_vae:
-        intensity = intensity.to(model.device)
-    else:
-        intensity = None
+
+    intensity = None
     #print("intensity",intensity)
     
     decoder_input_ids = decoder_input_ids.to(model.device)
@@ -2426,22 +2374,20 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         decoder_cls_labels = decoder_cls_labels.to(model.device) 
     emo_dist = emo_dist.to(model.device) if emo_dist is not None else None
     emo_in_dist = emo_in_dist.to(model.device) if emo_in_dist is not None else None
-    if args.stg_use_cat_attn:
+    if 1 == 2:
         strat_positions = strat_positions.to(model.device)
     else:
         strat_positions = None
-    if args.emo_use_cat_attn:
+    if 1 == 2:
         emo_positions = emo_positions.to(model.device)
     else:
         emo_positions = None
     #decoder_cls_labels = decoder_cls_labels.to(model.device)
     # model.train()
     # we did't use role label and turn number in modeling as they did't carry significant improvement. Codes still remain.
-    if args.use_role_embed:
-        role_ids = role_ids.to(model.device)
-    else:
-        role_ids = None
-    if args.use_vad_labels:
+
+    role_ids = role_ids.to(model.device)
+    if 1 == 2:
         vad_ids = vad_ids.to(model.device)
     else:
         vad_ids = None
@@ -2483,9 +2429,8 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
         paras["strat_positions"] = strat_positions
         paras["emo_positions"] = emo_positions
         paras["intensity"] = intensity
-        if args.use_role_embed:
-            paras["role_ids"] = role_ids
-        if args.use_vad_labels:
+        paras["role_ids"] = role_ids
+        if 1 == 2:
             paras["vad_ids"] = vad_ids
         if "reinforce" in phase:
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
@@ -2493,9 +2438,9 @@ def shared_steps(batch, model, tokenizer, args, add_strategy_noise = False, phas
             paras["generate_with_predicted_strategy"] = args.generate_with_predicted_strategy
         #if "reinforce_with_strategy_noise" in phase:
         paras["add_strategy_noise"] = add_strategy_noise
-        if type(args.generate_with_fixed_strategy) == int:
-            #print("generating with fixed strategy:",args.generate_with_fixed_strategy)
-            paras["generate_with_fixed_strategy"] = args.generate_with_fixed_strategy
+        #if type(args.generate_with_fixed_strategy) == int:
+        #   #print("generating with fixed strategy:",args.generate_with_fixed_strategy)
+        #    paras["generate_with_fixed_strategy"] = args.generate_with_fixed_strategy
         if phase == "reinforce_with_lm_loss":
             paras["labels"] = decoder_label_ids
             if args.use_contrastive_loss:

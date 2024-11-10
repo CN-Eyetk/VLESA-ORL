@@ -65,7 +65,7 @@ class Agent:
         self.hist_retriver = hist_retriver
         self.reward_func = reward_func
         self.mini_batch_size = mini_batch_size
-        self.use_vad_labels = self.model.pretrained_model.config.use_vad_labels
+        self.use_vad_labels = False
         self.generation_kwargs = generation_kwargs
         self.seeker = seeker
         self.seeker_func = seeker_func
@@ -343,8 +343,8 @@ class Agent:
         input_ids = next_state["input_ids"]
         role_ids = next_state["role_ids"]
         attention_masks = next_state["attention_masks"]
-        if self.model.config.use_vad_labels:
-            vad_ids = next_state["vad_ids"]
+        #if 1 == 2:
+        #   vad_ids = next_state["vad_ids"]
         batch_size = len(input_ids)
         for i in range(batch_size):
             seeker_response = seeker_reponses[i]
@@ -355,12 +355,12 @@ class Agent:
             new_role_ids = new_role_ids.to(input_ids[i].device)
             new_attention_masks = (torch.zeros(len(new_input_ids)) + 1).bool()
             new_attention_masks = new_attention_masks.to(input_ids[i].device)
-            if self.model.config.use_vad_labels:
-                new_vad_ids = torch.zeros(len(new_input_ids)) + self.tokenizer.pad_token_id
-                _, _,new_vad_labels = self.vad_tokenizer.tokenizer_vad(seeker_response, is_fast_tokenizer = False, char_to_remove = "Ġ")
-                new_vad_labels = [-1] + new_vad_labels
-                new_vad_ids[:len(new_vad_labels)] = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(new_vad_labels))
-                new_vad_ids = new_vad_ids.to(input_ids[i].device)
+            #if 1 == 2:
+            #    new_vad_ids = torch.zeros(len(new_input_ids)) + self.tokenizer.pad_token_id
+            #    _, _,new_vad_labels = self.vad_tokenizer.tokenizer_vad(seeker_response, is_fast_tokenizer = False, char_to_remove = "Ġ")
+            #    new_vad_labels = [-1] + new_vad_labels
+            #    new_vad_ids[:len(new_vad_labels)] = torch.LongTensor(self.tokenizer.convert_tokens_to_ids(new_vad_labels))
+            #    new_vad_ids = new_vad_ids.to(input_ids[i].device)
             #print("input_ids[i]",input_ids[i])
             #print("role_ids[i]",role_ids[i])
             #print("attention_masks[i]",attention_masks[i])
@@ -369,17 +369,17 @@ class Agent:
             input_ids[i] = torch.cat((input_ids[i][:non_path_length], new_input_ids), dim = -1) #Feb9 修正，concat的时候要剔除前面的pad
             role_ids[i] = torch.cat((role_ids[i][:non_path_length], new_role_ids), dim = -1)
             attention_masks[i] = torch.cat((attention_masks[i][:non_path_length], new_attention_masks), dim = -1)
-            if self.model.config.use_vad_labels:
-                vad_ids[i] = torch.cat((vad_ids[i][:non_path_length], new_vad_ids), dim = -1)
+            #if 1 == 2:
+            #    vad_ids[i] = torch.cat((vad_ids[i][:non_path_length], new_vad_ids), dim = -1)
             assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1)# == vad_ids[i].size(-1)
-            if self.model.config.use_vad_labels:
-                assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
+            #if 1 == 2:
+            #    assert input_ids[i].size(-1) == role_ids[i].size(-1) == attention_masks[i].size(-1) == vad_ids[i].size(-1)
             if input_ids[i].size(-1) > max_len:
                 input_ids[i] = torch.concat((input_ids[i][:1], input_ids[i][-max_len+1:]))
                 role_ids[i] = torch.concat((role_ids[i][:1], role_ids[i][-max_len+1:]))
                 attention_masks[i] = torch.concat((attention_masks[i][:1], attention_masks[i][-max_len+1:]))
-                if self.model.config.use_vad_labels:
-                    vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
+                #if 1 == 2:
+                #    vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
 
     def get_reward_and_response(self, state, next_state = None):
         response = self.tokenizer.batch_decode(state["response_tensor"], skip_special_tokens = True)
