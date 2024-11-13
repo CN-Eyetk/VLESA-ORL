@@ -1,9 +1,10 @@
+
+import sys
+
 from chatbot.agent import Chatbot
 import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 import json
-import sys
-
 
 
 def command_line(cb):
@@ -78,38 +79,7 @@ def use_stream_list(cb, situ, model_name):
             st.session_state.messages.append({"role": "assistant", "content": resp})
 
 if __name__ == "__main__":
-    candidates = ["/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922",
-                  "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/",
-                  "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llamatemp/",
-                  "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/",#dialog gpt
-                  "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp",
-                  "/disk/junlin/EmoSp/bart-our/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am116",
-                  ]
-    names = ["Without Optimal Relevance",
-    "Optimal Relevance (after chat with LLaMA)",
-    "Without effort score (after chat with LLaMA)",
-    "Optimal Relevance with Finetuned Dialogue GPT",
-    "Without Word Reward (after chat with Finetuned Dialogue GPT) ",
-    "Displaying Agent"
-    ]
-    if 1==2:
-        idx = int(sys.argv[1])
-        cb = Chatbot(candidates[idx])
-        if cb.use_situ:
-            situ = sys.argv[2]
-            chat = command_line(cb)#use_stream_list(cb, situ, model_name = names[idx])
-        else:
-            situ = None
-            chat = command_line(cb)#use_stream_list(cb, situ, model_name = names[idx])
-    
-    
-    if 1== 1:
-        path_A = candidates[0]
-        path_B = candidates[1]
-        cb_A = Chatbot(path_A)
-        cb_B = Chatbot(path_B)
-        for i in range(8, 50):
-            chat_A = command_line(cb_A)
-            print("+++++++++++++++++++++++++++++++++++++++++++")
-            chat_B = command_line(cb_B)
-            print("===========================================")
+    path = sys.argv[1]
+    cb = Chatbot(path)
+    chat = command_line(cb)
+
