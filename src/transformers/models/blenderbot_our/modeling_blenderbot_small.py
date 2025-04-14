@@ -2009,7 +2009,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                 return_dict=return_dict,
                 strategy_logit_ground = strategy_logit_ground,
                 emo_in_dist=emo_in_dist,
-                emo_out_dist=emo_dist if self.use_vae else None,
+                emo_out_dist=emo_dist,
                 intensity=intensity,
                 strat_positions=strat_positions,
                 emo_positions=emo_positions,
@@ -2209,16 +2209,21 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
                         emo_entropy = torch.sum(-emo_out_prob.exp()*emo_out_prob) / batch_size
                     else:
                         emo_entropy = 0
-                        
+
                     if self.use_kl:
                         emo_out_loss_fct = nn.KLDivLoss(reduction="batchmean")
+                        emo_out_prob = torch.log_softmax(emo_out_prob, dim = -1)
                         emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_dist) + emo_entropy
+
                     else:
-                        emo_out_loss_fct = NLLLoss()
+                        emo_out_loss_fct = CrossEntropyLoss()
                         emo_out_label = emo_dist.argmax(-1).squeeze()
                         emo_out_loss = emo_out_loss_fct(emo_out_prob, emo_out_label) + emo_entropy
-                    if self.training:
-                        loss += self.emo_out_loss_ratio * emo_out_loss
+                    if self.config.use_dissimilarity_loss:
+                        dissimilar_loss = TripletLoss()(torch.softmax(emo_out_prob, dim = -1), emo_dist)
+                        emo_out_loss += dissimilar_loss
+                    else:
+                        dissimilar_loss = None
             if self.use_vae:
                 mu_prior, logvar_prior = encoder_outputs.vae_prior_output
                 mu_posterior, logvar_posterior = encoder_outputs.vae_posterior_output
@@ -2280,7 +2285,7 @@ class BlenderbotSmallForConditionalGeneration(BlenderbotSmallPreTrainedModel):
         encoder_kwargs = {
             argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist")# and not argument.startswith("emo_in_dist") #Update 5-31
         }
-        #encoder_kwargs["emo_out_dist"] = model_kwargs["emo_dist"]
+        encoder_kwargs["emo_out_dist"] = model_kwargs["emo_dist"]
         model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
 
         if self.use_copy:

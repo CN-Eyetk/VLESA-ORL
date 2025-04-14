@@ -3,7 +3,7 @@ import wandb
 import re
 import numpy as np
 from cal_reward import calculate_reward
-from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
+#from esconv_trainer import ESCONVTrainer, ESCONVTrainingArguments, postprocess_text, random, clac_metric_2
 from BlenderEmotionalSupport import load_dataset
 import os
 
@@ -40,10 +40,15 @@ parser.add_argument("--wo_Sresp",action="store_true") #No strategy control over 
 parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
 parser.add_argument("--layer_control", action="store_true")
 parser.add_argument("--strategy_use_cvae", action="store_true")
+parser.add_argument("--use_vae", action="store_true")
 parser.add_argument("--use_joint_emo", action="store_true")
 parser.add_argument("--use_triplet_loss", action="store_true")
 parser.add_argument("--strategy_latent_dim",default=None)
 parser.add_argument("--distributed",action="store_true")
+parser.add_argument("--use_moe",action="store_true")
+parser.add_argument("--stop_e_expert",action="store_true")
+parser.add_argument("--n_moe_layers",default=2,type=int)
+parser.add_argument("--use_dissimilarity_loss",action="store_true")
 
 args_g = parser.parse_args()
 if args_g.distributed:
@@ -74,6 +79,8 @@ else:
         +("-tp" if args_g.use_triplet_loss else "") \
         +("-situ" if args_g.use_situ else "") \
         +(f"-stg_{args_g.strategy_latent_dim}" if args_g.strategy_latent_dim else "") \
+        +(f"-moe_{args_g.n_moe_layers}" if args_g.use_moe else "") \
+            +(f"-dis_{args_g.use_dissimilarity_loss}" if args_g.use_dissimilarity_loss else "") \
         +args_g.tag
                                 
 
@@ -176,6 +183,7 @@ def load_arg():
             "emo_out_loss_ratio":EM_OT_LS_RAT,
             "freeze_emo_stag_params":args_g.freeze_emo_stag_params,
             "use_contrastive_loss":args_g.use_contrastive_loss,
+            "use_dissimilarity_loss":args_g.use_dissimilarity_loss,
             "contrastive_loss_ratio":args_g.contrastive_loss_ratio,
             "pretrained_model_path":args_g.pretrained_model_path,
             "strategy_loss_ratio":args_g.strategy_loss_ratio,
@@ -187,7 +195,10 @@ def load_arg():
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
             "strategy_latent_dim":args_g.strategy_latent_dim,
-            "use_emo_in_dist":False
+            "use_vae":args_g.use_vae,
+            "use_emo_in_dist":False,
+            "use_moe":args_g.use_moe,
+            "n_moe_layers":args_g.n_moe_layers,
             }
     if local_rank > -1:
         torch.cuda.set_device(local_rank)
@@ -394,7 +405,7 @@ if __name__ == "__main__":
             #test_results = evaluate(args, model, tokenizer, args.test_dataset, "of test set")
             #args.device = "cpu"
             #generate_new(args, model = model, prefix="of eval set")
-            result = generate_new(args, model = model, prefix="of test set", batch_size = 1)
+            result = generate_new(args, model = model, prefix="of test set", batch_size = 1, verbose = True)
             prefix = args.generation_dir.split("/")[-2] if re.compile(r"^.*?/$").search(args.generation_dir) else generation_dir.split("/")[-1]
             print("calculating reward, prefix =", prefix)
             rwds = calculate_reward(path=args.generation_dir, prefix=prefix)

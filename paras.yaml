@@ -1,3 +1,3 @@
-path_to_helpful_model: "/disk/junlin/models/EmoSupport/bert/output/esconv_fb"
-path_to_seeker_model: "/disk/junlin/models/EmoSupport/gpt/output/esconv_2"
+path_to_helpful_model: "/mnt/HD-8T/lijunlin/models/EmoSupport/bert/esconv_fb"
+path_to_seeker_model: "/mnt/HD-8T/lijunlin/models/EmoSupport/gpt/output/esconv_2/esconv_2"
 path_to_llama_seeker_model: "meta-llama/Llama-2-7b-chat-hf"

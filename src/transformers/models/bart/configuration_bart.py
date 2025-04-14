@@ -179,9 +179,18 @@ class BartConfig(PretrainedConfig):
         self.strategy_loss_ratio = kwargs["strategy_loss_ratio"] if "strategy_loss_ratio" in kwargs.keys() else 0.05
         self.emo_out_loss_ratio = kwargs["emo_out_loss_ratio"] if "emo_out_loss_ratio" in kwargs.keys() else 1.0
         self.use_contrastive_loss = kwargs["use_contrastive_loss"] if "use_contrastive_loss" in kwargs.keys() else False
+        self.use_dissimilarity_loss = kwargs["use_dissimilarity_loss"] if "use_dissimilarity_loss" in kwargs.keys() else False
         self.contrastive_loss_ratio = kwargs["contrastive_loss_ratio"] if "contrastive_loss_ratio" in kwargs.keys() else 0.05
         self.use_joint_emo = kwargs["use_joint_emo"] if "use_joint_emo" in kwargs.keys() else False #utterance and situation emotion
         self.strategy_latent_dim = kwargs["strategy_latent_dim"] if "strategy_latent_dim" in kwargs.keys() else False #utterance and situation emotion
+        
+        self.use_moe = kwargs["use_moe"] if "use_moe" in kwargs.keys() else False 
+        self.n_moe_layers = kwargs["n_moe_layers"] if "n_moe_layers" in kwargs.keys() else 0 
+        self.num_experts_per_tok = kwargs["num_experts_per_tok"] if "num_experts_per_tok" in kwargs.keys() else 0.5
+        self.norm_topk_prob = kwargs["norm_topk_prob"] if "num_experts_per_tok" in kwargs.keys() else False
+        self.moe_intermediate_size = kwargs["moe_intermediate_size"] if "moe_intermediate_size" in kwargs.keys() else int(self.d_model / 4)
+        self.shared_expert_intermediate_size = kwargs["shared_expert_intermediate_size"] if "shared_expert_intermediate_size" in kwargs.keys() else int(self.d_model / 4)
+        self.use_vae = kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
         self.rl_emb_ratio = -1 #kwargs["rl_emb_ratio"] if "rl_emb_ratio" in kwargs.keys() else 0.2
         self.vad_emb_ratio = -1 #kwargs["vad_emb_ratio"] if "vad_emb_ratio" in kwargs.keys() else 0.2
         
@@ -190,7 +199,7 @@ class BartConfig(PretrainedConfig):
         self.use_emb_prep = True #kwargs["use_emb_prep"] if "use_emb_prep" in kwargs.keys() else False
         self.no_fuse = True#kwargs["no_fuse"] if "no_fuse" in kwargs.keys() else False
         self.use_role_embed = True#kwargs["use_role_embed"] if "use_role_embed" in kwargs.keys() else False
-        self.use_vae = True#kwargs["use_vae"] if "use_vae" in kwargs.keys() else False
+        
         self.mixed_vae = True#kwargs["mixed_vae"] if "mixed_vae" in kwargs.keys() else False
         self.wo_comet = True #kwargs["wo_comet"] if "wo_comet" in kwargs.keys() else False
         self.sample_strategy_embedding = True #kwargs["sample_strategy_embedding"] if "sample_strategy_embedding" in kwargs.keys() else False

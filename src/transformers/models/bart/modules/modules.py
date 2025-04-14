@@ -28,13 +28,13 @@ class EmoTrans(nn.Module):
         strat_logits = self.dropout(strat_logits)
         emo_prob = F.softmax(emo_logits, dim = -1)
         for i,matrix in enumerate(self.matrices):
-            if stop_norm_weight:
-                emo_out_logits_cur_strat = F.softmax(F.linear(emo_prob, matrix.t()))
-            else:
-                with torch.no_grad():
-                    weight_norm = matrix/matrix.sum(dim=1, keepdim=True)
-                    matrix.copy_(weight_norm)
-                emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
+            #if stop_norm_weight:
+            #    emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
+            #else:
+            #    with torch.no_grad():
+            #        weight_norm = matrix/matrix.sum(dim=1, keepdim=True)
+            #        matrix.copy_(weight_norm)
+            emo_out_logits_cur_strat = F.linear(emo_prob, matrix.t())
             emo_out_logits_each_strat[:, i, :] = emo_out_logits_cur_strat
         #for i in range(len(self.matrices)):
         #    with torch.no_grad():
@@ -43,12 +43,19 @@ class EmoTrans(nn.Module):
         #    emo_out_logits_cur_strat = F.linear(emo_prob, self.matrices[i].t())
         #    emo_out_logits_each_strat[:, i, :] = emo_out_logits_cur_strat
         strat_prob = F.softmax(strat_logits, dim = -1)
-        emo_out_prob = torch.bmm(strat_prob.unsqueeze(-2), emo_out_logits_each_strat) #[b, 1, stra] * [b, stra, emo] -> [b, 1, emo] 
+        emo_out_logits = torch.bmm(strat_prob.unsqueeze(-2), emo_out_logits_each_strat) #[b, 1, stra] * [b, stra, emo] -> [b, 1, emo] 
+        emo_out_prob = F.softmax(emo_out_logits, dim = -1)
         emotion_id = self.emotion_id.to(emo_logits.device) 
         emo_embed = torch.bmm(emo_out_prob,  self.emotion_embedding(emotion_id).unsqueeze(0).repeat(b, 1, 1))
-        emo_out_prob = emo_out_prob.squeeze()
-        emo_out_prob = torch.log(emo_out_prob) #upDATE  9-27-II
-        return emo_embed, emo_out_prob
+        
+
+        emo_out_prob = emo_out_prob.squeeze(-2)
+        emo_out_logits = emo_out_logits.squeeze(-2)
+
+        
+        #emo_out_log_prob = torch.log(emo_out_prob) #upDATE  9-27-II
+        #emo_out_logits = emo_out_log_prob - torch.mean(emo_out_log_prob, dim = 1, keepdim=True)
+        return emo_embed, emo_out_prob, emo_out_logits
         
         
 
@@ -854,6 +861,112 @@ def get_last_arg_where_equal(x, value):
     i_pos = torch.cat((i_pos, torch.tensor([nzr.size(0) - 1]).to(i_pos.device)))
     pos = nzr[i_pos,:]
     return pos
+from ....activations import ACT2FN
+
+class MoeMLP(nn.Module):
+    #From; https://github.com/huggingface/transformers/blob/main/src/transformers/models/qwen2_moe/modeling_qwen2_moe.py#L607
+    def __init__(self, config, intermediate_size=None):
+        super().__init__()
+        self.config = config
+        self.hidden_size = config.hidden_size
+        self.intermediate_size = intermediate_size
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)
+        self.act_fn = ACT2FN[config.activation_function]
+
+    def forward(self, x):
+        return self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+
+class MoeSparseMoeBlock(nn.Module):
+    #From; https://github.com/huggingface/transformers/blob/main/src/transformers/models/qwen2_moe/modeling_qwen2_moe.py#L607
+    def __init__(self, config, num_experts, with_gate = True):
+        super().__init__()
+        self.num_experts = num_experts
+        self.top_k = int(num_experts * config.num_experts_per_tok)
+        self.norm_topk_prob = config.norm_topk_prob
+
+        # gating
+        self.with_gate = with_gate
+        if self.with_gate:
+            self.gate = nn.Linear(config.hidden_size * 2, num_experts, bias=False)
+        else:
+            self.gate = None
+        self.experts = nn.ModuleList(
+            [MoeMLP(config, intermediate_size=int(config.hidden_size//self.num_experts)) for _ in range(self.num_experts)]
+        )
+
+        self.shared_expert = MoeMLP(config, intermediate_size=config.shared_expert_intermediate_size)
+        self.shared_expert_gate = torch.nn.Linear(config.hidden_size, 1, bias=False)
+
+    def forward(self, hidden_states: torch.Tensor, 
+                        embedding: torch.Tensor = None,
+                        gate_from_embedding = False,
+                        router_logits: torch.Tensor = None, 
+                        router_softmax = True) -> torch.Tensor:
+        """ """
+        batch_size, sequence_length, hidden_dim = hidden_states.shape
+        hidden_states = hidden_states.view(-1, hidden_dim)
+        
+        if router_logits is None:
+
+            # router_logits: (batch * sequence_length, n_experts)
+            if gate_from_embedding:
+                router_logits = self.gate(embedding)
+            else:
+                router_logits = self.gate(hidden_states)
+
+        elif len(router_logits.size()) == 2:
+            router_logits = router_logits.unsqueeze(-2).repeat(1,sequence_length,1).view(-1, self.num_experts)
+        elif len(router_logits.size()) == 3 and router_logits.size(1) == 1:
+            router_logits = router_logits.repeat(1,sequence_length,1).view(-1, self.num_experts)
+        if router_softmax:
+            routing_weights = F.softmax(router_logits, dim=1, dtype=torch.float)
+        else:
+            routing_weights = router_logits.to(dtype=torch.float)
+
+        if routing_weights.size(0) == batch_size:
+            #If we calculate sentence-level router weight, we need to extend it to per-token
+            routing_weights = routing_weights.view(routing_weights.size(0),1,routing_weights.size(-1))
+            routing_weights = routing_weights.repeat(1,sequence_length,1)
+            routing_weights = routing_weights.view(-1, routing_weights.size(-1))
+            
+        routing_weights, selected_experts = torch.topk(routing_weights, self.top_k, dim=-1)
+        if self.norm_topk_prob:
+            routing_weights /= routing_weights.sum(dim=-1, keepdim=True)
+        # we cast back to the input dtype
+        routing_weights = routing_weights.to(hidden_states.dtype)
+
+        final_hidden_states = torch.zeros(
+            (batch_size * sequence_length, hidden_dim), dtype=hidden_states.dtype, device=hidden_states.device
+        )
+
+        # One hot encode the selected experts to create an expert mask
+        # this will be used to easily index which expert is going to be sollicitated
+        expert_mask = torch.nn.functional.one_hot(selected_experts, num_classes=self.num_experts).permute(2, 1, 0)
+
+        # Loop over all available experts in the model and perform the computation on each expert
+        for expert_idx in range(self.num_experts):
+            expert_layer = self.experts[expert_idx]
+            idx, top_x = torch.where(expert_mask[expert_idx])
+
+            # Index the correct hidden states and compute the expert hidden state for
+            # the current expert. We need to make sure to multiply the output hidden
+            # states by `routing_weights` on the corresponding tokens (top-1 and top-2)
+            current_state = hidden_states[None, top_x].reshape(-1, hidden_dim)
+            current_hidden_states = expert_layer(current_state) * routing_weights[top_x, idx, None]
+
+            # However `index_add_` only support torch tensors for indexing so we'll use
+            # the `top_x` tensor here.
+            final_hidden_states.index_add_(0, top_x, current_hidden_states.to(hidden_states.dtype))
+
+        shared_expert_output = self.shared_expert(hidden_states)
+        shared_expert_output = F.sigmoid(self.shared_expert_gate(hidden_states)) * shared_expert_output
+
+        final_hidden_states = final_hidden_states + shared_expert_output
+
+        final_hidden_states = final_hidden_states.reshape(batch_size, sequence_length, hidden_dim)
+        return final_hidden_states, router_logits
 
 if __name__ == "__main__":
     n_emo_in = 3

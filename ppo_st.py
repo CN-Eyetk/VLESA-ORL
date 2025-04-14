@@ -25,7 +25,7 @@ from arguments import load_arg
 from rewarder import distribute_word_score_to_tokens, distribute_word_score_to_tokens_check, distribute_word_score_to_tokens_new
 #from metric.text_feats import dependency_distance
 from BlenderEmotionalSupport import evaluate, save_checkpoint, load_model_for_eval, save_value_head
-from attach_vad.VADTokenizer import W2VAD
+#from attach_vad.VADTokenizer import W2VAD
 from accelerate import Accelerator
 vad_tokenizer = None
 #print("finished import")
@@ -324,13 +324,17 @@ if __name__ == "__main__":
                     with torch.no_grad():
                         ppo_output_dir = os.path.join(args.ppo_output_dir,f"epoch{epoch}_step{i}_{today}",args.ppo_prefix + ("temp" if generation_kwargs["temperature"] > 0.7 else ""))
                         print("****************\ppo model save dir:",ppo_output_dir,"\****************")
-                        results = evaluate(args, 
-                                        ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 
-                                        tokenizer, 
-                                        eval_dataset, 
-                                        "{}-{}".format("checkpoint", f"ppo_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}"),
-                                        eval_output_dir = ppo_output_dir
-                                        )
+                        try:
+                            results = evaluate(args, 
+                                            ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model, 
+                                            tokenizer, 
+                                            eval_dataset, 
+                                            "{}-{}".format("checkpoint", f"ppo_epoch{epoch}_step{i}_{today}_{args.ppo_prefix}"),
+                                            eval_output_dir = ppo_output_dir
+                                            )
+                        except Exception as e:
+                            print("Something wrong with evaluation")
+                            print(e)
                         #test_result = generate_new(args, 
                         #                           model = ppo_trainer.model.pretrained_model if not ppo_trainer.is_distributed else ppo_trainer.model.module.pretrained_model,
                         #                           verbose = False, 
@@ -352,10 +356,10 @@ if __name__ == "__main__":
                                         )
                         
                         print("success saved")
-                        ppl = results["eval_perplexity"]
-                        if ppl > best_ppl:
-                            early_stop_steps += 1
-                        if early_stop_steps > 2:
-                            print("finished")
-                            break
-                    del results
+                        #ppl = results["eval_perplexity"]
+                        #if ppl > best_ppl:
+                        #    early_stop_steps += 1
+                        #if early_stop_steps > 2:
+                        #    print("finished")
+                        #    break
+                    #del results

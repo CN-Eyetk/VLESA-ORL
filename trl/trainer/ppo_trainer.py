@@ -226,9 +226,10 @@ class PPOTrainer(BaseTrainer):
         config.is_peft_model = self.is_peft_model
 
         is_using_tensorboard = config.log_with is not None and config.log_with == "tensorboard"
+        #if 1==2:
         self.accelerator.init_trackers(
             config.tracker_project_name,
-            config=dict(trl_ppo_trainer_config=config.to_dict()) if not is_using_tensorboard else config.to_dict(),
+            #config=dict(trl_ppo_trainer_config=config.to_dict()) if not is_using_tensorboard else config.to_dict(),
             init_kwargs=config.tracker_kwargs,
         )
         self.is_using_text_environment = getattr(config, "use_text_environment", False)

@@ -167,8 +167,8 @@ class LLamaSeekerAgent:
     def __init__(self, model_dir):
         #model_name = model_dir
         tokenizer = AutoTokenizer.from_pretrained(model_dir,
-                                                  token="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",
-                                                  )
+                                                token="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",
+                                                )
         base_model = AutoModelForCausalLM.from_pretrained(
                     model_dir,
                     low_cpu_mem_usage=True,

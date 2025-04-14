@@ -60,6 +60,8 @@ def load_tag(args):
         +("-tp" if args.use_triplet_loss else "") \
         +("-situ" if args.use_situ else "") \
         +(f"-stg_{args.strategy_latent_dim}" if args.strategy_latent_dim else "") \
+        +(f"-moe_{args.n_moe_layers}" if args.use_moe else "") \
+        +(f"-dis_{args.use_dissimilarity_loss}" if args.use_dissimilarity_loss else "") \
         +args.tag
     GROUP = "base"
     return TAG, GROUP
@@ -96,9 +98,20 @@ def load_arg(return_tag = False, ):
     parser.add_argument("--block_size",type=int, default=512) #No strategy control over response
     parser.add_argument("--layer_control", action="store_true")
     parser.add_argument("--strategy_use_cvae", action="store_true")
+    #parser.add_argument("--use_joint_emo", action="store_true")
+    #parser.add_argument("--use_triplet_loss", action="store_true")
+    #parser.add_argument("--strategy_latent_dim",default=None)
+    
+    ###################
+    parser.add_argument("--use_vae", action="store_true")
     parser.add_argument("--use_joint_emo", action="store_true")
     parser.add_argument("--use_triplet_loss", action="store_true")
     parser.add_argument("--strategy_latent_dim",default=None)
+    parser.add_argument("--distributed",action="store_true")
+    parser.add_argument("--use_moe",action="store_true")
+    parser.add_argument("--stop_e_expert",action="store_true")
+    parser.add_argument("--n_moe_layers",default=2,type=int)
+    parser.add_argument("--use_dissimilarity_loss",action="store_true")
     parser.add_argument("--ppo", action = "store_true")
     #args_g = parser.parse_args()
     
@@ -186,7 +199,7 @@ def load_arg(return_tag = False, ):
             "base_vocab_size":54944 if not args_g.use_bart else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,
-            "local-rank":-1,#local_rank,
+            "local_rank":-1,#local_rank,
             "per_gpu_train_batch_size":20,
             "per_gpu_eval_batch_size":20,
             "save_total_limit":1,
@@ -234,7 +247,11 @@ def load_arg(return_tag = False, ):
             "use_joint_emo":args_g.use_joint_emo,
             "use_triplet_loss":args_g.use_triplet_loss,
             "strategy_latent_dim":args_g.strategy_latent_dim,
-            "use_emo_in_dist":False
+            "use_vae":args_g.use_vae,
+            "use_emo_in_dist":False,
+            "use_moe":args_g.use_moe,
+            "n_moe_layers":args_g.n_moe_layers,
+            "use_dissimilarity_loss":args_g.use_dissimilarity_loss
             }
     #add ppo related args
     ppo_args = {k:v for k,v in vars(args_g).items() if k.startswith("ppo")}
@@ -278,6 +295,14 @@ class LLamaSeekerArguments:
     model_dir = global_args["path_to_llama_seeker_model"]
     #model_dir = "/mnt/c/Users/Ray/Desktop/PolyuSem5/esconv"
     device = torch.device("cpu")
+    
+
+special_tokens = {
+    'meta-llama/Meta-Llama-3.1-8B-Instruct':
+        {"bos":"<|end_header_id|>","eos":"<|eot_id|>"},
+    'meta-llama/Llama-2-7b-chat-hf':
+        {"bos":"[INST]","eos":"[/INST]"},
+}
 if __name__ == "__main__":
     arg = load_arg(return_tag=True)
     print(arg)
