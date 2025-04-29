@@ -15,8 +15,8 @@ strategy_labels = [
     "[Others]",    
 ]
 
-emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
-emo_out_labels = [v for k,v in emo_out_lables.items()]
+#emo_out_lables =  json.load(open("dataset/labels/emo_out_labels.json"))
+#emo_out_labels = [v for k,v in emo_out_lables.items()]
 class CustomChatbot:
     def  __init__(self, model_path) -> None:
         model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
@@ -75,23 +75,23 @@ class Chatbot:
         batch = self.make_input(chat, situ)
         with torch.no_grad():
             chat_history_ids, mutual_attention, mutual_attention_st, strategy_logits, emotion_logits = self.model.generate(
-                **batch, max_length=512,
+                **batch, max_length=128,
                 min_length=5,
                 num_beams=1,
                 use_cache=True,
                 pad_token_id=self.tokenizer.pad_token_id,
-                early_stopping=True,
-                eos_token_id=self.tokenizer.eos_token_id, temperature=1.0,
-                top_p=0.9, 
+                #early_stopping=True,
+                eos_token_id=self.tokenizer.eos_token_id, temperature=0.9,
+                top_p=0.6, 
                 top_k = 50, 
                 do_sample=True, 
-                no_repeat_ngram_size=3,
-                repetition_penalty=1.03
+                #no_repeat_ngram_size=1,
+                #repetition_penalty=1.03
                 ) #top_p 0.9, topk 30
         strategy_id = strategy_logits.squeeze().argmax()
         emo_id = emotion_logits.squeeze().argmax()
-        print("strategy",strategy_labels[strategy_id])
-        print("emotion",emo_out_labels[emo_id])
+        #print("strategy",strategy_labels[strategy_id])
+        #print("emotion",emo_out_labels[emo_id])
         generated_text = self.tokenizer.decode(chat_history_ids[:, :][0], skip_special_tokens=True)
         return generated_text
 

@@ -7,7 +7,7 @@ import re
 import torch
 from metric.myMetrics import split_punct
 from evaluate import load
-from coherence.coherence import Coherence
+#from coherence.coherence import Coherence
 import os
 from scipy import stats
 from scipy.stats import f_oneway, ttest_rel
@@ -15,8 +15,8 @@ from transformers import pipeline
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.pipeline import Pipeline
-from vad import get_vad_stats
-from lexical_diversity import lex_div as ld
+#from vad import get_vad_stats
+#from lexical_diversity import lex_div as ld
 #from PAIR.main import PairEval
 from metric.gather_tree_stats import gather_stats
 from metric.ngrams import SpanProcessor
@@ -176,11 +176,11 @@ def evaluate(dirs, masks = None):
         else:
             depth_scores = None
 
-        if coh is not None:
-            coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
-                                            response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
-            print("coherence:",coh_score)
-            result["coherence"] = coh_score
+        #if coh is not None:
+        #    coh_scores, coh_score = coh.corpus_coherence_score(response_path=None, context_path = None,
+        #                                    response_list=[split_punct(x) for x in hyps], context_list=[split_punct(x) for x in prevs])
+        #    print("coherence:",coh_score)
+        #    result["coherence"] = coh_score
         
         print(result)
 
@@ -226,7 +226,7 @@ def evaluate(dirs, masks = None):
             for k,v in bert_results.items():
                 if any([x in k for x in ["precision","recall","f1"]]):
                     all_res_by_sent[dir][k] = [float(x) for x in v]
-        all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
+        #all_res_by_sent[dir]["coh"] = [float(x) for x in coh_scores]
         all_res_by_sent[dir]["toxic"] = toxics
         if humanlike_scores is not None:
             all_res_by_sent[dir]["humanlike"] =[float(x) for x in humanlike_scores] 
@@ -301,16 +301,16 @@ if __name__ == "__main__":
         bertscore = None
     
     #pairscore = PairEval()
-    emb_type = 'other'
-    emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
-    coh = Coherence(emb_type, emb_path)
+    #emb_type = 'other'
+    #emb_path = '/disk/junlin/metric/word2vec/glove.6B.300d.model.bin'
+    #coh = Coherence(emb_type, emb_path)
 
     model_path = 'JungleLee/bert-toxic-comment-classification'
     #contexts = load_context("outputs/edition.txt", row_index=0)
     #print(contexts[:10])
     #print("=========")
     #humanlike = SentEval(model_path, is_distributon = True)
-    empathy = SentEval("bdotloh/roberta-base-empathy")
+    #empathy = SentEval("bdotloh/roberta-base-empathy")
     toxic = Toxity()
     if args.depth:
         depth = DialogRPTEval("microsoft/DialogRPT-depth")
@@ -337,16 +337,11 @@ if __name__ == "__main__":
     #dirs = [os.path.join("our_generated_data/",x,y) for x in os.listdir("our_generated_data/") for y in os.listdir(f"our_generated_data/{x}")]
     #dirs = [x for x in dirs if "1016_II" in x and "bart" in x ]
     dirs = [    
-            #"our_generated_data/-LIGHT-TRANS4/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/non_mix/",
-            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5temp/non_mix/",
-            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_llamatemp/non_mix/",
-            "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix/",
-            "our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_0-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5temp/non_mix/",
-            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woatemp/non_mix/",
-            #"our_generated_data/bart-our/-LIGHT-TRANS4PPO/all_loss-1.0_0.1_0.1_510-spst-nokl-vae16-ct0.1-svae-lc-je-tp-situ-stg_8am922/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_0.5_stem_1wo_fullwo_diff_nonmix_rec_load_1.5_woetemp/non_mix/",
-
-
-            
+            "/home/lijunlin/VLESA-ORL/our_generated_data/base/all_loss-ct0.1-svae-lc-je-tp-situ-stg_8-dis_Trueam411",
+            "/home/lijunlin/VLESA-ORL/our_generated_data/bart-our/basePPO/all_loss-ct0.1-svae-lc-je-tp-situ-stg_8-dis_Trueam411/epoch0_step39_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_1.0_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5_wltemp",
+            "/home/lijunlin/VLESA-ORL/our_generated_data/bart-our/basePPO/all_loss-ct0.1-svae-lc-je-tp-situ-stg_8-dis_Trueam411/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_1.0_stem_1wo_fullwo_diff_nonmix_rec_llama_load_1.5_wltemp",
+            "/home/lijunlin/VLESA-ORL/our_generated_data/bart-our/basePPO/all_loss-ct0.1-svae-lc-je-tp-situ-stg_8-dis_Trueam411/epoch0_step39_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_1.0_stem_1wo_fullwo_diff_nonmix_rec_llamatemp",
+            "/home/lijunlin/VLESA-ORL/our_generated_data/bart-our/basePPO/all_loss-ct0.1-svae-lc-je-tp-situ-stg_8-dis_Trueam411/epoch0_step78_2024-06-11/lr_2e-07-bs_64-sl_0-gs_16-kl_0.0-wr_1-sr_0.5-lm_1.0_stem_1wo_fullwo_diff_nonmix_rec_llamatemp"
             ]
     #dirs.append("supporter_generated_data")
     #irs.append("cooper_generated_data")
@@ -373,7 +368,7 @@ if __name__ == "__main__":
     df.to_csv("res.csv")
 
     our = dirs[1]
-    baselines = [dirs[i] for i in [0,2]]
+    baselines = [dirs[i] for i in [0,2,3,4]]
     for k,v in all_res_by_sent[our].items():
         print(k)
         print(type(v))

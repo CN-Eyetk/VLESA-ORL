@@ -43,6 +43,11 @@ def load_ppo_prefix(args_g):
             prefix += "_woa"
         if args_g.ppo_wo_e:
             prefix += "_woe"
+        if args_g.ppo_use_word_load:
+            prefix += '_wl'
+        if args_g.ppo_use_emp:
+            prefix += '_empnew'
+        prefix += "_nopunc"
         
     else:
         prefix = args_g.prefix
@@ -150,6 +155,8 @@ def load_arg(return_tag = False, ):
     ppo_parser.add_argument("--ppo_wo_w", action="store_true")
     ppo_parser.add_argument("--ppo_n_actions", nargs='+', type=int, default=[8, 28])
     ppo_parser.add_argument("--ppo_use_load", action="store_true")
+    ppo_parser.add_argument("--ppo_use_word_load", action="store_true")
+    ppo_parser.add_argument("--ppo_use_emp", action="store_true")
     ppo_parser.add_argument("--ppo_load_coef", default=0.01, type=float)
     args_g = ppo_parser.parse_args()
     TAG, GROUP = load_tag(args_g)
@@ -271,7 +278,7 @@ def load_arg(return_tag = False, ):
         return args
 
 class EmpathyDetectorArguments:
-    output_dir = "/disk/junlin/models/empdetect_best/"
+    output_dir = "/mnt/HD-8T/lijunlin/EmoSp/empdetect_best"
     batch_size = 64
     lr = 2e-5
     save_steps = 50

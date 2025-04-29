@@ -2327,7 +2327,8 @@ class BartForConditionalGeneration(BartPretrainedModel):
         encoder_kwargs = {
             argument: value for argument, value in model_kwargs.items() if not argument.startswith("decoder_") and not argument.startswith("emo_dist")# and not argument.startswith("emo_in_dist") #Update 5-31
         }
-        encoder_kwargs["emo_out_dist"] = model_kwargs["emo_dist"]
+        #if "emo_dist" in model_kwargs:
+        #    encoder_kwargs["emo_out_dist"] = model_kwargs["emo_dist"]
         model_kwargs["encoder_outputs"]: ModelOutput = encoder(input_ids, return_dict=True, **encoder_kwargs)
         return model_kwargs
     def prepare_inputs_for_generation(

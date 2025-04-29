@@ -14,6 +14,7 @@ parser.add_argument("--data_path", type = str, default="converted_dataset")
 parser.add_argument("--explain", action= "store_true")
 parser.add_argument("--use_situ", action= "store_true")
 parser.add_argument("--use_bart", action= "store_true")
+parser.add_argument("--use_large", action= "store_true")
 parser.add_argument("--use_kl", action= "store_true")
 parser.add_argument("--latent_dim", type = int, default=256)
 parser.add_argument("--wo_Stra", action= "store_true")
@@ -58,6 +59,7 @@ else:
 root_path = args_g.root_path
 KL = args_g.use_kl
 BART = args_g.use_bart
+LARGE = args_g.use_large
 LATENT_DIM = args_g.latent_dim
 WO_STRA = args_g.wo_Stra
 WO_EMO = args_g.wo_Emo
@@ -125,6 +127,9 @@ logger = logging.getLogger(__name__)
 def load_arg():
     
     local_rank = args_g.local_rank
+    model_name_or_path = "facebook/blenderbot_small-90M" if not BART else "facebook/bart-base"
+    if LARGE:
+        model_name_or_path = model_name_or_path.replace("base","large")
 
     args = {"do_train":args_g.do_train,
             "do_show_emotion":args_g.do_show_emotion,
@@ -144,7 +149,7 @@ def load_arg():
             "data_cache_dir":"{}/531_II_{}_{}_{}{}{}{}{}cached".format(root_path,"noprep", "bart_" if BART else "", "","", args_g.data_path if not args_g.data_path == "converted_dataset" else "",args_g.block_size if args_g.block_size != 512 else "","situ" if args_g.use_situ else ""),
             "model_type":"mymodel",
             "overwrite_cache":args_g.over_write,
-            "model_name_or_path":"facebook/blenderbot_small-90M" if not BART else "facebook/bart-base",
+            "model_name_or_path":model_name_or_path,
             "base_vocab_size":54944 if not BART else 50265,
             "model_cache_dir":"./blender-small",
             "strategy":False,

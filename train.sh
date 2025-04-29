@@ -33,18 +33,20 @@ ppo_args=" --ppo
 
 ppo_args+=" --root_path "$root_path
 ppo_args+=" --ppo_frozen_layer_num 0"
-ppo_args+=" --ppo_init_kl_coef 0.0"
-ppo_args+=" --ppo_lr 2e-07"
+ppo_args+=" --ppo_init_kl_coef 2.0"
+ppo_args+=" --ppo_lr 5e-07"
 ppo_args+=" --ppo_train_use_seeker  --ppo_stop_use_diff_reward"
 ppo_args+=" --ppo_use_llama_seeker"
 ppo_args+=" --ppo_multiple_actions"
 ppo_args+=" --ppo_load_coef 1.5"
 ppo_args+=" --ppo_use_load"
+ppo_args+=" --ppo_use_word_load"
+ppo_args+=' --ppo_use_emp'
 cur_comm+="$ppo_args"
 
 ppo_prefix=$(python3 arguments.py $pretrained_args $ppo_args --ppo_return_arg)
 comm_a=$cur_comm
 accelerate launch --num_processes=2 --multi_gpu $comm_a
-checkpoint="${root_path}/bart-our/basePPO/${tag}/epoch0_step${step}_2024-04-11/${ppo_prefix}temp"
-eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$checkpoint" "$pretrained_args""
-CUDA_VISIBLE_DEVICES=0 $eval_comm_b
+#checkpoint="${root_path}/bart-our/basePPO/${tag}/epoch0_step${step}_2024-04-11/${ppo_prefix}temp"
+#eval_comm_b="python3 main.py --log_on_wandb --generate_with_predicted_strategy --pretrained_model "$checkpoint" "$pretrained_args""
+#CUDA_VISIBLE_DEVICES=0 $eval_comm_b

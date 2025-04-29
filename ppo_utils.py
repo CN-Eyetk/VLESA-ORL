@@ -38,23 +38,24 @@ def show_paras(paras):
 
 class Agent:
     def __init__(self, args, model, 
-                 tokenizer: PreTrainedTokenizer, 
-                 vad_tokenizer, 
-                 hist_retriver, 
-                 feed_backer, 
-                 reward_func, 
-                 ppo_trainer, 
-                 mini_batch_size, 
-                 device,
-                 generation_kwargs, 
-                 seeker = None, 
-                 seeker_func = None, 
-                 use_diff_reward = False,
-                 use_word_level_reward = False,
-                 lm_only = False,
-                 load_func = None,
-                 load_coef = None,
-                 ) -> None:
+                tokenizer: PreTrainedTokenizer, 
+                vad_tokenizer, 
+                hist_retriver, 
+                feed_backer, 
+                reward_func, 
+                ppo_trainer, 
+                mini_batch_size, 
+                device,
+                generation_kwargs, 
+                seeker = None, 
+                seeker_func = None, 
+                use_diff_reward = False,
+                use_word_level_reward = False,
+                lm_only = False,
+                load_func = None,
+                load_coef = None,
+                use_word_load = False,
+                ) -> None:
         self.args = args
         self.model = model
         self.tokenizer = tokenizer
@@ -75,6 +76,9 @@ class Agent:
         self.device = device
         self.load_func = load_func
         self.load_coef = load_coef
+        self.use_word_load = use_word_load
+        if self.use_word_load:
+            print("Using word load")
         if self.load_func is not None:
             print("Using load")
     def make_next_state(self, input_ids, role_ids, attention_mask, decoder_output_ids, max_len = 512):
@@ -334,9 +338,31 @@ class Agent:
         else:
             self.seeker.model = self.seeker.model.to(torch.device("cpu"))
         return seeker_reponses
-    def get_load(self, history):
+    def get_load(self, history, response_tensors = None, padding = True):
         self.load_func.model = self.load_func.model.to(self.device)
-        load = [self.load_func.calculate_load(response) for response in history]
+        if self.use_word_load:
+            #此处需要加入response_tensor来分配surprisal
+            load = []
+            assert response_tensors is not None
+            for i,response in enumerate(history):
+                try:
+                    cur_load = self.load_func.calculate_word_load(response)
+                    cur_load = distribute_word_score_to_tokens_new(self.tokenizer, cur_load, response_tensors[i])
+                except Exception as e:
+                    print("error when parsing word load",e)
+                    print("cur data=",response)
+                    cur_load = torch.zeros(response_tensors[i].size()).to(self.load_func.model.device)
+                    
+                cur_load = torch.tensor(cur_load).float()
+                #cur_load[cur_load<1] = 1
+                load.append(cur_load)
+            #load = [torch.tensor(x).float() for x in load]
+            if padding:
+                #target model 的 load要padding
+                load = pad_sequence(load, batch_first = True, padding_value = 0)
+
+        else:
+            load = [self.load_func.calculate_load(response) for response in history]
         self.load_func.model = self.load_func.model.to(torch.device("cpu"))
         return load
     def update_next_state_with_seeker_response(self, next_state, seeker_reponses, max_len = 512):
@@ -380,25 +406,42 @@ class Agent:
                 attention_masks[i] = torch.concat((attention_masks[i][:1], attention_masks[i][-max_len+1:]))
                 #if 1 == 2:
                 #    vad_ids[i] = torch.concat((vad_ids[i][:1], vad_ids[i][-max_len+1:]))
-
+    def compute_reward_with_load(self, rewards, loads):
+        results = []
+        for r, load in zip(rewards, loads):
+            if r.size() == load.size():
+                mask = load > 2
+                cumsum_load = load.cumsum(dim = -1)
+                mask = mask.float()
+                result = r * mask
+                result = result / (1 + cumsum_load ** 0.75)
+            else:
+                print("wrong as reward shape = ", r.size(), " while load shape = ", load.size())
+                result = torch.zeros(r.size()).to(r.device)
+            results.append(result)
+        return results
     def get_reward_and_response(self, state, next_state = None):
         response = self.tokenizer.batch_decode(state["response_tensor"], skip_special_tokens = True)
         ref_response = self.tokenizer.batch_decode(state["ref_response_tensor"], skip_special_tokens = True)
         history_with_response = [state["histories"][i] + [{"content":response[i], "speaker":"supporter"}] for i in range(len(response))]
         history_with_ref_response = [state["histories"][i] + [{"content":ref_response[i], "speaker":"supporter"}] for i in range(len(ref_response))]
-        
-        self.feed_backer.model = self.feed_backer.model.to(self.device)
+        if hasattr(self.feed_backer, 'model_1'):
+            self.feed_backer.model_1 = self.feed_backer.model_1.to(self.device)
+            self.feed_backer.model_2 = self.feed_backer.model_2.to(self.device)
+        else:
+            self.feed_backer.model = self.feed_backer.model.to(self.device)
         
         def compute_w_reward(rewarder, responses, response_tensors):
             sent_rewards = []
             rewards = []
             for i in range(len(responses)):
-                s_r, w_r = rewarder.word_rewarder(responses[i])[-1]
+                s_r, w_r = rewarder.word_rewarder(responses[i], post_processing = True)[-1]
                 sent_rewards.append(s_r)
                 reward = distribute_word_score_to_tokens_new(tokenizer = self.tokenizer,
                                                     tokens_with_scores = w_r,
                                                     response_tensor = response_tensors[i])
-                rewards.append(torch.tensor(reward).float())
+                reward = torch.tensor(reward).float() * len(w_r)
+                rewards.append(reward)
             return sent_rewards, rewards
         
         if self.use_word_level_reward:
@@ -412,8 +455,11 @@ class Agent:
             rewards = [self.reward_func(response) for response in history_with_response]
             ref_rewards = [self.reward_func(response) for response in history_with_ref_response]
         
-        
-        self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
+        if hasattr(self.feed_backer, 'model_1'):
+            self.feed_backer.model_1 = self.feed_backer.model_1.to(self.device)
+            self.feed_backer.model_2 = self.feed_backer.model_2.to(self.device)
+        else:
+            self.feed_backer.model = self.feed_backer.model.to(torch.device("cpu"))
         
         if self.seeker is not None and not self.lm_only:
             seeker_responses = self.get_seeker_response(history_with_response)
@@ -422,9 +468,21 @@ class Agent:
             seeker_responses = None
         
         if self.load_func is not None:
-            loads = self.get_load(history_with_response)
-            ref_loads = self.get_load(history_with_ref_response)
-            if self.load_coef == 0.1:
+            loads = self.get_load(history_with_response, response_tensors= state["response_tensor"] if self.use_word_load else None)
+            #print("loads",loads)
+            ref_loads = self.get_load(history_with_ref_response, response_tensors= state["ref_response_tensor"] if self.use_word_load else None, padding = False)
+            if self.use_word_load:
+                #for r, l in zip(rewards, loads):
+                #    print("reward",r.shape)
+                #    print("load",l.shape)
+                #for r, l in zip(ref_rewards, ref_loads):
+                #    print("reward",r.shape)
+                #    print("load",l.shape)
+                #rewards = [r/(0.1 * (1+load)) for r, load in zip(rewards, loads)]
+                #ref_rewards = [r/(0.1 * (1+ref_load)) for r, ref_load in zip(ref_rewards, ref_loads)]
+                rewards = self.compute_reward_with_load(rewards = rewards, loads=loads)#[(load > 2).float() * r/(1+load**0.1) for r, load in zip(rewards, loads)]
+                ref_rewards = self.compute_reward_with_load(rewards = ref_rewards, loads=ref_loads)
+            elif self.load_coef == 0.1:
                 rewards = [r/(0.1 * load) for r, load in zip(rewards, loads)]
                 ref_rewards = [r/(0.1 * ref_load) for r, ref_load in zip(ref_rewards, ref_loads)]
             elif self.load_coef == 0.01:
@@ -437,7 +495,10 @@ class Agent:
         response_tensors = [response_tensors[i] for i in range(len(response_tensors))]
         action_logits = torch.stack(state["actions"], dim = 0).float()#[b,1]?
         action_ids = action_logits.argmax(-1)
-
+        #print("rewards shape",rewards[0].shape)
+        #print("rewards shape",rewards[1].shape)
+        #print("response_tensors shape",response_tensors[0].shape)
+        #print("response_tensors shape",response_tensors[1].shape)
         return rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids
     def make_multiple_actions(self, batch_actions, batch_emotion_logits):
         batch_emotions = batch_emotion_logits.argmax(-1)
@@ -448,7 +509,27 @@ class Agent:
         new_batch_actions = torch.stack((batch_actions, batch_emotions), dim = -1).view(-1,4)
         #print("new_batch_actions",new_batch_actions)
         return new_batch_actions
-        
+    def print_response_with_reward(self, response_tensors, rewards):
+        b = len(rewards)
+        outputs = []
+        for i in range(b):
+            cur_seq = response_tensors[i][1:]
+
+            cur_rwd = rewards[i]
+
+            cur_mask = cur_seq.ne(self.tokenizer.pad_token_id)
+            cur_seq = cur_seq[cur_mask]
+            cur_rwd = cur_rwd[cur_mask.to(cur_rwd.device)]
+            cur_tokens = self.tokenizer.convert_ids_to_tokens(cur_seq)
+            #print("cur_tokens",cur_tokens)
+            #print("cur_rwd",cur_rwd)
+            cur_output = "|".join(f"{x}-{str(y.item())}" for x, y in zip(cur_tokens, cur_rwd))
+            #if i == 0:
+            #    print(cur_output)
+            #print("cur_output",cur_output)
+            outputs.append(cur_output)
+        return outputs
+            
     def prepare_experience_pool_recursive(self, batch, n_step = 2, remove_time_dimension  = False):
         all_states = []
         all_rewards = []
@@ -474,7 +555,7 @@ class Agent:
             state, next_state, all_paras, bool_paras = self.step(batch, recursive = recursive)
             
             rewards, ref_rewards, response, ref_response, response_tensors, seeker_responses, action_logits, action_ids = self.get_reward_and_response(state, next_state = next_state)
-            
+
             next_batch = {
                 "input_ids":next_state["input_ids"],
                 "role_ids":next_state["role_ids"],
@@ -560,8 +641,9 @@ class Agent:
         response = [f"{a}|{b}" for a,b in zip(all_responses[0], all_responses[1])]
         ref_response =  [f"{a}|{b}" for a,b in zip(all_ref_responses[0], all_ref_responses[1])]
         seeker_responses = [f"{a}|{b}" for a,b in zip(all_seeker_responses[0], all_seeker_responses[1])]
+        reward_distribution = self.print_response_with_reward(all_response_tensors[0],all_rewards[0])
 
-        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
+        return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses, reward_distribution
     
     def prepare_experience_pool(self, batch):
         if self.lm_only:
@@ -605,7 +687,7 @@ class Agent:
             assert len(paras["comet_embs"]) == len(query_tensors)
         return query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses
     def recursive_ppo_step(self, batch, ppo_batch):
-        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool_recursive(batch)
+        query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses, reward_distribution = self.prepare_experience_pool_recursive(batch)
         
         ppo_batch["response"] = response
         ppo_batch["ref_response"] = ref_response
@@ -622,7 +704,8 @@ class Agent:
         ref_rewards = [ref_rewards[i].sum() for i in range(len(ref_rewards))]
         ppo_batch["ref_rewards"] = ref_rewards
         ppo_batch["rewards"] = rewards
-        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses"])
+        ppo_batch["reward_distribution"] = reward_distribution
+        self.ppo_trainer.log_stats(stats, ppo_batch, rewards, columns_to_log=["query", "response", "ref_response", "ref_rewards","seeker_reponses", "reward_distribution"])
     def batched_ppo_step(self, batch, ppo_batch):
         #print("preparing experience pool")
         query_tensors, response_tensors, rewards, ref_rewards, paras, response, ref_response, seeker_responses = self.prepare_experience_pool(batch)

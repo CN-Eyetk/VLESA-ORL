@@ -193,7 +193,7 @@ class LLamaSeekerAgent:
         self.eos = self.tokenizer("[/INST]", add_special_tokens=False).input_ids[0]
         self.model = base_model
         
-    def calculate_load(self, contents):
+    def calculate_load(self, contents, by_token = False):
 
         prompt = self.make_prompt(contents)
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
@@ -205,8 +205,27 @@ class LLamaSeekerAgent:
         index = inputs["input_ids"][:,start_index+1:end_index+1]
         #print("index",index.shape)
         active_logits = torch.gather(input = active_logits, dim = 2, index = index.unsqueeze(-1))
-        spr = -1 * active_logits.sum()
-        return spr.detach().cpu().item()
+        if by_token:
+            spr = -1 * active_logits
+            return spr.detach().cpu().squeeze(), index.detach().cpu().squeeze().numpy()
+        else:
+            spr = -1 * active_logits.sum()
+            return spr.detach().cpu().item()
+    def calculate_word_load(self, contents):
+        # cannot be batch
+        w_surps, w_idx = self.calculate_load(contents, by_token = True)
+        tokens = self.tokenizer.convert_ids_to_tokens(w_idx)
+        output_surps = []
+        output_tokens = []
+        for i, (surp, w_id, token) in enumerate(zip(w_surps, w_idx, tokens)):
+            if token.startswith("▁"):
+                #is start of word
+                output_surps.append(surp)
+                output_tokens.append(token[1:])
+            else:
+                output_surps[-1] += surp
+                output_tokens[-1] += token
+        return list(zip(output_tokens, output_surps))
     def response(self, contents):
         prompt = self.make_prompt(contents)
         formatted_prompt = (
@@ -249,14 +268,19 @@ class LLamaSeekerAgent:
         return prompt
 
 class SeekerAgent:
-    def __init__(self, args):
-        self.tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
-        self.model = AutoModelForCausalLM.from_pretrained(args.model_dir)
-        self.device = args.device
+    def __init__(self, args = None, device = None,model_dir = None):
+        if model_dir is not None:
+            self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
+            self.model = AutoModelForCausalLM.from_pretrained(model_dir)
+            self.device = device
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
+            self.model = AutoModelForCausalLM.from_pretrained(args.model_dir)
+            self.device = args.device
         self.collator = SeekerCollater(self.tokenizer)
         self.model = self.model.to(self.device)
         self.model.eval()
-    def calculate_load(self, contents):
+    def calculate_load(self, contents, by_token = False):
 
         cur_data = {
             "hist":contents
@@ -285,8 +309,29 @@ class SeekerAgent:
         index = batch["input_ids"][:,start_index+1:end_index+1]
         #print("index",index.shape)
         active_logits = torch.gather(input = active_logits, dim = 2, index = index.unsqueeze(-1))
-        spr = -1 * active_logits.sum()
-        return spr.detach().cpu().item()
+        if by_token:
+            spr = -1 * active_logits
+            return spr.detach().cpu().squeeze(), index.detach().cpu().squeeze().numpy()
+        else:
+            spr = -1 * active_logits.sum()
+            return spr.detach().cpu().item()
+    def calculate_word_load(self, contents):
+        # cannot be batch
+        w_surps, w_idx = self.calculate_load(contents, by_token = True)
+        #print(w_surps, w_idx)
+        tokens = self.tokenizer.convert_ids_to_tokens(w_idx)
+        #print(tokens)
+        output_surps = []
+        output_tokens = []
+        for i, (surp, w_id, token) in enumerate(zip(w_surps, w_idx, tokens)):
+            if token.startswith("Ġ"):
+                #is start of word
+                output_surps.append(surp)
+                output_tokens.append(token[1:])
+            else:
+                output_surps[-1] += surp
+                output_tokens[-1] += token
+        return list(zip(output_tokens, output_surps))
     def response(self, contents):
         cur_data = {
                 "hist":contents
@@ -355,7 +400,9 @@ class EmFeedBacker:
             prediction = self.model(**{k:v.to(self.model.device) if v is not None else None for k,v in batch.items()}, output_attentions = output_attentions)
         score = prediction.logits.detach().cpu().item()
         if output_attentions:
+            #Before April 16 
             attn = prediction.attentions[-1].sum(1)[0][0]
+            #attn = torch.cat(prediction.attentions, dim=0).sum(0).sum(0).sum(0)
             input_ids = batch["input_ids"]
             return score, attn, input_ids.squeeze(0)
         else:
@@ -366,7 +413,7 @@ class EmFeedBacker:
             s_cur = self.score(contents)
         r = s_cur - s_prev
         return s_cur, s_prev, r
-    def word_rewarder(self, contents):
+    def word_rewarder(self, contents, post_processing = False):
         #reward_token_ids = []
         reward_weights = []
         reward_tokens = []
@@ -378,6 +425,9 @@ class EmFeedBacker:
             for i, (idx, a) in enumerate(zip(input_ids, attn)):
                 if i > final_spt_position:
                     token = self.tokenizer.convert_ids_to_tokens([idx])[0]
+                    if post_processing:
+                        if re.compile("^[^\w\s]+$").match(token):
+                            a = torch.tensor(0).to(a.device)
                     if token.startswith("##"):
                         reward_weights[-1] += a.item()
                         reward_tokens[-1] += token[2:] #remove the beginning ##
@@ -390,6 +440,124 @@ class EmFeedBacker:
         return s_cur, s_prev, (r, reward_by_word)
 
 
+#class EmFeedBacker2(EmFeedBacker):
+#    def __init__(self, args, emp_model_dir, sent_rwd_ratio=0):
+#        super().__init__(args, sent_rwd_ratio)
+#        self.emp_model = AutoModelForSequenceClassification.from_pretrained(emp_model_dir)
+#    def get_emp_score(self, content):
+        
+
+class EmFeedBacker2:
+    def __init__(self, model_dir_1, model_dir_2, device, sent_rwd_ratio = 0):
+        self.tokenizer_1 = load_tokenizer_from_path(model_dir_1)
+        self.model_1 = AutoModelForSequenceClassification.from_pretrained(model_dir_1)
+        self.tokenizer_2 = load_tokenizer_from_path(model_dir_2)
+        self.model_2 = AutoModelForSequenceClassification.from_pretrained(model_dir_2)
+        self.device = device
+        self.collator = Collater(self.tokenizer_1)
+        self.model_1 = self.model_1.to(self.device).eval()
+        self.model_2 = self.model_2.to(self.device).eval()
+        self.spt_token_id = self.tokenizer_1.convert_tokens_to_ids("[unused1]")
+        self.sent_rwd_ratio = sent_rwd_ratio
+    def score_1(self, contents, output_attentions = False):
+        #[
+        #{"content":"...", "speaker":"seeker"},
+        #{"content":"...", "speaker":"supporter"},
+        #{"content":"...", "speaker":"seeker"},
+        #{"content":"...", "speaker":"supporter"}
+        #        ]
+        cur_data = {
+            "hist":contents
+        }
+        inputs = encode_history(cur_data, self.tokenizer_1)
+        batch = [
+            {"input_ids": inputs["hist_input_ids"],
+            "token_type_ids": inputs["hist_token_type_ids"],
+            "attention_mask": inputs["hist_attention_mask"],
+            }
+        ]
+        batch = self.collator.collate(batch)
+        with torch.no_grad():
+            prediction = self.model_1(**{k:v.to(self.model_1.device) if v is not None else None for k,v in batch.items()}, output_attentions = output_attentions)
+        score = prediction.logits.detach().cpu().item()
+        if output_attentions:
+            #Before April 16 
+            attn = prediction.attentions[-1].sum(1)[0][0]
+            #attn = torch.cat(prediction.attentions, dim=0).sum(0).sum(0).sum(0)
+            input_ids = batch["input_ids"]
+            return score, attn, input_ids.squeeze(0)
+        else:
+            return score
+    def score_2(self, contents, output_attentions = False):
+        with torch.no_grad():
+            example = {
+            "text":contents[-1]['content']
+            }
+            inputs = self.tokenizer_2(example["text"], return_tensors = "pt").to(self.model_2.device)
+            prediction = self.model_2(**inputs, output_attentions=output_attentions )
+        probs = prediction.logits.softmax(dim = -1).squeeze(0).tolist()  #[No empathy, Seek Empathy, Show Empathy]
+        score = 5 * probs[2] - 5* probs[1]
+        if output_attentions:
+            #print("prediction.attentions",prediction.attentions)
+            weight = torch.cat(prediction.attentions, dim=0).sum(0).sum(0).sum(0)
+            #attention = list(zip(self.tokenizer.convert_ids_to_tokens(inputs.input_ids[0]), weight))
+            #return prediction.attentions
+            return score, weight, inputs.input_ids.squeeze(0)
+        else:
+            return score
+        
+    def rewarder(self, contents):
+        with torch.no_grad():
+            s_prev = self.score(contents[:-1])
+            s_cur = self.score(contents)
+        r = s_cur - s_prev
+        return s_cur, s_prev, r
+    def word_rewarder(self, contents, post_processing = False):
+        #reward_token_ids = []
+        reward_weights_1 = []
+        reward_weights_2 = []
+        reward_tokens = []
+        with torch.no_grad():
+            s_prev = self.score_1(contents[:-1])
+            s_cur, attn_1, input_ids_1 = self.score_1(contents, output_attentions = True)
+            #print("input_ids_1",input_ids_1)
+            r_1 = s_cur - s_prev
+            r_2, attn_2, input_ids_2 = self.score_2(contents, output_attentions = True)
+
+            final_spt_position = (input_ids_1 == self.spt_token_id).nonzero(as_tuple = True)[0][-1]
+            for i, (idx, a) in enumerate(zip(input_ids_1, attn_1)):
+                if i > final_spt_position:
+                    token = self.tokenizer_1.convert_ids_to_tokens([idx])[0]
+                    #print("token-I",token)
+                    if post_processing:
+                        if re.compile("^[^\w\s]+$").match(token):
+                            a = torch.tensor(0).to(a.device)
+                    if token.startswith("##"):
+                        reward_weights_1[-1] += a.item()
+                        reward_tokens[-1] += token[2:] #remove the beginning ##
+                    else:
+                        reward_weights_1.append(a.item())
+                        #reward_token_ids.append(idx)
+                        reward_tokens.append(token)
+
+            for i, (idx, a) in enumerate(zip(input_ids_2, attn_2)):
+                if i > 0:
+                    token = self.tokenizer_2.convert_ids_to_tokens([idx])[0]
+                    #print("token-II",token)
+                    if post_processing:
+                        if re.compile("^[^\w\s]+$").match(token):
+                            a = torch.tensor(0).to(a.device)
+                    if token.startswith("##"):
+                        reward_weights_2[-1] += a.item()
+                        #reward_tokens[-1] += token[2:] #remove the beginning ##
+                    else:
+                        reward_weights_2.append(a.item())
+
+            reward_weights_1 = np.array(reward_weights_1) / sum(reward_weights_1)
+            reward_weights_2 = np.array(reward_weights_2) / sum(reward_weights_2)
+            reward_by_word = [(x, (y_1 * r_1 + y_2 * r_2 if i < len(reward_tokens) - 1 else (y_1 * r_1 + y_2 * r_2) * self.sent_rwd_ratio)) for i, (x,y_1,y_2) in enumerate(zip(reward_tokens, reward_weights_1, reward_weights_2))]
+        
+        return s_cur, s_prev, (r_1 + r_2, reward_by_word)
 class ChatGPTScore:
     def __init__(self, base_prompt) -> None:
         self.base_prompt = {
@@ -490,6 +658,12 @@ def load_feedbacker():
     feedbacker = EmFeedBacker(EmpathyFeedbackerArguments)
     return feedbacker
 
+def load_feedbacker_2():
+    feedbacker = EmFeedBacker2(model_dir_1 = EmpathyFeedbackerArguments.model_dir,
+                            model_dir_2 = EmpathyDetectorArguments.output_dir,
+                            device=torch.device("cpu"),
+                            )
+    return feedbacker
 def load_seeker():
     seeker = SeekerAgent(SeekerArguments)
     return seeker

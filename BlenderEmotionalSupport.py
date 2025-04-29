@@ -226,7 +226,7 @@ def load_model(args, tokenizer):
 def load_tokenizer(args):
     if args.use_bart:
         config = BartConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
-        tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
+        tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir, local_files_only=True)
     else:
         config = BlenderbotSmallConfig.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)
         tokenizer = BlenderbotSmallTokenizer.from_pretrained(args.model_name_or_path, cache_dir=args.model_cache_dir)

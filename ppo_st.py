@@ -11,7 +11,7 @@ from BlenderEmotionalSupport import (load_tokenizer,
                     load_dataset,
                     generate_new
                     )
-from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker, load_seeker, load_llama_seeker
+from rewarder import NLTK_Senti, EmpathyDetector, Retrive_DiagHist, EmFeedBacker, load_empathy_detector_rewarder, load_feedbacker, load_seeker, load_llama_seeker, load_feedbacker_2
 from BlenderEmotionalSupport import set_seed
 from ppo_utils import freeze_parameters, Agent, load_ref_model
 import torch
@@ -75,7 +75,8 @@ class ScriptArguments:
             wo_a = args.ppo_wo_a,
             wo_e = args.ppo_wo_e,
             wo_w = args.ppo_wo_w,
-            n_actions = args.ppo_n_actions if not args.ppo_wo_a and not args.ppo_wo_e else ([8] if args.ppo_wo_e else [28])
+            n_actions = args.ppo_n_actions if not args.ppo_wo_a and not args.ppo_wo_e else ([8] if args.ppo_wo_e else [28]),
+            
             
             
             
@@ -88,6 +89,8 @@ class ScriptArguments:
     use_lm_reward: bool = args.ppo_use_lm_reward
     sent_rwd_ratio: float = args.ppo_sent_reward_ratio
     frozen_layer_num: int = args.ppo_frozen_layer_num
+    use_word_load: bool = args.ppo_use_word_load
+    use_emp: bool = args.ppo_use_emp
     use_seq2seq: bool = True
     lm_only: bool = args.ppo_lm_only
     """whether to use seq2seq models"""
@@ -208,6 +211,7 @@ if __name__ == "__main__":
                                 tokenizer = tokenizer, 
                                 dataset = train_dataset, 
                                 data_collator = train_dataset.collate,
+                                
                                 )
 
         #Set a default Device
@@ -219,7 +223,11 @@ if __name__ == "__main__":
             
         #Prepare Dialouge HIstory and Reward FUnc
         hist_retriver = Retrive_DiagHist(tokenizer)
-        feed_backer = load_feedbacker()
+        if ppo_args.use_emp:
+            feed_backer = load_feedbacker_2()
+            print("Feedback with Empathy")
+        else:
+            feed_backer = load_feedbacker()
         feed_backer.sent_rwd_ratio = ppo_args.sent_rwd_ratio
         reward_func = lambda x:torch.tensor(feed_backer.rewarder(x)[-1]).float()
         if ppo_args.use_seeker:
@@ -288,6 +296,7 @@ if __name__ == "__main__":
                         lm_only=ppo_args.lm_only,
                         load_func = seeker if ppo_args.use_load else None,
                         load_coef = ppo_args.load_coef,
+                        use_word_load=ppo_args.use_word_load
                         )
         for epoch in range(ppo_trainer.config.num_train_epochs):
             for i, batch in tqdm(enumerate(ppo_trainer.dataloader), total=len(ppo_trainer.dataloader)):
